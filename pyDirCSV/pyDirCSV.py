@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # pyDirCSV.py - Read a directory structure into a CSV file
-# This can be useful things like comparing two directory trees
+# This can be used for things like comparing two directory trees in EXCEL
 
 import pygtk
 pygtk.require('2.0')
