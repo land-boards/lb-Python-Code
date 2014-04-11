@@ -1,0 +1,12 @@
+ Volume in drive C has no label.
+ Volume Serial Number is AE7A-0575
+
+ Directory of C:\Users\Doug\Documents\course\pyDirCSV
+
+04/11/2014  08:30 AM    <DIR>          .
+04/11/2014  08:30 AM    <DIR>          ..
+04/11/2014  08:28 AM               839 pyDirCSV.py
+04/11/2014  08:30 AM                 0 test.txt
+04/11/2014  07:34 AM         4,673,535 test2.txt
+               3 File(s)      4,674,374 bytes
+               2 Dir(s)  585,230,786,560 bytes free
