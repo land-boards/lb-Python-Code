@@ -144,22 +144,21 @@ class readDirectoryToList:
 		readFile.close()
 		readDirectoryToList.deleteTempFile(self)
 		return(dirFileList)
+	def openCSVFile(self, csvName):
+		try:
+			myCSVFile = open(outCSVFileName, 'wb')
+		except:
+			print "Couldn't open\nIs the file open in EXCEL?"
+			s = raw_input('--> ')
+			exit()
+		# Open file as a CSV writer output
+		outFile = csv.writer(myCSVFile)
+		return(outFile)
 
-# create an instance of the readDirectoryToList class
-myReadFolder = readDirectoryToList()
-
-# read the directory structure into a list
-dirFileList = myReadFolder.doReadDir()
-
+myReadFolder = readDirectoryToList()		# create an instance of the readDirectoryToList class
+dirFileList = myReadFolder.doReadDir()		# read the directory structure into a list
 outCSVFileName = myReadFolder.selectOutputFileName()
-# Open the output csv file
-try:
-	myCSVFile = open(outCSVFileName, 'wb')
-except:
-	print "Couldn't open\nIs the file open in EXCEL?"
-	exit()
-# Open file as a CSV writer output
-outFile = csv.writer(myCSVFile)
+outFile = myReadFolder.openCSVFile(outCSVFileName)	# Open the output csv file
 
 # Write out the file header
 outFile.writerow(['Date','Time','Size','FileName','Path'])
