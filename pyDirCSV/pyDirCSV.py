@@ -26,10 +26,32 @@ class readDirectoryToList:
 		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
 		response = dialog.run()
 		if response == gtk.RESPONSE_OK:
-			return(dialog.get_filename())
+			retFileName = dialog.get_filename()
+			dialog.destroy()
+			return(retFileName)
+		elif response == gtk.RESPONSE_CANCEL: 
+			print 'Closed, no files selected'
+			dialog.destroy()
+			exit()
+	
+	# 
+	def selectOutputFileName(self):
+		dialog = gtk.FileChooserDialog(title="Select output file", 
+			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
+		filter = gtk.FileFilter() 
+		filter.set_name("Select File")
+		filter.add_pattern("*.csv") # whats the pattern for a folder 
+		dialog.add_filter(filter)
+		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+			retFileName = dialog.get_filename()
+			dialog.destroy()
+			return(retFileName)
 		elif response == gtk.RESPONSE_CANCEL: 
 			print 'Closed, no files selected'
 		dialog.destroy()
+		exit()
 	
 	# Support for drag and drop or command line execution
 	# returns the path to the directory
@@ -122,9 +144,10 @@ myReadFolder = readDirectoryToList()
 # read the directory structure into a list
 dirFileList = myReadFolder.doReadDir()
 
+outCSVFileName = myReadFolder.selectOutputFileName()
 # Open the output csv file
 try:
-	myCSVFile = open('c:\\temp\\results.csv', 'wb')
+	myCSVFile = open(outCSVFileName, 'wb')
 except:
 	print "Couldn't open\nIs the file open in EXCEL?"
 	exit()
