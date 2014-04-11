@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# pyDirCSV.py - Read a directory structure into a CSV file
+# This can be useful things like comparing two directory trees
+
 import pygtk
 pygtk.require('2.0')
 
@@ -14,6 +17,7 @@ import csv
 import os
 import sys
 
+# this class does all the work of reading a directory tree into a list
 class readDirectoryToList:
 	# browseToPath - Opens a windows file browser to allow user to navigate to the directory to read
 	def browseToPath(self):
@@ -34,12 +38,12 @@ class readDirectoryToList:
 			dialog.destroy()
 			exit()
 	
-	# 
+	# selectOutputFileName
 	def selectOutputFileName(self):
-		dialog = gtk.FileChooserDialog(title="Select output file", 
+		dialog = gtk.FileChooserDialog(title="Save as", 
 			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
 		filter = gtk.FileFilter() 
-		filter.set_name("Select File")
+		filter.set_name("*.csv")
 		filter.add_pattern("*.csv") # whats the pattern for a folder 
 		dialog.add_filter(filter)
 		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
@@ -112,6 +116,7 @@ class readDirectoryToList:
 				None
 		return(dirFiles)
 		
+	# deleteTempFile - delete the temporary file that was created
 	def deleteTempFile(self):
 		try:
 			os.system('del c:\\temp\\tempDir.txt')
@@ -119,19 +124,18 @@ class readDirectoryToList:
 			print "Couldn't delete temp file"
 			exit()
 	
+	# doReadDir - 
 	def doReadDir(self):
 		pathToDir = readDirectoryToList.dealWithCommandLine(self)
 		if pathToDir == '':
 			pathToDir = readDirectoryToList.browseToPath(self)
 		commandString = readDirectoryToList.formCommandLine(self, pathToDir)
-		
 		rval = os.system(commandString)
 		#print 'rval', rval
 		if rval == 1:
 			print 'Error running dir command'
 			s = raw_input('--> ')
 			exit()
-	
 		readFile = open('c:\\temp\\tempDir.txt','rb')
 		dirFileList = readDirectoryToList.parseDirTxt(self, readFile)
 		readFile.close()
