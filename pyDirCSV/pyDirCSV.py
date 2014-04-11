@@ -131,11 +131,14 @@ class readDirectoryToList:
 			pathToDir = readDirectoryToList.browseToPath(self)
 		commandString = readDirectoryToList.formCommandLine(self, pathToDir)
 		rval = os.system(commandString)
-		#print 'rval', rval
-		if rval == 1:
-			print 'Error running dir command'
-			s = raw_input('--> ')
-			exit()
+		if rval == 1:		# error because the c:\temp folder does not exist
+			print 'Creating c:\\temp folder'
+			rval2 = os.system('md c:\\temp\\')
+			if rval2 == 1:
+				print 'unable to create c:\\temp\\ folder'
+				s = raw_input('--> ')
+				exit()
+			rval = os.system(commandString)
 		readFile = open('c:\\temp\\tempDir.txt','rb')
 		dirFileList = readDirectoryToList.parseDirTxt(self, readFile)
 		readFile.close()
