@@ -59,7 +59,7 @@ class readDirectoryToList:
 		return(commandLine)
 			
 	# parse through the text file that was created when the directory was set up
-	def partDirTxt(self, filePtr):
+	def parseDirTxt(self, filePtr):
 		dirFiles = []
 		dirName = ""
 		for textLine in filePtr:
@@ -106,12 +106,12 @@ class readDirectoryToList:
 		rval = os.system(commandString)
 		#print 'rval', rval
 		if rval == 1:
-			print 'Error running command'
+			print 'Error running dir command'
 			s = raw_input('--> ')
 			exit()
 	
 		readFile = open('c:\\temp\\tempDir.txt','rb')
-		dirFileList = readDirectoryToList.partDirTxt(self, readFile)
+		dirFileList = readDirectoryToList.parseDirTxt(self, readFile)
 		readFile.close()
 		readDirectoryToList.deleteTempFile(self)
 		return(dirFileList)
