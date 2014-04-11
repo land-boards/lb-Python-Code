@@ -20,6 +20,7 @@ import sys
 # this class does all the work of reading a directory tree into a list
 class readDirectoryToList:
 	# browseToPath - Opens a windows file browser to allow user to navigate to the directory to read
+	# returns the file name of the path that was selected
 	def browseToPath(self):
 		dialog = gtk.FileChooserDialog(title="Select folder", 
 			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
@@ -39,6 +40,7 @@ class readDirectoryToList:
 			exit()
 	
 	# selectOutputFileName
+	# returns the name of the output csv file
 	def selectOutputFileName(self):
 		dialog = gtk.FileChooserDialog(title="Save as", 
 			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
@@ -85,6 +87,7 @@ class readDirectoryToList:
 		return(commandLine)
 			
 	# parse through the text file that was created when the directory was set up
+	# returns a list of lists
 	def parseDirTxt(self, filePtr):
 		dirFiles = []
 		dirName = ""
@@ -122,6 +125,7 @@ class readDirectoryToList:
 			os.system('del c:\\temp\\tempDir.txt')
 		except:
 			print "Couldn't delete temp file"
+			s = raw_input('--> ')
 			exit()
 	
 	# doReadDir - 
@@ -140,30 +144,29 @@ class readDirectoryToList:
 				exit()
 			rval = os.system(commandString)
 		readFile = open('c:\\temp\\tempDir.txt','rb')
-		dirFileList = readDirectoryToList.parseDirTxt(self, readFile)
+		dirFileL = readDirectoryToList.parseDirTxt(self, readFile)
 		readFile.close()
 		readDirectoryToList.deleteTempFile(self)
-		return(dirFileList)
+		return(dirFileL)
+	
+	# openCSVFile - opens the CSV output file as a CSV writer output
 	def openCSVFile(self, csvName):
 		try:
-			myCSVFile = open(outCSVFileName, 'wb')
+			myCSVFile = open(csvName, 'wb')
 		except:
 			print "Couldn't open\nIs the file open in EXCEL?"
 			s = raw_input('--> ')
 			exit()
-		# Open file as a CSV writer output
-		outFile = csv.writer(myCSVFile)
-		return(outFile)
+		outFil = csv.writer(myCSVFile)
+		return(outFil)
 
-myReadFolder = readDirectoryToList()		# create an instance of the readDirectoryToList class
-dirFileList = myReadFolder.doReadDir()		# read the directory structure into a list
-outCSVFileName = myReadFolder.selectOutputFileName()
-outFile = myReadFolder.openCSVFile(outCSVFileName)	# Open the output csv file
+myReadFolder = readDirectoryToList()						# create readDirectoryToList instance
+dirFileList = myReadFolder.doReadDir()						# read dir structure into a list
+outCSVFileName = myReadFolder.selectOutputFileName()		# get output file name
+outFile = myReadFolder.openCSVFile(outCSVFileName)			# Open the output csv file
 
-# Write out the file header
-outFile.writerow(['Date','Time','Size','FileName','Path'])
-# Write out all of the lines in the file
-for dirLineData in dirFileList:
+outFile.writerow(['Date','Time','Size','FileName','Path'])	# File header
+for dirLineData in dirFileList:								# Write out lines
 	outFile.writerow(dirLineData)
 
 print 'Files : ', len(dirFileList)
