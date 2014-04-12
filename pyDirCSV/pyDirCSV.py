@@ -12,21 +12,21 @@ import gtk
 if gtk.pygtk_version < (2,3,90):
    print "PyGtk 2.3.90 or later required for this example"
    raise SystemExit
- 
+
 import csv
 import os
 import sys
 
 # this class does all the work of reading a directory tree into a list
 class readDirectoryToList:
-	# browseToPath - Opens a windows file browser to allow user to navigate to the directory to read
+	# browseToFolder - Opens a windows file browser to allow user to navigate to the directory to read
 	# returns the file name of the path that was selected
-	def browseToPath(self):
+	def browseToFolder(self):
 		dialog = gtk.FileChooserDialog(title="Select folder", 
 			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
 		filter = gtk.FileFilter() 
 		filter.set_name("Select Folder")
-		filter.add_pattern("*") # whats the pattern for a folder 
+		filter.add_pattern("*") # what's the pattern for a folder 
 		dialog.add_filter(filter)
 		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
 		response = dialog.run()
@@ -132,7 +132,7 @@ class readDirectoryToList:
 	def doReadDir(self):
 		pathToDir = readDirectoryToList.dealWithCommandLine(self)
 		if pathToDir == '':
-			pathToDir = readDirectoryToList.browseToPath(self)
+			pathToDir = readDirectoryToList.browseToFolder(self)
 		commandString = readDirectoryToList.formCommandLine(self, pathToDir)
 		rval = os.system(commandString)
 		if rval == 1:		# error because the c:\temp folder does not exist
