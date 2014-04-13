@@ -17,7 +17,7 @@ import os
 import sys
 
 # this class does all the work of reading a directory tree into a list
-class readDirectoryToList:
+class ReadDirectoryToList:
 	# browseToFolder - Opens a windows file browser to allow user to navigate to the directory to read
 	# returns the file name of the path that was selected
 	def browseToFolder(self):
@@ -79,7 +79,7 @@ class readDirectoryToList:
 	# formCommandLine - Forms the command line string
 	# returns the command line string
 	def formCommandLine(self, makeDirPath):
-		makeDirPath = '\"' + makeDirPath + '\"'		# path might have spaces, etc
+		makeDirPath = '"' + makeDirPath + '\"'		# path might have spaces, etc
 		commandLine = 'dir '
 		commandLine += makeDirPath
 		commandLine += ' /-c /s > c:\\temp\\tempDir.txt'
@@ -93,31 +93,36 @@ class readDirectoryToList:
 		for textLine in filePtr:
 			textLine = textLine.strip('\r\n')
 			if len(textLine) == 0:
-				None
-			elif textLine.find("Volume in drive ") != -1:
-				None
-			elif textLine.find("Volume Serial Number is") != -1:
-				None
-			elif textLine.find("Directory of ") != -1:
+				continue
+			elif " Volume in drive " in textLine:
+				continue
+			elif " Volume Serial Number is" in textLine:
+				continue
+			elif '<DIR>' in textLine:
+				continue
+			elif textLine.find('/') == 2:
+				tempDirLine = textLine.split()
+				dirLine = []
+				for item in tempDirLine:
+					if item != '':
+						dirLine.append(item)				
+				myDirFile = []
+				myDirFile.append(dirLine[0])
+				myDirFile.append(dirLine[1] + ' ' + dirLine[2])
+				myDirFile.append(dirLine[3])
+				myDirFile.append(dirLine[4])
+				myDirFile.append(relDirName)
+				myDirFile.append(dirName)
+				dirFiles.append(myDirFile)
+			elif "Directory of " in textLine:
 				dirName = textLine[14:].strip()
 				relDirName = dirName[len(rootDirPath):]		# relative path
-			elif textLine.find('<DIR>') > 0:
-				None
-			elif textLine.find('/') == 2:
-				dirLine = []
-				dirLine.append(textLine[0:10])
-				dirLine.append(textLine[12:20])
-				dirLine.append(textLine[22:38].strip())
-				dirLine.append(textLine[39:])
-				dirLine.append(relDirName)
-				dirLine.append(dirName)
-				dirFiles.append(dirLine)
-			elif textLine.find('File(s)') > 0:
-				None
-			elif textLine.find('     Total Files Listed:') > 0:
-				None
-			elif textLine.find(' Dir(s)') > 0:
-				None
+			elif 'File(s)' in textLine:
+				continue
+			elif '     Total Files Listed:' in textLine:
+				continue
+			elif ' Dir(s)' in textLine:
+				continue
 		return(dirFiles)
 		
 	# deleteTempFile - delete the temporary file that was created
@@ -131,10 +136,10 @@ class readDirectoryToList:
 	
 	# doReadDir - 
 	def doReadDir(self):
-		pathToDir = readDirectoryToList.dealWithCommandLine(self)
+		pathToDir = self.dealWithCommandLine()
 		if pathToDir == '':
-			pathToDir = readDirectoryToList.browseToFolder(self)
-		commandString = readDirectoryToList.formCommandLine(self, pathToDir)
+			pathToDir = self.browseToFolder()
+		commandString = self.formCommandLine(pathToDir)
 		rval = os.system(commandString)
 		if rval == 1:		# error because the c:\temp folder does not exist
 			print 'Creating c:\\temp folder'
@@ -145,9 +150,9 @@ class readDirectoryToList:
 				exit()
 			rval = os.system(commandString)
 		readFile = open('c:\\temp\\tempDir.txt','rb')
-		dirFileL = readDirectoryToList.parseDirTxt(self, readFile, pathToDir)
+		dirFileL = self.parseDirTxt(readFile, pathToDir)
 		readFile.close()
-		readDirectoryToList.deleteTempFile(self)
+		self.deleteTempFile()
 		return(dirFileL)
 	
 	# openCSVFile - opens the CSV output file as a CSV writer output
@@ -161,7 +166,7 @@ class readDirectoryToList:
 		outFil = csv.writer(myCSVFile)
 		return(outFil)
 
-myReadFolder = readDirectoryToList()						# create readDirectoryToList instance
+myReadFolder = ReadDirectoryToList()						# create ReadDirectoryToList instance
 dirFileList1 = myReadFolder.doReadDir()						# read dir structure into a list
 dirFileList2 = myReadFolder.doReadDir()						# read dir structure into a list
 outCSVFileName = myReadFolder.selectOutputFileName()		# get output file name
@@ -171,24 +176,24 @@ diffsList = []
 
 # Eliminate the easy/exact matches first
 for dirLineData1 in dirFileList1:								# Write out lines
-	found = 0
+	found = False
 	for dirLineData2 in dirFileList2:
 		if (dirLineData1[0:5] == dirLineData2[0:5]):			#date,time,size,fileName,relpath match
-			found = 1
-	if found == 0:
+			found = True
+	if found == False:
 		outList = ['1'] + dirLineData1
 		diffsList.append(outList)
 
 for dirLineData2 in dirFileList2:								# Write out lines
-	found = 0
+	found = False
 	for dirLineData1 in dirFileList1:
 		if (dirLineData1[0:5] == dirLineData2[0:5]):
-			found = 1
-	if found == 0:
+			found = True
+	if found == False:
 		outList = ['2'] + dirLineData2
 		diffsList.append(outList)
 
-outFile.writerow(['FileNum','Code','Date','Time','Size','FileName','RelPath','AbsPath'])	# File header
+outFile.writerow(['FileNum','Date','Time','Size','FileName','RelPath','AbsPath'])	# File header
 for rows in diffsList:
 	outFile.writerow(rows)
 
