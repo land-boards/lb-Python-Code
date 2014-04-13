@@ -173,28 +173,87 @@ outCSVFileName = myReadFolder.selectOutputFileName()		# get output file name
 outFile = myReadFolder.openCSVFile(outCSVFileName)			# Open the output csv file
 
 diffsList = []
+diffs1List = []
+diffs2List = []
 
-# Eliminate the easy/exact matches first
+exactMatches = 0
+# Eliminate the easy/exact 1-2 matches first
 for dirLineData1 in dirFileList1:								# Write out lines
+	diffLine1 = []
 	found = False
 	for dirLineData2 in dirFileList2:
-		if (dirLineData1[0:5] == dirLineData2[0:5]):			#date,time,size,fileName,relpath match
+		if (dirLineData1[0:5] == dirLineData2[0:5]):			#date,time,size,fileName,relpath all match
 			found = True
+			exactMatches += 1
 	if found == False:
-		outList = ['1'] + dirLineData1
-		diffsList.append(outList)
+		diffLine1 = ['1']
+		diffLine1.extend(dirLineData1)
+		diffs1List.append(diffLine1)
+print 'exact matches from folder 1 to folder 2 :', exactMatches
 
+# Eliminate the easy/exact 2-1 matches first
+exactMatches = 0
 for dirLineData2 in dirFileList2:								# Write out lines
+	diffLine2 = []
 	found = False
 	for dirLineData1 in dirFileList1:
 		if (dirLineData1[0:5] == dirLineData2[0:5]):
 			found = True
+			exactMatches += 1
 	if found == False:
-		outList = ['2'] + dirLineData2
-		diffsList.append(outList)
+		diffLine2 = ['2']
+		diffLine2.extend(dirLineData2)
+		diffs2List.append(diffLine2)
+print 'exact matches from folder 2 to folder 1 :', exactMatches
 
-outFile.writerow(['FileNum','Date','Time','Size','FileName','RelPath','AbsPath'])	# File header
-for rows in diffsList:
+outFile.writerow(['FileNum','Date','Time','Size','FileName','RelPath','AbsPath','Code'])	# File header
+
+errorLines = []		# accumulate the triaged errors for printing
+line = []
+
+partDiffs1 = []		# remainders
+for line1 in diffs1List:
+	found = False
+	for line2 in diffs2List:
+		if line1[3:6] == line2[3:6]:		# name, size and path match, date or time don't match
+			found = True
+			line1.append('name/size/path match')
+			errorLines.append(line1)
+			break
+		elif line1[4:6] == line2[4:6]:		# name and path match, size, date, or time doesn't match
+			found = True
+			line1.append('size mismatch')
+			errorLines.append(line1)
+			break
+	if found == False:
+		line1.append('Missing file')
+		partDiffs1.append(line1)
+
+partDiffs2 = []
+for line2 in diffs2List:
+	found = False
+	for line1 in diffs1List:
+		if line1[3:6] == line2[3:6]:
+			found = True
+			line2.append('name/size/path match')
+			errorLines.append(line2)
+			break
+		elif line1[4:6] == line2[4:6]:		# name and path match, size, date, or time doesn't match
+			found = True
+			line2.append('size mismatch')
+			errorLines.append(line2)
+			break
+	if found == False:
+		line2.append('Missing file')
+		partDiffs2.append(line2)
+
+for rows in errorLines:
+	outFile.writerow(rows)
+
+for rows in partDiffs1:
+	outFile.writerow(rows)
+
+for rows in partDiffs2:
 	outFile.writerow(rows)
 
 print 'Files : ', len(dirFileList1)
