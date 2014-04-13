@@ -209,7 +209,6 @@ print 'exact matches from folder 2 to folder 1 :', exactMatches
 outFile.writerow(['FileNum','Date','Time','Size','FileName','RelPath','AbsPath','Code'])	# File header
 
 errorLines = []		# accumulate the triaged errors for printing
-line = []
 
 partDiffs1 = []		# remainders
 for line1 in diffs1List:
@@ -247,13 +246,21 @@ for line2 in diffs2List:
 		line2.append('Missing file')
 		partDiffs2.append(line2)
 
-for rows in errorLines:
-	outFile.writerow(rows)
+#for rows in errorLines:
+#	outFile.writerow(rows)
 
-for rows in partDiffs1:
-	outFile.writerow(rows)
+#for rows in partDiffs1:
+#	outFile.writerow(rows)
 
-for rows in partDiffs2:
+#for rows in partDiffs2:
+#	outFile.writerow(rows)
+
+allErrorsList = []
+allErrorsList = errorLines + partDiffs1 + partDiffs2
+allErrorsList = sorted(allErrorsList, key = lambda errs: errs[5])
+allErrorsList = sorted(allErrorsList, key = lambda errs: errs[4])
+
+for rows in allErrorsList:
 	outFile.writerow(rows)
 
 print 'Files : ', len(dirFileList1)
