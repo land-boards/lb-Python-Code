@@ -37,6 +37,10 @@ class ReadDirectoryToList:
 			print 'Closed, no files selected'
 			dialog.destroy()
 			exit()
+		else:
+			print 'Closed, no files selected'
+			dialog.destroy()
+			exit()
 	
 	# selectOutputFileName
 	# returns the name of the output csv file
@@ -82,7 +86,7 @@ class ReadDirectoryToList:
 		makeDirPath = '"' + makeDirPath + '\"'		# path might have spaces, etc
 		commandLine = 'dir '
 		commandLine += makeDirPath
-		commandLine += ' /-c /s > c:\\temp\\tempDir.txt'
+		commandLine += ' /-c /n /s > c:\\temp\\tempDir.txt'
 		return(commandLine)
 			
 	# parse through the text file that was created when the directory was set up
@@ -101,19 +105,19 @@ class ReadDirectoryToList:
 			elif '<DIR>' in textLine:
 				continue
 			elif textLine.find('/') == 2:
-				tempDirLine = textLine.split()
 				dirLine = []
-				for item in tempDirLine:
-					if item != '':
-						dirLine.append(item)				
-				myDirFile = []
-				myDirFile.append(dirLine[0])
-				myDirFile.append(dirLine[1] + ' ' + dirLine[2])
-				myDirFile.append(dirLine[3])
-				myDirFile.append(dirLine[4])
-				myDirFile.append(relDirName)
-				myDirFile.append(dirName)
-				dirFiles.append(myDirFile)
+#				tempDirLine = textLine.split()
+#				for item in tempDirLine:
+#					if item != '':
+#						dirLine.append(item)
+#				print 'dirLine', dirLine
+				dirLine.append(textLine[0:10])
+				dirLine.append(textLine[12:20])
+				dirLine.append(textLine[22:38].strip())
+				dirLine.append(textLine[39:].upper())
+				dirLine.append(relDirName)
+				dirLine.append(dirName)
+				dirFiles.append(dirLine)
 			elif "Directory of " in textLine:
 				dirName = textLine[14:].strip()
 				relDirName = dirName[len(rootDirPath):]		# relative path
@@ -176,6 +180,7 @@ diffsList = []
 diffs1List = []
 diffs2List = []
 
+print 'Checking for complete matches date/time/size/FileName/RelativePath'
 exactMatches = 0
 # Eliminate the easy/exact 1-2 matches first
 for dirLineData1 in dirFileList1:								# Write out lines
@@ -189,7 +194,7 @@ for dirLineData1 in dirFileList1:								# Write out lines
 		diffLine1 = ['1']
 		diffLine1.extend(dirLineData1)
 		diffs1List.append(diffLine1)
-print 'exact matches from folder 1 to folder 2 :', exactMatches
+print ' Complete matches from folder 1 to folder 2 :', exactMatches
 
 # Eliminate the easy/exact 2-1 matches first
 exactMatches = 0
@@ -204,63 +209,110 @@ for dirLineData2 in dirFileList2:								# Write out lines
 		diffLine2 = ['2']
 		diffLine2.extend(dirLineData2)
 		diffs2List.append(diffLine2)
-print 'exact matches from folder 2 to folder 1 :', exactMatches
+print ' Complete matches from folder 2 to folder 1 :', exactMatches
+
+print 'Checking for partial matches with matching relative paths'
 
 outFile.writerow(['FileNum','Date','Time','Size','FileName','RelPath','AbsPath','Code'])	# File header
 
 errorLines = []		# accumulate the triaged errors for printing
 
-partDiffs1 = []		# remainders
+partMatches = 0
+partDiffsFolders1 = []		# remainders
 for line1 in diffs1List:
 	found = False
 	for line2 in diffs2List:
 		if line1[3:6] == line2[3:6]:		# name, size and path match, date or time don't match
 			found = True
-			line1.append('name/size/path match')
+			line1.append('Note - name/size/path match')
 			errorLines.append(line1)
+			partMatches += 1
 			break
 		elif line1[4:6] == line2[4:6]:		# name and path match, size, date, or time doesn't match
 			found = True
-			line1.append('size mismatch')
+			line1.append('Error - size mismatch')
 			errorLines.append(line1)
 			break
 	if found == False:
-		line1.append('Missing file')
-		partDiffs1.append(line1)
-
-partDiffs2 = []
+		partDiffsFolders1.append(line1)
+print ' Partial matches 1 to 2 (matching name/size/path/folders)', partMatches
+		
+partMatches = 0
+partDiffsFolders2 = []
 for line2 in diffs2List:
 	found = False
 	for line1 in diffs1List:
 		if line1[3:6] == line2[3:6]:
 			found = True
-			line2.append('name/size/path match')
+			line2.append('Note - name/size/path match')
 			errorLines.append(line2)
+			partMatches += 1
 			break
 		elif line1[4:6] == line2[4:6]:		# name and path match, size, date, or time doesn't match
 			found = True
-			line2.append('size mismatch')
+			line2.append('Error - size mismatch')
 			errorLines.append(line2)
 			break
 	if found == False:
-		line2.append('Missing file')
-		partDiffs2.append(line2)
+		partDiffsFolders2.append(line2)
+print ' Partial matches 2 to 1 (matching name/size/path/folders)', partMatches
 
-#for rows in errorLines:
-#	outFile.writerow(rows)
+print 'Checking for matches in different folders'
+fileMatches = 0
+for line1 in partDiffsFolders1:
+	found = False
+	for line2 in partDiffsFolders2:
+		if line1[1:5] == line2[1:5]:
+			found = True
+			line1.append('Note - Date/time/size/FileName match, different folder')
+			errorLines.append(line1)
+			fileMatches += 1
+			break
+		elif line1[3:5] == line2[3:5]:
+			found = True
+			line1.append('Note - Size/FileName match, different date/time/folder')
+			errorLines.append(line1)
+			fileMatches += 1
+			break
+		elif line1[4] == line2[4]:
+			found = True
+			line1.append('Error - FileName match, different date/time/size/folder')
+			errorLines.append(line1)
+			break
+	if not found:
+		line1.append('Error - Missing file')
+		errorLines.append(line1)
+print ' Matches in different folders 1 to 2', fileMatches
 
-#for rows in partDiffs1:
-#	outFile.writerow(rows)
+fileMatches = 0
+for line2 in partDiffsFolders2:
+	found = False
+	for line1 in partDiffsFolders1:
+		if line1[1:5] == line2[1:5]:
+			found = True
+			line2.append('Note - Date/time/size/FileName match, different folder')
+			errorLines.append(line2)
+			break
+		elif line1[3:5] == line2[3:5]:
+			found = True
+			line2.append('Note - Size/FileName match, different date/time/folder')
+			errorLines.append(line2)
+			fileMatches += 1
+			break
+		elif line1[4] == line2[4]:
+			found = True
+			line2.append('Error - FileName match, different date/time/size/folder')
+			errorLines.append(line2)
+			break
+	if not found:
+		line2.append('Error - Missing file')
+		errorLines.append(line2)
+print ' Matches in different folders 2 to 1', fileMatches
 
-#for rows in partDiffs2:
-#	outFile.writerow(rows)
+errorLines = sorted(errorLines, key = lambda errs: errs[5])
+errorLines = sorted(errorLines, key = lambda errs: errs[4])
 
-allErrorsList = []
-allErrorsList = errorLines + partDiffs1 + partDiffs2
-allErrorsList = sorted(allErrorsList, key = lambda errs: errs[5])
-allErrorsList = sorted(allErrorsList, key = lambda errs: errs[4])
-
-for rows in allErrorsList:
+for rows in errorLines:
 	outFile.writerow(rows)
 
 print 'Files : ', len(dirFileList1)
