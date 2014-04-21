@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-
 # pyDirCSV.py - Read a directory structure into a CSV file
 # This can be used for things like comparing two directory trees in EXCEL
+# Code is written to work with Windoze dir command line output
 
 import pygtk
 pygtk.require('2.0')
@@ -10,14 +9,20 @@ import gtk
 
 # Check for new pygtk: this is new class in PyGtk 2.4
 if gtk.pygtk_version < (2,3,90):
-   print "PyGtk 2.3.90 or later required for this example"
+   print "PyGtk 2.3.90 or later required"
    raise SystemExit
 
 import csv
 import os
 import sys
 
-# this class does all the work of reading a directory tree into a list
+# this class does all the work of reading a directory tree into a list of lists
+# each line in the list has
+# 0 - Date
+# 1 - Time
+# 2 - Size
+# 3 = FileName
+# 4 - Path
 class readDirectoryToList:
 	# browseToFolder - Opens a windows file browser to allow user to navigate to the directory to read
 	# returns the file name of the path that was selected
@@ -38,26 +43,6 @@ class readDirectoryToList:
 			print 'Closed, no files selected'
 			dialog.destroy()
 			exit()
-	
-	# selectOutputFileName
-	# returns the name of the output csv file
-	def selectOutputFileName(self):
-		dialog = gtk.FileChooserDialog(title="Save as", 
-			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
-		filter = gtk.FileFilter() 
-		filter.set_name("*.csv")
-		filter.add_pattern("*.csv") # whats the pattern for a folder 
-		dialog.add_filter(filter)
-		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-			retFileName = dialog.get_filename()
-			dialog.destroy()
-			return(retFileName)
-		elif response == gtk.RESPONSE_CANCEL: 
-			print 'Closed, no files selected'
-		dialog.destroy()
-		exit()
 	
 	# Support for drag and drop or command line execution
 	# returns the path to the directory
@@ -125,7 +110,7 @@ class readDirectoryToList:
 			os.system('del c:\\temp\\tempDir.txt')
 		except:
 			print "Couldn't delete temp file"
-			s = raw_input('--> ')
+			s = raw_input('Hit ENTER to continue --> ')
 			exit()
 	
 	# doReadDir - 
@@ -140,7 +125,7 @@ class readDirectoryToList:
 			rval2 = os.system('md c:\\temp\\')
 			if rval2 == 1:
 				print 'unable to create c:\\temp\\ folder'
-				s = raw_input('--> ')
+				s = raw_input('Hit ENTER to continue --> ')
 				exit()
 			rval = os.system(commandString)
 		readFile = open('c:\\temp\\tempDir.txt','rb')
@@ -148,25 +133,51 @@ class readDirectoryToList:
 		readFile.close()
 		readDirectoryToList.deleteTempFile(self)
 		return(dirFileL)
+		
+# this class allows the user to select the output file name and opens the output file as a csv file
+class selOutputFile:
+	# selectOutputFileName
+	# returns the name of the output csv file
+	def selectOutputFileName(self):
+		dialog = gtk.FileChooserDialog(title="Save as", 
+			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
+		filter = gtk.FileFilter() 
+		filter.set_name("*.csv")
+		filter.add_pattern("*.csv") # whats the pattern for a folder 
+		dialog.add_filter(filter)
+		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+			retFileName = dialog.get_filename()
+			dialog.destroy()
+			return(retFileName)
+		elif response == gtk.RESPONSE_CANCEL: 
+			print 'Closed, no files selected'
+		dialog.destroy()
+		exit()
 	
 	# openCSVFile - opens the CSV output file as a CSV writer output
 	def openCSVFile(self, csvName):
+		if csvName[-4:] != '.csv' and csvName[-4:] != '.CSV':
+			csvName += '.csv'
 		try:
 			myCSVFile = open(csvName, 'wb')
 		except:
-			print "Couldn't open\nIs the file open in EXCEL?"
-			s = raw_input('--> ')
+			print "Couldn't open the output file. Is the file open in EXCEL?"
+			s = raw_input('Hit ENTER to exit --> ')	# wait for enter to be pressed
 			exit()
 		outFil = csv.writer(myCSVFile)
 		return(outFil)
-
+		
 myReadFolder = readDirectoryToList()						# create readDirectoryToList instance
 dirFileList = myReadFolder.doReadDir()						# read dir structure into a list
-outCSVFileName = myReadFolder.selectOutputFileName()		# get output file name
-outFile = myReadFolder.openCSVFile(outCSVFileName)			# Open the output csv file
 
+myOutFile = selOutputFile()									# create output file class
+outCSVFileName = myOutFile.selectOutputFileName()			# get output file name
+outFile = myOutFile.openCSVFile(outCSVFileName)				# Open the output csv file
+
+# write out the file header followed by the file data
 outFile.writerow(['Date','Time','Size','FileName','Path'])	# File header
-for dirLineData in dirFileList:								# Write out lines
-	outFile.writerow(dirLineData)
+outFile.writerows(dirFileList)
 
 print 'Files : ', len(dirFileList)
