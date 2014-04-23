@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # pyCompFolders.py - Compare two directory trees
 
 import pygtk
@@ -16,11 +14,19 @@ import csv
 import os
 import sys
 
+import filecmp		# Used to compare files which have same name and size
+
+verboseFlag = 0
+folderStrucChangesFlag = 0
+
 # this class does all the work of reading a directory tree into a list
+# Includes the folder navigation and loading of the folder path
+# Returns a list of lists.
+# Each line has the directory elements (time, date, size, name, path).
 class ReadDirectoryToList:
 	# browseToFolder - Opens a windows file browser to allow user to navigate to the directory to read
 	# returns the file name of the path that was selected
-	def browseToFolder(self):
+	def browseToFolder(self, startPath):
 		dialog = gtk.FileChooserDialog(title="Select folder", 
 			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
 		filter = gtk.FileFilter() 
@@ -28,6 +34,8 @@ class ReadDirectoryToList:
 		filter.add_pattern("*") # what's the pattern for a folder 
 		dialog.add_filter(filter)
 		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+		if startPath != '':
+			dialog.set_current_folder(startPath)
 		response = dialog.run()
 		if response == gtk.RESPONSE_OK:
 			retFileName = dialog.get_filename()
@@ -41,44 +49,6 @@ class ReadDirectoryToList:
 			print 'Closed, no files selected'
 			dialog.destroy()
 			exit()
-	
-	# selectOutputFileName
-	# returns the name of the output csv file
-	def selectOutputFileName(self):
-		dialog = gtk.FileChooserDialog(title="Save as", 
-			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
-		filter = gtk.FileFilter() 
-		filter.set_name("*.csv")
-		filter.add_pattern("*.csv") # whats the pattern for a folder 
-		dialog.add_filter(filter)
-		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-			retFileName = dialog.get_filename()
-			dialog.destroy()
-			return(retFileName)
-		elif response == gtk.RESPONSE_CANCEL: 
-			print 'Closed, no files selected'
-		dialog.destroy()
-		exit()
-	
-	# Support for drag and drop or command line execution
-	# returns the path to the directory
-	# if the path can't be determined returns an empty string
-	def dealWithCommandLine(self):
-		pathToDir = ""
-		if sys.argv[0][-16:] == 'pyCompFolders.py':		# running from the command line
-			if len(sys.argv) == 2:
-				pathToDir = sys.argv[1]
-			elif len(sys.argv) == 1:
-				None
-		elif len(sys.argv) > 2:						# command line with too many passed values
-			print 'usage pyDirCSV path_to_search'
-			s = raw_input('--> ')
-			exit()
-		elif len(sys.argv) == 2:					# run from drag/drop
-			pathToDir = sys.argv[0] 
-		return(pathToDir)
 		
 	# formCommandLine - Forms the command line string
 	# returns the command line string
@@ -106,11 +76,6 @@ class ReadDirectoryToList:
 				continue
 			elif textLine.find('/') == 2:
 				dirLine = []
-#				tempDirLine = textLine.split()
-#				for item in tempDirLine:
-#					if item != '':
-#						dirLine.append(item)
-#				print 'dirLine', dirLine
 				dirLine.append(textLine[0:10])
 				dirLine.append(textLine[12:20])
 				dirLine.append(textLine[22:38].strip())
@@ -128,7 +93,7 @@ class ReadDirectoryToList:
 			elif ' Dir(s)' in textLine:
 				continue
 		return(dirFiles)
-		
+	
 	# deleteTempFile - delete the temporary file that was created
 	def deleteTempFile(self):
 		try:
@@ -139,10 +104,7 @@ class ReadDirectoryToList:
 			exit()
 	
 	# doReadDir - 
-	def doReadDir(self):
-		pathToDir = self.dealWithCommandLine()
-		if pathToDir == '':
-			pathToDir = self.browseToFolder()
+	def doReadDir(self, pathToDir):
 		commandString = self.formCommandLine(pathToDir)
 		rval = os.system(commandString)
 		if rval == 1:		# error because the c:\temp folder does not exist
@@ -164,156 +126,451 @@ class ReadDirectoryToList:
 		try:
 			myCSVFile = open(csvName, 'wb')
 		except:
-			print "Couldn't open\nIs the file open in EXCEL?"
-			s = raw_input('--> ')
-			exit()
+			print "Couldn't open\nIs the file open in EXCEL?, Try closing the file"
+			s = raw_input('Hit enter to continue --> ')
+			try:
+				myCSVFile = open(csvName, 'wb')
+			except:
+				print "Couldn't open\nIs the file STILL open in EXCEL?\nExiting..."
+				s = raw_input('Hit enter to exit --> ')
+				exit()
 		outFil = csv.writer(myCSVFile)
 		return(outFil)
-
-myReadFolder = ReadDirectoryToList()						# create ReadDirectoryToList instance
-dirFileList1 = myReadFolder.doReadDir()						# read dir structure into a list
-dirFileList2 = myReadFolder.doReadDir()						# read dir structure into a list
-outCSVFileName = myReadFolder.selectOutputFileName()		# get output file name
-outFile = myReadFolder.openCSVFile(outCSVFileName)			# Open the output csv file
-
-diffsList = []
-diffs1List = []
-diffs2List = []
-
-print 'Checking for complete matches date/time/size/FileName/RelativePath'
-exactMatches = 0
-# Eliminate the easy/exact 1-2 matches first
-for dirLineData1 in dirFileList1:								# Write out lines
-	diffLine1 = []
-	found = False
-	for dirLineData2 in dirFileList2:
-		if (dirLineData1[0:5] == dirLineData2[0:5]):			#date,time,size,fileName,relpath all match
-			found = True
-			exactMatches += 1
-	if found == False:
-		diffLine1 = ['1']
-		diffLine1.extend(dirLineData1)
-		diffs1List.append(diffLine1)
-print ' Complete matches from folder 1 to folder 2 :', exactMatches
-
-# Eliminate the easy/exact 2-1 matches first
-exactMatches = 0
-for dirLineData2 in dirFileList2:								# Write out lines
-	diffLine2 = []
-	found = False
-	for dirLineData1 in dirFileList1:
-		if (dirLineData1[0:5] == dirLineData2[0:5]):
-			found = True
-			exactMatches += 1
-	if found == False:
-		diffLine2 = ['2']
-		diffLine2.extend(dirLineData2)
-		diffs2List.append(diffLine2)
-print ' Complete matches from folder 2 to folder 1 :', exactMatches
-
-print 'Checking for partial matches with matching relative paths'
-
-outFile.writerow(['FileNum','Date','Time','Size','FileName','RelPath','AbsPath','Code'])	# File header
-
-errorLines = []		# accumulate the triaged errors for printing
-
-partMatches = 0
-partDiffsFolders1 = []		# remainders
-for line1 in diffs1List:
-	found = False
-	for line2 in diffs2List:
-		if line1[3:6] == line2[3:6]:		# name, size and path match, date or time don't match
-			found = True
-			line1.append('Note - name/size/path match')
-			errorLines.append(line1)
-			partMatches += 1
-			break
-		elif line1[4:6] == line2[4:6]:		# name and path match, size, date, or time doesn't match
-			found = True
-			line1.append('Error - size mismatch')
-			errorLines.append(line1)
-			break
-	if found == False:
-		partDiffsFolders1.append(line1)
-print ' Partial matches 1 to 2 (matching name/size/path/folders)', partMatches
 		
-partMatches = 0
-partDiffsFolders2 = []
-for line2 in diffs2List:
-	found = False
-	for line1 in diffs1List:
-		if line1[3:6] == line2[3:6]:
-			found = True
-			line2.append('Note - name/size/path match')
-			errorLines.append(line2)
-			partMatches += 1
-			break
-		elif line1[4:6] == line2[4:6]:		# name and path match, size, date, or time doesn't match
-			found = True
-			line2.append('Error - size mismatch')
-			errorLines.append(line2)
-			break
-	if found == False:
-		partDiffsFolders2.append(line2)
-print ' Partial matches 2 to 1 (matching name/size/path/folders)', partMatches
+class WriteDirectoryCSV:
+	# selectOutputFileName
+	# returns the name of the output csv file
+	def selectOutputFileName(self, startPath):
+		dialog = gtk.FileChooserDialog(title="Save as", 
+			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
+		filter = gtk.FileFilter() 
+		filter.set_name("*.csv")
+		filter.add_pattern("*.csv") # whats the pattern for a folder 
+		if startPath != '':
+			dialog.set_current_folder(startPath)
+		dialog.add_filter(filter)
+		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+			retFileName = dialog.get_filename()
+			dialog.destroy()
+			return(retFileName)
+		elif response == gtk.RESPONSE_CANCEL: 
+			print 'Closed, no files selected'
+		dialog.destroy()
+		exit()
 
-print 'Checking for matches in different folders'
-fileMatches = 0
-for line1 in partDiffsFolders1:
-	found = False
-	for line2 in partDiffsFolders2:
-		if line1[1:5] == line2[1:5]:
-			found = True
-			line1.append('Note - Date/time/size/FileName match, different folder')
-			errorLines.append(line1)
-			fileMatches += 1
-			break
-		elif line1[3:5] == line2[3:5]:
-			found = True
-			line1.append('Note - Size/FileName match, different date/time/folder')
-			errorLines.append(line1)
-			fileMatches += 1
-			break
-		elif line1[4] == line2[4]:
-			found = True
-			line1.append('Error - FileName match, different date/time/size/folder')
-			errorLines.append(line1)
-			break
-	if not found:
-		line1.append('Error - Missing file')
-		errorLines.append(line1)
-print ' Matches in different folders 1 to 2', fileMatches
+def doCompFolders():
+	myReadFolder = ReadDirectoryToList()							# create ReadDirectoryToList instance
+	pathToDir1 = myReadFolder.browseToFolder('')					# get first directory name from folder browser
+	print 'first folder : %s' % pathToDir1
+	pathToDir2 = myReadFolder.browseToFolder(pathToDir1)			# get second directory name from folder browser
+	print 'second folder : %s' % pathToDir2
+	myWriteFolder = WriteDirectoryCSV()
+	outCSVFileName = myWriteFolder.selectOutputFileName(pathToDir1)	# get output file name from file browser
+	print 'Output file : %s' % outCSVFileName
 
-fileMatches = 0
-for line2 in partDiffsFolders2:
-	found = False
+	print 'Reading in first directory to list'
+	dirFileList1 = myReadFolder.doReadDir(pathToDir1)			# read dir structure into a list
+
+	print 'Reading in second directory to list'
+	dirFileList2 = myReadFolder.doReadDir(pathToDir2)			# read dir structure into a list
+
+	outFile = myReadFolder.openCSVFile(outCSVFileName)			# Open the output csv file
+
+	diffs1List = []
+	diffs2List = []
+	errorLines = []		# accumulate the triaged errors for printing
+
+	print 'Sorting lists'
+	dirFileList1 = sorted(dirFileList1, key = lambda errs: errs[2])
+	dirFileList1 = sorted(dirFileList1, key = lambda errs: errs[3])
+	dirFileList2 = sorted(dirFileList2, key = lambda errs: errs[2])
+	dirFileList2 = sorted(dirFileList2, key = lambda errs: errs[3])
+	
+	print 'Line count in first list :', len(dirFileList1)
+	print 'Line count in second list :', len(dirFileList2)
+
+	outFile.writerow(['Code','FileNum','Date','Time','Size','FileName','RelPath','AbsPath','Date*','Time*','Size*','FileName*','RelPath*','AbsPath*'])	# File header
+
+	#################################################
+	# Check for EXACT matches
+	# Date,Time,Size,FileName,RelPath
+
+	if folderStrucChangesFlag == 1:
+		print 'Checking for complete matches date/time/size/FileName/RelativePath'
+		exactMatches = 0
+		# Eliminate the easy/exact 1-2 matches first
+		for dirLineData1 in dirFileList1:								# Write out lines
+			found = False
+			for dirLineData2 in dirFileList2:
+				if (dirLineData1[0:5] == dirLineData2[0:5]):			#date,time,size,fileName,relpath all match
+					found = True
+					exactMatches += 1
+			if found == False:
+				diffs1List.append(dirLineData1)
+		print ' Complete matches from RelFolder 1 to RelFolder 2 :', exactMatches
+
+		# Eliminate the easy/exact 2-1 matches first
+		exactMatches = 0
+		for dirLineData2 in dirFileList2:								# Write out lines
+			found = False
+			for dirLineData1 in dirFileList1:
+				if (dirLineData1[0:5] == dirLineData2[0:5]):
+					found = True
+					exactMatches += 1
+			if found == False:
+				diffs2List.append(dirLineData2)
+		print ' Complete matches from RelFolder 2 to RelFolder 1 :', exactMatches
+
+
+		#################################################
+		# Check for partial matches
+		# Date,Time,Size,FileName,RelPath
+
+		print 'Checking for partial matches with matching relative paths'
+		partMatches = 0
+		partDiffsFolders1 = []		# remainders
+		for line1 in diffs1List:
+			found = False
+			for line2 in diffs2List:
+				if line1[2:5] == line2[2:5]:		# size, name, and relpath match, date or time don't match
+					found = True
+					thisErrorLine = []
+					thisErrorLine.append('Note - Size/Name/RelPath match')
+					thisErrorLine.append('1')
+					thisErrorLine += line1
+					errorLines.append(thisErrorLine)
+					partMatches += 1
+					break
+				elif line1[3:5] == line2[3:5]:		# name and pathrel match, size, date, or time doesn't match
+					found = True
+					thisErrorLine = []
+					thisErrorLine.append('Error - Name/RelPath match, size/date/time mismatch')
+					thisErrorLine.append('1')
+					thisErrorLine += line1
+					errorLines.append(thisErrorLine)
+					partMatches += 1
+					break
+			if found == False:
+				partDiffsFolders1.append(line1)
+		print ' Partial matches 1 to 2 (matching name/size/path/folders) :', partMatches
+
+		partMatches = 0
+		partDiffsFolders2 = []
+		for line2 in diffs2List:
+			found = False
+			for line1 in diffs1List:
+				if line1[2:5] == line2[2:5]:
+					found = True
+					thisErrorLine = []
+					thisErrorLine.append('Note - Size/Name/RelPath match')
+					thisErrorLine.append('2')
+					thisErrorLine += line2
+					errorLines.append(thisErrorLine)
+					partMatches += 1
+					break
+				elif line1[3:5] == line2[3:5]:		# name and path match, size, date, or time doesn't match
+					found = True
+					thisErrorLine = []
+					thisErrorLine.append('Error - Name/RelPath match, size/date/time mismatch')
+					thisErrorLine.append('2')
+					thisErrorLine += line2
+					errorLines.append(thisErrorLine)
+					partMatches += 1
+					break
+			if found == False:
+				partDiffsFolders2.append(line2)
+		print ' Partial matches 2 to 1 (matching name/size/path/folders) :', partMatches
+	else:
+		partDiffsFolders1 = dirFileList1
+		partDiffsFolders2 = dirFileList2
+		
+	print 'Checking for matches in different folders'
+	fileMatches = 0
 	for line1 in partDiffsFolders1:
-		if line1[1:5] == line2[1:5]:
-			found = True
-			line2.append('Note - Date/time/size/FileName match, different folder')
-			errorLines.append(line2)
-			break
-		elif line1[3:5] == line2[3:5]:
-			found = True
-			line2.append('Note - Size/FileName match, different date/time/folder')
-			errorLines.append(line2)
-			fileMatches += 1
-			break
-		elif line1[4] == line2[4]:
-			found = True
-			line2.append('Error - FileName match, different date/time/size/folder')
-			errorLines.append(line2)
-			break
-	if not found:
-		line2.append('Error - Missing file')
-		errorLines.append(line2)
-print ' Matches in different folders 2 to 1', fileMatches
+		found = False
+		for line2 in partDiffsFolders2:
+			if line1[0:4] == line2[0:4]:
+				found = True
+				thisErrorLine = []
+				thisErrorLine.append('Note - Date*time*size*name match, different RelPath')
+				thisErrorLine.append('1')
+				thisErrorLine += line1
+				errorLines.append(thisErrorLine)
+				fileMatches += 1
+				if not verboseFlag:
+					break
+			elif line1[2:4] == line2[2:4]:	# Size/FileName match, different date/time/folder
+				found = True
+				thisErrorLine = []
+				filePath1 = ''
+				filePath2 = ''
+				filePath1 = line1[5] + '\\' + line1[3]
+				filePath2 = line2[5] + '\\' + line2[3]
+				if filecmp.cmp(filePath1, filePath2) == True:
+					thisErrorLine.append('Note - Size*FileName*contents match, different RelPath*(date|time)')
+					print '+',
+				else:
+					thisErrorLine.append('Error - Size*FileName match, different RelPath*contents*(date|time)')
+					print '-',
+				thisErrorLine.append('1')
+				thisErrorLine += line1
+				errorLines.append(thisErrorLine)
+				fileMatches += 1
+				if not verboseFlag:
+					break
+			elif line1[3] == line2[3]:		# File name match, other stuff maybe not
+				found = True
+				thisErrorLine = []
+				thisErrorLine.append('Error - FileName match, different RelPath*size*(date|time)')
+				thisErrorLine.append('1')
+				thisErrorLine += line1
+				errorLines.append(thisErrorLine)
+				if not verboseFlag:
+					break
+			elif line1[0:3] == line2[0:3]:		# date/time/size match, filename mismatch
+				thisErrorLine = []
+				filePath1 = ''
+				filePath2 = ''
+				filePath1 = line1[5] + '\\' + line1[3]
+				filePath2 = line2[5] + '\\' + line2[3]
+				if filecmp.cmp(filePath1, filePath2) == True:
+					found = True
+					thisErrorLine.append('Note - Date*time*size*contents match, different name|RelPath')
+					thisErrorLine.append('1')
+					print '+',
+					thisErrorLine += line1
+					thisErrorLine += line2
+					errorLines.append(thisErrorLine)
+					if not verboseFlag:
+						break
+			elif line1[2] == line2[2]:		# size match, name*date|time mismatch
+				thisErrorLine = []
+				filePath1 = ''
+				filePath2 = ''
+				filePath1 = line1[5] + '\\' + line1[3]
+				filePath2 = line2[5] + '\\' + line2[3]
+				if filecmp.cmp(filePath1, filePath2) == True:
+					found = True
+					thisErrorLine.append('Note - size*contents match, different RelPath*(date|time|name)')
+					thisErrorLine.append('1')
+					print '+',
+					thisErrorLine += line1
+					thisErrorLine += line2
+					errorLines.append(thisErrorLine)
+					if not verboseFlag:
+						break
+		if not found:
+			thisErrorLine = []
+			thisErrorLine.append('Error - Missing file')
+			thisErrorLine.append('1')
+			thisErrorLine += line1
+			errorLines.append(thisErrorLine)
+	print '\n Matches in different folders 1 to 2 :', fileMatches
 
-errorLines = sorted(errorLines, key = lambda errs: errs[5])
-errorLines = sorted(errorLines, key = lambda errs: errs[4])
+	fileMatches = 0
+	for line2 in partDiffsFolders2:
+		found = False
+		for line1 in partDiffsFolders1:
+			if line1[0:4] == line2[0:4]:
+				found = True
+				thisErrorLine = []
+				thisErrorLine.append('Note - Date*time*size*name match, different RelPath')
+				thisErrorLine.append('2')
+				thisErrorLine += line2
+				errorLines.append(thisErrorLine)
+				fileMatches += 1
+				if not verboseFlag:
+					break
+			elif line1[2:4] == line2[2:4]:	# Size/FileName match, different date/time/folder
+				found = True
+				thisErrorLine = []
+				filePath1 = ''
+				filePath2 = ''
+				filePath1 = line1[5] + '\\' + line1[3]
+				filePath2 = line2[5] + '\\' + line2[3]
+				if filecmp.cmp(filePath1, filePath2) == True:
+					thisErrorLine.append('Note - Size*FileName*contents match, different RelPath*(date|time)')
+					print '+',
+				else:
+					thisErrorLine.append('Error - Size*FileName match, different RelPath*contents*(date|time)')
+					print '-',
+				thisErrorLine.append('2')
+				thisErrorLine += line2
+				errorLines.append(thisErrorLine)
+				fileMatches += 1
+				if not verboseFlag:
+					break
+			elif line1[3] == line2[3]:
+				found = True
+				thisErrorLine = []
+				thisErrorLine.append('Error - FileName match, different RelPath*size*(date|time)')
+				thisErrorLine.append('2')
+				thisErrorLine += line2
+				errorLines.append(thisErrorLine)
+				if not verboseFlag:
+					break
+			elif line1[0:3] == line2[0:3]:		# date/time/size match, filename mismatch
+				thisErrorLine = []
+				filePath1 = ''
+				filePath2 = ''
+				filePath1 = line1[5] + '\\' + line1[3]
+				filePath2 = line2[5] + '\\' + line2[3]
+				if filecmp.cmp(filePath1, filePath2) == True:
+					found = True
+					thisErrorLine.append('Note - Date*time*size*contents match, different name|RelPath')
+					thisErrorLine.append('2')
+					print '+',
+					thisErrorLine += line2
+					thisErrorLine += line1
+					errorLines.append(thisErrorLine)
+					if not verboseFlag:
+						break
+			elif line1[2] == line2[2]:		# size match, name*date|time mismatch
+				thisErrorLine = []
+				filePath1 = ''
+				filePath2 = ''
+				filePath1 = line1[5] + '\\' + line1[3]
+				filePath2 = line2[5] + '\\' + line2[3]
+				if filecmp.cmp(filePath1, filePath2) == True:
+					found = True
+					thisErrorLine.append('Note - size*contents match, different RelPath*(date|time|name)')
+					thisErrorLine.append('2')
+					print '+',
+					thisErrorLine += line2
+					thisErrorLine += line1
+					errorLines.append(thisErrorLine)
+					if not verboseFlag:
+						break
+		if not found:
+			thisErrorLine = []
+			thisErrorLine.append('Error - Missing file')
+			thisErrorLine.append('2')
+			thisErrorLine += line2
+			errorLines.append(thisErrorLine)
+	print '\n Matches in different folders 2 to 1 :', fileMatches
 
-for rows in errorLines:
-	outFile.writerow(rows)
+	errorLines = sorted(errorLines, key = lambda errs: errs[1])
+	errorLines = sorted(errorLines, key = lambda errs: errs[5])
 
-print 'Files : ', len(dirFileList1)
-print 'Files : ', len(dirFileList2)
+	for rows in errorLines:
+		outFile.writerow(rows)
+
+	print 'Files :', len(dirFileList1)
+	print 'Files :', len(dirFileList2)
+
+
+class UIManager:
+	interface = """
+	<ui>
+		<menubar name="MenuBar">
+			<menu action="File">
+				<menuitem action="Open"/>
+				<menuitem action="Quit"/>
+			</menu>
+			<menu action="Options">
+				<menuitem action="Verbose"/>
+				<menuitem action="First"/>
+				 <separator />
+				<menuitem action="StrucFold"/>
+				<menuitem action="UnstrucFold"/>
+			</menu>
+			<menu action="Help">
+				<menuitem action="About"/>
+			</menu>
+		</menubar>
+	</ui>
+	"""
+
+	def __init__(self):
+
+		# Create the top level window
+		window = gtk.Window()
+		window.connect('destroy', lambda w: gtk.main_quit())
+		window.set_default_size(200, 200)
+		
+		vbox = gtk.VBox()
+		
+		# Create a UIManager instance
+		uimanager = gtk.UIManager()
+
+		# Add the accelerator group to the toplevel window
+		accelgroup = uimanager.get_accel_group()
+		window.add_accel_group(accelgroup)
+
+		# Create an ActionGroup
+		actiongroup =  gtk.ActionGroup("pyCompBom")
+		self.actiongroup = actiongroup
+
+		# Create actions
+		self.actiongroup.add_actions([
+			("Open", gtk.STOCK_OPEN, "_Open", None, "Open an Existing Document", self.openIF),
+			("Quit", gtk.STOCK_QUIT, "_Quit", None, "Quit the Application", self.quit_application),
+			("File", None, "_File"),
+			("Options", None, "_Options"),
+			("Help", None, "_Help"),
+			("About", None, "_About", None, "About pyCompFolders", self.about_pycompfolders),
+			])
+		self.actiongroup.add_radio_actions([
+			("Verbose", gtk.STOCK_PREFERENCES, "_Verbose", '<Control>V', "Verbose - check all the list", 0),
+			("First", gtk.STOCK_PREFERENCES, "_First", '<Control>F', "First - scan list till first message", 1),
+			], 1, self.verboseSingle)
+		self.actiongroup.add_radio_actions([
+			("StrucFold", gtk.STOCK_PREFERENCES, "_StrucFold", '<Control>S', "Check Folder Structure", 0),
+			("UnstrucFold", gtk.STOCK_PREFERENCES, "_UnstrucFold", '<Control>U', "Do not check Folder Structure", 1),
+			], 1, self.folderStrucChange)
+		uimanager.insert_action_group(self.actiongroup, 0)
+		uimanager.add_ui_from_string(self.interface)
+		
+		menubar = uimanager.get_widget("/MenuBar")
+		vbox.pack_start(menubar, False)
+		
+		window.connect("destroy", lambda w: gtk.main_quit())
+		
+		window.add(vbox)
+		window.show_all()
+
+	def openIF(self, b):
+		doCompFolders()
+		message = gtk.MessageDialog(type=gtk.MESSAGE_INFO, buttons=gtk.BUTTONS_OK)
+		message.set_markup("Comparison Completed")
+		message.run()
+		message.destroy()
+
+		return
+
+	def about_pycompfolders(self, b):
+		message = gtk.MessageDialog(type=gtk.MESSAGE_INFO, buttons=gtk.BUTTONS_OK)
+		message.set_markup("About pyCompFolders\nAuthor: Doug Gilliland\n(c) 2014 - AAC - All rights reserved\npyCompFolders compares two folders and lists the differences")
+		message.run()
+		message.destroy()
+		
+	def folderStrucChange(self, action, current):
+		global folderStrucChangesFlag
+		text = current.get_name()
+		if (text == "StrucFold"):
+			folderStrucChangesFlag = 1
+			print 'Check folder structure'
+		elif (text == "UnstrucFold"):
+			folderStrucChangesFlag = 0
+			print "Don't check folder structure"
+		return
+		
+	def verboseSingle(self, action, current):
+		global verboseFlag
+		text = current.get_name()
+		if (text == "Verbose"):
+			verboseFlag = 1
+			print 'Verbose mode - all messages'
+		elif (text == "First"):
+			verboseFlag = 0
+			print 'First message occurrence mode'
+		return
+
+	def quit_application(self, widget):
+		gtk.main_quit()
+
+if __name__ == '__main__':
+	ba = UIManager()
+	gtk.main()
