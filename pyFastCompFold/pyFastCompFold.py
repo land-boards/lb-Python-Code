@@ -17,8 +17,9 @@ import sys
 import filecmp		# Used to compare files which have same name and size
 
 # global program flags
-folderStrucChangesFlag = 0
 errorMsgLevel = 2
+
+errorLines = []		# accumulate the triaged errors for printing
 
 # this class does all the work of reading a directory tree into a list
 # Includes the folder navigation and loading of the folder path
@@ -168,8 +169,6 @@ def detailFileComp(fileName1, path1, fileName2, path2):
 	filePath2 = path2 + '\\' + fileName2
 	return (filecmp.cmp(filePath1, filePath2))
 
-errorLines = []		# accumulate the triaged errors for printing
-
 # errorMsgLevel
 # 0 = report errors only
 # 1 = report errors/warnings
@@ -197,6 +196,7 @@ errorLines = []		# accumulate the triaged errors for printing
 # addToErrorLines(1, 'Warning - Duplicated file', 1, dirFileList1[list1Off], lastLine1)
 def addToErrorLines(inFileNum, errorLevel, errorString, line1String, line2String):
 	global errorLines
+	global errorMsgLevel
 	thisErrorLine = []
 	thisErrorLine.append(errorString)
 	thisErrorLine.append(str(inFileNum))
@@ -363,7 +363,7 @@ def doCompFolders():
 						printedLast2 = True
 			else:
 				if not printedLast1:
-					addToErrorLines(1, 0, 'Note - matching size*contents, different filename*(date|time)', dirFileList1[list1Off], [''])
+					addToErrorLines(1, 2, 'Note - matching size*contents, different filename*(date|time)', dirFileList1[list1Off], [''])
 					if list1Off < lastInList1:
 						lastLine1 = dirFileList1[list1Off]
 						list1Off += 1
@@ -422,7 +422,6 @@ def doCompFolders():
 	print 'Files :', len(dirFileList1)
 	print 'Files :', len(dirFileList2)
 
-
 class UIManager:
 	interface = """
 	<ui>
@@ -444,7 +443,6 @@ class UIManager:
 	"""
 
 	def __init__(self):
-
 		# Create the top level window
 		window = gtk.Window()
 		window.connect('destroy', lambda w: gtk.main_quit())
@@ -476,7 +474,7 @@ class UIManager:
 			("ErrorsOnly", gtk.STOCK_PREFERENCES, "_Report Errors Only", '<Control>E', "Only save errors", 0),
 			("ErrorsAndWarns", gtk.STOCK_PREFERENCES, "_Report Errors/Warnings", '<Control>W', "Save errors and warnings", 1),
 			("AllMessages", gtk.STOCK_PREFERENCES, "_Report All Messages", '<Control>A', "Save all messages", 2),
-			], 2, self.errorMsgLevel)
+			], 2, self.setErrorMsgLevel)
 		uimanager.insert_action_group(self.actiongroup, 0)
 		uimanager.add_ui_from_string(self.interface)
 		
@@ -503,7 +501,7 @@ class UIManager:
 		message.run()
 		message.destroy()
 		
-	def errorMsgLevel(self, action, current):
+	def setErrorMsgLevel(self, action, current):
 		global errorMsgLevel
 		text = current.get_name()
 		if (text == "ErrorsOnly"):
