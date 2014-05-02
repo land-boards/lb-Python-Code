@@ -1,0 +1,9 @@
+Code,FileNum,Date,Time,Size,FileName,RelPath,AbsPath,Date*,Time*,Size*,FileName*,RelPath*,AbsPath*
+Note - matching date*time*size*filename*RelPath,1,05/02/2014,11:41 AM,40,TESTFILE1 HAS EXACT MATCH.TXT,,C:\Users\DGilliland.AACISD\Documents\GitHub\Dougs-Python-Files\pyFastCompFold\tests\testFold1,
+Note - matching date*time*size*filename*RelPath,2,05/02/2014,11:41 AM,40,TESTFILE1 HAS EXACT MATCH.TXT,,C:\Users\DGilliland.AACISD\Documents\GitHub\Dougs-Python-Files\pyFastCompFold\tests\testFold2,
+Error - no match for part,1,05/02/2014,11:42 AM,40,TESTFILE2 HAS NO MATCH.TXT,,C:\Users\DGilliland.AACISD\Documents\GitHub\Dougs-Python-Files\pyFastCompFold\tests\testFold1,
+"Note - matching size*filename*contents, different date|time",1,05/02/2014,11:42 AM,68,TESTFILE3 CONTENT MATCH DIFFERENT TIME.TXT,,C:\Users\DGilliland.AACISD\Documents\GitHub\Dougs-Python-Files\pyFastCompFold\tests\testFold1,
+"Note - matching size*filename*contents, different date|time",2,05/02/2014,11:49 AM,68,TESTFILE3 CONTENT MATCH DIFFERENT TIME.TXT,,C:\Users\DGilliland.AACISD\Documents\GitHub\Dougs-Python-Files\pyFastCompFold\tests\testFold2,
+"Error - matching filename, different size*(date|time)",1,05/02/2014,11:43 AM,102,TESTFILE4.TXT,,C:\Users\DGilliland.AACISD\Documents\GitHub\Dougs-Python-Files\pyFastCompFold\tests\testFold1,
+"Error - matching filename, different size*(date|time)",2,05/02/2014,11:43 AM,130,TESTFILE4.TXT,,C:\Users\DGilliland.AACISD\Documents\GitHub\Dougs-Python-Files\pyFastCompFold\tests\testFold2,
+Error - no match for part,2,05/02/2014,11:46 AM,153,TESTFILE5 HAS NO MATCHES.TXT,,C:\Users\DGilliland.AACISD\Documents\GitHub\Dougs-Python-Files\pyFastCompFold\tests\testFold2,
