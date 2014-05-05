@@ -1,4 +1,7 @@
 ###########################################################################################
+# Some common Python Patterns
+
+###########################################################################################
 # Path/filename extraction
 import string
 
@@ -85,3 +88,69 @@ class writeOutToCSVFile:
 
 	print 'Sorting lists'
 	dirFileList1 = sorted(dirFileList1, key = lambda errs: errs[0])		# sort by Relative Path
+
+###########################################################################################
+# findCSVFile() - This is the dialog which locates the csv files
+# Function returns the path/name of the file that was selected
+
+class FindACsvFile:
+	def findCsvFile(self, startingPath):
+		csvFileString = "Select file"
+		dialog = gtk.FileChooserDialog(csvFileString,
+	                               None,
+	                               gtk.FILE_CHOOSER_ACTION_OPEN,
+	                               (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+	                               gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+		dialog.set_default_response(gtk.RESPONSE_OK)
+
+		if startingPath != '':
+			dialog.set_current_folder(startingPath)
+		filter = gtk.FileFilter()
+		filter.set_name("CSV files")
+		filter.add_pattern("*.csv")
+		dialog.add_filter(filter)
+
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+			retFileName = dialog.get_filename()
+			dialog.destroy()
+			return retFileName
+		elif response == gtk.RESPONSE_CANCEL:
+			print 'Closed, no files selected'
+			dialog.destroy()
+			exit()
+		dialog.destroy()
+
+###########################################################################################
+# FindAXmlFile() - This is the dialog which locates the xml files
+# Function returns the path/name of the file that was selected
+
+class FindAXmlFile:
+	def findXmlFile(self, startingPath):
+		csvFileString = "Select file"
+		dialog = gtk.FileChooserDialog(csvFileString,
+	                               None,
+	                               gtk.FILE_CHOOSER_ACTION_OPEN,
+	                               (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+	                               gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+		dialog.set_default_response(gtk.RESPONSE_OK)
+
+		if startingPath != '':
+			dialog.set_current_folder(startingPath)
+		filter = gtk.FileFilter()
+		filter.set_name("XML files")
+		filter.add_pattern("*.xml")
+		dialog.add_filter(filter)
+
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+			retFileName = dialog.get_filename()
+			dialog.destroy()
+			return retFileName
+		elif response == gtk.RESPONSE_CANCEL:
+			print 'Closed, no files selected'
+			dialog.destroy()
+			exit()
+		dialog.destroy()
+
+	
