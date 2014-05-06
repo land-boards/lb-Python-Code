@@ -153,4 +153,22 @@ class FindAXmlFile:
 			exit()
 		dialog.destroy()
 
-	
+###########################################################################################
+# Check to see if a file is fresh (shares the same date as today)
+# Uses global reshnessCheck
+
+class CheckFreshness():
+	def isFresh(self, pathToFile):
+		if not freshnessCheck:
+			return True
+		t = os.path.getmtime(pathToFile)
+		fileTimeDateStamp = datetime.datetime.fromtimestamp(t)
+		fileDateStamp = str(fileTimeDateStamp)
+		fileDateStamp = fileDateStamp[0:fileDateStamp.find(' ')]
+		currentDate = time.strftime("%Y-%m-%d")
+		if fileDateStamp == currentDate:
+			return True
+		else:
+			return False
+
+			
