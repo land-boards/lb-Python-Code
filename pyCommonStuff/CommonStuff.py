@@ -155,7 +155,7 @@ class FindAXmlFile:
 
 ###########################################################################################
 # Check to see if a file is fresh (shares the same date as today)
-# Uses global reshnessCheck
+# Uses global freshnessCheck
 
 class CheckFreshness():
 	def isFresh(self, pathToFile):
