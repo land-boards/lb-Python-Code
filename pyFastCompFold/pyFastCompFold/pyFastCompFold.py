@@ -1,4 +1,51 @@
-# pyFastCompFold.py - Compare two directory trees
+"""Compares two directory trees quickly.
+Allows the user to browse to the two folders and create a comparison list.
+
+=====
+Usage
+=====
+
+Program is run by either typing python pyFastCompFold.py or double clicking pyFastCompFold.py.
+
+=============
+Output Format
+=============
+
+The file output format is:
+
+['Code','FileNum','Date','Time','Size','FileName','RelPath','AbsPath','Date*','Time*','Size*','FileName*','RelPath*','AbsPath*']
+
+The contents of the list can vary depending upon which Code is indicated.
+Also, for some codes, the fields with asterisks (*) are the matching/mismatching file.
+
+===============
+Program Options
+===============
+
+==============
+Output Message
+==============
+
+There are three classes of messages:
+
+* Errors
+* Warnings
+* Notes
+
+There are a couple of Rrrors:
+
+* No match for part
+* Found a match for the part but it had different size
+
+There are a couple of Warnings:
+
+There are a couple of Notes:
+
+============
+Code follows
+============
+
+"""
 
 import pygtk
 pygtk.require('2.0')
@@ -19,18 +66,34 @@ import filecmp		# Used to compare files which have same name and size
 # global program flags
 errorMsgLevel = 2	# default error message level = all messages
 
-# this class does all the work of reading a directory tree into a list
-# Includes the folder navigation and loading of the folder path
-# Returns a list of lists.
-# Each line has the directory elements (time, date, size, name, path).
+def errorDialog(errorString):
+	"""
+	Prints an error message as a dialog box
+	"""
+	message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
+	message.set_markup(errorString)
+	message.run()		# Display the dialog box and hang around waiting for the "OK" button
+	message.destroy()	# Takes down the dialog box
+	return
+
 class ReadDirectoryToList:
+	"""Read the directory
+	this class does all the work of reading a directory tree into a list
+	Includes the folder navigation and loading of the folder path
+	Returns a list of lists.
+	Each line has the directory elements (time, date, size, name, path).
+	"""
 
 	def __init__(self):
 		return
 
-	# browseToFolder - Opens a windows file browser to allow user to navigate to the directory to read
-	# returns the file name of the path that was selected
 	def browseToFolder(self, startPath):
+		"""Opens a windows file browser to allow user to navigate to the directory to read
+		
+		:param startPath: a starting point for the path
+		:returns: full pathname of the selected path
+		"""
+		
 		dialog = gtk.FileChooserDialog(title="Select folder", 
 			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
 		filter = gtk.FileFilter() 
@@ -54,33 +117,45 @@ class ReadDirectoryToList:
 			dialog.destroy()
 			exit()
 		
-	# formCommandLine - Forms the command line string
-	# returns the command line string
 	def formCommandLine(self, makeDirPath):
+		"""Forms the command line string.
+		The function executes a standard DOS style DIR command.
+		The function creates a temporary file in the temp directory.
+		
+		:param makeDirPath: the path that the directory is of
+		:returns: the command line string
+		"""
 		makeDirPath = '"' + makeDirPath + '\"'		# path might have spaces, etc
 		commandLine = 'dir '
 		commandLine += makeDirPath
 		commandLine += ' /-c /n /s > c:\\temp\\tempDir.txt'
 		return(commandLine)
 
-	# openCSVFile - opens the CSV output file as a CSV writer output
 	def openCSVFile(self, csvName):
+		"""Creates an output CSV file and has the functions to write to the CSV file
+		
+		:param csvName: String which has the Pathfilename of the csv file
+		:returns: pointer to the output file
+		"""
 		try:
 			myCSVFile = open(csvName, 'wb')
 		except:
-			print "Couldn't open\nIs the file open in EXCEL?, Try closing the file"
-			s = raw_input('Hit enter to continue --> ')
+			errorDialog("Couldn't open the output file\nIs the file open in Excel?")
 			try:
 				myCSVFile = open(csvName, 'wb')
 			except:
-				print "Couldn't open\nIs the file STILL open in EXCEL?\nExiting..."
-				s = raw_input('Hit enter to exit --> ')
+				errorDialog("Couldn't open the output file, Exiting...")
 				exit()
 		outFil = csv.writer(myCSVFile)
 		return(outFil)
-			# parse through the text file that was created when the directory was set up
-	# returns a list of lists
+		
 	def parseDirToList(self, filePtr, rootDirPath):
+		"""Parses through the text file that was created when the directory was set up
+		
+		:param filePtr: pointer to the file
+		:param rootDirPath: the root of directory path - used for relative comparisons
+		:returns: list of lists representing the directory structure
+		"""
 		dirFiles = []
 		dirName = ""
 		for textLine in filePtr:
@@ -113,26 +188,32 @@ class ReadDirectoryToList:
 				continue
 		return(dirFiles)
 	
-	# deleteTempFile - delete the temporary file that was created
+	
 	def deleteTempFile(self):
+		"""Deletes the temporary file that was created.
+		"""
 		try:
 			os.system('del c:\\temp\\tempDir.txt')
 		except:
-			print "Couldn't delete temp file"
-			s = raw_input('--> ')
-			exit()
+			print "Couldn't delete the temporary file c:\\temp\\tempDir.txt"
+			errorDialog("Couldn't delete the temporary file c:\\temp\\tempDir.txt")
+			raise SystemExit
 	
-	# doReadDir
 	def doReadDir(self, pathToDir):
+		"""Reads the directory into the tempDir.txt file in the temp folder.
+		If the method is unable to create the directly it throws up an error message and quits out.
+	
+		:param pathToDir: the path to the directory
+		:returns: list that has the directory contents
+		"""
 		commandString = self.formCommandLine(pathToDir)	# form the 'dir' command string
 		rval = os.system(commandString)					# issue the dir command
 		if rval == 1:									# error because the c:\temp folder does not exist
 			print 'Creating c:\\temp folder'			# 
 			rval2 = os.system('md c:\\temp\\')
 			if rval2 == 1:
-				print 'unable to create c:\\temp\\ folder'
-				s = raw_input('--> ')
-				exit()
+				errorDialog("unable to create c:\\temp\\ folder")
+				raise SystemExit
 			rval = os.system(commandString)
 		readFile = open('c:\\temp\\tempDir.txt','rb')
 		dirFileL = self.parseDirToList(readFile, pathToDir)
@@ -141,14 +222,17 @@ class ReadDirectoryToList:
 		return(dirFileL)
 	
 class SelOutFileName:
-
+	"""Simple class to select the output filename.
+	"""
 	def __init__(self):
 		retFolderName = ''
 		return
 
-	# selectOutputFileName
-	# returns the name of the output csv file
 	def selectOutputFileName(self, startPath):
+		"""Select the output file name via a filechooser dialog.
+		
+		:returns: name of the output csv file
+		"""
 		dialog = gtk.FileChooserDialog(title="Save as", 
 			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
 		filter = gtk.FileFilter() 
@@ -169,12 +253,22 @@ class SelOutFileName:
 		exit()
 
 class CompareTwoDirLists:
+	"""Class that does the comparison of the two directory lists.
+	"""
 	errorLines = []					# accumulate the errors as a list for printing
 
 	def __init__(self):
 		self.errorLines = []		# accumulate the triaged errors for printing
 
 	def detailFileComp(self, fileName1, path1, fileName2, path2):
+		"""Does a very detailed file comparison of the two files.
+		
+		:param fileName1: The name of the first file
+		:param path1: The name of the first path
+		:param fileName2: The name of the second file
+		:param path2: The name of the second path
+		:returns: True if the files match, false if they differ
+		"""
 		filePath1 = ''
 		filePath2 = ''
 		filePath1 = path1 + '\\' + fileName1
@@ -182,31 +276,25 @@ class CompareTwoDirLists:
 		return (filecmp.cmp(filePath1, filePath2))
 
 	def addToErrorLines(self,inFileNum, errorLevel, errorString, line1String, line2String):
-	# errorMsgLevel
-	# 0 = report errors only
-	# 1 = report errors/warnings
-	# 2 = report errors/warnings/notes
-	#
-	# Passed 
-	# inFileNum - number which indicates which file is being referenced by the error
-	# errorLevel - 
-	# 0 = errors only
-	# 1 = warnings
-	# 2 - note
-	# errorString - the string to print which describes the error
-	# line1String - the actual directory line
-	# line2String - optional other directory line
-	#
-	# replaces these 7 lines of code - 
-	# thisErrorLine = []
-	# thisErrorLine.append('Warning - Duplicated file')
-	# thisErrorLine.append('1')
-	# thisErrorLine += dirFileList1[list1Off]
-	# thisErrorLine += previousLine1
-	# if errorMsgLevel > 0:
-	#	self.errorLines.append(thisErrorLine)
-	# replace with this line -
-	# addToErrorLines(1, 'Warning - Duplicated file', 1, dirFileList1[list1Off], previousLine1)
+		"""Adds the error to the errorLines list if the error exceeds the current message level option setting.
+		errorMsgLevel
+		
+		* 0 = report errors only
+		* 1 = report errors/warnings
+		* 2 = report errors/warnings/notes
+		
+		:param inFileNum: number which indicates which file is being referenced by the error
+		:param errorLevel: The error level of this issue
+		
+		* 0 = errors only
+		* 1 = warnings
+		* 2 - note
+		
+		:param errorString: the string to print which describes the error
+		:param line1String: the actual directory line
+		:param line2String: optional other directory line
+		"""
+
 		global errorMsgLevel
 		thisErrorLine = []
 		thisErrorLine.append(errorString)
@@ -217,13 +305,23 @@ class CompareTwoDirLists:
 			self.errorLines.append(thisErrorLine)
 
 	def writeOutHeader(self, outFilePtr):
+		"""Write out the header.
+	
+		:param outFilePtr: points to the output file
+		"""
 		outFilePtr.writerow(['Code','FileNum','Date','Time','Size','FileName','RelPath','AbsPath','Date*','Time*','Size*','FileName*','RelPath*','AbsPath*'])	# File header
 		
 	def writeOutList(self, outFilePtr):
+		"""Write out the list.
+	
+		:param outFilePtr: points to the output file
+		"""
 		for rows in self.errorLines:
 			outFilePtr.writerow(rows)
 
 	def doCompFolders(self):
+		"""The executive which calls the other functions
+		"""
 		myReadFolder = ReadDirectoryToList()							# create ReadDirectoryToList instance
 		pathToDir1 = myReadFolder.browseToFolder('')					# get first directory name from folder browser
 		print 'first folder : %s' % pathToDir1
