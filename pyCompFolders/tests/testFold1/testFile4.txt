@@ -1,3 +1,0 @@
-This is the stuff that is in the file.
-Different stuff in this one.
-This one is only in this folder.
