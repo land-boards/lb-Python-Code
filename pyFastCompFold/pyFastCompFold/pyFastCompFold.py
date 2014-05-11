@@ -32,7 +32,7 @@ There are three classes of messages:
 * Warnings
 * Notes
 
-There are a couple of Rrrors:
+There are a couple of Errors:
 
 * No match for part
 * Found a match for the part but it had different size
