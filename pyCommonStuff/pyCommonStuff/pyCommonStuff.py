@@ -1,39 +1,47 @@
-###########################################################################################
-# Some common Python Patterns
+"""Some common Python Patterns
+"""
 
-###########################################################################################
-# Path/filename extraction
 import string
 
-# Extract Path from fullPathFilename
-def	extractPathFromPathfilename(fullPathFilename):
-	return(fullPathFilename[0:fullPathFilename.rfind('\\')+1])
+class pathFileExtracts:
+	"""Extract file names and path from pathfilenames
+	"""
+	def	extractPathFromPathfilename(self,fullPathFilename):
+		"""Extract Path from fullPathFilename
+		"""
+		return(fullPathFilename[0:fullPathFilename.rfind('\\')+1])
 
-# Extract fileName without extension from pathfullPathName
-def extractFilenameFromPathfilename(fullPathFilename):
-	return(fullPathFilename[fullPathFilename.rfind('\\')+1:-4])
+	def extractFilenameFromPathfilename(self,fullPathFilename):
+		"""Extract fileName without extension from pathfullPathName
+		"""
+		return(fullPathFilename[fullPathFilename.rfind('\\')+1:-4])
 
-# Extract fileName from pathfullPathName
-def extractFilenameNoextFromPathfilename(fullPathFilename):
-	return(fullPathFilename[fullPathFilename.rfind('\\')+1:])
+	def extractFilenameNoextFromPathfilename(self,fullPathFilename):
+		"""Extract fileName from pathfullPathName
+		"""
+		return(fullPathFilename[fullPathFilename.rfind('\\')+1:])
 
-### Test Code
-testFullpathFilename = 'c:\\mypath\doug.csv'
+	def testExtracts(self):
+		"""Test Code
+		"""
+		testFullpathFilename = 'c:\\mypath\doug.csv'
 
-print extractPathFromPathfilename(testFullpathFilename)
-print extractFilenameFromPathfilename(testFullpathFilename)
-print extractFilenameNoextFromPathfilename(testFullpathFilename)
+		print extractPathFromPathfilename(testFullpathFilename)
+		print extractFilenameFromPathfilename(testFullpathFilename)
+		print extractFilenameNoextFromPathfilename(testFullpathFilename)
 
-###########################################################################################
-# reading in an XML file
+"""reading in an XML file
+"""
 
 # Use the ElementTree module but alias it as "Xml"
 import xml.etree.ElementTree as Xml
 
-# XMLtoList class reads the XML file into a list
 class XMLtoList:
-	# returns list which contains the XML spreadsheet data
+	"""XMLtoList class reads the XML file into a list
+	"""
 	def readSpreadsheetXML2List(self, inFileN):
+		"""returns list which contains the XML spreadsheet data
+		"""
 		# Get the root by parsing the XML file and then using the "getroot" method 
 		root = Xml.parse(inFileN).getroot()
 
@@ -55,15 +63,16 @@ class XMLtoList:
 					new_list.append(cell[0].text or "")	# Append the cell data to the new list
 		return xmlData
 
-		
-###########################################################################################
-# writing out a CSV file
-
 import csv
 
 class writeOutToCSVFile:
-
+	"""writing out a CSV file
+	"""
 	def openCSVFile(self, csvName):
+		"""Open the CSV file for output.
+		
+		:param csvName: the name of the file as a string
+		"""
 		try:
 			myCSVFile = open(csvName, 'wb')
 		except:
@@ -79,22 +88,38 @@ class writeOutToCSVFile:
 		return(outFil)
 
 	def writeOutCsvBody(self, theOutList, outFileName):
+		"""write out the CSV body
+		
+		:param theOutList: list that needs to be written out
+		:param outFileName: string that has the pathfilename
+		"""
+
+	def doWriteOut(self, outFileName, theOutList):
+		"""Calls the other function which do the write out of the CSV file
+	
+		:param outFileName: string which has the pathfilename
+		:param theOutList: the list to write out
+		"""
 		outFilePtr = self.openCSVFile(outFileName)			# start at the same folder as the input file was located
 #		self.writeOutputHeader(theOutList, outFilePtr)		# write out the header
 		outFilePtr.writerows(theOutList)					# write out the BOM list to the output CSV file
 
-###########################################################################################
-# sorting a list
-
-	print 'Sorting lists'
-	dirFileList1 = sorted(dirFileList1, key = lambda errs: errs[0])		# sort by Relative Path
-
-###########################################################################################
-# findCSVFile() - This is the dialog which locates the csv files
-# Function returns the path/name of the file that was selected
+	def sortMyList(self, inList):
+		"""sorting a list
+		
+		:param inList: The list to sort
+		:returns: the sorted list
+		"""
+		print 'Sorting lists'
+		dirFileList = sorted(dirFileList1, key = lambda errs: errs[0])		# sort by Relative Path
+		return dirFileList
 
 class FindACsvFile:
 	def findCsvFile(self, startingPath):
+		"""findCSVFile() - This is the dialog which locates the csv files
+	
+		:returns: path/name of the file that was selected
+		"""
 		csvFileString = "Select file"
 		dialog = gtk.FileChooserDialog(csvFileString,
 	                               None,
@@ -121,12 +146,16 @@ class FindACsvFile:
 			exit()
 		dialog.destroy()
 
-###########################################################################################
-# FindAXmlFile() - This is the dialog which locates the xml files
-# Function returns the path/name of the file that was selected
 
 class FindAXmlFile:
+	"""Find XML file with the file chooser dialog
+	"""
 	def findXmlFile(self, startingPath):
+		"""FindAXmlFile() - This is the dialog which locates the xml files
+		
+		:param startingPath: the path to start the folder selector in
+		:returns: path/name of the file that was selected
+		"""
 		csvFileString = "Select file"
 		dialog = gtk.FileChooserDialog(csvFileString,
 	                               None,
@@ -153,15 +182,21 @@ class FindAXmlFile:
 			exit()
 		dialog.destroy()
 
-###########################################################################################
-# Check to see if a file is fresh (shares the same date as today)
-# Uses global freshnessCheck
 
 class CheckFreshness():
-	def isFresh(self, pathToFile):
+	"""Check to see if the file was saved today.
+	Ignores midnight
+	"""
+	def isFresh(self, pathFileName):
+		"""Check to see if a file is fresh (shares the same date as today)
+		Uses global freshnessCheck
+		
+		:param pathFileName: Pathfilename to check
+		:returns: True if the date matches today's date, false otherwise
+		"""
 		if not freshnessCheck:
 			return True
-		t = os.path.getmtime(pathToFile)
+		t = os.path.getmtime(pathFileName)
 		fileTimeDateStamp = datetime.datetime.fromtimestamp(t)
 		fileDateStamp = str(fileTimeDateStamp)
 		fileDateStamp = fileDateStamp[0:fileDateStamp.find(' ')]
