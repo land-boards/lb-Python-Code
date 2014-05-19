@@ -206,4 +206,13 @@ class CheckFreshness():
 		else:
 			return False
 
+def errorDialog(errorString):
+	"""
+	Prints an error message as a dialog box
+	"""
+	message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
+	message.set_markup(errorString)
+	message.run()		# Display the dialog box and hang around waiting for the "OK" button
+	message.destroy()	# Takes down the dialog box
+	return
 			
