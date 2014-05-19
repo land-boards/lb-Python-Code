@@ -1,0 +1,60 @@
+[
+    {
+        "call_number": "HD31 .A294 1996",
+        "description": "viii, 336 p. : ill. ; 22 cm.",
+        "isbn": "0887307876",
+        "lc_control_no": "96000388",
+        "lccn_permalink": "http://lccn.loc.gov/96000388",
+        "links": "Table of Contents",
+        "main_title": "The Dilbert principle : a cubicle\u2019s-eye view of bosses, meetings, management fads & other workplace afflictions / Scott Adams.",
+        "personal_name": "Adams, Scott, 1957-",
+        "published/created": "New York : HarperBusiness, c1996.",
+        "request_in": "Jefferson or Adams Building Reading Rooms",
+        "status": "Not Charged",
+        "type_of_material": "Book (Print, Microform, Electronic, etc.)"
+    },
+    {
+        "call_number": "QA76.73.P98 P57 2009 LANDOVR",
+        "description": "xlix, 360 p. : ill. ; 24 cm.",
+        "isbn": "9781430224150",
+        "lc_control_no": "2011377607",
+        "lccn_permalink": "http://lccn.loc.gov/2011377607",
+        "main_title": "Dive into Python 3 / Mark Pilgrim.",
+        "personal_name": "Pilgrim, Mark.",
+        "published/created": "New York : Apress c2009.",
+        "request_in": "Jefferson or Adams Building Reading Rooms - STORED OFFSITE",
+        "status": "Not Charged",
+        "type_of_material": "Book (Print, Microform, Electronic, etc.)"
+    },
+    {
+        "call_number": "PR6051.D3352 A6 1996",
+        "description": "xi, 815 p. ; 25 cm.",
+        "edition": "Complete & unabridged.",
+        "isbn": "0517149257",
+        "lc_control_no": "95037384",
+        "lccn_permalink": "http://lccn.loc.gov/95037384",
+        "links": "Publisher description",
+        "main_title": "The ultimate hitchhiker\u2019s guide / Douglas Adams.",
+        "personal_name": "Adams, Douglas, 1952-2001.",
+        "published/created": "New York : Wings Books, 1996.",
+        "request_in": "Jefferson or Adams Building Reading Rooms",
+        "status": "Not Charged",
+        "type_of_material": "Book (Print, Microform, Electronic, etc.)",
+        "uniform_title": "Ultimate hitch-hiker\u2019s guide"
+    },
+    {
+        "call_number": "PS3535.A547 A94 1992 OVERFLOWA5S\u001e",
+        "description": "xv, 1168 p. ; 24 cm.",
+        "edition": "35th anniversary ed.",
+        "isbn": "0525934189 : $30.00",
+        "lc_control_no": "91036842",
+        "lccn_permalink": "http://lccn.loc.gov/91036842",
+        "main_title": "Atlas shrugged / Ayn Rand.",
+        "personal_name": "Rand, Ayn.",
+        "published/created": "New York, N.Y., U.S.A. : Dutton, [1992]",
+        "request_in": "Jefferson or Adams Building Reading Rooms (FLM1)",
+        "shelf_location": "FLM2014 006380",
+        "status": "Not Charged",
+        "type_of_material": "Book (Print, Microform, Electronic, etc.)"
+    }
+]
