@@ -146,7 +146,6 @@ class FindACsvFile:
 			exit()
 		dialog.destroy()
 
-
 class FindAXmlFile:
 	"""Find XML file with the file chooser dialog
 	"""
@@ -182,7 +181,6 @@ class FindAXmlFile:
 			exit()
 		dialog.destroy()
 
-
 class CheckFreshness():
 	"""Check to see if the file was saved today.
 	Ignores midnight
@@ -215,4 +213,5 @@ def errorDialog(errorString):
 	message.run()		# Display the dialog box and hang around waiting for the "OK" button
 	message.destroy()	# Takes down the dialog box
 	return
+			
 			
