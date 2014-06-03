@@ -30,6 +30,6 @@ Features:
 <li>Rheostat mode temperature coefficient: 35 ppm/&deg;C</li>
 <li>Voltage divider temperature coefficient: 5 ppm/&deg;C</li>
 <li>+9 V to +33 V single-supply operation</li>
-<li>&plusmn;9 V to &plusmn;16.5 V dual-supply operation</li>
+<li>+9 V to -16.5 V dual-supply operation</li>
 <li>See data sheet for additional features</li>
 </ul>
