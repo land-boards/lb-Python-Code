@@ -114,6 +114,16 @@ class writeOutToCSVFile:
 		dirFileList = sorted(dirFileList1, key = lambda errs: errs[0])		# sort by Relative Path
 		return dirFileList
 
+import pygtk
+pygtk.require('2.0')
+
+import gtk
+
+# Check for new pygtk: this is new class in PyGtk 2.4
+if gtk.pygtk_version < (2,3,90):
+   print "PyGtk 2.3.90 or later required"
+   raise SystemExit
+
 class FindACsvFile:
 	def findCsvFile(self, startingPath):
 		"""findCSVFile() - This is the dialog which locates the csv files
