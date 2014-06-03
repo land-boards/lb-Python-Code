@@ -1,0 +1,175 @@
+<p>&nbsp;</p>
+<h1><span style="font-size: 115%;">Integrated Theremin</span></h1>
+<p>&nbsp;</p>
+<p><img id="pbImage918288" src="/f/iTheremin-2.jpg" alt="" /></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">The Integrated Theremin combines five of the Theremin boards into one design. The boards included are:</span></p>
+<p>&nbsp;</p>
+<ul>
+<li><span style="font-size: 115%;"><a href="/w/page/55223153/MiniDuino">MiniDuino</a></span></li>
+<ul>
+<li><span style="font-size: 115%;">16 MHz ATMega 328 processor</span></li>
+<li><span style="font-size: 115%;">Arduino UNO Code and IDE Compatible</span></li>
+<li><span style="font-size: 115%;">TFT Display connector <br /></span></li>
+</ul>
+<li><a href="/w/page/55092684/FTDI%20USB%20TTL" search_id="undefined"><span style="font-size: 115%;">FTDI</span></a></li>
+<ul>
+<li><span style="font-size: 115%;">USB Interface</span></li>
+<li><span style="font-size: 115%;">Board is <strong>not </strong>powerable from FTDI</span> </li>
+</ul>
+<li><span style="font-size: 115%;"><a href="/w/page/63417535/HVDigitalPot2">HV Digital Pots</a></span></li>
+<ul>
+<li><span style="font-size: 115%;">10-bits, 1024 steps<br /></span></li>
+<li><span style="font-size: 115%;">Control Frequency and Voltage <br /></span></li>
+</ul>
+<li><span style="font-size: 115%;"><a href="/w/page/55033770/AudioAmp386">Audio Amplifier 386</a></span></li>
+<ul>
+<li><span style="font-size: 115%;">3/4 Watt Output</span></li>
+<li><span style="font-size: 115%;">Standard RCA phone style connector <br /></span></li>
+</ul>
+<li><a href="/w/page/63697225/XR%202206%20X2"><span style="font-size: 115%;">XR-2206 Voltage Controlled Oscillator</span></a></li>
+<ul>
+<li><span style="font-size: 115%;">Waveform Adjustment pot from X3 version of XR-2206 <br /></span></li>
+</ul>
+</ul>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">The board has additional features including:</span></p>
+<p>&nbsp;</p>
+<ul>
+<li><span style="font-size: 115%;">Advanced Power Supply Design</span></li>
+<ul>
+<li><span style="font-size: 115%;">Single +12V power supply input</span></li>
+<li>+<span style="font-size: 115%;">5V High-Efficiency Switcher to drive logic and High Intensity <a href="/w/page/62992363/IR%20Sensor">IR Sensors</a></span></li>
+<ul>
+<li><span style="font-size: 115%;">Previous (separate board) design had a hot regulator on the MiniDuino </span></li>
+<ul>
+<li>D<span style="font-size: 115%;">ue to the current drop of the +12V or +9V to 5V </span></li>
+<ul>
+<li><span style="font-size: 115%;">At 200 mA due to the IR sensor cards<br /></span></li>
+</ul>
+</ul>
+<li><span style="font-size: 115%;">Total power Measured at 12V, 130 mA =&nbsp; 1.6 Watts</span><span style="font-size: 115%;"> <br /></span></li>
+</ul>
+</ul>
+<li><span style="font-size: 115%;">Dedicated connectors for <a href="/w/page/62992363/IR%20Sensor">IR Sensors</a></span></li>
+<li><span style="font-size: 115%;">Direct (DC) coupling for Voltage Controlled Oscillator to Audio Amplifier</span></li>
+<ul>
+<li><span style="font-size: 115%;">AC cap in series with the previous design led to clipping of the audio <br /></span></li>
+</ul>
+<li><span style="font-size: 115%;">Added connection to allow Microprocessor to monitor (via A/D) the VCO level for smoother volume control transitions</span></li>
+<ul>
+<li><span style="font-size: 115%;">Write all of the D/A serial bits then cycle the FSYNC line to load the D/A <br /></span></li>
+<li><span style="font-size: 115%;">Voltage divider</span></li>
+<ul>
+<li><span style="font-size: 115%;">Average voltage into divider is 6V</span></li>
+<li><span style="font-size: 115%;">Divider resistors 2.2K, 4.7K</span></li>
+<li><span style="font-size: 115%;">Divider ratio is (2.2/(2.2+4.7)) = 0.31884</span></li>
+<li><span style="font-size: 115%;">6V * divider ratio = 1.913 V</span></li>
+<li><span style="font-size: 115%;">1.913V * (1023 counts/5V) =&nbsp; 391 counts</span></li>
+<li><span style="font-size: 115%;">Peak voltage is 12V - scales to 3.82V which is safely below the 5V input of the A/D<br /></span></li>
+</ul>
+<li><span style="font-size: 115%;">Measurements:<br /></span></li>
+<ul>
+<li><span style="font-size: 115%;">Minimum count = 278</span></li>
+<li><span style="font-size: 115%;">Maximum count = 414</span></li>
+<li><span style="font-size: 115%;">Average count = 346</span></li>
+</ul>
+<li><span style="font-size: 115%;">Measured the average voltage and it wasn't 6V as expected, it was 5.3V which correlates well to the 346 count <br /></span></li>
+<li><span style="font-size: 115%;">Where is the transition supposed to happen with respect to the waveform to write data to the pots?&nbsp;</span></li>
+<li><span style="font-size: 115%;">A/D sample rate is around 10K samples/sec</span></li>
+<li><span style="font-size: 115%;">If the max freq is 1KHz that means that the waveform is only sampled 10 times per cycle so there could be a large step in volume </span></li>
+<li><span style="font-size: 115%;">Start up question as well - the board needs to be autocalibrated at startup </span></li>
+<li><span style="font-size: 115%;">May need hardware assist to cycle FSYNC at zero crossing</span></li>
+<li><span style="font-size: 115%;">May want to connect the data and clock to the MOSI and SCK lines instead of PIO lines to speed up transfers<br /></span></li>
+<li><span style="font-size: 115%;">May want to use logic analyzer to debug<br /></span></li>
+</ul>
+<li><span style="font-size: 115%;">Board layout is slightly under 50 mm x 100 mm to use SeeedStudio service ($30 for 10 pcs). </span></li>
+<li><span style="font-size: 115%;">Board has four mounting holes</span></li>
+<li><span style="font-size: 115%;">New schematic design using hierarchical sheets</span></li>
+<li><span style="font-size: 115%;">Split Power and ground planes (+12V/+5V) at center of card with jumper to connect GNDs </span></li>
+</ul>
+<p>&nbsp;</p>
+<h2><span style="font-size: 115%;">Block Diagram</span></h2>
+<p>&nbsp;</p>
+<p><img id="pbImage806131" src="/f/iThereminBlockX1.png" alt="" width="820" /></p>
+<p>&nbsp;</p>
+<h2><span style="font-size: 115%;">Connectors</span></h2>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">J1 - Power Connector</span></p>
+<ol>
+<li><span style="font-size: 115%;">+12V</span></li>
+<li><span style="font-size: 115%;">Ground<br /></span></li>
+</ol>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">J2 -Analog Output - RCA connector<br /></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">J3 -USB-B Mini<br /></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">J4 - 5-Way Switch</span></p>
+<ol>
+<li><span style="font-size: 115%;">Ground</span></li>
+<li><span style="font-size: 115%;">Voltage (+5V)</span></li>
+<li><span style="font-size: 115%;">Signal (Keypad)<br /></span></li>
+</ol>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">J5 -Volume GVVS<br /></span></p>
+<ol>
+<li><span style="font-size: 115%;">Ground</span></li>
+<li><span style="font-size: 115%;">Emitter Voltage (5V @ 100 mA)<br /></span></li>
+<li><span style="font-size: 115%;">Sensor Voltage</span></li>
+<li><span style="font-size: 115%;">Sensor Output</span></li>
+</ol>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">J6 - Frequency GVVS<br /></span></p>
+<ol>
+<li><span style="font-size: 115%;">Ground</span></li>
+<li><span style="font-size: 115%;">Emitter Voltage</span><span style="font-size: 115%;"> (5V @ 100 mA)</span></li>
+<li><span style="font-size: 115%;">Sensor Voltage</span></li>
+<li><span style="font-size: 115%;">Sensor Output</span></li>
+</ol>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">J7 -Analog Spares<br /></span></p>
+<ol>
+<li><span style="font-size: 115%;">AD5</span></li>
+<li><span style="font-size: 115%;">AD4</span></li>
+<li><span style="font-size: 115%;">AREF</span></li>
+<li><span style="font-size: 115%;">GND</span></li>
+<li><span style="font-size: 115%;">AREF</span></li>
+<li><span style="font-size: 115%;">VCC</span></li>
+</ol>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">J8 - TFT LCD</span></p>
+<ul>
+</ul>
+<ol>
+<li><span style="font-size: 115%;">VCC</span></li>
+<li><span style="font-size: 115%;">Backlight (GND)</span></li>
+<li><span style="font-size: 115%;">RESET</span></li>
+<li><span style="font-size: 115%;">RS</span></li>
+<li><span style="font-size: 115%;">MISO</span></li>
+<li><span style="font-size: 115%;">MOSI</span></li>
+<li><span style="font-size: 115%;">SCK</span></li>
+<li><span style="font-size: 115%;">LCDCS</span></li>
+<li><span style="font-size: 115%;">SDCS</span></li>
+<li><span style="font-size: 115%;">GND</span></li>
+</ol> 
+<ul>
+</ul>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">J9(X2)/J10(X1) - Ground jumper</span></p>
+<p style="margin-left: 40px;"><span style="font-size: 115%;">1-2 - GND to GNDA</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;">RV1 - Waveform Adjust</span></p>
+<p>&nbsp;</p>
+<h2><span style="font-size: 115%;">Supported Peripherals</span></h2>
+<p>&nbsp;</p>
+<p><span style="font-size: 115%;"><img id="pbImage940308" src="/f/LCD%20screen.png" alt="" /><br /></span></p>
+<p>&nbsp;</p>
+<p><img id="pbImage522671" src="/f/Sw5Way.png" alt="" /></p>
+<p>&nbsp;</p>
+<p><img id="pbImage788005" src="/f/IR-horiz-top.png" alt="" /></p>
+<p>&nbsp;</p>
+<p><img id="pbImage414726" src="/f/IR-vert-top.png" alt="" /></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
