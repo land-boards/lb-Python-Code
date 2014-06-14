@@ -1,0 +1,95 @@
+<h2>Git Reference Pages</h2>
+
+<ul>
+<li>http://gitref.org/ Git reference site</li>
+<li>http://www.javacodegeeks.com/2012/03/git-tutorial-getting-started.html Git Tutorial</li>
+<li>http://help.github.com/ Git Help </li>
+<li>http://www.mediawiki.org/wiki/Help:Formatting mediawiki markup (set file extension to .mediawiki) </li>
+<li>https://github.com/fletcher/MultiMarkdown/blob/master/Documentation/Markdown%20Syntax.md .md markdown tutorial </li>
+</ul>
+
+<h2>Git Repositories</h2>
+
+<ul>
+<li>git@github.com:douggilliland/Dougs-Arduino-Stuff.git </li>
+<li><p> git@github.com:douggilliland/DougsPCBDesigns.git </p></li>
+<li><p> git@github.com:douggilliland/DougsPrintedParts.git</p></li>
+<li><p> git@github.com:douggilliland/DougsWoodWorld.git  </p></li>
+</ul>
+
+<h2>Creating a repo</h2>
+
+<ul>
+<li>In the directory</li>
+<ul>
+<li><pre>git init</pre></li>
+</ul>
+</ul>
+
+<h2>Looking at log</h2>
+
+<ul>
+<li>git log</li>
+</ul>
+
+<h2>Pulling changes from a server made by someone else or you from another computer</h2>
+
+<ul>
+<li>In the directory</li>
+
+<pre>git fetch origin
+git rebase origin/master</pre>
+<li>Manually fix any conflicts</li>
+
+<pre>git rebase --continue</pre>
+</ul>
+
+<h2>Adding to an existing (local) git repository (Linux command line)</h2>
+
+<ul>
+<li>In a terminal.</li>
+<ul>
+<li> cd ~/arduino-1.0.1/Projects</li>
+</ul>
+<li>Make the change to the source file.&nbsp;</li>
+<li> git add .</li>
+<ul>
+<li>Adds all the files that are to be added recursively from the Projects folder (due to .) </li>
+</ul>
+<li>(Alternately)  git add -u</li>
+<ul>
+<li>Does update (seemed to have deleted moved files from the old location which is a good thing), </li>
+</ul>
+<li>  git commit -m 'Changed something not important'</li>
+<ul>
+<li>Gets back something like:</li>
+<ul>
+<li><em>[master 090f893] Changed something not important</em><em>&nbsp;2 files changed, 153 insertions(+), 76 deletions(-)</em><em>&nbsp;create mode 100644 cylon/Cylon_Warrior_03/Cylon_Warrior_03.ino~</em></li>
+</ul>
+</ul>
+</ul>
+
+<h2>Pushing changes to a remote repository (github)</h2>
+
+<ul>
+<li> git push</li>
+<ul>
+<li>Gets back something like:</li>
+<ul>
+<li><em>Counting objects: 9, done.</em><em>Compressing objects: 100% (4/4), done.</em><em>Writing objects: 100% (5/5), 746 bytes, done.</em><em>Total 5 (delta 2), reused 0 (delta 0)</em><em>To git@github.com:douggilliland/Dougs-Arduino-Stuff.git</em><em>&nbsp;&nbsp; 952a95d..090f893&nbsp; master -&gt; master </em></li>
+</ul>
+</ul>
+</ul>
+
+<h2>Clone folder to a new machine</h2>
+
+<pre>git clone <a>git://github.com/douggilliland/Dougs-Arduino-Stuff.git
+git clone https://github.com/douggilliland/DougsPCBDesigns.git  
+</pre>
+
+
+<h2>Getting files from Repository onto local machine</h2>
+
+<ul>
+<li>git pull</li>
+</ul>
