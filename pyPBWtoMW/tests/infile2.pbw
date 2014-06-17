@@ -1,0 +1,35 @@
+<h2>High Voltage Digital Pot (10-bit)</h2>
+
+[[File:fronthvpot.png]] [[File:backhvpot2.png]]
+
+<h2>Connectors</h2>
+
+J1 - 8 pin Header
+
+<ol>
+<li>+12V</li>
+<li>GND</li>
+<li>+5V</li>
+<li>Din1</li>
+<li>Din2</li>
+<li>CLK</li>
+<li>CSN</li>
+<li>GND </li>
+</ol>
+
+<h2>D/A Converter</h2>
+
+IC is AD5292 (http://www.google.com/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;sqi=2&amp;ved=0CDsQFjAB&amp;url=http%3A%2F%2Fwww.analog.com%2Fstatic%2Fimported-files%2Fdata_sheets%2FAD5291_5292.pdf&amp;ei=gsoaUdihKpTo9gTD-YGIDA&amp;usg=AFQjCNFwn6u5EX6GGnIXNOb3hgNDUghi7Q&amp;bvm=bv.42261806,d.dmQ PDF Datasheet). 
+Features:
+
+<ul>
+<li>Single-channel, 256-/1024-position resolution</li>
+<li>20 k&Omega;, 50 k&Omega;, and 100 k&Omega; nominal resistance</li>
+<li>Maximum &plusmn;1% nominal resistor tolerance error (resistor performance mode)</li>
+<li>20-times programmable wiper memory</li>
+<li>Rheostat mode temperature coefficient: 35 ppm/&deg;C</li>
+<li>Voltage divider temperature coefficient: 5 ppm/&deg;C</li>
+<li>+9 V to +33 V single-supply operation</li>
+<li>+9 V to -16.5 V dual-supply operation</li>
+<li>See data sheet for additional features</li>
+</ul>

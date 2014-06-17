@@ -1,5 +1,19 @@
-'''pyPBWtoMW - convert PBWorks wiki pages to MediaWiki pages
+'''pyPBWtoMW - Convert PBWorks wiki pages to MediaWiki wiki pages.
+Handles simpler html tags which make for most of the data.
+
+=====
+INPUT
+=====
+
+Select input file via browser. 
+
+======
+OUTPUT
+======
+
+Output file is named the same as the input file with extension changed to .mw.
 '''
+
 import string
 
 import pygtk
@@ -50,6 +64,7 @@ def processListItem(strToProcess):
 	'''
 	global indentLevelUL
 	outStr = strToProcess
+	outStart = ''
 	if string.find(outStr,'<li>') != -1:
 		outStr = string.replace(outStr, '<li>','')
 		if unorderedListFlag == True:
@@ -120,8 +135,8 @@ def processImageTag(strToProcess):
 	return outStr
 
 def processAHref(strToProcess):
-	'''String format is:
-	<a href="/w/page/55092684/FTDI%20USB%20TTL" search_id="undefined"><span style="font-size: 115%;">FTDI</span></a>
+	'''href string format is:
+	<a href="/w/page/55092684/FTDI%20USB%20TTL" search_id="undefined">FTDI</a>
 	'''
 	print 'processingAHref line', strToProcess
 	inStr = strToProcess
@@ -144,6 +159,43 @@ def processAHref(strToProcess):
 	outStr += ']]'
 	
 	print 'ahref out', outStr
+	return outStr
+
+def processTableHeader(strToProcess):
+	'''Line looks like:
+	<table border="0" cellspacing="0" cellpadding="0" width="416">
+	'''
+	outStr = '{| class="wikitable"'
+	return outStr
+	
+def processTableEnd(strToProcess):
+	'''Line looks like:
+	</table>
+	'''
+	outStr = '|}'
+	return outStr
+		
+def processTableData(strToProcess):
+	'''Line looks like:
+	<td style="height: 20px; width: 93px;" width="93" height="20">Iforward</td>
+	'''
+	outStr = '|'
+	textStr = strToProcess[string.find(strToProcess,'>')+1:string.rfind(strToProcess,'<')]
+	outStr += textStr
+	return outStr
+	
+def processTableRowEnd(strToProcess):
+	'''Line looks like:
+	</tr>
+	'''
+	outStr = ''
+	return outStr
+
+def processTableRowStart(strToProcess):
+	'''Line looks like:
+	<tr>
+	'''
+	outStr = '|-'
 	return outStr
 
 def reformatLine(strToFormat):
@@ -183,6 +235,33 @@ def reformatLine(strToFormat):
 			keepDoingIt = True
 			if printParse == True:
 				print 'got an href'
+		elif string.find(outLine, '<table') != -1:
+			outLine = processTableHeader(outLine)
+			keepDoingIt = True
+			if printParse == True:
+				print 'found table start'
+			processingTable = True
+		elif string.find(outLine, '</table>') != -1:
+			outLine = processTableEnd(outLine)
+			keepDoingIt = True
+			if printParse == True:
+				print 'found end table'
+			processingTable = False
+		elif string.find(outLine, '<tr>') != -1:
+			outLine = processTableRowStart(outLine)
+			keepDoingIt = True
+			if printParse == True:
+				print 'found table row start'
+		elif string.find(outLine, '</tr>') != -1:
+			outLine = processTableRowEnd(outLine)
+			keepDoingIt = True
+			if printParse == True:
+				print 'found table row end'
+		elif string.find(outLine, '<td') != -1:
+			outLine = processTableData(outLine)
+			keepDoingIt = True
+			if printParse == True:
+				print 'found table row end'
 		else:
 			keepDoingIt = False
 	return outLine

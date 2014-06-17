@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# pyFastCompFold documentation build configuration file, created by
+# pyPBWtoMW documentation build configuration file, created by
 # sphinx-quickstart on Thu May 08 14:02:28 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -18,7 +18,7 @@ import os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0,"C:\\Users\\DGilliland.AACISD\\Documents\\GitHub\\Dougs-Python-Files\\pyFastCompFold\\pyFastCompFold")
+sys.path.insert(0,"C:\\Users\\DGilliland.AACISD\\Documents\\GitHub\\lb-Python-Code\\pyPBWtoMW\\pyPBWtoMW")
 
 # -- General configuration ------------------------------------------------
 
@@ -45,7 +45,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pyFastCompFold'
+project = u'pyPBWtoMW'
 copyright = u'2014, Doug Gilliland'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -178,7 +178,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'pyFastCompFolddoc'
+htmlhelp_basename = 'pyPBWtoMW'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -198,7 +198,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'pyFastCompFold.tex', u'pyFastCompFold Documentation',
+  ('index', 'pyPBWtoMW.tex', u'pyPBWtoMW Documentation',
    u'Doug Gilliland', 'manual'),
 ]
 
@@ -228,7 +228,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'pyfastcompfold', u'pyFastCompFold Documentation',
+    ('index', 'pyPBWtoMW', u'pyPBWtoMW Documentation',
      [u'Doug Gilliland'], 1)
 ]
 
@@ -242,8 +242,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'pyFastCompFold', u'pyFastCompFold Documentation',
-   u'Doug Gilliland', 'pyFastCompFold', 'One line description of project.',
+  ('index', 'pyPBWtoMW', u'pyPBWtoMW Documentation',
+   u'Doug Gilliland', 'pyPBWtoMW', 'One line description of project.',
    'Miscellaneous'),
 ]
 

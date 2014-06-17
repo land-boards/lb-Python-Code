@@ -1,35 +1,178 @@
-<h2>High Voltage Digital Pot (10-bit)</h2>
+== IR Sensor ==
 
-[[File:fronthvpot.png]] [[File:backhvpot2.png]]
+[[File:IR-Front.png]] [[File:IR-Back.png]]
 
-<h2>Connectors</h2>
+[[File:IR-horiz-top.png]]
 
-J1 - 8 pin Header
+This design consists of an Infrared Emitter and Infrared Receiver. 
+The initial design was done with a 
+http://www.radioshack.com/product/index.jsp?productId=2049723 
+Radio Shack P/N 276-142  which worked fairly well.  
 
-<ol>
-<li>+12V</li>
-<li>GND</li>
-<li>+5V</li>
-<li>Din1</li>
-<li>Din2</li>
-<li>CLK</li>
-<li>CSN</li>
-<li>GND </li>
-</ol>
+Using a 1M Ohm resistor as the Infrared Receiver bias value I got a nice voltage swing at various distances.
 
-<h2>D/A Converter</h2>
+I didn't like the mismatch between the peak emitter (950mm) and received frequencies (850mm) and the cost of the Radio Shack solution is not cheap ($3.69) so I decided to look for new parts. 
 
-IC is AD5292 (http://www.google.com/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;sqi=2&amp;ved=0CDsQFjAB&amp;url=http%3A%2F%2Fwww.analog.com%2Fstatic%2Fimported-files%2Fdata_sheets%2FAD5291_5292.pdf&amp;ei=gsoaUdihKpTo9gTD-YGIDA&amp;usg=AFQjCNFwn6u5EX6GGnIXNOb3hgNDUghi7Q&amp;bvm=bv.42261806,d.dmQ PDF Datasheet). 
-Features:
+== IR Emitter ==
 
-<ul>
-<li>Single-channel, 256-/1024-position resolution</li>
-<li>20 k&Omega;, 50 k&Omega;, and 100 k&Omega; nominal resistance</li>
-<li>Maximum &plusmn;1% nominal resistor tolerance error (resistor performance mode)</li>
-<li>20-times programmable wiper memory</li>
-<li>Rheostat mode temperature coefficient: 35 ppm/&deg;C</li>
-<li>Voltage divider temperature coefficient: 5 ppm/&deg;C</li>
-<li>+9 V to +33 V single-supply operation</li>
-<li>+9 V to -16.5 V dual-supply operation</li>
-<li>See data sheet for additional features</li>
-</ul>
+LiteOn http://www.digikey.com/product-detail/en/HSDL-4261/516-1706-ND/724038 HSDL-4261 
+
+Infrared Emitters High Speed (LED), 5V, 45mW, 870nm, 26 Deg, T1-3/4 package (5mm)
+
+<table border="0" cellspacing="0" cellpadding="0" width="416">
+
+<tr>
+<td style="height: 20px; width: 93px;" width="93" height="20">Iforward</td>
+<td style="width: 74px;" width="75" align="right">0.1</td>
+<td style="width: 43px;" width="43">A</td>
+<td style="width: 112px;" width="112"> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Pdiss</td>
+<td align="right">0.190</td>
+<td>W</td>
+<td>at 20 deg C</td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Vf-typ</td>
+<td align="right">1.7</td>
+<td>V</td>
+<td>at 100 mA</td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20"> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Voltage</td>
+<td align="right">5</td>
+<td>V</td>
+<td>Reverse</td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Vres</td>
+<td align="right">3.3</td>
+<td>V</td>
+<td>across resistor(s)</td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Res</td>
+<td align="right">35</td>
+<td>Ohms</td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Resx2</td>
+<td align="right">82</td>
+<td> </td>
+<td>R1,R2</td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">ResX2/2</td>
+<td align="right">41</td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20"> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Iactual</td>
+<td align="right">0.080</td>
+<td>A</td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Power</td>
+<td align="right">0.266</td>
+<td>W</td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Power/2</td>
+<td align="right">0.133</td>
+<td>W</td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Pow-res</td>
+<td align="right">0.25</td>
+<td>W</td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Safety fact</td>
+<td align="right">0.531</td>
+<td>W/W</td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20"> </td>
+<td> </td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Pwr-LED</td>
+<td align="right">0.137</td>
+<td>W</td>
+<td> </td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">Safety factor</td>
+<td align="right">0.720</td>
+<td>W/W</td>
+<td> </td>
+</tr>
+</table>
+
+== IR Receiver ==
+
+OSHRAM http://www.digikey.com/product-detail/en/SFH313FA/475-1080-ND/607289 SFH 313 
+
+Phototransistors NPN Phototransistor 70V 200mW 870nm
+
+<table border="0" cellspacing="0" cellpadding="0" width="215">
+ 
+<tr>
+<td style="height: 20px; width: 125px;" colspan="2" width="126" height="20">Irradiance</td>
+<td style="width: 89px;" colspan="2" width="89">Ic</td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20">10</td>
+<td>mW/cm2</td>
+<td align="right">0.01</td>
+<td>A</td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20" align="right">1</td>
+<td>mW/cm2</td>
+<td align="right">0.001</td>
+<td>A</td>
+</tr>
+<tr>
+<td style="height: 20px;" height="20" align="right">0.01</td>
+<td>mW/cm2</td>
+<td align="right">0.0001</td>
+<td>A</td>
+</tr>
+</table>
+== Connector ==
+
+J1 is a 4-pin 0.1" pitch header type of connector. The pinout is a modified [[GVS-Pinout|GVS pinout]].
+
+
+# Ground (Square pin)
+# Voltage - Transmitter +5V
+# Voltage - Receiver +5V
+# Sensor Output 
+
+
+The purpose of having a separate transmitter and receiver voltage is two-fold. One it would allow the transmitter to be turned off and on conserving power and allowing for calibration at power-up. It needs to be noted that the drive current is greater than the current a microprocessor can directly drive.
+
+The second purpose is to allow the analog reference voltage to be used for the receiver increasing noise immunity from the main power of the digital controller card(s).

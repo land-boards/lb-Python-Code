@@ -1,0 +1,112 @@
+'''pyPBWtoMW - Convert PBWorks wiki pages to MediaWiki wiki pages.
+Handles simpler html tags which make for most of the data.
+
+=====
+INPUT
+=====
+
+Select input file via browser. 
+
+======
+OUTPUT
+======
+
+Output file is named the same as the input file with extension changed to .mw.
+'''
+
+import string
+
+import pygtk
+pygtk.require('2.0')
+
+import gtk
+
+# Check for new pygtk: this is new class in PyGtk 2.4
+if gtk.pygtk_version < (2,3,90):
+   print "PyGtk 2.3.90 or later required"
+   raise SystemExit
+
+class FindAFile:
+	def findFile(self, startingPath):
+		"""findCSVFile() - This is the dialog which locates the csv files
+	
+		:returns: path/name of the file that was selected
+		"""
+		csvFileString = "Select file"
+		dialog = gtk.FileChooserDialog(csvFileString,
+	                               None,
+	                               gtk.FILE_CHOOSER_ACTION_OPEN,
+	                               (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+	                               gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+		dialog.set_default_response(gtk.RESPONSE_OK)
+
+		if startingPath != '':
+			dialog.set_current_folder(startingPath)
+		filter = gtk.FileFilter()
+		filter.set_name("All files")
+		filter.add_pattern("*.*")
+		dialog.add_filter(filter)
+
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+			retFileName = dialog.get_filename()
+			dialog.destroy()
+			return retFileName
+		elif response == gtk.RESPONSE_CANCEL:
+			print 'Closed, no files selected'
+			dialog.destroy()
+			exit()
+		dialog.destroy()
+
+
+def processListItem(strToProcess):
+	'''process the list items LI lines
+	'''
+	global indentLevelUL
+	outStr = strToProcess
+	outStart = ''
+ 	if string.find(outStr,'') != -1:
+ 		outStr = string.replace(outStr, '','')
+		if unorderedListFlag == True:
+			outStart = '*' * indentLevelUL
+		elif unorderedListFlag == False:
+			outStart = '#' * indentLevelOL
+ 	if string.find(outStr,'') != -1:
+ 		outStr = string.replace(outStr,'',"")
+	outStr = outStart + ' ' + outStr
+	return outStr
+
+def processListTagUL(strToProcess):
+	'''process the unordered list tags
+	'''
+	global unorderedListFlag
+	global indentLevelUL
+	outString = strToProcess
+	if string.find(strToProcess, "") != -1:
+		outString = string.replace(strToProcess, "", '')
+		indentLevelUL += 1
+	elif string.find(strToProcess, "") != -1:
+		outString = string.replace(strToProcess, "", '')
+		indentLevelUL -= 1
+	unorderedListFlag = True
+	return outString
+
+def processListTagOL(strToProcess):
+	'''process the ordered list tags
+	'''
+	global unorderedListFlag
+	global indentLevelOL
+	outString = strToProcess
+	if string.find(strToProcess, "") != -1:
+		outString = string.replace(strToProcess, "", '')
+		indentLevelOL += 1
+	elif string.find(strToProcess, "") != -1:
+		outString = string.replace(strToProcess, "", '')
+		indentLevelOL -= 1
+	unorderedListFlag = False
+	return outString
+
+def processHeader(strToProcess):
+	''' process the header lines
+	'''
+	inStr = strToProcess
