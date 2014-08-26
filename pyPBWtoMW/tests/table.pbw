@@ -1,0 +1,74 @@
+== Design Advantages ==
+
+*Gets away from all of the painful wire jumpers and pins that constantly come loose. 
+*Makes the step from prototype to final design much easier.
+*I thought that I invented the name, but http://www.itux.co.za/2012/01/happy-new-year-from-itux-co-za-whats-new-this-year/ someone beat me to it. 
+**Since there was little information on the site and the seller didn't list shipping to the US, etc. I decided to make my own design. 
+*Besides, I know that nobody will make it exactly like I want it.
+ 
+<table border="1">
+<tr>
+<td>Method</td>
+<td>Material Costs</td>
+<td>Labor Tasks</td>
+<td width="123">Power/Ground pins</td>
+<td>Wires secure?</td>
+<td>Mounting</td>
+<td width="95">I2C Support</td>
+</tr>
+<tr>
+<td height="70">Processor</td>
+<td>UNO - $30</td>
+<td>Strip wires and solder to parts</td>
+<td>3 GND1 PWR</td>
+<td>Wires don't stay in holes with any stress.</td>
+<td>Poor</td>
+<td align="left">No connector</td>
+</tr>
+<tr>
+<td height="104">Breadboards</td>
+<td>Uno - $30 +Breadboard $10</td>
+<td>Strip wires or use breadboard wires</td>
+<td>120 each PWR/GND for 700 point breadboard</td>
+<td>Moderately secure since the holes are usually &ldquo;tight&rdquo;</td>
+<td>Poor</td>
+<td align="left">No connector</td>
+</tr>
+<tr>
+<td height="104">ProtoShields</td>
+<td>Uno - $30 +Shields - $15</td>
+<td>Lot of time- consuming soldering of custom wiring</td>
+<td>Vary but usually enough although maybe not connectorized in the best use</td>
+<td>Wires typically soldered so secure</td>
+<td>Poor</td>
+<td align="left">No connector</td>
+</tr>
+<tr>
+<td height="70">Sensor Shields</td>
+<td>Uno - $30 +Shields - $15</td>
+<td>Use custom wires</td>
+<td>Excellent at 1 per Arduino Digital/Analog pin</td>
+<td>Connectors are secure</td>
+<td>Poor</td>
+<td align="left">Yes</td>
+</tr>
+<tr>
+<td height="70">Screw Wings</td>
+<td>Uno - $30 + Wing Shield - $15</td>
+<td>Strip wires and solder to parts</td>
+<td>Varies depending upon shield</td>
+<td>Connections very secure</td>
+<td>Poor</td>
+<td align="left">No connector</td>
+</tr>
+<tr>
+<td height="87">Screwduino</td>
+<td>$25 (est)</td>
+<td>Strip wires and solder to parts</td>
+<td>5 &ndash; Ground 4 &ndash; PowerAdditional on other connectors</td>
+<td>Connections very secure</td>
+<td>Excellent</td>
+<td align="left">Yes</td>
+</tr>
+</table>
+<hr />
