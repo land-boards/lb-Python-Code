@@ -1,0 +1,272 @@
+== GVSDuino Rev X3 ==
+
+[[File:GVSDuinoX3-cca.JPG]]
+
+== GVSDuino Features ==
+
+*GVSDuino takes two awesome boards and puts them together on one board taking the best of each and improving on both. 
+**GVSDuino is the combination of an [http://arduino.cc/en/Main/ArduinoBoardUno/ Arduino UNO] and a [http://arduino-info.wikispaces.com/SensorShield GVS Shield].
+*The board is a minimalist Arduino design without a USB interface so it requires an FTDI board such as the [[FTDI-USB-TTL|USB-to-TTL Converter board]] to connect up to a Host Computer. 
+*The board has [[GVS-Pinout|GVS connectors]] for all of the Processor I/O pins. 
+
+=== New Features in the GVSDuino Revision X3 ===
+
+The GVSDuino Revision X3 board is a re-layout of the GVSDuino Revision X2 board with some minor changes.
+
+*Redesigned for [http://www.seeedstudio.com/depot/fusion-pcb-service-2-layers-p-835.html?cPath=70 seeedstudio Fusion PCB fabrication] (changed form factor to a 49x49 mm board).
+**This is a larger form factor (49mm x 49mm, or 3.72 in2) than the original design (2.2" x 1/25", or 2.75 in2) which was optimized for size because [http://oshpark.com/ oshpark] prices their PCB fabrication service based on board size.
+**Oshpark charges approximately $4.58 per board and seeedstudio charges approximately $1.50 a board.
+*Jumper selectable power source selects whether the FTDI (USB) or the DC regulator will be used to power the board.
+*Replaced the screw terminal block power connector with a 2.1 mm DC power connector.
+**This is more convenient because an inexpensive wall wart can be used.
+*The GVSDuino Revision X3 has an extended ISP connector intended to connect to the [[ATProgHead]].
+**The [[ATProgHead]] board is a daughterboard to the GVSDuino Rev X3 or  later. 
+**It mounts above the GVSDuino board and allows AVRs to be  programmed with the Arduino Bootloader. 
+**Note that this is not the same as an ISP header to program the GVSDuino itself. 
+**To program the GVSDuino board via ISP, the reset needs to be connected directly to pin 1 of the ATMega328P.
+
+== Headers/Connectors (Revision X3 board) ==
+
+=== J2 - DC Power Connector ===
+
+2.1mm connector. Center connection is Plus (+) and outside is Ground (-).
+
+=== J3 - In System Programming Connector ===
+
+{| class="wikitable"
+|-
+|<strong>Pin </strong>
+|<strong>Function</strong>
+|<strong>Arduino ISP Function</strong>
+
+|-
+|1 
+|D12
+|MISO
+
+|-
+|2 
+|
+VCC
+</td>
+|VCC
+
+|-
+|3 
+|D13
+|SCK
+
+|-
+|4 
+|D11
+|MOSI
+
+|-
+|5 
+|D10
+|RESET*
+
+|-
+|6 
+|GND
+|GND
+
+|-
+|7
+|VIN
+|N/R 
+
+|-
+|8
+|D7
+|Prog LED
+
+|-
+|9
+|D5
+|N/R 
+
+|-
+|10
+|D8
+|Error LED
+
+|-
+|11
+|D6
+|N/R 
+
+|-
+|12
+|D9
+|Heartbeat LED
+
+|}
+
+===J4 - FTDI Connector/Header ===
+
+{| class="wikitable"
+|-
+|<strong>Pin </strong>
+|<strong>Description </strong>
+
+|-
+|1 
+|GND 
+
+|-
+|2 
+|CTS (In) 
+
+|-
+|3 
+|VCC
+
+|-
+|4 
+|TX (Out) 
+
+|-
+|5 
+|RX (In) 
+
+|-
+|6 
+|DTR (Out) 
+
+|}
+
+=== GVS Headers ===
+
+The [[GVS-Pinout|GVS]] headers surround the Microprocessor. The square pins are pin 1. The Microprocessor I/O connections on the headers are:
+
+{| class="wikitable"
+|-
+|<strong>Pin </strong>
+|<strong>Function </strong>
+
+|-
+|1 
+|GND 
+
+|-
+|2
+|VCC 
+
+|-
+|3 
+|Signal 
+
+|}
+
+The white text below shows the connection that is on pin 3 (AREF and VSEL are exceptions as below). 
+
+[[File:GVSDuinoX3.PNG]]
+
+=== AREF Header ===
+
+{| class="wikitable"
+|-
+|<strong>Connection </strong>
+|<strong>Function </strong>
+
+|-
+|1-2 
+|Power Analog pins from +5V
+
+|-
+|2-3 
+|Power Analog header pins from Processor AREF 
+
+|}
+
+=== VSEL Header ===
+
+{| class="wikitable"
+|-
+|<strong>Connection </strong>
+|<strong>Function </strong>
+
+|-
+|1-2 
+|Power board from J2 connector 
+
+|-
+|2-3 
+|Power board from FTDI 
+
+|}
+
+== Board Dimensions ==
+
+The board size is 49mm x 49mm.
+
+[[File:GVSDuinoX3Dimensions.PNG]]
+
+== Future Improvements ==
+
+
+* Add jumper for ISP header to allow pin to be used as D10 out or Reset-In. This would allow the card to act as a programmer or to be programmed.
+
+
+== GVSDuino Revision X2 ==
+
+[[File:GVSDuino-X2-Built-640.JPG]]
+
+=== Revision X2 Layout/Connectors ===
+
+[[File:GVSDuinoX2-FrontSideBorderLegends.png]]
+
+=== AREF SEL - Select the voltage on the V pin of the AD0-AD5 pins ===
+
+{| class="wikitable"
+|-
+|Pins 
+|Description 
+
+|-
+|1-2 
+|+5V 
+
+|-
+|2-3
+|AREF pin on Arduino 
+
+|}
+
+=== GVS Pins ===
+*Square pins are pin 1. Pins nearest the Microprocessor are the Signal lines. The outer ring is GND. The middle is +5V Power.
+
+{| class="wikitable"
+|-
+|Pin
+|Description 
+
+|-
+|1
+|Ground
+
+|-
+|2
+|+5V 
+
+|-
+|3
+|Signal (D0-D13,AD0-AD5)
+
+|}
+
+=== Revision X2 Mounting Holes ===
+*One of the things which separates the GVSDuino from other boards are the mounting holes. The board has four solid mounting holes, one in each corner allowing 4-40 hardware to be used to solidly mount the board into an enclosure.
+
+*[[File:gvsduinox2.PNG]]
+
+== GVSDuino X1 Issues ==
+
+[[File:GVSDuinoConnectors-v1.png]]
+
+The board was unusable.
+
+*The drill master file was not updated when the board was updated.
+*Messed up pads include D1, R1, C1, C4, Vref select header.
+*The wrong drill master caused shorts between power and ground.
