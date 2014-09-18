@@ -21,6 +21,13 @@ import os
 
 from sys import argv
 
+clickAddrLab = False
+clickInvPulls = False
+clickShipLists = False
+checkTheBacklog = False
+
+pathToFile = '.'
+
 def errorDialog(errorString):
 	"""
 	Prints an error message as a dialog box
@@ -98,54 +105,78 @@ class ControlClass:
 				theOutLine.append(row[24])
 				theOutLine.append(row[27])
 				theOutList.append(theOutLine)
-#		print theOutList
 		return(theOutList)
 
 	def writeOutAdrList(self, outFilePtr, theList):
 		''' [0]First Name,[1]Last Name,[2]Street,[3]City,[4]State / Province,[5]Postal/Zip Code,[6]Product Name,[7]Option Summary,
 		[8]Quantity,[9]Model Number
 		'''
-		outFilePtr.write('Address List\n\n')
+		outFilePtr.write('=======================\n')
+		outFilePtr.write('Address Labels\n\n')
 		for row in theList:
 			outFilePtr.write('  ' + row[0] + ' ' + row[1] + '\n')
 			outFilePtr.write('  ' + row[2] + '\n')
 			outFilePtr.write('  ' + row[3] + ', ' + row[4] +' ' + row[5] + '\n\n')
 			
-		outFilePtr.write('Inventory List\n\n')
+	def writeOutInvPullList(self, outFilePtr, theList):
+		'''
+		'''
+		outFilePtr.write('=======================\n')
+		outFilePtr.write('Pull for Shipment List\n\n')
 		uniqueParts = []
 		uniqueItems = []
 		for rowList in theList:
 			inUniqueParts = False
+			rowNum = 0
 			for rowUnique in uniqueParts:
 				if rowUnique[6:8] == rowList[6:8] and rowUnique[9] == rowList[9]:
 					inUniqueParts = True
-					qtyInList = int(rowList[8])
-					qtyInUnique = int(rowUnique[8])
-					totalQty = qtyInList + qtyInUnique
-					print 'totalQty', totalQty
-					rowUnique[8] = str(totalQty)
 			if inUniqueParts == False:
 				uniqueParts.append(rowList)
 				uniqueItemsLine = []
 				uniqueItemsLine.append(rowList[6])
 				uniqueItemsLine.append(rowList[7])
 				uniqueItemsLine.append(rowList[9])
-				uniqueItemsLine.append(rowList[8])
 				uniqueItems.append(uniqueItemsLine)
-		print uniqueItems
-		
+			rowNum += 1
+
+		totalParts = []
+		for part in uniqueItems:
+			partCount = 0
+			for orderedPart in theList:
+				if part[0:2] == orderedPart[6:8] and part[2] == orderedPart[9]:
+					partCount += int(orderedPart[8])
+					print 'partCount', partCount
+			totalPartLine = part
+			totalPartLine.append(str(partCount))
+			totalParts.append(totalPartLine)
+		for row in totalParts:
+			outFilePtr.write('qty:' + row[3] + '\n')
+			outFilePtr.write(row[0] + '\n')
+			outFilePtr.write(row[1] + '\n')
+			outFilePtr.write(row[2] + '\n\n')
+			
+	def writeOutShipList(self, outFilePtr, theList):
+		'''
+		'''
+		outFilePtr.write('=======================\n')
 		outFilePtr.write('Ship List\n\n')
 		for row in theList:
 			outFilePtr.write(row[0] + ' ' + row[1] + '\n')
 			outFilePtr.write('qty:' + row[8] + '\n')
 			outFilePtr.write(row[6] + '\n')
 			outFilePtr.write(row[7] + '\n')
-			outFilePtr.write(str(row[8]) + '\n')
 			outFilePtr.write(row[9] + '\n\n')
 		
 	def theExecutive(self):
+		global clickAddrLab
+		global clickShipLists
+		global clickInvPulls
+		global pathToFile
+
 		myCSV = FindCSVFile()
-		fileToRead = myCSV.findCSVFileBrowse('.')
+		fileToRead = myCSV.findCSVFileBrowse(pathToFile)
+		pathToFile = fileToRead[0:fileToRead.rfind('\\')+1]
 
 		fileToWrite = fileToRead[:-4] + "_adr.txt"
 
@@ -167,7 +198,14 @@ class ControlClass:
 
 		theInList = self.readInCSV(inFile)
 		theOutList = self.processTindieList(theInList)
-		self.writeOutAdrList(outFile, theOutList)
+		if clickAddrLab:
+			self.writeOutAdrList(outFile, theOutList)
+		if clickShipLists:
+			self.writeOutInvPullList(outFile, theOutList)
+		if clickInvPulls:
+			self.writeOutShipList(outFile, theOutList)
+		if checkBacklog:
+			self.checkTheBacklog(outFile, theInList)
 
 class UIManager:
 	"""The UI manager
@@ -178,6 +216,11 @@ class UIManager:
 			<menu action="File">
 				<menuitem action="Open"/>
 				<menuitem action="Quit"/>
+			</menu>
+			<menu action="Options">
+				<menuitem action="Adr_Lab"/>
+				<menuitem action="Inv_Pulls"/>
+				<menuitem action="Ship_List"/>
 			</menu>
 			<menu action="Help">
 				<menuitem action="About"/>
@@ -202,22 +245,35 @@ class UIManager:
 		# Add the accelerator group to the toplevel window
 		accelgroup = uimanager.get_accel_group()
 		window.add_accel_group(accelgroup)
-		window.set_title('pyTindieList - Kicad Parts List creation program')
+		window.set_title('pyTindieList - Tindie Order Processing')
 
-		# Create an ActionGroup
-		actiongroup =	gtk.ActionGroup("pyTindieList")
-		self.actiongroup = actiongroup
+		# Create the base ActionGroup
+		actiongroup0 =	gtk.ActionGroup("pyTindieList")
+		self.actiongroup0 = actiongroup0
 
 		# Create actions
-		self.actiongroup.add_actions([
+		self.actiongroup0.add_actions([
 									("Open", gtk.STOCK_OPEN, "_Open", None, "Open an Existing Document", self.openIF),
 									("Quit", gtk.STOCK_QUIT, "_Quit", None, "Quit the Application", self.quit_application),
 									("File", None, "_File"),
+									("Options", None, "_Options"),
 									("Help", None, "_Help"),
 									("About", None, "_About", None, "About pyTindieList", self.about_pyTindieList),
 									])
-		uimanager.insert_action_group(self.actiongroup, 0)
+		uimanager.insert_action_group(self.actiongroup0, 0)
 		uimanager.add_ui_from_string(self.interface)
+
+		# Create an ActionGroup
+		actiongroup = gtk.ActionGroup('UIMergeExampleBase')
+		self.actiongroup = actiongroup
+
+		# Create a ToggleAction, etc.
+		actiongroup.add_toggle_actions([("Adr_Lab", gtk.STOCK_PREFERENCES, "_Create Address Labels", None, "", self.clickAddrLab)])
+		actiongroup.add_toggle_actions([("Inv_Pulls",gtk.STOCK_PREFERENCES, "_Create Inventory Pull Lists", None, "", self.clickInvPulls)])
+		actiongroup.add_toggle_actions([("Ship_List",gtk.STOCK_PREFERENCES, "_Create Shipping Lists", None, "", self.clickShipLists)])
+
+		# Add the actiongroup to the uimanager
+		uimanager.insert_action_group(actiongroup, 1)
 		
 		menubar = uimanager.get_widget("/MenuBar")
 		vbox.pack_start(menubar, False)
@@ -246,6 +302,41 @@ class UIManager:
 		message.set_markup("About pyTindieList\nAuthor: Doug Gilliland\n(c) 2014 - Doug Gilliland - All rights reserved\npyTindieList - create an address list for labels from Tindie")
 		message.run()
 		message.destroy()
+		return
+		
+		
+
+	def clickAddrLab(self, action):
+		"""Address Label was clicked
+		"""
+		global clickAddrLab
+		clickAddrLab = not clickAddrLab
+		if clickAddrLab == True:
+			print 'selected option to print address labels'
+		else:
+			print 'deselected option to print address labels'
+		return
+		
+	def clickInvPulls(self, action):
+		"""Inventory Pulls was clicked
+		"""
+		global clickInvPulls
+		clickInvPulls = not clickInvPulls
+		if clickInvPulls == True:
+			print 'selected option to print inventory pull list'
+		else:
+			print 'deselected option to print inventory pull list'
+		return
+		
+	def clickShipLists(self, action):
+		"""Ship Lists was clicked
+		"""
+		global clickShipLists
+		clickShipLists = not clickShipLists
+		if clickShipLists == True:
+			print 'selected option to print shipping pull list'
+		else:
+			print 'deselected option to print shipping pull list'
 		return
 
 	def quit_application(self, widget):
