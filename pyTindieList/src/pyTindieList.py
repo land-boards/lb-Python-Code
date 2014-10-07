@@ -79,7 +79,7 @@ class ControlClass:
 		for row in csvReader:
 			list2Read.append(row)
 		return list2Read
-				
+		
 	def processTindieList(self, theTindieList):
 		'''Tindie list comes in the format:
 		[0]=ID,[1]Date,[2]First Name,[3]Last Name,[4]Street,[5]City,[6]State / Province,[7]Postal/Zip Code,[8]Country,[9]Additional Instructions,
