@@ -145,10 +145,10 @@ class UIManager:
 		# Add the accelerator group to the toplevel window
 		accelgroup = uimanager.get_accel_group()
 		window.add_accel_group(accelgroup)
-		window.set_title('kiPL - Kicad Parts List creation program')
+		window.set_title('pyCSVtoMWTable - Kicad Parts List creation program')
 
 		# Create an ActionGroup
-		actiongroup =	gtk.ActionGroup("kiPL")
+		actiongroup =	gtk.ActionGroup("pyCSVtoMWTable")
 		self.actiongroup = actiongroup
 
 		# Create actions
@@ -157,7 +157,7 @@ class UIManager:
 									("Quit", gtk.STOCK_QUIT, "_Quit", None, "Quit the Application", self.quit_application),
 									("File", None, "_File"),
 									("Help", None, "_Help"),
-									("About", None, "_About", None, "About kiPL", self.about_kiPL),
+									("About", None, "_About", None, "About pyCSVtoMWTable", self.about_pyCSVtoMWTable),
 									])
 		uimanager.insert_action_group(self.actiongroup, 0)
 		uimanager.add_ui_from_string(self.interface)
@@ -182,11 +182,11 @@ class UIManager:
 		message.destroy()	# Takes down the dialog box
 		return
 
-	def about_kiPL(self, b):
+	def about_pyCSVtoMWTable(self, b):
 		"""The about dialog
 		"""
 		message = gtk.MessageDialog(type=gtk.MESSAGE_INFO, buttons=gtk.BUTTONS_OK)
-		message.set_markup("About kiPL\nAuthor: Doug Gilliland\n(c) 2014 - AAC - All rights reserved\nkiPL Process Deltek T and E Charge Account Report")
+		message.set_markup("About pyCSVtoMWTable\nAuthor: Doug Gilliland\n(c) 2014 - AAC - All rights reserved\npyCSVtoMWTable Process Deltek T and E Charge Account Report")
 		message.run()
 		message.destroy()
 		return
