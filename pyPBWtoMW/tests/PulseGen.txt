@@ -1,0 +1,66 @@
+<table border="1">
+<tr>
+<td>RG-58/U, Belden 8240</td>
+<td>&nbsp;</td>
+<td>RG-58C/U, Belden 8259</td>
+</tr>
+<tr>
+<td>Velocity Factor 66%</td>
+<td>&nbsp;</td>
+<td>Velocity Factor66%</td>
+</tr>
+<tr>
+<td>MHz</td>
+<td>dB/100 ft</td>
+<td>Pout</td>
+<td>&nbsp;</td>
+<td>MHz</td>
+<td>dB/100   ft</td>
+<td>Pout</td>
+</tr>
+<tr>
+<td>50</td>
+<td>2.5</td>
+<td>28</td>
+<td>&nbsp;</td>
+<td>50</td>
+<td>3.7</td>
+<td>21</td>
+</tr>
+<tr>
+<td>100</td>
+<td>3.8</td>
+<td>21</td>
+<td>&nbsp;</td>
+<td>100</td>
+<td>5.4</td>
+<td>14</td>
+</tr>
+<tr>
+<td>200</td>
+<td>5.6</td>
+<td>14</td>
+<td>&nbsp;</td>
+<td>200</td>
+<td>8.1</td>
+<td>8</td>
+</tr>
+<tr>
+<td>400</td>
+<td>8.4</td>
+<td>7</td>
+<td>&nbsp;</td>
+<td>400</td>
+<td>12.4</td>
+<td>3</td>
+</tr>
+<tr>
+<td>700</td>
+<td>11.7</td>
+<td>3</td>
+<td>&nbsp;</td>
+<td>700</td>
+<td>17.7</td>
+<td>1</td>
+</tr>
+</table>
