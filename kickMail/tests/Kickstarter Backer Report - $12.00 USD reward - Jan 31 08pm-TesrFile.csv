@@ -1,0 +1,5 @@
+Backer Id,Backer Name,Email,Shipping Country,Shipping Amount,Reward Minimum,Pledge Amount,Pledged At,Rewards Sent?,Pledged Status,Notes,Survey Response,Shipping Name,Shipping Address 1,Shipping Address 2,Shipping City,Shipping State,Shipping Postal Code,Shipping Country Name,Shipping Country Code
+1,jack smith,jsmith@gmail.com,FR,$8.00 USD,$12.00 USD,$20.00 USD,"2014/11/13, 15:12",,collected,POSTAGE-2015-01-22,"2015/01/18, 09:32",jack smith,Escargot 21,,Paris,hautes pyrenees,78564,France,FR
+2,Jane Doe,janiedoeeyes@aim.com,US,$5.00 USD,$12.00 USD,$17.00 USD,"2014/11/14, 22:40",,collected,SHIPPING-2015-01-16,,,,,,,,,
+4,Eber X. Zeberd,eberhome@gbtt.uk.co,GB,$5.00 USD,$12.00 USD,$41.00 USD,"2014/11/15, 20:38",,collected,POSTAGE-2015-01-16,"2015/01/16, 20:50",Eber X. Zeberd,2389 Drill St,,Livonia,MI,45367-6545,United States,US
+5,Fonie Fonzarello,heyyyy@fonzie.net,US,$5.00 USD,$12.00 USD,$17.00 USD,"2014/11/16, 00:27",Sent,collected,POSTAGE-2015-01-22,"2015/01/19, 00:40",Fonie Fonzarello,9876 NW 12th St Ste 94c,,Miami,FL,33122-1723,United States,US
