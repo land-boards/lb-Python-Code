@@ -21,6 +21,20 @@ import os
 
 from sys import argv
 
+shippingNameColumn = 99
+address1Column = 99
+address2Column = 99
+cityColumn = 99
+stateColumn = 99
+countryColumn = 99
+zipColumn = 99
+emailColumn = 99
+shippingAmtColumn = 99
+rewardMinimumColumn = 99
+pledgeAmountColumn = 99
+rewardsSentColumn = 99
+surveyResponseColumn = 99
+
 def errorDialog(errorString):
 	"""
 	Prints an error message as a dialog box
@@ -75,41 +89,145 @@ class ControlClass:
 			list2Read.append(row)
 		return list2Read
 		
-	def surveySent(self, theInList):
+	def mapInputList(self, theInList):
 		"""
-		If the survey has not been sent, the header has 
-			Backer Id,Backer Name,Email,Shipping Country,Shipping Amount,Reward Minimum,Pledge Amount,Pledged At,Rewards Sent?,Pledged Status,Notes
+		Latest input format -
+			Backer Number,
+			Backer UID,
+			Backer Name,
+			Email,
+			Shipping Country,
+			Shipping Amount,
+			Reward Minimum,
+			Pledge Amount,
+			Pledged At,
+			Rewards Sent?,
+			Pledged Status,
+			Notes,
+			Survey Response,
+			Shipping Name,
+			Shipping Address 1,
+			Shipping Address 2,
+			Shipping City,
+			Shipping State,
+			Shipping Postal Code,
+			Shipping Country Name,			
+			Shipping Country Code
+
 		"""
-		if len(theInList[0]) > 12:
-			print 'Survey has been sent'
-			return True
-		print 'Survey has not yet been sent'
-		return False
-		
-	def processList(self, theInList):
+		global emailColumn
+		global countryColumn
+		global shippingAmtColumn
+		global rewardMinimumColumn
+		global pledgeAmountColumn
+		global rewardsSentColumn
+		global shippingNameColumn
+		global address1Column
+		global address2Column
+		global cityColumn
+		global stateColumn
+		global zipColumn
+		global countryColumn
+		global surveyResponseColumn
+		myOutList = []
+		header = theInList[0]
+		headerLen = len(header)
+		itemNum = 0
+		for item in header:
+			if item == 'Email':
+				emailColumn = itemNum
+			elif item == 'Shipping Country':
+				countryColumn = itemNum
+			elif item == 'Shipping Amount':
+				shippingAmtColumn = itemNum
+			elif item == 'Reward Minimum':
+				rewardMinimumColumn = itemNum
+			elif item == 'Pledge Amount':
+				pledgeAmountColumn = itemNum
+			elif item == 'Rewards Sent?':
+				rewardsSentColumn = itemNum
+			elif item == 'Shipping Name':
+				shippingNameColumn = itemNum
+			elif item == 'Shipping Address 1':
+				address1Column = itemNum
+			elif item == 'Shipping Address 2':
+				address2Column = itemNum
+			elif item == 'Shipping City':
+				cityColumn = itemNum
+			elif item == 'Shipping State':
+				stateColumn = itemNum
+			elif item == 'Shipping Postal Code':
+				zipColumn = itemNum
+			elif item == 'Shipping Country Name':
+				countryColumn = itemNum
+			elif item == 'Survey Response':
+				surveyResponseColumn = itemNum
+			itemNum += 1
+		# print 'header columns', itemNum
+		return
+
+	def countBoards(self, theInList):
 		"""
-		Re-order the list.
-		Input list -
-			0 - Backer Id,
-			1 - Backer Name,
-			2 - Email,
-			3 - Shipping Country (Two letter code)
-			4 - Shipping Amount,
+			4 - Shipping Amount, $5.00 USD
 			5 - Reward Minimum,
 			6 - Pledge Amount,
-			7 - Pledged At,
-			8 - Rewards Sent? ('Sent' or blank) 
-			9 - Pledged Status ('collected')
-			10 - Notes,
-			11 - Survey Response,
-			12 - Shipping Name,
-			13 - Shipping Address 1,
-			14 - Shipping Address 2,
-			15 - Shipping City,
-			16 - Shipping State,
-			17 - Shipping Postal Code,
-			18 - Shipping Country Name (spelled out name)
-			19 - Shipping Country Code (same as 3)
+		"""
+		global emailColumn
+		global countryColumn
+		global shippingAmtColumn
+		global rewardMinimumColumn
+		global pledgeAmountColumn
+		global rewardsSentColumn
+		global shippingNameColumn
+		global address1Column
+		global address2Column
+		global cityColumn
+		global stateColumn
+		global zipColumn
+		global countryColumn
+		global surveyResponseColumn
+		boardsCount = 0.0
+		unshippedBoardsCount = 0.0
+		shippingTotal = 0.0
+		rewardTotal = 0.0
+		pledgeTotal = 0.0
+		backers = 0
+		for row in theInList[1:]:
+			num = 0.0
+			shippingString = row[shippingAmtColumn][1:-4]
+			rewardString = row[rewardMinimumColumn][1:-4]
+			pledgeString = row[pledgeAmountColumn][1:-4]
+			# print shippingString, rewardString, pledgeString
+			shippingNum = float(shippingString)
+			shippingTotal += shippingNum
+			rewardNum = float(rewardString)
+			rewardTotal += rewardNum
+			pledgeNum = float(pledgeString)
+			pledgeTotal += pledgeNum
+			# print 'boards', (pledgeNum - shippingNum) / rewardNum
+			boardsCount += (pledgeNum - shippingNum) / rewardNum
+			if row[rewardsSentColumn] != 'Sent':
+				unshippedBoardsCount += (pledgeNum - shippingNum) / rewardNum
+			backers += 1
+#		print 'Total Rewards =', boardsCount
+		outStr = 'Backers = '
+		outStr += str(backers)
+		outStr += '\nTotal Rewards = '
+		outStr += str(boardsCount)
+		outStr += '\nUnshipped Rewards = '
+		outStr += str(unshippedBoardsCount)
+		outStr += '\nTotal Shipping = '
+		outStr += str(shippingTotal)
+		outStr += '\nTotal Rewards = '
+		outStr += str(rewardTotal)
+		outStr += '\nTotal Pledges = '
+		outStr += str(pledgeTotal)
+		outStr += '\nAvg $ per board = $'
+		outStr += str(rewardTotal/boardsCount)
+		errorDialog(outStr)
+	
+	def writeOutUSPSAddressBook(self, outFilePtr, theList):
+		"""
 		Output list -
 			0 - First Name,
 			1 - MI,
@@ -128,78 +246,42 @@ class ControlClass:
 			14 - E Mail,
 			15 - Reference Number,
 			16 - Nickname,,,
-		"""
-		myOutList = []
-		for row in theInList[1:]:
-			if row[11] != '' and row[8] != 'Sent' and row[9] == 'collected':
-				outRow = []
-				outRow.append(row[12][0:row[12].find(' ')])		# 0 - first name
-				outRow.append('')								# 1 - Middle initial
-				outRow.append(row[12][row[12].find(' ')+1:])	# 2 - last name
-				outRow.append('')			# 3 - company
-				outRow.append(row[13])		# 4 - address1
-				outRow.append(row[14])		# 5 - address2
-				outRow.append('')			# 6 - address3
-				outRow.append(row[15])		# 7 - city
-				outRow.append(row[16])		# 8 - state
-				outRow.append(row[17])		# 9 - ZIP code
-				outRow.append(row[19])		# 10 - country
-				outRow.append('')			# 11 - Urbanization
-				outRow.append('')			# 12 - Phone Number
-				outRow.append('')			# 13 - fax number
-				outRow.append(row[2])		# 14 - email
-				outRow.append('')			# 15 - Nickname
-				myOutList.append(outRow)
-		return myOutList
-
-	def countBoards(self, theInList):
-		"""
-			4 - Shipping Amount, $5.00 USD
-			5 - Reward Minimum,
-			6 - Pledge Amount,
-		"""
-		boardsCount = 0.0
-		shippingTotal = 0.0
-		rewardTotal = 0.0
-		pledgeTotal = 0.0
-		backers = 0
-		for row in theInList[1:]:
-			num = 0.0
-			shippingString = row[4][1:-4]
-			rewardString = row[5][1:-4]
-			pledgeString = row[6][1:-4]
-			# print shippingString, rewardString, pledgeString
-			shippingNum = float(shippingString)
-			shippingTotal += shippingNum
-			rewardNum = float(rewardString)
-			rewardTotal += rewardNum
-			pledgeNum = float(pledgeString)
-			pledgeTotal += pledgeNum
-			# print 'boards', (pledgeNum - shippingNum) / rewardNum
-			boardsCount += (pledgeNum - shippingNum) / rewardNum
-			backers += 1
-#		print 'Total Rewards =', boardsCount
-		outStr = 'Backers = '
-		outStr += str(backers)
-		outStr += '\nTotal Rewards = '
-		outStr += str(boardsCount)
-		outStr += '\n'
-		outStr += 'Total Shipping = '
-		outStr += str(shippingTotal)
-		outStr += '\nTotal Rewards = '
-		outStr += str(rewardTotal)
-		outStr += '\nTotal Pledges = '
-		outStr += str(pledgeTotal)
-		outStr += '\nAvg $ per board = $'
-		outStr += str(rewardTotal/boardsCount)
-		errorDialog(outStr)
-	
-	def writeOutUSPSAddressBook(self, outFilePtr, theList):
-		"""
 		First Name,MI,Last Name,Company,Address 1,Address 2,Address 3,City,State/Province,ZIP/Postal Code,Country,Urbanization,Phone Number,Fax Number,E Mail,Reference Number,Nickname
 		"""
+		global emailColumn
+		global countryColumn
+		global shippingAmtColumn
+		global rewardMinimumColumn
+		global pledgeAmountColumn
+		global rewardsSentColumn
+		global shippingNameColumn
+		global address1Column
+		global address2Column
+		global cityColumn
+		global stateColumn
+		global zipColumn
+		global countryColumn
+		global surveyResponseColumn
 		outFilePtr.writerow(['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname'])
-		outFilePtr.writerows(theList)
+		for row in theList[1:]:
+			if (row[rewardsSentColumn] == '') and (row[address1Column] != ''):
+				outLine = []
+				outLine.append(row[shippingNameColumn])
+				outLine.append('')
+				outLine.append('')
+				outLine.append('')
+				outLine.append(row[address1Column])
+				outLine.append(row[address2Column])
+				outLine.append('')
+				outLine.append(row[cityColumn])
+				outLine.append(row[stateColumn])
+				outLine.append(row[zipColumn])
+				outLine.append(row[countryColumn])
+				outLine.append('')
+				outLine.append('')
+				outLine.append('')
+				outLine.append(row[emailColumn])
+				outFilePtr.writerow(outLine)
 
 	def theExecutive(self):
 		"""
@@ -226,12 +308,9 @@ class ControlClass:
 				exit()
 
 		theInList = self.readInCSV(inFile)
-		if self.surveySent(theInList):
-			processedList = self.processList(theInList)
-			self.countBoards(theInList)
-			self.writeOutUSPSAddressBook(outCSVFile, processedList)
-		else:
-			self.countBoards(theInList)
+		self.mapInputList(theInList)
+		self.countBoards(theInList)
+		self.writeOutUSPSAddressBook(outCSVFile, theInList)
 
 class UIManager:
 	"""The UI manager
