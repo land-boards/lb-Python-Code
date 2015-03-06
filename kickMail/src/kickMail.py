@@ -197,7 +197,7 @@ class ControlClass:
 			shippingString = row[shippingAmtColumn][1:-4]
 			rewardString = row[rewardMinimumColumn][1:-4]
 			pledgeString = row[pledgeAmountColumn][1:-4]
-			# print shippingString, rewardString, pledgeString
+			print shippingString, rewardString, pledgeString
 			shippingNum = float(shippingString)
 			shippingTotal += shippingNum
 			rewardNum = float(rewardString)
@@ -209,7 +209,7 @@ class ControlClass:
 			if row[rewardsSentColumn] != 'Sent':
 				unshippedBoardsCount += (pledgeNum - shippingNum) / rewardNum
 			backers += 1
-#		print 'Total Rewards =', boardsCount
+#		print 'Total Rewards =', rewardTotal
 		outStr = 'Backers = '
 		outStr += str(backers)
 		outStr += '\nTotal Rewards = '
@@ -218,12 +218,10 @@ class ControlClass:
 		outStr += str(unshippedBoardsCount)
 		outStr += '\nTotal Shipping = '
 		outStr += str(shippingTotal)
-		outStr += '\nTotal Rewards = '
-		outStr += str(rewardTotal)
 		outStr += '\nTotal Pledges = '
 		outStr += str(pledgeTotal)
 		outStr += '\nAvg $ per board = $'
-		outStr += str(rewardTotal/boardsCount)
+		outStr += str((pledgeTotal-shippingTotal)/boardsCount)
 		errorDialog(outStr)
 	
 	def writeOutUSPSAddressBook(self, outFilePtr, theList):
@@ -264,24 +262,25 @@ class ControlClass:
 		global surveyResponseColumn
 		outFilePtr.writerow(['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname'])
 		for row in theList[1:]:
-			if (row[rewardsSentColumn] == '') and (row[address1Column] != ''):
-				outLine = []
-				outLine.append(row[shippingNameColumn])
-				outLine.append('')
-				outLine.append('')
-				outLine.append('')
-				outLine.append(row[address1Column])
-				outLine.append(row[address2Column])
-				outLine.append('')
-				outLine.append(row[cityColumn])
-				outLine.append(row[stateColumn])
-				outLine.append(row[zipColumn])
-				outLine.append(row[countryColumn])
-				outLine.append('')
-				outLine.append('')
-				outLine.append('')
-				outLine.append(row[emailColumn])
-				outFilePtr.writerow(outLine)
+			if len(row) > 12:
+				if (row[rewardsSentColumn] == '') and (row[address1Column] != ''):
+					outLine = []
+					outLine.append(row[shippingNameColumn])
+					outLine.append('')
+					outLine.append('')
+					outLine.append('')
+					outLine.append(row[address1Column])
+					outLine.append(row[address2Column])
+					outLine.append('')
+					outLine.append(row[cityColumn])
+					outLine.append(row[stateColumn])
+					outLine.append(row[zipColumn])
+					outLine.append(row[countryColumn])
+					outLine.append('')
+					outLine.append('')
+					outLine.append('')
+					outLine.append(row[emailColumn])
+					outFilePtr.writerow(outLine)
 
 	def theExecutive(self):
 		"""
