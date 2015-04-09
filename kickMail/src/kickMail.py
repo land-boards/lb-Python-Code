@@ -1,7 +1,32 @@
 """
-kickMail.py
-Reads in the Kickstarter backer file.
-Writes out a USPS csv file.
+kickMail.py - Automate Kickstarter backer lists.
+
+--------
+Features
+--------
+
+* Input is the csv file as exported from Kickstarter 
+* Program provides input field flexibility to allow for some column moving (Kickstarter changes this from time to time).
+* Output is a USPS formated CSV file which can be directly imported into the USPS as an Address Book.
+
+----------
+Input File
+----------
+
+How to export the file from Kickstarter
+
+* Kickstarter
+* Menu (on)
+* Backer Report
+* Export
+* All Reward Tiers
+* Save to ZIP
+* Extract/combine into one CSV file (only one header line)
+
+----
+Code
+----
+
 """
 
 import pygtk
@@ -37,19 +62,24 @@ surveyResponseColumn = 99
 
 def errorDialog(errorString):
 	"""
+	:param errorDialog: The error message to print
+	
 	Prints an error message as a dialog box
 	"""
 	message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
 	message.set_markup(errorString)
 	message.run()		# Display the dialog box and hang around waiting for the "OK" button
 	message.destroy()	# Takes down the dialog box
-	return
 
 class FindCSVFile:
+	'''Find the CSV input file.
+	'''
 	def findCSVFileBrowse(self, startingPath):
-		"""findCSVFileBrowse() - This is the dialog which locates the csv files
-	
-		:returns: path/name of the file that was selected
+		"""
+		:param startingPath: start browsing from this folder.
+		:returns: path/file name of the file that was selected
+		
+		findCSVFileBrowse() - Dialog which locates the csv files using the file browser.
 		"""
 		csvFileString = "Select file"
 		dialog = gtk.FileChooserDialog(csvFileString,
@@ -82,6 +112,10 @@ class ControlClass:
 	"""
 	def readInCSV(self, inFile):
 		"""
+		:param inFile: The pointer to the CSV file that gets read in.
+		:return: the CSV file as a list.
+
+		Read the input CSV file into a list.
 		"""
 		csvReader = csv.reader(inFile)
 		list2Read = []
@@ -90,29 +124,33 @@ class ControlClass:
 		return list2Read
 		
 	def mapInputList(self, theInList):
-		"""
+		"""Map the column headers to an internal preferred ordering.
 		Latest input format -
-			Backer Number,
-			Backer UID,
-			Backer Name,
-			Email,
-			Shipping Country,
-			Shipping Amount,
-			Reward Minimum,
-			Pledge Amount,
-			Pledged At,
-			Rewards Sent?,
-			Pledged Status,
-			Notes,
-			Survey Response,
-			Shipping Name,
-			Shipping Address 1,
-			Shipping Address 2,
-			Shipping City,
-			Shipping State,
-			Shipping Postal Code,
-			Shipping Country Name,			
-			Shipping Country Code
+		
+		* Backer Number,
+		* Backer UID,
+		* Backer Name,
+		* Email,
+		* Shipping Country,
+		* Shipping Amount,
+		* Reward Minimum,
+		* Pledge Amount,
+		* Pledged At,
+		* Rewards Sent?,
+		* Pledged Status,
+		* Notes,
+		* Survey Response,
+		* Shipping Name,
+		* Shipping Address 1,
+		* Shipping Address 2,
+		* Shipping City,
+		* Shipping State,
+		* Shipping Postal Code,
+		* Shipping Country Name,			
+		* Shipping Country Code
+		
+		:param theInList: The entire input list.
+		:return: a mapping file with the columns mapped to a column number.
 
 		"""
 		global emailColumn
@@ -167,10 +205,14 @@ class ControlClass:
 		return
 
 	def countBoards(self, theInList):
-		"""
-			4 - Shipping Amount, $5.00 USD
-			5 - Reward Minimum,
-			6 - Pledge Amount,
+		"""Count the boards and generate a snapshot of the data.
+		
+		* 4 - Shipping Amount, $5.00 USD
+		* 5 - Reward Minimum,
+		* 6 - Pledge Amount,
+			
+		:param theInList: The entire list
+		:return: no value
 		"""
 		global emailColumn
 		global countryColumn
@@ -192,6 +234,7 @@ class ControlClass:
 		rewardTotal = 0.0
 		pledgeTotal = 0.0
 		backers = 0
+		unshippedBackers = 0
 		for row in theInList[1:]:
 			num = 0.0
 			shippingString = row[shippingAmtColumn][1:-4]
@@ -208,43 +251,52 @@ class ControlClass:
 			print shippingString, rewardString, pledgeString, (pledgeNum - shippingNum) / rewardNum
 			if row[rewardsSentColumn] != 'Sent':
 				unshippedBoardsCount += (pledgeNum - shippingNum) / rewardNum
+				unshippedBackers += 1
 			backers += 1
-#		print 'Total Rewards =', rewardTotal
-		outStr = 'Backers = '
+		outStr = 'Total Backers = '
 		outStr += str(backers)
 		outStr += '\nTotal Rewards = '
-		outStr += str(boardsCount)
-		outStr += '\nUnshipped Rewards = '
+		#{0:.3f}.'.format(boardsCount)
+		outStr += '{0:.2f}'.format(boardsCount)
+#		outStr += str(boardsCount)
+		outStr += '\n-\nUnshipped Backers = '
+		outStr += str(unshippedBackers)
+		outStr += '\nUnshipped Boards = '
 		outStr += str(unshippedBoardsCount)
-		outStr += '\nTotal Shipping = '
-		outStr += str(shippingTotal)
-		outStr += '\nTotal Pledges = '
-		outStr += str(pledgeTotal)
+		outStr += '\n-\nTotal Shipping = $'
+		outStr += '{0:.2f}'.format(shippingTotal)
+		outStr += '\nTotal Pledges = $'
+		outStr += '{0:.2f}'.format(pledgeTotal)
 		outStr += '\nAvg $ per board = $'
-		outStr += str((pledgeTotal-shippingTotal)/boardsCount)
+		outStr += '{0:.2f}'.format((pledgeTotal-shippingTotal)/boardsCount)
 		errorDialog(outStr)
 	
 	def writeOutUSPSAddressBook(self, outFilePtr, theList):
-		"""
+		"""Write out the USPS Address book values.
+		The output file is a CSV that can be read by the USPS Address Book Import.
+		
 		Output list -
-			0 - First Name,
-			1 - MI,
-			2 - Last Name,
-			3 - Company,
-			4 - Address 1,
-			5 - Address 2,
-			6 - Address 3,
-			7 - City,
-			8 - State/Province,
-			9 - ZIP/Postal Code,
-			10 - Country,
-			11 - Urbanization (relates to Puerto Rico)
-			12 - Phone Number,
-			13 - Fax Number,
-			14 - E Mail,
-			15 - Reference Number,
-			16 - Nickname,,,
-		First Name,MI,Last Name,Company,Address 1,Address 2,Address 3,City,State/Province,ZIP/Postal Code,Country,Urbanization,Phone Number,Fax Number,E Mail,Reference Number,Nickname
+		
+		* 0 - First Name,
+		* 1 - MI,
+		* 2 - Last Name,
+		* 3 - Company,
+		* 4 - Address 1,
+		* 5 - Address 2,
+		* 6 - Address 3,
+		* 7 - City,
+		* 8 - State/Province,
+		* 9 - ZIP/Postal Code,
+		* 10 - Country,
+		* 11 - Urbanization (relates to Puerto Rico)
+		* 12 - Phone Number,
+		* 13 - Fax Number,
+		* 14 - E Mail,
+		* 15 - Reference Number,
+		* 16 - Nickname,,,
+		
+		:param outFilePtr: points to the output file
+		:return: no return value
 		"""
 		global emailColumn
 		global countryColumn
@@ -289,7 +341,7 @@ class ControlClass:
 					outFilePtr.writerow(outLine)
 
 	def theExecutive(self):
-		"""
+		"""The code that calls the other code
 		"""
 		myCSV = FindCSVFile()
 		fileToRead = myCSV.findCSVFileBrowse('.')
@@ -391,7 +443,7 @@ class UIManager:
 		"""The about dialog
 		"""
 		message = gtk.MessageDialog(type=gtk.MESSAGE_INFO, buttons=gtk.BUTTONS_OK)
-		message.set_markup("About kickMail\nAuthor: Doug Gilliland\n(c) 2014 - AAC - All rights reserved\nkickMail Process Deltek T and E Charge Account Report")
+		message.set_markup("About kickMail\nAuthor: Doug Gilliland\n(c) 2015 - land-boards.com - All rights reserved\nkickMail - Process Kickstarter Backer Reports")
 		message.run()
 		message.destroy()
 		return
