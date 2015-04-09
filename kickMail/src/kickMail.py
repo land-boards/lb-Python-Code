@@ -197,7 +197,6 @@ class ControlClass:
 			shippingString = row[shippingAmtColumn][1:-4]
 			rewardString = row[rewardMinimumColumn][1:-4]
 			pledgeString = row[pledgeAmountColumn][1:-4]
-			print shippingString, rewardString, pledgeString
 			shippingNum = float(shippingString)
 			shippingTotal += shippingNum
 			rewardNum = float(rewardString)
@@ -206,6 +205,7 @@ class ControlClass:
 			pledgeTotal += pledgeNum
 			# print 'boards', (pledgeNum - shippingNum) / rewardNum
 			boardsCount += (pledgeNum - shippingNum) / rewardNum
+			print shippingString, rewardString, pledgeString, (pledgeNum - shippingNum) / rewardNum
 			if row[rewardsSentColumn] != 'Sent':
 				unshippedBoardsCount += (pledgeNum - shippingNum) / rewardNum
 			backers += 1
@@ -265,9 +265,15 @@ class ControlClass:
 			if len(row) > 12:
 				if (row[rewardsSentColumn] == '') and (row[address1Column] != ''):
 					outLine = []
-					outLine.append(row[shippingNameColumn])
-					outLine.append('')
-					outLine.append('')
+					firstName = row[shippingNameColumn][0:row[shippingNameColumn].find(' ')]
+					lastName = row[shippingNameColumn][row[shippingNameColumn].rfind(' ')+1:]
+					if row[shippingNameColumn].find(' ') < row[shippingNameColumn].rfind(' '):
+						middleInit = row[shippingNameColumn][row[shippingNameColumn].find(' '):row[shippingNameColumn].find(' ')+2]
+					else:
+						middleInit = ''
+					outLine.append(firstName)
+					outLine.append(middleInit)
+					outLine.append(lastName)
 					outLine.append('')
 					outLine.append(row[address1Column])
 					outLine.append(row[address2Column])
