@@ -60,6 +60,52 @@ pledgeAmountColumn = 99
 rewardsSentColumn = 99
 surveyResponseColumn = 99
 
+defaultPath = ''
+
+class HandleDefault:
+	""""Load and save defaults file
+	This can be used to save stuff like the default path
+	The file is a simple list with KEY, value pairs on individual lines
+	"""
+	def loadDefaults(self):
+		""" Load the defaults file
+		"""
+		defaultFileHdl = open('Defaults.csv', 'rb')
+		defaultListItem = csv.reader(defaultFileHdl)
+		defaultList = []
+		for row in defaultListItem:
+			defaultList+=row
+		return defaultList
+
+	def storeDefaults(self,defaultList):
+		""" Store to the defaults file
+		"""
+#		print 'storing list', defaultList
+		defaultFileHdl = open('Defaults.csv', 'wb')
+		defaultFile = csv.writer(defaultFileHdl)
+		defaultFile.writerows(defaultList)
+		return True
+
+	def createDefaults(self):
+		""" Create the defaults file
+		"""
+		defaultFileHdl = open('Defaults.csv', 'wb')
+		defaultFile = csv.writer(defaultFileHdl)
+		defaultArray = ['DEFAULT_PATH','.']
+		defaultFile.writerow(defaultArray)
+		return True
+		
+	def ifExistsDefaults(self):
+		""" Check if the defaults file exists
+		
+		:return: True if the default file exists, false if the default file does not exist
+		"""
+		try:
+			open('Defaults.csv')
+		except:
+			return False
+		return True
+
 def errorDialog(errorString):
 	"""
 	:param errorDialog: The error message to print
@@ -343,8 +389,35 @@ class ControlClass:
 	def theExecutive(self):
 		"""The code that calls the other code
 		"""
+		global defaultPath
+		
+		defaultParmsClass = HandleDefault()
+		if defaultParmsClass.ifExistsDefaults() == True:
+			detailParmList = defaultParmsClass.loadDefaults()
+			print 'loaded defaults file'
+		else:
+			print 'defaults file does not exist'
+			defaultParmsClass.createDefaults()
+			print 'created defaults file'
+			detailParmList = defaultParmsClass.loadDefaults()
+			print 'loaded defaults file'
+		if detailParmList[0] != 'DEFAULT_PATH':
+			print 'Expected the first line to say DEFAULT_PATH, got',detailParmList
+			defaultPath = '.'
+		else:
+			# print 'default path is', detailParmList[1]
+			defaultPath = detailParmList[1]
+		
 		myCSV = FindCSVFile()
-		fileToRead = myCSV.findCSVFileBrowse('.')
+		fileToRead = myCSV.findCSVFileBrowse(defaultPath)
+		
+		defaultPath = fileToRead[0:fileToRead.rfind('\\')+1]
+		defaultList = []
+		defaultItem = []
+		defaultItem.append('DEFAULT_PATH')
+		defaultItem.append(defaultPath)
+		defaultList.append(defaultItem)
+		defaultParmsClass.storeDefaults(defaultList)
 
 		fileToWrite = fileToRead[:-4] + "_USPS.csv"
 

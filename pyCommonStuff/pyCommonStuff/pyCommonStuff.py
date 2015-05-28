@@ -3,7 +3,43 @@
 
 import string
 
-class pathFileExtracts:
+class HandleDefault:
+	""""Load and save defaults file
+	This can be used to save stuff like the default path
+	The file is a simple list with KEY, value pairs on individual lines
+	"""
+	def loadDefaults(self):
+		""" Load the defaults file
+		"""
+		defaultFileHdl = open('Defaults.csv', 'rb')
+		defaultListItem = csv.reader(defaultFileHdl)
+		defaultList = []
+		for row in defaultListItem:
+			defaultList+=row
+		return defaultList
+
+	def storeDefaults(self,defaultList):
+#		print 'storing list', defaultList
+		defaultFileHdl = open('Defaults.csv', 'wb')
+		defaultFile = csv.writer(defaultFileHdl)
+		defaultFile.writerows(defaultList)
+		return True
+
+	def createDefaults(self):
+		defaultFileHdl = open('Defaults.csv', 'wb')
+		defaultFile = csv.writer(defaultFileHdl)
+		defaultArray = ['DEFAULT_PATH','.']
+		defaultFile.writerow(defaultArray)
+		return True
+		
+	def ifExistsDefaults(self):
+		try:
+			open('Defaults.csv')
+		except:
+			return False
+		return True
+
+class PathFileExtracts:
 	"""Extract file names and path from pathfilenames
 	"""
 	def	extractPathFromPathfilename(self,fullPathFilename):
