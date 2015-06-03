@@ -3,38 +3,63 @@
 
 import string
 
+defaultsFileNamePath = 'c:\\temp\\ProgDefaults.csv'		# Edit to match file names
 class HandleDefault:
 	""""Load and save defaults file
 	This can be used to save stuff like the default path
 	The file is a simple list with KEY, value pairs on individual lines
 	"""
+	global defaultsFileNamePath
 	def loadDefaults(self):
 		""" Load the defaults file
 		"""
-		defaultFileHdl = open('Defaults.csv', 'rb')
+		defaultFileHdl = open(defaultsFileNamePath, 'rb')
 		defaultListItem = csv.reader(defaultFileHdl)
 		defaultList = []
 		for row in defaultListItem:
 			defaultList+=row
 		return defaultList
 
+	def getKeyVal(self, keyName):
+		"""feed it a key name and it returns the corresponding key value
+		:param: keyName - the name of the key to look up
+		:return: the value of that key, blank if there is no corresponding key
+		"""
+		if self.ifExistsDefaults() == False:
+			self.createDefaults()
+		defaultFileHdl = open(defaultsFileNamePath, 'rb')
+		defaultListItem = csv.reader(defaultFileHdl)
+		defaultList = []
+		for row in defaultListItem:
+			if row[0] == keyName:
+				return row[1]
+		return ''
+	
 	def storeDefaults(self,defaultList):
+		""" Store to the defaults file
+		"""
 #		print 'storing list', defaultList
-		defaultFileHdl = open('Defaults.csv', 'wb')
+		defaultFileHdl = open(defaultsFileNamePath, 'wb')
 		defaultFile = csv.writer(defaultFileHdl)
 		defaultFile.writerows(defaultList)
 		return True
 
 	def createDefaults(self):
-		defaultFileHdl = open('Defaults.csv', 'wb')
+		""" Create the defaults file
+		"""
+		defaultFileHdl = open(defaultsFileNamePath, 'wb')
 		defaultFile = csv.writer(defaultFileHdl)
 		defaultArray = ['DEFAULT_PATH','.']
 		defaultFile.writerow(defaultArray)
 		return True
 		
 	def ifExistsDefaults(self):
+		""" Check if the defaults file exists
+		
+		:return: True if the default file exists, false if the default file does not exist
+		"""
 		try:
-			open('Defaults.csv')
+			open(defaultsFileNamePath)
 		except:
 			return False
 		return True
