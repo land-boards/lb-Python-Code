@@ -2,3 +2,5 @@ kickMail/src/Defaults.csv
 TindieMail/tests/orders.csv
 TindieMail/tests/Kickstarter Backer Report - $12.00 USD reward - Jan 31 08pm-TesrFile.csv
 TindieMail/src/Defaults.csv
+TindieMail/tests/orders_PayPal.csv
+TindieMail/tests/orders_USPS.csv
