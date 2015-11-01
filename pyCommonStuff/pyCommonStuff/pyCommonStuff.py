@@ -285,6 +285,31 @@ def errorDialog(errorString):
 	message.destroy()	# Takes down the dialog box
 	return
 			
+class FindDirectory:
+	# browseToFolder - Opens a windows file browser to allow user to navigate to the directory
+	def browseToFolder(self, startPath):
+		dialog = gtk.FileChooserDialog(title="Select folder", 
+			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
+		filter = gtk.FileFilter() 
+		filter.set_name("Select Folder")
+		filter.add_pattern("*") # what's the pattern for a folder 
+		dialog.add_filter(filter)
+		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+		if startPath != '':
+			dialog.set_current_folder(startPath)
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+			retFileName = dialog.get_filename()
+			dialog.destroy()
+			return(retFileName)
+		elif response == gtk.RESPONSE_CANCEL: 
+			print 'Closed, no files selected'
+			dialog.destroy()
+			exit()
+		else:
+			print 'Closed, no files selected'
+			dialog.destroy()
+			exit()
 
 			
 class UIManager:

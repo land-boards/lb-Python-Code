@@ -1,27 +1,25 @@
 """
-kickMail.py - Automate Kickstarter backer lists.
+TindieMail.py - Automate Tindie shipping lists.
 
 --------
 Features
 --------
 
-* Input is the csv file as exported from Kickstarter 
-* Program provides input field flexibility to allow for some column moving (Kickstarter changes this from time to time).
+* Input is the csv file as exported from Tindie 
+* Program provides input field flexibility to allow for some column moving
 * Output is a USPS formated CSV file which can be directly imported into the USPS as an Address Book.
 
 ----------
 Input File
 ----------
 
-How to export the file from Kickstarter
+How to export the file from Tindie
 
-* Kickstarter
-* Menu (on)
-* Backer Report
-* Export
-* All Reward Tiers
+* Tindie
+* Menu
+* My Storee
+* Export CSV
 * Save to ZIP
-* Extract/combine into one CSV file (only one header line)
 
 ----
 Code
@@ -172,29 +170,35 @@ class ControlClass:
 	def mapInputList(self, theInList):
 		"""Map the column headers to an internal preferred ordering.
 		Latest input format -
-		
-		* Backer Number,
-		* Backer UID,
-		* Backer Name,
-		* Email,
-		* Shipping Country,
-		* Shipping Amount,
-		* Reward Minimum,
-		* Pledge Amount,
-		* Pledged At,
-		* Rewards Sent?,
-		* Pledged Status,
-		* Notes,
-		* Survey Response,
-		* Shipping Name,
-		* Shipping Address 1,
-		* Shipping Address 2,
-		* Shipping City,
-		* Shipping State,
-		* Shipping Postal Code,
-		* Shipping Country Name,			
-		* Shipping Country Code
-		
+		* ID
+		* Date
+		* First Name
+		* Last Name
+		* Street
+		* City
+		* State / Province
+		* Postal/Zip Code
+		* Country
+		* Additional Instructions
+		* Email
+		* Phone	
+		* Refunded
+		* Shipped
+		* Pay Out Status
+		* Paid Out
+		* Shipping
+		* Shipping Amount 
+		* Tracking Number
+		* Tindie Fee
+		* Processing Fee
+		* Product Name
+		* Option Summary
+		* Status
+		* Quantity
+		* Unit Price
+		* Total Price
+		* Model Number
+
 		:param theInList: The entire input list.
 		:return: a mapping file with the columns mapped to a column number.
 
@@ -205,7 +209,8 @@ class ControlClass:
 		global rewardMinimumColumn
 		global pledgeAmountColumn
 		global rewardsSentColumn
-		global shippingNameColumn
+		global shippingFirstNameColumn
+		global shippingLastNameColumn
 		global address1Column
 		global address2Column
 		global cityColumn
@@ -220,7 +225,7 @@ class ControlClass:
 		for item in header:
 			if item == 'Email':
 				emailColumn = itemNum
-			elif item == 'Shipping Country':
+			elif item == 'Country':
 				countryColumn = itemNum
 			elif item == 'Shipping Amount':
 				shippingAmtColumn = itemNum
@@ -228,24 +233,22 @@ class ControlClass:
 				rewardMinimumColumn = itemNum
 			elif item == 'Pledge Amount':
 				pledgeAmountColumn = itemNum
-			elif item == 'Rewards Sent?':
+			elif item == 'Shipped':
 				rewardsSentColumn = itemNum
 			elif item == 'Shipping Name':
 				shippingNameColumn = itemNum
-			elif item == 'Shipping Address 1':
+			elif item == 'Street':
 				address1Column = itemNum
 			elif item == 'Shipping Address 2':
 				address2Column = itemNum
-			elif item == 'Shipping City':
+			elif item == 'City':
 				cityColumn = itemNum
-			elif item == 'Shipping State':
+			elif item == 'State / Province':
 				stateColumn = itemNum
-			elif item == 'Shipping Postal Code':
+			elif item == 'Postal/Zip Code':
 				zipColumn = itemNum
-			elif item == 'Shipping Country Name':
-				countryColumn = itemNum
-			elif item == 'Survey Response':
-				surveyResponseColumn = itemNum
+			else:
+				print 'unknown/unused header',item
 			itemNum += 1
 		# print 'header columns', itemNum
 		return
@@ -266,7 +269,8 @@ class ControlClass:
 		global rewardMinimumColumn
 		global pledgeAmountColumn
 		global rewardsSentColumn
-		global shippingNameColumn
+		global shippingFirstNameColumn
+		global shippingLastNameColumn
 		global address1Column
 		global address2Column
 		global cityColumn
@@ -350,7 +354,8 @@ class ControlClass:
 		global rewardMinimumColumn
 		global pledgeAmountColumn
 		global rewardsSentColumn
-		global shippingNameColumn
+		global shippingFirstNameColumn
+		global shippingLastNameColumn
 		global address1Column
 		global address2Column
 		global cityColumn
@@ -421,7 +426,8 @@ class ControlClass:
 		global rewardMinimumColumn
 		global pledgeAmountColumn
 		global rewardsSentColumn
-		global shippingNameColumn
+		global shippingFirstNameColumn
+		global shippingLastNameColumn
 		global address1Column
 		global address2Column
 		global cityColumn
@@ -558,10 +564,10 @@ class UIManager:
 		# Add the accelerator group to the toplevel window
 		accelgroup = uimanager.get_accel_group()
 		window.add_accel_group(accelgroup)
-		window.set_title('kickMail - Kickkstarter rewards processing program')
+		window.set_title('TindieMail - Kickkstarter rewards processing program')
 
 		# Create an ActionGroup
-		actiongroup =	gtk.ActionGroup("kickMail")
+		actiongroup =	gtk.ActionGroup("TindieMail")
 		self.actiongroup = actiongroup
 
 		# Create actions
@@ -570,7 +576,7 @@ class UIManager:
 									("Quit", gtk.STOCK_QUIT, "_Quit", None, "Quit the Application", self.quit_application),
 									("File", None, "_File"),
 									("Help", None, "_Help"),
-									("About", None, "_About", None, "About kickMail", self.about_kickMail),
+									("About", None, "_About", None, "About TindieMail", self.about_TindieMail),
 									])
 		uimanager.insert_action_group(self.actiongroup, 0)
 		uimanager.add_ui_from_string(self.interface)
@@ -595,11 +601,11 @@ class UIManager:
 		message.destroy()	# Takes down the dialog box
 		return
 
-	def about_kickMail(self, b):
+	def about_TindieMail(self, b):
 		"""The about dialog
 		"""
 		message = gtk.MessageDialog(type=gtk.MESSAGE_INFO, buttons=gtk.BUTTONS_OK)
-		message.set_markup("About kickMail\nAuthor: Doug Gilliland\n(c) 2015 - land-boards.com - All rights reserved\nkickMail - Process Kickstarter Backer Reports")
+		message.set_markup("About TindieMail\nAuthor: Doug Gilliland\n(c) 2015 - land-boards.com - All rights reserved\nTindieMail - Process Kickstarter Backer Reports")
 		message.run()
 		message.destroy()
 		return
