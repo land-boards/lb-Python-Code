@@ -19,7 +19,6 @@ How to export the file from Tindie
 * Menu
 * My Storee
 * Export CSV
-* Save to ZIP
 
 ----
 Code
@@ -44,20 +43,15 @@ import os
 
 from sys import argv
 
-shippingNameColumn = 99
+shippingFirstNameColumn = 99
+shippingLastNameColumn = 99
 address1Column = 99
-address2Column = 99
 cityColumn = 99
 stateColumn = 99
 countryColumn = 99
 zipColumn = 99
 emailColumn = 99
-shippingAmtColumn = 99
-rewardMinimumColumn = 99
-pledgeAmountColumn = 99
 rewardsSentColumn = 99
-surveyResponseColumn = 99
-
 defaultPath = ''
 
 class HandleDefault:
@@ -204,20 +198,14 @@ class ControlClass:
 
 		"""
 		global emailColumn
-		global countryColumn
-		global shippingAmtColumn
-		global rewardMinimumColumn
-		global pledgeAmountColumn
-		global rewardsSentColumn
 		global shippingFirstNameColumn
 		global shippingLastNameColumn
 		global address1Column
-		global address2Column
 		global cityColumn
 		global stateColumn
 		global zipColumn
 		global countryColumn
-		global surveyResponseColumn
+		global rewardsSentColumn
 		myOutList = []
 		header = theInList[0]
 		headerLen = len(header)
@@ -225,14 +213,12 @@ class ControlClass:
 		for item in header:
 			if item == 'Email':
 				emailColumn = itemNum
+			elif item == 'First Name':
+				shippingFirstNameColumn = itemNum
+			elif item == 'Last Name':
+				shippingLastNameColumn = itemNum
 			elif item == 'Country':
 				countryColumn = itemNum
-			elif item == 'Shipping Amount':
-				shippingAmtColumn = itemNum
-			elif item == 'Reward Minimum':
-				rewardMinimumColumn = itemNum
-			elif item == 'Pledge Amount':
-				pledgeAmountColumn = itemNum
 			elif item == 'Shipped':
 				rewardsSentColumn = itemNum
 			elif item == 'Shipping Name':
@@ -247,80 +233,12 @@ class ControlClass:
 				stateColumn = itemNum
 			elif item == 'Postal/Zip Code':
 				zipColumn = itemNum
-			else:
-				print 'unknown/unused header',item
+			#else:
+				#print 'unknown/unused header',item
 			itemNum += 1
 		# print 'header columns', itemNum
 		return
 
-	def countBoards(self, theInList):
-		"""Count the boards and generate a snapshot of the data.
-		
-		* 4 - Shipping Amount, $5.00 USD
-		* 5 - Reward Minimum,
-		* 6 - Pledge Amount,
-			
-		:param theInList: The entire list
-		:return: no value
-		"""
-		global emailColumn
-		global countryColumn
-		global shippingAmtColumn
-		global rewardMinimumColumn
-		global pledgeAmountColumn
-		global rewardsSentColumn
-		global shippingFirstNameColumn
-		global shippingLastNameColumn
-		global address1Column
-		global address2Column
-		global cityColumn
-		global stateColumn
-		global zipColumn
-		global countryColumn
-		global surveyResponseColumn
-		boardsCount = 0.0
-		unshippedBoardsCount = 0.0
-		shippingTotal = 0.0
-		rewardTotal = 0.0
-		pledgeTotal = 0.0
-		backers = 0
-		unshippedBackers = 0
-		for row in theInList[1:]:
-			num = 0.0
-			shippingString = row[shippingAmtColumn][1:-4]
-			rewardString = row[rewardMinimumColumn][1:-4]
-			pledgeString = row[pledgeAmountColumn][1:-4]
-			shippingNum = float(shippingString)
-			shippingTotal += shippingNum
-			rewardNum = float(rewardString)
-			rewardTotal += rewardNum
-			pledgeNum = float(pledgeString)
-			pledgeTotal += pledgeNum
-			# print 'boards', (pledgeNum - shippingNum) / rewardNum
-			boardsCount += (pledgeNum - shippingNum) / rewardNum
-			print shippingString, rewardString, pledgeString, (pledgeNum - shippingNum) / rewardNum
-			if row[rewardsSentColumn] != 'Sent':
-				unshippedBoardsCount += (pledgeNum - shippingNum) / rewardNum
-				unshippedBackers += 1
-			backers += 1
-		outStr = 'Total Backers = '
-		outStr += str(backers)
-		outStr += '\nTotal Rewards = '
-		#{0:.3f}.'.format(boardsCount)
-		outStr += '{0:.2f}'.format(boardsCount)
-#		outStr += str(boardsCount)
-		outStr += '\n-\nUnshipped Backers = '
-		outStr += str(unshippedBackers)
-		outStr += '\nUnshipped Boards = '
-		outStr += str(unshippedBoardsCount)
-		outStr += '\n-\nTotal Shipping = $'
-		outStr += '{0:.2f}'.format(shippingTotal)
-		outStr += '\nTotal Pledges = $'
-		outStr += '{0:.2f}'.format(pledgeTotal)
-		outStr += '\nAvg $ per board = $'
-		outStr += '{0:.2f}'.format((pledgeTotal-shippingTotal)/boardsCount)
-		errorDialog(outStr)
-	
 	def writeOutUSPSAddressBook(self, outFilePtr, theList):
 		"""Write out the USPS Address book values.
 		The output file is a CSV that can be read by the USPS Address Book Import.
@@ -349,49 +267,41 @@ class ControlClass:
 		:return: no return value
 		"""
 		global emailColumn
-		global countryColumn
-		global shippingAmtColumn
-		global rewardMinimumColumn
-		global pledgeAmountColumn
-		global rewardsSentColumn
 		global shippingFirstNameColumn
 		global shippingLastNameColumn
 		global address1Column
-		global address2Column
 		global cityColumn
 		global stateColumn
 		global zipColumn
-		global surveyResponseColumn
+		global countryColumn
+		global rewardsSentColumn
 		outFilePtr.writerow(['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname'])
 		for row in theList[1:]:
-			if len(row) > 12:
-				if (row[rewardsSentColumn] == '') and (row[address1Column] != '') and (row[countryColumn] != 'United States'):
-					outLine = []
-					firstName = row[shippingNameColumn][0:row[shippingNameColumn].find(' ')]
-					lastName = row[shippingNameColumn][row[shippingNameColumn].rfind(' ')+1:]
-					if row[shippingNameColumn].find(' ') < row[shippingNameColumn].rfind(' '):
-						middleInit = row[shippingNameColumn][row[shippingNameColumn].find(' '):row[shippingNameColumn].find(' ')+2]
-					else:
-						middleInit = ''
-					outLine.append(firstName)
-					outLine.append(middleInit)
-					outLine.append(lastName)
-					outLine.append('')
-					outLine.append(row[address1Column])
-					outLine.append(row[address2Column])
-					outLine.append('')
-					outLine.append(row[cityColumn])
-					outLine.append(row[stateColumn])
-					outLine.append(row[zipColumn])
-					if row[countryColumn] == 'United Kingdom':
-						outLine.append('GREAT BRITIAN AND NORTHERN IRELAND')
-					else:
-						outLine.append(row[countryColumn])
-					outLine.append('')
-					outLine.append('')
-					outLine.append('')
-					outLine.append(row[emailColumn])
-					outFilePtr.writerow(outLine)
+			if (row[rewardsSentColumn] == 'False') and (row[countryColumn] != 'United States'):
+				outLine = []
+				firstName = row[shippingNameColumn][0:row[shippingNameColumn].find(' ')]
+				lastName = row[shippingNameColumn][row[shippingNameColumn].rfind(' ')+1:]
+				if row[shippingNameColumn].find(' ') < row[shippingNameColumn].rfind(' '):
+					middleInit = row[shippingNameColumn][row[shippingNameColumn].find(' '):row[shippingNameColumn].find(' ')+2]
+				else:
+					middleInit = ''
+				outLine.append(row[shippingFirstNameColumn])
+				outLine.append(row[shippingLastNameColumn])
+				outLine.append('')
+				outLine.append(row[address1Column])
+				outLine.append('')
+				outLine.append(row[cityColumn])
+				outLine.append(row[stateColumn])
+				outLine.append(row[zipColumn])
+				if row[countryColumn] == 'United Kingdom':
+					outLine.append('GREAT BRITIAN AND NORTHERN IRELAND')
+				else:
+					outLine.append(row[countryColumn])
+				outLine.append('')
+				outLine.append('')
+				outLine.append('')
+				outLine.append(row[emailColumn])
+				outFilePtr.writerow(outLine)
 
 	def writeOutPayPalAddressBook(self, outFilePtr, theList):
 		"""Write out the USPS Address book values.
@@ -421,47 +331,34 @@ class ControlClass:
 		:return: no return value
 		"""
 		global emailColumn
-		global countryColumn
-		global shippingAmtColumn
-		global rewardMinimumColumn
-		global pledgeAmountColumn
-		global rewardsSentColumn
 		global shippingFirstNameColumn
 		global shippingLastNameColumn
 		global address1Column
-		global address2Column
 		global cityColumn
 		global stateColumn
 		global zipColumn
-		global surveyResponseColumn
+		global countryColumn
+		global rewardsSentColumn
 		outFilePtr.writerow(['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname'])
 		for row in theList[1:]:
-			if len(row) > 12:
-				print 'country', row[countryColumn]
-				if (row[rewardsSentColumn] == '') and (row[address1Column] != '') and (row[countryColumn] == 'United States'):
-					outLine = []
-					firstName = row[shippingNameColumn][0:row[shippingNameColumn].find(' ')]
-					lastName = row[shippingNameColumn][row[shippingNameColumn].rfind(' ')+1:]
-					if row[shippingNameColumn].find(' ') < row[shippingNameColumn].rfind(' '):
-						middleInit = row[shippingNameColumn][row[shippingNameColumn].find(' '):row[shippingNameColumn].find(' ')+2]
-					else:
-						middleInit = ''
-					outLine.append(firstName)
-					outLine.append(middleInit)
-					outLine.append(lastName)
-					outLine.append('')
-					outLine.append(row[address1Column])
-					outLine.append(row[address2Column])
-					outLine.append('')
-					outLine.append(row[cityColumn])
-					outLine.append(row[stateColumn])
-					outLine.append(row[zipColumn])
-					outLine.append(row[countryColumn])
-					outLine.append('')
-					outLine.append('')
-					outLine.append('')
-					outLine.append(row[emailColumn])
-					outFilePtr.writerow(outLine)
+			if (row[rewardsSentColumn] == 'False') and (row[countryColumn] == 'United States'):
+			#print 'country', row[countryColumn]
+				outLine = []
+				outLine.append(row[shippingFirstNameColumn])
+				outLine.append('')
+				outLine.append(row[shippingLastNameColumn])
+				outLine.append('')
+				outLine.append(row[address1Column])
+				outLine.append('')
+				outLine.append(row[cityColumn])
+				outLine.append(row[stateColumn])
+				outLine.append(row[zipColumn])
+				outLine.append(row[countryColumn])
+				outLine.append('')
+				outLine.append('')
+				outLine.append('')
+				outLine.append(row[emailColumn])
+				outFilePtr.writerow(outLine)
 
 	def theExecutive(self):
 		"""The code that calls the other code
@@ -527,7 +424,6 @@ class ControlClass:
 
 		theInList = self.readInCSV(inFile)
 		self.mapInputList(theInList)
-		self.countBoards(theInList)
 		self.writeOutUSPSAddressBook(outCSVFile, theInList)
 		self.writeOutPayPalAddressBook(outCSVFilePayPal, theInList)
 
