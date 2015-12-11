@@ -64,6 +64,30 @@ class HandleDefault:
 			return False
 		return True
 
+	def checkSetDefaults(self):
+		"""Checks to see if there is a defaults file.
+		If there is not a defaults file it creates a basic defaults file with a path to the data files.
+		Opens the defaults file and loads the path into the global variable defaultPath
+		
+		:global: defaultPath default path of the data files.
+		"""
+		global defaultPath
+		if self.ifExistsDefaults() == True:
+			detailParmList = self.loadDefaults()
+			print 'loaded defaults file'
+		else:
+			print 'defaults file does not exist'
+			self.createDefaults()
+			print 'created defaults file'
+			detailParmList = self.loadDefaults()
+			print 'loaded defaults file'
+		if detailParmList[0] != 'DEFAULT_PATH':
+			print 'Expected the first line to say DEFAULT_PATH, got',detailParmList
+			defaultPath = '.'
+		else:
+			# print 'default path is', detailParmList[1]
+			defaultPath = detailParmList[1]
+
 class PathFileExtracts:
 	"""Extract file names and path from pathfilenames
 	"""
@@ -397,3 +421,8 @@ class UIManager:
 if __name__ == '__main__':
 	ba = UIManager()
 	gtk.main()
+
+# Another version of the main thing
+if __name__ == "__main__":
+	myExec = ExecCode()
+	myExec.doExec()
