@@ -116,7 +116,7 @@ class HandleDefault:
 			print 'Expected the first line to say DEFAULT_PATH, got',detailParmList
 			defaultPath = '.'
 		else:
-			# print 'default path is', detailParmList[1]
+			print 'default path is', detailParmList[1]
 			defaultPath = detailParmList[1]
 
 class WriteOutToCSVFile:
@@ -159,7 +159,7 @@ class WriteOutToCSVFile:
 		outFilePtr.writerows(theOutList)					# write out the BOM list to the output CSV file
 			
 class FindCSVFile:
-	def findCSVFileBrowse(self):
+	def findCSVFileBrowse(self, startingPath):
 		"""findCSVFileBrowse() - This is the dialog which locates the csv files
 	
 		:returns: path/name of the file that was selected
@@ -173,7 +173,7 @@ class FindCSVFile:
 			gtk.STOCK_OPEN, gtk.RESPONSE_OK))
 		dialog.set_default_response(gtk.RESPONSE_OK)
 
-		dialog.set_current_folder(defaultPath)
+		dialog.set_current_folder(startingPath)
 		filter = gtk.FileFilter()
 		filter.set_name("CSV files")
 		filter.add_pattern("*.csv")
@@ -261,8 +261,14 @@ class ControlClass:
 		defaultClass.checkSetDefaults()
 
 		myCSV = FindCSVFile()
-		fileToRead = myCSV.findCSVFileBrowse()
+		fileToRead = myCSV.findCSVFileBrowse(defaultPath)
 		defaultPath = fileToRead[0:fileToRead.rfind('\\')+1]
+		defaultList = []
+		defaultItem = []
+		defaultItem.append('DEFAULT_PATH')
+		defaultItem.append(defaultPath)
+		defaultList.append(defaultItem)
+		defaultClass.storeDefaults(defaultList)
 
 		outFileName = fileToRead[:-4] + "_Accts.csv"
 
