@@ -5,7 +5,8 @@ kickMail.py - Automate Kickstarter backer lists.
 Features
 --------
 
-* Input is the csv file as exported from Kickstarter 
+* Input is the csv file(s) as exported from Kickstarter 
+* Can selecy multiple files one at a time
 * Program provides input field flexibility to allow for some column moving (Kickstarter changes this from time to time).
 * Output is a USPS formated CSV file which can be directly imported into the USPS as an Address Book.
 
@@ -21,7 +22,7 @@ How to export the file from Kickstarter
 * Export
 * All Reward Tiers
 * Save to ZIP
-* Extract/combine into one CSV file (only one header line)
+* Extract/combine into CSV file(s)
 
 ----
 Code
@@ -148,9 +149,8 @@ class FindCSVFile:
 			dialog.destroy()
 			return retFileName
 		elif response == gtk.RESPONSE_CANCEL:
-			print 'Closed, no files selected'
 			dialog.destroy()
-			exit()
+			return ''
 		dialog.destroy()
 		
 class ControlClass:
@@ -294,7 +294,7 @@ class ControlClass:
 			pledgeTotal += pledgeNum
 			# print 'boards', (pledgeNum - shippingNum) / rewardNum
 			boardsCount += (pledgeNum - shippingNum) / rewardNum
-			print shippingString, rewardString, pledgeString, (pledgeNum - shippingNum) / rewardNum
+			# print shippingString, rewardString, pledgeString, (pledgeNum - shippingNum) / rewardNum
 			if row[rewardsSentColumn] != 'Sent':
 				unshippedBoardsCount += (pledgeNum - shippingNum) / rewardNum
 				unshippedBackers += 1
@@ -379,7 +379,7 @@ class ControlClass:
 					outLine.append(row[stateColumn])
 					outLine.append(row[zipColumn])
 					if row[countryColumn] == 'United Kingdom':
-						outLine.append('GREAT BRITIAN AND NORTHERN IRELAND')
+						outLine.append('GREAT BRITAIN AND NORTHERN IRELAND')
 					else:
 						outLine.append(row[countryColumn])
 					outLine.append('')
@@ -431,7 +431,7 @@ class ControlClass:
 		outFilePtr.writerow(['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname'])
 		for row in theList[1:]:
 			if len(row) > 12:
-				print 'country', row[countryColumn]
+				# print 'country', row[countryColumn]
 				if (row[rewardsSentColumn] == '') and (row[address1Column] != '') and (row[countryColumn] == 'United States'):
 					outLine = []
 					firstName = row[shippingNameColumn][0:row[shippingNameColumn].find(' ')]
@@ -479,10 +479,34 @@ class ControlClass:
 			# print 'default path is', detailParmList[1]
 			defaultPath = detailParmList[1]
 		
+		theInList = []
+		listNum = 1
 		myCSV = FindCSVFile()
-		fileToRead = myCSV.findCSVFileBrowse(defaultPath)
+		keepReading = True
+		savePath = ''
+		while keepReading:
+			fileToRead = myCSV.findCSVFileBrowse(defaultPath)
+			if fileToRead == '':
+				keepReading = False
+			else:
+				try:
+					inFile = open(fileToRead, 'rb')
+				except IOError:
+					errorDialog('ERROR - Cannot open input file')
+					exit()
+				readList = self.readInCSV(inFile)
+				if listNum == 1:
+					theInList += readList
+				else:
+					theInList += readList[1:]
+				listNum += 1
+				savePath = fileToRead
 		
-		defaultPath = fileToRead[0:fileToRead.rfind('\\')+1]
+		if theInList ==[]:
+			errorDialog('No file selected')
+			exit()
+		defaultPath = savePath[0:savePath.rfind('\\')+1]
+		print 'path', defaultPath
 		defaultList = []
 		defaultItem = []
 		defaultItem.append('DEFAULT_PATH')
@@ -490,15 +514,9 @@ class ControlClass:
 		defaultList.append(defaultItem)
 		defaultParmsClass.storeDefaults(defaultList)
 
-		fileToWriteUSPS = fileToRead[:-4] + "_USPS.csv"
-		fileToWritePayPal = fileToRead[:-4] + "_PayPal.csv"
+		fileToWriteUSPS = savePath[:-4] + "_USPS.csv"
+		fileToWritePayPal = savePath[:-4] + "_PayPal.csv"
 
-		try:
-			inFile = open(fileToRead, 'rb')
-		except IOError:
-			errorDialog('ERROR - Cannot open input file')
-			exit()
-		
 		try:
 			outCSVFile = csv.writer(open(fileToWriteUSPS, 'wb'), delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)
 		except IOError:
@@ -519,7 +537,6 @@ class ControlClass:
 				errorDialog('ERROR - Tried again,  - Is the file already open in EXCEL?')
 				exit()
 
-		theInList = self.readInCSV(inFile)
 		self.mapInputList(theInList)
 		self.countBoards(theInList)
 		self.writeOutUSPSAddressBook(outCSVFile, theInList)

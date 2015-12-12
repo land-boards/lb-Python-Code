@@ -13,7 +13,7 @@ Contents:
 
 .. automodule:: pyCommonStuff
  
-.. autoclass:: pathFileExtracts
+.. autoclass:: PathFileExtracts
     :members:
 
 .. autoclass:: CheckFreshness
