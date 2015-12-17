@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to dgReadCSVtoList’s documentation! &mdash; pyUnivBom 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyUnivBom 1.0.1 documentation" href="#" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">pyUnivBom 1.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-dgreadcsvtolist-s-documentation">
+<h1>Welcome to dgReadCSVtoList&#8217;s documentation!<a class="headerlink" href="#welcome-to-dgreadcsvtolist-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-dgReadCSVtoList"></span><div class="section" id="dgreadcsvtolist-py">
+<h2>dgReadCSVtoList.py<a class="headerlink" href="#dgreadcsvtolist-py" title="Permalink to this headline">¶</a></h2>
+<p>Functions to read a CSV file into a list and return the list.</p>
+<p>Intended to be imported into another Python program.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="installation-usage">
+<h2>Installation/Usage<a class="headerlink" href="#installation-usage" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Put this file into the folder C:/Python27/Lib/site-packages/dgCommonModules</li>
+</ul>
+<p>Typical use</p>
+<ul class="simple">
+<li>myCSVFileReadClass = ReadCSVtoList()  # instantiate the class</li>
+<li>myCSVFileReadClass.setVerboseMode(True)       # turn on verbose mode until all is working</li>
+<li>csvAsReadIn = myCSVFileReadClass.findOpenReadCSV(defaultPath,&#8217;Select CSV File&#8217;)       # read in CSV into list</li>
+<li>if csvAsReadIn == []:</li>
+<li>return False</li>
+</ul>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+</div>
+<dl class="class">
+<dt id="dgReadCSVtoList.ReadCSVtoList">
+<em class="property">class </em><code class="descclassname">dgReadCSVtoList.</code><code class="descname">ReadCSVtoList</code><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.extractFilenameFromPathfilename">
+<code class="descname">extractFilenameFromPathfilename</code><span class="sig-paren">(</span><em>fullPathFilename</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.extractFilenameFromPathfilename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract fileName without extension from pathfullPathName</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fullPathFilename</strong> &#8211; The path and file name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Path without the filename at the end</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.findInputCSVFile">
+<code class="descname">findInputCSVFile</code><span class="sig-paren">(</span><em>defaultPath</em>, <em>bomFileString='Select File to Open'</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.findInputCSVFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses filechooser to browse for a CSV file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>defaultPath</strong> &#8211; The path that was selected. The calling function is responsible for remembering the name.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">pathfilename of the file that was selected or empty string if no file was selected.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.findOpenReadCSV">
+<code class="descname">findOpenReadCSV</code><span class="sig-paren">(</span><em>self</em>, <em>defaultPath</em>, <em>dialogHeader</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.findOpenReadCSV" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main method which calls the other methods in this class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Global lastPathFileName:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first">The path asset by this function based on the path found by the browser.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Global verboseMode:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first">Set to true if you want diagnostic messages printed along the way. Verbose Mode can also be changed by calling setVerboseMode().</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>defaultPath</strong> &#8211; Optional default path. If none is entered defaults to empty.</li>
+<li><strong>dialogHeader</strong> &#8211; Optional headers that is printed on the top of the screen.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The contents of the file as a list. If cancel was pressed on the file selector or the file is empty, returns an empty list.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.getFreshFlag">
+<code class="descname">getFreshFlag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.getFreshFlag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the value of the freshness check flag</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Global freshFlag:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Flag value stored as a global for use directly by other functions</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Global verboseMode:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Verbose flag.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the value of the fresh check flag.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.getLastPathFileName">
+<code class="descname">getLastPathFileName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.getLastPathFileName" title="Permalink to this definition">¶</a></dt>
+<dd><p>getLastPathFileName - Used by external calling methods to determine what the path/filename 
+of the last file that was read in was.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Global lastPathFileName:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">the last path file name that was used</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the last path file name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.readInCSV">
+<code class="descname">readInCSV</code><span class="sig-paren">(</span><em>inFileN</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.readInCSV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a CSV file into a list. This method</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Global useSniffer:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Flag which indicates whether or not to use the file sniffer. Set the sniffer flag by setUseSnifferFlag().</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inFileN</strong> &#8211; Input pathfilename</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List which contains the contents of the CSV file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.setFreshCheckFlag">
+<code class="descname">setFreshCheckFlag</code><span class="sig-paren">(</span><em>freshnessFlag</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.setFreshCheckFlag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the freshness check flag.
+This flag is used to determine whether or not to check the file freshness before opening it.
+If this flag is set the file has to be created on the same day that this method is invoked.
+This is intended to be set from other modules which use this class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Global freshFlag:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Flag value stored as a global for use directly by other functions</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Global verboseMode:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Verbose flag.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True always</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.setUseSnifferFlag">
+<code class="descname">setUseSnifferFlag</code><span class="sig-paren">(</span><em>snifferFlag</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.setUseSnifferFlag" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Set the flag for whether or not the CSV sniffer should be used when reading the CSV file.</dt>
+<dd>The sniffer can determine the input file style of the delimiter (comma separated, tab separated, etc.)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Global useSniffer:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Flag that determines whether or not to use the CSV sniffer.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True always</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.setVerboseMode">
+<code class="descname">setVerboseMode</code><span class="sig-paren">(</span><em>verboseFlag</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.setVerboseMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the verbose mode flag. 
+This flag is used by other functions to determine whether messages should be output to the console or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Global verboseMode:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Flag value.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Always True</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to dgReadCSVtoList&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#dgreadcsvtolist-py">dgReadCSVtoList.py</a></li>
+<li><a class="reference internal" href="#background">Background</a></li>
+<li><a class="reference internal" href="#installation-usage">Installation/Usage</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2014, Doug Gilliland.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>
