@@ -7,7 +7,10 @@ Features
 
 * Input is the csv file as exported from Tindie 
 * Program provides input field flexibility to allow for some column moving
-* Output is a USPS formated CSV file which can be directly imported into the USPS as an Address Book.
+* There are two possible files output
+* Files are only produced for items which have not yet shippped.
+* One of the output formts is USPS formated CSV file (used fot foreign shipping)
+* The other output format is PauPal formated CSV file for US shipping
 
 ----------
 Input File
