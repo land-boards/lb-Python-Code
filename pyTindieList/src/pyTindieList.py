@@ -172,6 +172,7 @@ class ControlClass:
 		global clickAddrLab
 		global clickShipLists
 		global clickInvPulls
+		global checkTheBacklog
 		global pathToFile
 
 		myCSV = FindCSVFile()
@@ -204,7 +205,7 @@ class ControlClass:
 			self.writeOutInvPullList(outFile, theOutList)
 		if clickInvPulls:
 			self.writeOutShipList(outFile, theOutList)
-		if checkBacklog:
+		if checkTheBacklog:
 			self.checkTheBacklog(outFile, theInList)
 
 class UIManager:
