@@ -11,10 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: kickMail
- 
-.. autoclass:: FindCSVFile
-    :members:
+.. automodule:: TindieMail
 	
 .. autoclass:: ControlClass
     :members:

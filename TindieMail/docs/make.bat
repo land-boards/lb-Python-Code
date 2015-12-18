@@ -2,8 +2,7 @@
 
 REM Command file for Sphinx documentation
 
-if "%SPHINXBUILD%" == "" (
-	set SPHINXBUILD=sphinx-build
+set SPHINXBUILD=c:/Python27/Scripts/sphinx-build
 )
 set BUILDDIR=_build
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% .
@@ -50,7 +49,7 @@ if "%1" == "clean" (
 %SPHINXBUILD% 2> nul
 if errorlevel 9009 (
 	echo.
-	echo.The 'sphinx-build' command was not found. Make sure you have Sphinx
+	echo.yyThe 'sphinx-build' command was not found. Make sure you have Sphinx
 	echo.installed, then set the SPHINXBUILD environment variable to point
 	echo.to the full path of the 'sphinx-build' executable. Alternatively you
 	echo.may add the Sphinx directory to PATH.
@@ -115,9 +114,9 @@ if "%1" == "qthelp" (
 	echo.
 	echo.Build finished; now you can run "qcollectiongenerator" with the ^
 .qhcp project file in %BUILDDIR%/qthelp, like this:
-	echo.^> qcollectiongenerator %BUILDDIR%\qthelp\pyFastCompFold.qhcp
+	echo.^> qcollectiongenerator %BUILDDIR%\qthelp\pyUnivBom.qhcp
 	echo.To view the help file:
-	echo.^> assistant -collectionFile %BUILDDIR%\qthelp\pyFastCompFold.ghc
+	echo.^> assistant -collectionFile %BUILDDIR%\qthelp\pyUnivBom.ghc
 	goto end
 )
 

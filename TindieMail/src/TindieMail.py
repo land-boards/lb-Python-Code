@@ -17,7 +17,7 @@ How to export the file from Tindie
 
 * Tindie
 * Menu
-* My Storee
+* My Store
 * Export CSV
 
 ----
@@ -41,7 +41,11 @@ import string
 import sys
 import os
 
-from sys import argv
+sys.path.append('C:\\Users\\doug_000\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
+
+from dgProgDefaults import *
+from dgReadCSVtoList import *
+from dgWriteListtoCSV import *
 
 shippingFirstNameColumn = 99
 shippingLastNameColumn = 99
@@ -52,114 +56,64 @@ countryColumn = 99
 zipColumn = 99
 emailColumn = 99
 rewardsSentColumn = 99
-defaultPath = ''
-
-class HandleDefault:
-	""""Load and save defaults file
-	This can be used to save stuff like the default path
-	The file is a simple list with KEY, value pairs on individual lines
-	"""
-	def loadDefaults(self):
-		""" Load the defaults file
-		"""
-		defaultFileHdl = open('Defaults.csv', 'rb')
-		defaultListItem = csv.reader(defaultFileHdl)
-		defaultList = []
-		for row in defaultListItem:
-			defaultList+=row
-		return defaultList
-
-	def storeDefaults(self,defaultList):
-		""" Store to the defaults file
-		"""
-#		print 'storing list', defaultList
-		defaultFileHdl = open('Defaults.csv', 'wb')
-		defaultFile = csv.writer(defaultFileHdl)
-		defaultFile.writerows(defaultList)
-		return True
-
-	def createDefaults(self):
-		""" Create the defaults file
-		"""
-		defaultFileHdl = open('Defaults.csv', 'wb')
-		defaultFile = csv.writer(defaultFileHdl)
-		defaultArray = ['DEFAULT_PATH','.']
-		defaultFile.writerow(defaultArray)
-		return True
-		
-	def ifExistsDefaults(self):
-		""" Check if the defaults file exists
-		
-		:return: True if the default file exists, false if the default file does not exist
-		"""
-		try:
-			open('Defaults.csv')
-		except:
-			return False
-		return True
+defaultPath = '.'
 
 def errorDialog(errorString):
-	"""
+	"""Prints an error message as a dialog box.
+
 	:param errorDialog: The error message to print
 	
-	Prints an error message as a dialog box
 	"""
 	message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
 	message.set_markup(errorString)
 	message.run()		# Display the dialog box and hang around waiting for the "OK" button
 	message.destroy()	# Takes down the dialog box
 
-class FindCSVFile:
-	'''Find the CSV input file.
-	'''
-	def findCSVFileBrowse(self, startingPath):
-		"""
-		:param startingPath: start browsing from this folder.
-		:returns: path/file name of the file that was selected
-		
-		findCSVFileBrowse() - Dialog which locates the csv files using the file browser.
-		"""
-		csvFileString = "Select file"
-		dialog = gtk.FileChooserDialog(csvFileString,
-			None,
-			gtk.FILE_CHOOSER_ACTION_OPEN,
-			(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-			gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-		dialog.set_default_response(gtk.RESPONSE_OK)
-
-		if startingPath != '':
-			dialog.set_current_folder(startingPath)
-		filter = gtk.FileFilter()
-		filter.set_name("CSV files")
-		filter.add_pattern("*.csv")
-		dialog.add_filter(filter)
-
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-			retFileName = dialog.get_filename()
-			dialog.destroy()
-			return retFileName
-		elif response == gtk.RESPONSE_CANCEL:
-			print 'Closed, no files selected'
-			dialog.destroy()
-			exit()
-		dialog.destroy()
-		
 class ControlClass:
+	"""Methods to read tindie file and write out USPS and PayPal lists.
 	"""
-	"""
-	def readInCSV(self, inFile):
+	def theExecutive(self):
+		"""The code that calls the other code
 		"""
-		:param inFile: The pointer to the CSV file that gets read in.
-		:return: the CSV file as a list.
+		global defaultPath
+		
+		defaultParmsClass = HandleDefault()
+		defaultParmsClass.initDefaults()
+		defaultPath = defaultParmsClass.getKeyVal('DEFAULT_PATH')
+		print 'defaultPath',defaultPath
 
-		Read the input CSV file into a list.
-		"""
-		csvReader = csv.reader(inFile)
-		list2Read = []
-		for row in csvReader:
-			list2Read.append(row)
-		return list2Read
+		myCSVFileReadClass = ReadCSVtoList()	# instantiate the class
+		myCSVFileReadClass.setVerboseMode(True)	# turn on verbose mode until all is working 
+		theInList = myCSVFileReadClass.findOpenReadCSV(defaultPath,'Select CSV File')	# read in CSV into list
+		if theInList == []:
+			return False
+		self.mapInputList(theInList)
+		uspsList = self.createUSPSAddressList(theInList)
+		payPalList = self.createPayPalAddressList(theInList)
+
+		outMessage = 'TindieMail Statistics\n'
+		outMessage += 'Unfiltered list lines : '
+		outMessage += str(len(theInList))
+		outMessage += '\nUSPS list lines : '
+		outMessage += str(len(uspsList))
+		outMessage += '\nPayPal list lines : '
+		outMessage += str(len(payPalList))
+		errorDialog(outMessage)
+
+		defaultPath = myCSVFileReadClass.getLastPath()
+		defaultParmsClass.storeKeyValuePair('DEFAULT_PATH',defaultPath)
+
+		fileToWriteUSPS = defaultPath + "orders_USPS.csv"
+		fileToWritePayPal = defaultPath + "orders_PayPal.csv"
+
+		outFileClass = WriteListtoCSV()
+		outFileClass.appendOutFileName('.csv')
+		if uspsList != []:
+			uspsHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
+			outFileClass.writeOutList(fileToWriteUSPS, uspsHeader, uspsList)
+		if payPalList != []:
+			payPalHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
+			outFileClass.writeOutList(fileToWritePayPal, payPalHeader, payPalList)
 		
 	def mapInputList(self, theInList):
 		"""Map the column headers to an internal preferred ordering.
@@ -239,7 +193,7 @@ class ControlClass:
 		# print 'header columns', itemNum
 		return
 
-	def writeOutUSPSAddressBook(self, outFilePtr, theList):
+	def createUSPSAddressList(self, theList):
 		"""Write out the USPS Address book values.
 		The output file is a CSV that can be read by the USPS Address Book Import.
 		
@@ -275,35 +229,32 @@ class ControlClass:
 		global zipColumn
 		global countryColumn
 		global rewardsSentColumn
-		outFilePtr.writerow(['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname'])
+		outList = []
 		for row in theList[1:]:
 			if (row[rewardsSentColumn] == 'False') and (row[countryColumn] != 'United States'):
 				outLine = []
-				firstName = row[shippingNameColumn][0:row[shippingNameColumn].find(' ')]
-				lastName = row[shippingNameColumn][row[shippingNameColumn].rfind(' ')+1:]
-				if row[shippingNameColumn].find(' ') < row[shippingNameColumn].rfind(' '):
-					middleInit = row[shippingNameColumn][row[shippingNameColumn].find(' '):row[shippingNameColumn].find(' ')+2]
-				else:
-					middleInit = ''
 				outLine.append(row[shippingFirstNameColumn])
+				outLine.append('')
 				outLine.append(row[shippingLastNameColumn])
 				outLine.append('')
 				outLine.append(row[address1Column])
+				outLine.append('')
 				outLine.append('')
 				outLine.append(row[cityColumn])
 				outLine.append(row[stateColumn])
 				outLine.append(row[zipColumn])
 				if row[countryColumn] == 'United Kingdom':
-					outLine.append('GREAT BRITIAN AND NORTHERN IRELAND')
+					outLine.append('GREAT BRITAIN AND NORTHERN IRELAND')
 				else:
 					outLine.append(row[countryColumn])
 				outLine.append('')
 				outLine.append('')
 				outLine.append('')
 				outLine.append(row[emailColumn])
-				outFilePtr.writerow(outLine)
+				outList.append(outLine)
+		return outList
 
-	def writeOutPayPalAddressBook(self, outFilePtr, theList):
+	def createPayPalAddressList(self, theList):
 		"""Write out the USPS Address book values.
 		The output file is a CSV that can be read by the USPS Address Book Import.
 		
@@ -339,7 +290,7 @@ class ControlClass:
 		global zipColumn
 		global countryColumn
 		global rewardsSentColumn
-		outFilePtr.writerow(['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname'])
+		outList = []
 		for row in theList[1:]:
 			if (row[rewardsSentColumn] == 'False') and (row[countryColumn] == 'United States'):
 			#print 'country', row[countryColumn]
@@ -350,6 +301,7 @@ class ControlClass:
 				outLine.append('')
 				outLine.append(row[address1Column])
 				outLine.append('')
+				outLine.append('')
 				outLine.append(row[cityColumn])
 				outLine.append(row[stateColumn])
 				outLine.append(row[zipColumn])
@@ -358,74 +310,9 @@ class ControlClass:
 				outLine.append('')
 				outLine.append('')
 				outLine.append(row[emailColumn])
-				outFilePtr.writerow(outLine)
+				outList.append(outLine)
+		return outList
 
-	def theExecutive(self):
-		"""The code that calls the other code
-		"""
-		global defaultPath
-		
-		defaultParmsClass = HandleDefault()
-		if defaultParmsClass.ifExistsDefaults() == True:
-			detailParmList = defaultParmsClass.loadDefaults()
-			print 'loaded defaults file'
-		else:
-			print 'defaults file does not exist'
-			defaultParmsClass.createDefaults()
-			print 'created defaults file'
-			detailParmList = defaultParmsClass.loadDefaults()
-			print 'loaded defaults file'
-		if detailParmList[0] != 'DEFAULT_PATH':
-			print 'Expected the first line to say DEFAULT_PATH, got',detailParmList
-			defaultPath = '.'
-		else:
-			# print 'default path is', detailParmList[1]
-			defaultPath = detailParmList[1]
-		
-		myCSV = FindCSVFile()
-		fileToRead = myCSV.findCSVFileBrowse(defaultPath)
-		
-		defaultPath = fileToRead[0:fileToRead.rfind('\\')+1]
-		defaultList = []
-		defaultItem = []
-		defaultItem.append('DEFAULT_PATH')
-		defaultItem.append(defaultPath)
-		defaultList.append(defaultItem)
-		defaultParmsClass.storeDefaults(defaultList)
-
-		fileToWriteUSPS = fileToRead[:-4] + "_USPS.csv"
-		fileToWritePayPal = fileToRead[:-4] + "_PayPal.csv"
-
-		try:
-			inFile = open(fileToRead, 'rb')
-		except IOError:
-			errorDialog('ERROR - Cannot open input file')
-			exit()
-		
-		try:
-			outCSVFile = csv.writer(open(fileToWriteUSPS, 'wb'), delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)
-		except IOError:
-			errorDialog('ERROR - Cannot open the output file.\nIs the file already open in EXCEL?\nClose the file and return.')
-			try:
-				outCSVFile = csv.writer(open(fileToWriteUSPS, 'wb'), delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)
-			except IOError:
-				errorDialog('ERROR - Tried again,  - Is the file already open in EXCEL?')
-				exit()
-
-		try:
-			outCSVFilePayPal = csv.writer(open(fileToWritePayPal, 'wb'), delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)
-		except IOError:
-			errorDialog('ERROR - Cannot open the output file.\nIs the file already open in EXCEL?\nClose the file and return.')
-			try:
-				outCSVFilePayPal = csv.writer(open(fileToWritePayPal, 'wb'), delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)
-			except IOError:
-				errorDialog('ERROR - Tried again,  - Is the file already open in EXCEL?')
-				exit()
-
-		theInList = self.readInCSV(inFile)
-		self.mapInputList(theInList)
-		self.writeOutUSPSAddressBook(outCSVFile, theInList)
-		self.writeOutPayPalAddressBook(outCSVFilePayPal, theInList)
 
 class UIManager:
 	"""The UI manager

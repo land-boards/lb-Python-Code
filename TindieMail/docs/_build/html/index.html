@@ -8,7 +8,7 @@
     
     <title>Welcome to kickMail’s documentation! &mdash; pyFastCompFold 1.0 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,26 +23,18 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pyFastCompFold 1.0 documentation" href="#" /> 
+    <link rel="top" title="pyFastCompFold 1.0 documentation" href="#" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
   </head>
-  <body>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li><a href="#">pyFastCompFold 1.0 documentation</a> &raquo;</li> 
-      </ul>
-    </div>  
+  <body role="document">  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="welcome-to-kickmail-s-documentation">
 <h1>Welcome to kickMail&#8217;s documentation!<a class="headerlink" href="#welcome-to-kickmail-s-documentation" title="Permalink to this headline">¶</a></h1>
@@ -51,142 +43,35 @@
 <ul class="simple">
 </ul>
 </div>
-<span class="target" id="module-kickMail"></span><p>kickMail.py - Automate Kickstarter backer lists.</p>
+<span class="target" id="module-TindieMail"></span><p>TindieMail.py - Automate Tindie shipping lists.</p>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Input is the csv file as exported from Kickstarter</li>
-<li>Program provides input field flexibility to allow for some column moving (Kickstarter changes this from time to time).</li>
+<li>Input is the csv file as exported from Tindie</li>
+<li>Program provides input field flexibility to allow for some column moving</li>
 <li>Output is a USPS formated CSV file which can be directly imported into the USPS as an Address Book.</li>
 </ul>
 </div>
 <div class="section" id="input-file">
 <h2>Input File<a class="headerlink" href="#input-file" title="Permalink to this headline">¶</a></h2>
-<p>How to export the file from Kickstarter</p>
+<p>How to export the file from Tindie</p>
 <ul class="simple">
-<li>Kickstarter</li>
-<li>Menu (on)</li>
-<li>Backer Report</li>
-<li>Export</li>
-<li>All Reward Tiers</li>
-<li>Save to ZIP</li>
-<li>Extract/combine into one CSV file (only one header line)</li>
+<li>Tindie</li>
+<li>Menu</li>
+<li>My Store</li>
+<li>Export CSV</li>
 </ul>
 </div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 </div>
 <dl class="class">
-<dt id="kickMail.FindCSVFile">
-<em class="property">class </em><tt class="descclassname">kickMail.</tt><tt class="descname">FindCSVFile</tt><a class="headerlink" href="#kickMail.FindCSVFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the CSV input file.</p>
+<dt id="TindieMail.ControlClass">
+<em class="property">class </em><code class="descclassname">TindieMail.</code><code class="descname">ControlClass</code><a class="headerlink" href="#TindieMail.ControlClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Methods to read tindie file and write out USPS and PayPal lists.</p>
 <dl class="method">
-<dt id="kickMail.FindCSVFile.findCSVFileBrowse">
-<tt class="descname">findCSVFileBrowse</tt><big>(</big><em>startingPath</em><big>)</big><a class="headerlink" href="#kickMail.FindCSVFile.findCSVFileBrowse" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>startingPath</strong> &#8211; start browsing from this folder.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">path/file name of the file that was selected</td>
-</tr>
-</tbody>
-</table>
-<p>findCSVFileBrowse() - Dialog which locates the csv files using the file browser.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="kickMail.ControlClass">
-<em class="property">class </em><tt class="descclassname">kickMail.</tt><tt class="descname">ControlClass</tt><a class="headerlink" href="#kickMail.ControlClass" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="kickMail.ControlClass.countBoards">
-<tt class="descname">countBoards</tt><big>(</big><em>theInList</em><big>)</big><a class="headerlink" href="#kickMail.ControlClass.countBoards" title="Permalink to this definition">¶</a></dt>
-<dd><p>Count the boards and generate a snapshot of the data.</p>
-<ul class="simple">
-<li>4 - Shipping Amount, $5.00 USD</li>
-<li>5 - Reward Minimum,</li>
-<li>6 - Pledge Amount,</li>
-</ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theInList</strong> &#8211; The entire list</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">no value</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="kickMail.ControlClass.mapInputList">
-<tt class="descname">mapInputList</tt><big>(</big><em>theInList</em><big>)</big><a class="headerlink" href="#kickMail.ControlClass.mapInputList" title="Permalink to this definition">¶</a></dt>
-<dd><p>Map the column headers to an internal preferred ordering.
-Latest input format -</p>
-<ul class="simple">
-<li>Backer Number,</li>
-<li>Backer UID,</li>
-<li>Backer Name,</li>
-<li>Email,</li>
-<li>Shipping Country,</li>
-<li>Shipping Amount,</li>
-<li>Reward Minimum,</li>
-<li>Pledge Amount,</li>
-<li>Pledged At,</li>
-<li>Rewards Sent?,</li>
-<li>Pledged Status,</li>
-<li>Notes,</li>
-<li>Survey Response,</li>
-<li>Shipping Name,</li>
-<li>Shipping Address 1,</li>
-<li>Shipping Address 2,</li>
-<li>Shipping City,</li>
-<li>Shipping State,</li>
-<li>Shipping Postal Code,</li>
-<li>Shipping Country Name,</li>
-<li>Shipping Country Code</li>
-</ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theInList</strong> &#8211; The entire input list.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a mapping file with the columns mapped to a column number.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="kickMail.ControlClass.readInCSV">
-<tt class="descname">readInCSV</tt><big>(</big><em>inFile</em><big>)</big><a class="headerlink" href="#kickMail.ControlClass.readInCSV" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inFile</strong> &#8211; The pointer to the CSV file that gets read in.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the CSV file as a list.</td>
-</tr>
-</tbody>
-</table>
-<p>Read the input CSV file into a list.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kickMail.ControlClass.theExecutive">
-<tt class="descname">theExecutive</tt><big>(</big><big>)</big><a class="headerlink" href="#kickMail.ControlClass.theExecutive" title="Permalink to this definition">¶</a></dt>
-<dd><p>The code that calls the other code</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="kickMail.ControlClass.writeOutUSPSAddressBook">
-<tt class="descname">writeOutUSPSAddressBook</tt><big>(</big><em>outFilePtr</em>, <em>theList</em><big>)</big><a class="headerlink" href="#kickMail.ControlClass.writeOutUSPSAddressBook" title="Permalink to this definition">¶</a></dt>
+<dt id="TindieMail.ControlClass.createPayPalAddressList">
+<code class="descname">createPayPalAddressList</code><span class="sig-paren">(</span><em>theList</em><span class="sig-paren">)</span><a class="headerlink" href="#TindieMail.ControlClass.createPayPalAddressList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out the USPS Address book values.
 The output file is a CSV that can be read by the USPS Address Book Import.</p>
 <p>Output list -</p>
@@ -221,15 +106,103 @@ The output file is a CSV that can be read by the USPS Address Book Import.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="TindieMail.ControlClass.createUSPSAddressList">
+<code class="descname">createUSPSAddressList</code><span class="sig-paren">(</span><em>theList</em><span class="sig-paren">)</span><a class="headerlink" href="#TindieMail.ControlClass.createUSPSAddressList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write out the USPS Address book values.
+The output file is a CSV that can be read by the USPS Address Book Import.</p>
+<p>Output list -</p>
+<ul class="simple">
+<li>0 - First Name,</li>
+<li>1 - MI,</li>
+<li>2 - Last Name,</li>
+<li>3 - Company,</li>
+<li>4 - Address 1,</li>
+<li>5 - Address 2,</li>
+<li>6 - Address 3,</li>
+<li>7 - City,</li>
+<li>8 - State/Province,</li>
+<li>9 - ZIP/Postal Code,</li>
+<li>10 - Country,</li>
+<li>11 - Urbanization (relates to Puerto Rico)</li>
+<li>12 - Phone Number,</li>
+<li>13 - Fax Number,</li>
+<li>14 - E Mail,</li>
+<li>15 - Reference Number,</li>
+<li>16 - Nickname,,,</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outFilePtr</strong> &#8211; points to the output file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">no return value</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="TindieMail.ControlClass.mapInputList">
+<code class="descname">mapInputList</code><span class="sig-paren">(</span><em>theInList</em><span class="sig-paren">)</span><a class="headerlink" href="#TindieMail.ControlClass.mapInputList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map the column headers to an internal preferred ordering.
+Latest input format -
+* ID
+* Date
+* First Name
+* Last Name
+* Street
+* City
+* State / Province
+* Postal/Zip Code
+* Country
+* Additional Instructions
+* Email
+* Phone 
+* Refunded
+* Shipped
+* Pay Out Status
+* Paid Out
+* Shipping
+* Shipping Amount 
+* Tracking Number
+* Tindie Fee
+* Processing Fee
+* Product Name
+* Option Summary
+* Status
+* Quantity
+* Unit Price
+* Total Price
+* Model Number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theInList</strong> &#8211; The entire input list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a mapping file with the columns mapped to a column number.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="TindieMail.ControlClass.theExecutive">
+<code class="descname">theExecutive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TindieMail.ControlClass.theExecutive" title="Permalink to this definition">¶</a></dt>
+<dd><p>The code that calls the other code</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
-<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
 </ul>
 </div>
 
@@ -237,7 +210,7 @@ The output file is a CSV that can be read by the USPS Address Book Import.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
@@ -249,13 +222,21 @@ The output file is a CSV that can be read by the USPS Address Book Import.</p>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
-
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/index.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -272,21 +253,20 @@ The output file is a CSV that can be read by the USPS Address Book Import.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li><a href="#">pyFastCompFold 1.0 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
     <div class="footer">
-        &copy; Copyright 2014, Doug Gilliland.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      &copy;2014, Doug Gilliland.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
     </div>
+
+    
+
+    
   </body>
 </html>
