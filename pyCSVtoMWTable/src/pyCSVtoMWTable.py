@@ -16,8 +16,14 @@ if gtk.pygtk_version < (2,3,90):
 
 import csv
 import string
-import sys
 import os
+import sys
+
+sys.path.append('C:\\Users\\doug_000\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
+
+from dgProgDefaults import *
+from dgReadCSVtoList import *
+defaultPath = '.'
 
 from sys import argv
 
@@ -30,48 +36,36 @@ def errorDialog(errorString):
 	message.run()		# Display the dialog box and hang around waiting for the "OK" button
 	message.destroy()	# Takes down the dialog box
 	return
-			
-
-
-class FindCSVFile:
-	def findCSVFileBrowse(self, startingPath):
-		"""findCSVFileBrowse() - This is the dialog which locates the csv files
 	
-		:returns: path/name of the file that was selected
-		"""
-		csvFileString = "Select file"
-		dialog = gtk.FileChooserDialog(csvFileString,
-			None,
-			gtk.FILE_CHOOSER_ACTION_OPEN,
-			(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-			gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-		dialog.set_default_response(gtk.RESPONSE_OK)
-
-		if startingPath != '':
-			dialog.set_current_folder(startingPath)
-		filter = gtk.FileFilter()
-		filter.set_name("CSV files")
-		filter.add_pattern("*.csv")
-		dialog.add_filter(filter)
-
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-			retFileName = dialog.get_filename()
-			dialog.destroy()
-			return retFileName
-		elif response == gtk.RESPONSE_CANCEL:
-			print 'Closed, no files selected'
-			dialog.destroy()
-			exit()
-		dialog.destroy()
-
 class ControlClass:
-	def readInCSV(self, inFile):
-		csvReader = csv.reader(inFile)
-		list2Read = []
-		for row in csvReader:
-			list2Read.append(row)
-		return list2Read
+	def theExecutive(self):
+		"""The code that calls the other code
+		"""
+		global defaultPath
+		
+		defaultParmsClass = HandleDefault()
+		defaultParmsClass.initDefaults()
+		defaultPath = defaultParmsClass.getKeyVal('DEFAULT_PATH')
+		#print 'defaultPath',defaultPath
+
+		myCSVFileReadClass = ReadCSVtoList()	# instantiate the class
+		myCSVFileReadClass.setVerboseMode(True)	# turn on verbose mode until all is working 
+		theInList = myCSVFileReadClass.findOpenReadCSV(defaultPath,'Select CSV File')	# read in CSV into list
+		if theInList == []:
+			return False
+		fileToWrite = myCSVFileReadClass.getLastPathFileName()[0:-4] + '.MW'
+		#print 'fileToWrite',fileToWrite
+		try:
+			outFile = open(fileToWrite, 'wb')
+		except IOError:
+			errorDialog('ERROR - Cannot open the output file.\nIs the file already open?\nClose the file and return.')
+			try:
+				outFile = open(fileToWrite, 'wb')
+			except IOError:
+				errorDialog('ERROR - Tried again,  - Is the file already open?')
+				exit()
+		
+		self.writeOutMWTable(outFile, theInList)
 		
 	def writeOutMWTable(self, outFilePtr, theList):
 		outFilePtr.write('{| class="wikitable"\n')
@@ -85,32 +79,6 @@ class ControlClass:
 			firstRow = False
 			outFilePtr.write('|-\n')
 		outFilePtr.write('|}\n')
-
-	def theExecutive(self):
-		myCSV = FindCSVFile()
-		fileToRead = myCSV.findCSVFileBrowse('.')
-
-		fileToWrite = fileToRead[:-4] + ".MW"
-
-		try:
-			inFile = open(fileToRead, 'rb')
-		except IOError:
-			errorDialog('ERROR - Cannot open input file')
-			exit()
-		
-		try:
-			outFile = open(fileToWrite, 'wb')
-		except IOError:
-			errorDialog('ERROR - Cannot open the output file.\nIs the file already open?\nClose the file and return.')
-			try:
-				outFile = open(fileToWrite, 'wb')
-			except IOError:
-				errorDialog('ERROR - Tried again,  - Is the file already open?')
-				exit()
-
-		theInList = self.readInCSV(inFile)
-		
-		self.writeOutMWTable(outFile, theInList)
 
 class UIManager:
 	"""The UI manager

@@ -41,14 +41,15 @@ if gtk.pygtk_version < (2,3,90):
 
 import csv
 import string
-import sys
 import os
+import sys
 
 sys.path.append('C:\\Users\\doug_000\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
 
 from dgProgDefaults import *
 from dgReadCSVtoList import *
 from dgWriteListtoCSV import *
+defaultPath = '.'
 
 shippingFirstNameColumn = 99
 shippingLastNameColumn = 99
@@ -59,7 +60,6 @@ countryColumn = 99
 zipColumn = 99
 emailColumn = 99
 rewardsSentColumn = 99
-defaultPath = '.'
 
 def errorDialog(errorString):
 	"""Prints an error message as a dialog box.
