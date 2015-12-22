@@ -1,5 +1,5 @@
-# pyCompFolders.py - Compare two directory trees
-
+""" pyCompFolders.py - Compare two directory trees
+"""
 import pygtk
 pygtk.require('2.0')
 
