@@ -196,7 +196,7 @@ class writeOutToCSVFile:
 		:returns: the sorted list
 		"""
 		print 'Sorting lists'
-		dirFileList = sorted(dirFileList1, key = lambda errs: errs[0])		# sort by Relative Path
+		dirFileList = sorted(inList, key = lambda errs: errs[0])		# sort by first column
 		return dirFileList
 
 import pygtk
