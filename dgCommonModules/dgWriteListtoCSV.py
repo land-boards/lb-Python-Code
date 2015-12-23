@@ -66,8 +66,11 @@ class WriteListtoCSV():
 			return
 		outFilePtr = self.openCSVFile(outFileNm)	# start at the same folder as the input file was located
 		self.writeOutputHeader(outFilePtr,header)			# write out the header
-		errorsColumnBom = csvListToWrite
-		outFilePtr.writerows(errorsColumnBom)
+		if self.test_dim(csvListToWrite) == 1:
+			outFilePtr.writerow(csvListToWrite)
+		else:
+			#print csvListToWrite
+			outFilePtr.writerows(csvListToWrite)
 		
 	def openCSVFile(self, csvName):
 		"""Creates an output CSV file and has the functions to write to the CSV file

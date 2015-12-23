@@ -107,13 +107,14 @@ class ControlClass:
 		defaultParmsClass = HandleDefault()
 		defaultParmsClass.initDefaults()
 		defaultPath = defaultParmsClass.getKeyVal('DEFAULT_PATH')
-		print 'defaultPath',defaultPath
+		# print 'defaultPath',defaultPath
 		myCSVFileReadClass = ReadCSVtoList()	# instantiate the class
 		myCSVFileReadClass.setVerboseMode(True)	# turn on verbose mode until all is working 
 
 		doneReading = False
 		firstLine = []
 		accumList = []
+		endList = []
 		while not doneReading:		# if the list is a Kickstarter list then keep reading until cancel
 			theInList = myCSVFileReadClass.findOpenReadCSV(defaultPath,'Select CSV File')	# read in CSV into list
 			if theInList == []:
@@ -128,10 +129,11 @@ class ControlClass:
 				firstLine = theInList[0]
 				for row in theInList[1:]:
 					accumList.append(row)
-		endList = firstLine
-		endList += accumList
-		print 'list is lines', len(endList)
-#		print 'endList', endList
+		endList.append(firstLine)
+		for row in accumList:
+			endList.append(row)
+		#print 'list is lines', len(endList)
+		#print 'endList', endList
 
 		if inFileType == 1:		# Kickstarter
 			self.mapKickInList(endList[0])
@@ -139,8 +141,8 @@ class ControlClass:
 			uspsList = self.createKickUSPSAddrList(endList[1:])
 			payPalList = self.createKickPayPalAddrList(endList[1:])
 		elif inFileType == 2:	# Tindie
-			print 'first row of list is', endList[0]
-			print 'second row of list is', endList[1]
+			#print 'first row of list is', endList[0]
+			#print 'second row of list is', endList[1]
 			self.mapTindieInList(endList[0])
 			uspsList = self.createTindieUSPSAddrList(endList[1:])
 			payPalList = self.createTindiePayPayAddrList(endList[1:])
@@ -167,6 +169,7 @@ class ControlClass:
 			uspsHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
 			outFileClass.writeOutList(fileToWriteUSPS, uspsHeader, uspsList)
 		if payPalList != []:
+			#print 'len of payPalList', len(payPalList)
 			payPalHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
 			outFileClass.writeOutList(fileToWritePayPal, payPalHeader, payPalList)
 		
@@ -282,7 +285,7 @@ class ControlClass:
 		unshippedBackers = 0
 		for row in theInList:
 			num = 0.0
-			print 'row',row
+			#print 'row',row
 			shippingString = row[shippingAmtColumn][1:-4]
 			rewardString = row[rewardMinimumColumn][1:-4]
 			pledgeString = row[pledgeAmountColumn][1:-4]
@@ -387,7 +390,7 @@ class ControlClass:
 					outLine.append('')
 					outLine.append(row[emailColumn])
 					outList.append(outLine)
-		return outLine
+		return outList
 
 	def createKickPayPalAddrList(self, theList):
 		"""Write out the USPS Address book values.
@@ -430,6 +433,7 @@ class ControlClass:
 		global zipColumn
 		global surveyResponseColumn
 		outLine = []
+		outList = []
 		for row in theList[1:]:
 			if len(row) > 12:
 				# print 'country', row[countryColumn]
@@ -456,7 +460,8 @@ class ControlClass:
 					outLine.append('')
 					outLine.append('')
 					outLine.append(row[emailColumn])
-					outLine.append(outLine)
+					outList.append(outLine)
+		return outList
 					
 	def determineInputFileType(self, theInList):
 		"""Look at the top row of the file to determine the input file type.
@@ -468,7 +473,7 @@ class ControlClass:
 		elif theInList[0] == '\xef\xbb\xbfID' or theInList[0] == 'ID':		# Tindie
 			return 2
 		else:
-			print 'first line', theInList
+			#print 'first line', theInList
 			errorDialog('determineInputFileType: Unable to detect the input file format\nExiting')
 			exit()
 	
