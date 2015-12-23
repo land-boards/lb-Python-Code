@@ -1,7 +1,6 @@
 """
 pyCSVtoMWTable.py
 Convert a CSV into a MediaWiki table.
-
 """
 
 import pygtk
@@ -154,7 +153,7 @@ class UIManager:
 		"""The about dialog
 		"""
 		message = gtk.MessageDialog(type=gtk.MESSAGE_INFO, buttons=gtk.BUTTONS_OK)
-		message.set_markup("About pyCSVtoMWTable\nAuthor: Doug Gilliland\n(c) 2014 - AAC - All rights reserved\npyCSVtoMWTable Process Deltek T and E Charge Account Report")
+		message.set_markup("About pyCSVtoMWTable\n(c) 2014 - Doug Gilliland\nAAC - All rights reserved\npyCSVtoMWTable Create a mediawiki table frm a CV file")
 		message.run()
 		message.destroy()
 		return

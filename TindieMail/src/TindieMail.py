@@ -391,7 +391,7 @@ class UIManager:
 		"""The about dialog
 		"""
 		message = gtk.MessageDialog(type=gtk.MESSAGE_INFO, buttons=gtk.BUTTONS_OK)
-		message.set_markup("About TindieMail\nAuthor: Doug Gilliland\n(c) 2015 - land-boards.com - All rights reserved\nTindieMail - Process Kickstarter Backer Reports")
+		message.set_markup("About TindieMail\nAuthor: Doug Gilliland\n(c) 2015 - land-boards.com - All rights reserved\nTindieMail - Process Timdie orders.cav.\nCreates USPS and PayPal mail order list.")
 		message.run()
 		message.destroy()
 		return
