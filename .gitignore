@@ -5,3 +5,7 @@ TindieMail/src/Defaults.csv
 TindieMail/tests/orders_PayPal.csv
 TindieMail/tests/orders_USPS.csv
 pyPayPal/src/Defaults.csv
+pyKickTinMail/src/Defaults.csv
+pyKickTinMail/TestData/Kickstarter Backer Report - $11.00 USD reward - Jan 31 08pm-TesrFile.csv
+*.csv
+*.pyc
