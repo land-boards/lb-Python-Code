@@ -129,7 +129,7 @@ class ControlClass:
 				firstLine = theInList[0]
 				for row in theInList[1:]:
 					accumList.append(row)
-		endList.append(firstLine)
+		endList = firstLine
 		for row in accumList:
 			endList.append(row)
 		#print 'list is lines', len(endList)
@@ -525,6 +525,7 @@ class ControlClass:
 		#print header
 		myOutList = []
 		itemNum = 0
+		#print 'mapTindieInList: header',header
 		for item in header:
 			if item == 'Email':
 				emailColumn = itemNum
@@ -536,6 +537,7 @@ class ControlClass:
 				countryColumn = itemNum
 			elif item == 'Shipped':
 				rewardsSentColumn = itemNum
+				#print 'shipped column mapped'
 			elif item == 'Shipping Name':
 				shippingNameColumn = itemNum
 			elif item == 'Street':
@@ -591,6 +593,10 @@ class ControlClass:
 		global rewardsSentColumn
 		outList = []
 		for entryInRow in theList:
+			#print entryInRow
+			#print 'rewardsSentColumn',rewardsSentColumn
+			#print 'countryColumn',countryColumn
+			#print '',
 			if entryInRow == []:
 				break
 			if ((entryInRow[rewardsSentColumn] == 'False') or (entryInRow[rewardsSentColumn] == 'FALSE')) and (entryInRow[countryColumn] != 'United States'):
