@@ -129,11 +129,15 @@ class ControlClass:
 				firstLine = theInList[0]
 				for row in theInList[1:]:
 					accumList.append(row)
-		endList = firstLine
-		for row in accumList:
-			endList.append(row)
+		if inFileType == 1:
+			endList.append(firstLine)
+			endList += accumList
+		elif inFileType == 2:
+			endList = firstLine
+			for row in accumList:
+				endList.append(row)
 		#print 'list is lines', len(endList)
-		#print 'endList', endList
+		print 'theExecutive: endList', endList
 
 		if inFileType == 1:		# Kickstarter
 			self.mapKickInList(endList[0])
@@ -283,9 +287,10 @@ class ControlClass:
 		pledgeTotal = 0.0
 		backers = 0
 		unshippedBackers = 0
+		#print 'countKickBoards: theInList',theInList
 		for row in theInList:
 			num = 0.0
-			#print 'row',row
+			# print 'countKickBoards: row',row
 			shippingString = row[shippingAmtColumn][1:-4]
 			rewardString = row[rewardMinimumColumn][1:-4]
 			pledgeString = row[pledgeAmountColumn][1:-4]
@@ -295,7 +300,7 @@ class ControlClass:
 			rewardTotal += rewardNum
 			pledgeNum = float(pledgeString)
 			pledgeTotal += pledgeNum
-			# print 'boards', (pledgeNum - shippingNum) / rewardNum
+			# print 'countKickBoards: boards', (pledgeNum - shippingNum) / rewardNum
 			boardsCount += (pledgeNum - shippingNum) / rewardNum
 			# print shippingString, rewardString, pledgeString, (pledgeNum - shippingNum) / rewardNum
 			if row[rewardsSentColumn] != 'Sent':
@@ -305,9 +310,7 @@ class ControlClass:
 		outStr = 'Total Backers = '
 		outStr += str(backers)
 		outStr += '\nTotal Rewards = '
-		#{0:.3f}.'.format(boardsCount)
 		outStr += '{0:.2f}'.format(boardsCount)
-#		outStr += str(boardsCount)
 		outStr += '\n-\nUnshipped Backers = '
 		outStr += str(unshippedBackers)
 		outStr += '\nUnshipped Boards = '
@@ -470,10 +473,12 @@ class ControlClass:
 		"""
 		if theInList[0] == 'Backer Id':	# Kickstarter
 			return 1
+		elif theInList[0] == '\xef\xbb\xbfBacker Number' and theInList[1] == 'Backer UID':	# Kickstarter
+			return 1
 		elif theInList[0] == '\xef\xbb\xbfID' or theInList[0] == 'ID':		# Tindie
 			return 2
 		else:
-			#print 'first line', theInList
+			print 'first line', theInList
 			errorDialog('determineInputFileType: Unable to detect the input file format\nExiting')
 			exit()
 	
