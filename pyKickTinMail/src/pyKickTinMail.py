@@ -57,6 +57,7 @@ import csv
 import string
 import os
 import sys
+import json
 
 sys.path.append('C:\\Users\\doug_000\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
 sys.path.append('C:\\Users\\DGilliland\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
@@ -137,7 +138,7 @@ class ControlClass:
 			for row in accumList:
 				endList.append(row)
 		#print 'list is lines', len(endList)
-		print 'theExecutive: endList', endList
+		#print 'theExecutive: endList', endList
 
 		if inFileType == 1:		# Kickstarter
 			self.mapKickInList(endList[0])
@@ -166,17 +167,34 @@ class ControlClass:
 
 		fileToWriteUSPS = defaultPath + "orders_USPS.csv"
 		fileToWritePayPal = defaultPath + "orders_PayPal.csv"
+		fileToWriteJSON = defaultPath + "orders_USPS.json"
 
 		outFileClass = WriteListtoCSV()
 		outFileClass.appendOutFileName('.csv')
 		if uspsList != []:
 			uspsHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
 			outFileClass.writeOutList(fileToWriteUSPS, uspsHeader, uspsList)
+			self.writeOutJSON(fileToWriteJSON, uspsHeader, uspsList)
 		if payPalList != []:
 			#print 'len of payPalList', len(payPalList)
 			payPalHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
 			outFileClass.writeOutList(fileToWritePayPal, payPalHeader, payPalList)
-		
+
+	def writeOutJSON(self, fileNameJSON, header, data):
+		objects = self.flat_to_objects(header, data)
+		json_lines = '\n\n'.join(json.dumps(obj) for obj in objects)
+		with open(fileNameJSON, 'w') as f:
+			f.write(json_lines)
+
+	def flat_to_objects(self, js_like_header, data):
+		return map(lambda row: self.row_to_dict(js_like_header, row), data)
+
+	def row_to_dict(self, js_like_header, row):
+		result = {}
+		for (heading, data) in zip(js_like_header, row):
+			result[heading] = data
+		return result
+
 	def mapKickInList(self, header):
 		"""Map the column headers to an internal preferred ordering.
 		Latest input format -
@@ -364,7 +382,7 @@ class ControlClass:
 		global zipColumn
 		global surveyResponseColumn
 		outList = []
-		for row in theList[1:]:
+		for row in theList:
 			if len(row) > 12:
 				if (row[rewardsSentColumn] == '') and (row[address1Column] != '') and (row[countryColumn] != 'United States'):
 					outLine = []
@@ -472,6 +490,8 @@ class ControlClass:
 		:params theInList: Top row of the file
 		"""
 		if theInList[0] == 'Backer Id':	# Kickstarter
+			return 1
+		elif theInList[0] == 'Backer Number':	# Kickstarter
 			return 1
 		elif theInList[0] == '\xef\xbb\xbfBacker Number' and theInList[1] == 'Backer UID':	# Kickstarter
 			return 1
@@ -610,9 +630,27 @@ class ControlClass:
 				outLine.append('')
 				outLine.append(entryInRow[shippingLastNameColumn])
 				outLine.append('')
-				outLine.append(entryInRow[address1Column])
-				outLine.append('')
-				outLine.append('')
+				numAddrLines = string.count(entryInRow[address1Column],'\n') + 1
+				if numAddrLines == 1:
+					firstAddrLine = entryInRow[address1Column]
+					secondAddrLine = ''
+					thirdAddrLine = ''
+				elif numAddrLines == 2:
+					firstAddrLine = entryInRow[address1Column][0:string.find(entryInRow[address1Column],'\n')-1]
+					offset1 = string.find(entryInRow[address1Column],'\n')
+					secondAddrLine = entryInRow[address1Column][offset1+1:]
+					thirdAddrLine = ''
+				elif numAddrLines == 3:
+					firstAddrLine = entryInRow[address1Column][0:string.find(entryInRow[address1Column],'\n')-1]
+					offset1 = string.find(entryInRow[address1Column],'\n')
+					offset2 = string.find(entryInRow[address1Column][offset1+1:],'\n')
+					secondAddrLine = entryInRow[address1Column][offset1+1:offset1+offset2]
+					thirdAddrLine = entryInRow[address1Column][offset1+offset2+2:]
+				else:
+					errorDialog('Too many address lines')
+				outLine.append(firstAddrLine)
+				outLine.append(secondAddrLine)
+				outLine.append(thirdAddrLine)
 				outLine.append(entryInRow[cityColumn])
 				outLine.append(entryInRow[stateColumn])
 				outLine.append(entryInRow[zipColumn])
@@ -672,9 +710,27 @@ class ControlClass:
 				outLine.append('')
 				outLine.append(row[shippingLastNameColumn])
 				outLine.append('')
-				outLine.append(row[address1Column])
-				outLine.append('')
-				outLine.append('')
+				numAddrLines = string.count(row[address1Column],'\n') + 1
+				if numAddrLines == 1:
+					firstAddrLine = row[address1Column]
+					secondAddrLine = ''
+					thirdAddrLine = ''
+				elif numAddrLines == 2:
+					firstAddrLine = row[address1Column][0:string.find(row[address1Column],'\n')-1]
+					offset1 = string.find(row[address1Column],'\n')
+					secondAddrLine = row[address1Column][offset1+1:]
+					thirdAddrLine = ''
+				elif numAddrLines == 3:
+					firstAddrLine = row[address1Column][0:string.find(row[address1Column],'\n')-1]
+					offset1 = string.find(row[address1Column],'\n')
+					offset2 = string.find(row[address1Column][offset1+1:],'\n')
+					secondAddrLine = row[address1Column][offset1+1:offset1+offset2]
+					thirdAddrLine = row[address1Column][offset1+offset2+2:]
+				else:
+					errorDialog('Too many address lines')
+				outLine.append(firstAddrLine)
+				outLine.append(secondAddrLine)
+				outLine.append(thirdAddrLine)
 				outLine.append(row[cityColumn])
 				outLine.append(row[stateColumn])
 				outLine.append(row[zipColumn])

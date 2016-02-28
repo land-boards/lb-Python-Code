@@ -1,175 +1,357 @@
-<p>&nbsp;</p>
-<h1><span style="font-size: 115%;">Integrated Theremin</span></h1>
-<p>&nbsp;</p>
-<p><img id="pbImage918288" src="/f/iTheremin-2.jpg" alt="" /></p>
-<p>&nbsp;</p>
-<p><span style="font-size: 115%;">The Integrated Theremin combines five of the Theremin boards into one design. The boards included are:</span></p>
-<p>&nbsp;</p>
+<h1><span style="font-size: 130%;">The Life of Jesus</span></h1>
+<h2><span style="font-size: 130%;">&nbsp;</span></h2>
+<h2><span style="font-size: 130%;">Pre-existence of Jesus</span></h2>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
 <ul>
-<li><span style="font-size: 115%;"><a href="/w/page/55223153/MiniDuino">MiniDuino</a></span></li>
+<li><a href="/The+Bible+Passages+on+the+Pre-existence+of+Jesus"><span style="font-size: 130%;">The Bible Passages on the Pre-existence of Jesus</span></a></li>
+<li><a href="/Christophanies-(Old-Testament-appearances-of-Jesus)"><span style="font-size: 130%;">Christophanies (Old Testament appearances of Jesus)&nbsp;</span></a></li>
+<li><a href="/Messianic-Prophecies-%E2%80%93-about-330-in-Old-Testament"><span style="font-size: 130%;">Messianic Prophecies &ndash; about 330 in Old Testament&nbsp;</span></a></li>
+<li><a href="/New-Testament-Uses-of-the-Messianic-Passages"><span style="font-size: 130%;">New Testament Uses of the Messianic Passages&nbsp;</span></a></li>
+<li><a href="/Titles-of-Jesus"><span style="font-size: 130%;">Titles of Jesus</span></a></li>
+<li><a href="/His-Role-in-Creation"><span style="font-size: 130%;">His Role in Creation&nbsp;</span></a></li>
+<li><a href="/Messianic-expectations-4-BC-and-other-first-century-Christs"><span style="font-size: 130%;">Messianic expectations 4 BC and other first century "Christs"&nbsp;</span></a></li>
+<li><span style="font-size: 130%;">Cultic theories&nbsp;</span> </li>
 <ul>
-<li><span style="font-size: 115%;">16 MHz ATMega 328 processor</span></li>
-<li><span style="font-size: 115%;">Arduino UNO Code and IDE Compatible</span></li>
-<li><span style="font-size: 115%;">TFT Display connector <br /></span></li>
-</ul>
-<li><a href="/w/page/55092684/FTDI%20USB%20TTL" search_id="undefined"><span style="font-size: 115%;">FTDI</span></a></li>
-<ul>
-<li><span style="font-size: 115%;">USB Interface</span></li>
-<li><span style="font-size: 115%;">Board is <strong>not </strong>powerable from FTDI</span> </li>
-</ul>
-<li><span style="font-size: 115%;"><a href="/w/page/63417535/HVDigitalPot2">HV Digital Pots</a></span></li>
-<ul>
-<li><span style="font-size: 115%;">10-bits, 1024 steps<br /></span></li>
-<li><span style="font-size: 115%;">Control Frequency and Voltage <br /></span></li>
-</ul>
-<li><span style="font-size: 115%;"><a href="/w/page/55033770/AudioAmp386">Audio Amplifier 386</a></span></li>
-<ul>
-<li><span style="font-size: 115%;">3/4 Watt Output</span></li>
-<li><span style="font-size: 115%;">Standard RCA phone style connector <br /></span></li>
-</ul>
-<li><a href="/w/page/63697225/XR%202206%20X2"><span style="font-size: 115%;">XR-2206 Voltage Controlled Oscillator</span></a></li>
-<ul>
-<li><span style="font-size: 115%;">Waveform Adjustment pot from X3 version of XR-2206 <br /></span></li>
+<li><a href="/Jehovah%E2%80%99s-Witnesses-%E2%80%93-Jesus-was-an-Angel"><span style="font-size: 130%;">Jehovah&rsquo;s Witnesses &ndash; "Jesus was an Angel"&nbsp;</span></a></li>
+<li><a href="/LDS+%E2%80%93+We+all+pre-existed"><span style="font-size: 130%;">LDS &ndash; "We all pre-existed"&nbsp;</span></a></li>
+<li><a href="/Jesus-Seminar-%E2%80%93-Jesus-as-one-sided-man%2C-which-side-today"><span style="font-size: 130%;">Jesus Seminar &ndash; Jesus, as "one sided man", which side today?&nbsp;</span></a></li>
+<li><a href="/Wells+-+Jesus+Never+Existed+at+all"><span style="font-size: 130%;">Well's - Jesus Never Existed at all&nbsp;</span></a></li>
+<li><a href="/Muslim+-+God+has+no+son"><span style="font-size: 130%;">Muslim - God has no son&nbsp;</span></a></li>
 </ul>
 </ul>
-<p>&nbsp;</p>
-<p><span style="font-size: 115%;">The board has additional features including:</span></p>
-<p>&nbsp;</p>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
+<h3><span style="font-size: 130%;">Christian Position&nbsp;</span></h3>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
 <ul>
-<li><span style="font-size: 115%;">Advanced Power Supply Design</span></li>
-<ul>
-<li><span style="font-size: 115%;">Single +12V power supply input</span></li>
-<li>+<span style="font-size: 115%;">5V High-Efficiency Switcher to drive logic and High Intensity <a href="/w/page/62992363/IR%20Sensor">IR Sensors</a></span></li>
-<ul>
-<li><span style="font-size: 115%;">Previous (separate board) design had a hot regulator on the MiniDuino </span></li>
-<ul>
-<li>D<span style="font-size: 115%;">ue to the current drop of the +12V or +9V to 5V </span></li>
-<ul>
-<li><span style="font-size: 115%;">At 200 mA due to the IR sensor cards<br /></span></li>
+<li><a href="/Two-natures-one-Divine-Person"><span style="font-size: 130%;">Two natures, one Divine Person</span></a></li>
+<li><a href="/Second-Person-of-the-Trinity"><span style="font-size: 130%;">Second Person of the Trinity</span></a></li>
+<li><a href="/Is-the-doctrine-of-the-Trinity-Rational"><span style="font-size: 130%;">Is the doctrine of the Trinity Rational?</span></a></li>
 </ul>
-</ul>
-<li><span style="font-size: 115%;">Total power Measured at 12V, 130 mA =&nbsp; 1.6 Watts</span><span style="font-size: 115%;"> <br /></span></li>
-</ul>
-</ul>
-<li><span style="font-size: 115%;">Dedicated connectors for <a href="/w/page/62992363/IR%20Sensor">IR Sensors</a></span></li>
-<li><span style="font-size: 115%;">Direct (DC) coupling for Voltage Controlled Oscillator to Audio Amplifier</span></li>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
+<h3><span style="font-size: 130%;">Human Ancestry</span></h3>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
 <ul>
-<li><span style="font-size: 115%;">AC cap in series with the previous design led to clipping of the audio <br /></span></li>
-</ul>
-<li><span style="font-size: 115%;">Added connection to allow Microprocessor to monitor (via A/D) the VCO level for smoother volume control transitions</span></li>
+<li><a href="/Genealogies-of-Jesus"><span style="font-size: 130%;">Genealogies of Jesus</span></a> </li>
 <ul>
-<li><span style="font-size: 115%;">Write all of the D/A serial bits then cycle the FSYNC line to load the D/A <br /></span></li>
-<li><span style="font-size: 115%;">Voltage divider</span></li>
+<li><a href="/Old-Testament-genealogies-%E2%80%93-Jesus-at-end"><span style="font-size: 130%;">Old Testament genealogies &ndash; Jesus at end</span></a></li>
+<li><a href="/His-hereditary-right-to-be-King-of-Israel"><span style="font-size: 130%;">His hereditary right to be King of Israel</span></a></li>
+</ul>
+<li><a href="/Biography-of-Mary-His-mother"><span style="font-size: 130%;">Biography of Mary His mother</span></a></li>
+<li><a href="/Biography+of+Joseph+His+step-father"><span style="font-size: 130%;">Biography of Joseph His step-father</span></a></li>
+</ul>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
+<h3><span style="font-size: 130%;">Virginal Conception of Jesus</span></h3>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
 <ul>
-<li><span style="font-size: 115%;">Average voltage into divider is 6V</span></li>
-<li><span style="font-size: 115%;">Divider resistors 2.2K, 4.7K</span></li>
-<li><span style="font-size: 115%;">Divider ratio is (2.2/(2.2+4.7)) = 0.31884</span></li>
-<li><span style="font-size: 115%;">6V * divider ratio = 1.913 V</span></li>
-<li><span style="font-size: 115%;">1.913V * (1023 counts/5V) =&nbsp; 391 counts</span></li>
-<li><span style="font-size: 115%;">Peak voltage is 12V - scales to 3.82V which is safely below the 5V input of the A/D<br /></span></li>
+<li><span style="font-size: 130%;">Role of the Holy Spirit</span></li>
+<li><span style="font-size: 130%;">Role of Mary (Theotokos)</span></li>
+<li><span style="font-size: 130%;">Mother of God?</span></li>
+<li><a href="/Ever-virgin"><span style="font-size: 130%;">Ever-virgin?</span></a></li>
+<li><span style="font-size: 130%;">Role of Joseph/paternity claims</span></li>
+<li><span style="font-size: 130%;">Roles of other relatives/John the Baptist</span></li>
+<li><span style="font-size: 130%;">Jewish claims</span></li>
+<li><span style="font-size: 130%;">Historical Records of the Life of Jesus</span></li>
+<li><span style="font-size: 130%;">Gospels 3 + 1</span></li>
+<li><span style="font-size: 130%;">Comparable historical people &ndash; contemporary records</span></li>
+<li><span style="font-size: 130%;">Josephus</span></li>
+<li><span style="font-size: 130%;">Tacitus</span></li>
+<li><span style="font-size: 130%;">Early Church Writers</span></li>
 </ul>
-<li><span style="font-size: 115%;">Measurements:<br /></span></li>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
+<h3><span style="font-size: 130%;">Birth of Jesus</span></h3>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
 <ul>
-<li><span style="font-size: 115%;">Minimum count = 278</span></li>
-<li><span style="font-size: 115%;">Maximum count = 414</span></li>
-<li><span style="font-size: 115%;">Average count = 346</span></li>
+<li><a href="/Roman-Census-information"><span style="font-size: 130%;">Roman Census information</span></a></li>
+<li><span style="font-size: 130%;">Christmas and Dec 25th</span></li>
+<li><span style="font-size: 130%;">Naming of Jesus</span></li>
+<li><span style="font-size: 130%;">Humble beginnings</span></li>
+<li><span style="font-size: 130%;">Betrothal v. marriage</span></li>
+<li><span style="font-size: 130%;">Visitors</span></li>
+<li><span style="font-size: 130%;">Wise Men</span></li>
+<li><span style="font-size: 130%;">Shepherds</span></li>
+<li><span style="font-size: 130%;">Little Drummer Boy? Other cultural urban legends</span></li>
+<li><span style="font-size: 130%;">Death of the Sons/Herod</span></li>
+<li><span style="font-size: 130%;">About Bethlehem</span></li>
+<li><span style="font-size: 130%;"><a href="/Circumcision">Circumcision</a>/dedication of Jesus</span></li>
+<li><span style="font-size: 130%;">Resources: Raymond E. Brown, "The Birth of the Messiah"</span></li>
 </ul>
-<li><span style="font-size: 115%;">Measured the average voltage and it wasn't 6V as expected, it was 5.3V which correlates well to the 346 count <br /></span></li>
-<li><span style="font-size: 115%;">Where is the transition supposed to happen with respect to the waveform to write data to the pots?&nbsp;</span></li>
-<li><span style="font-size: 115%;">A/D sample rate is around 10K samples/sec</span></li>
-<li><span style="font-size: 115%;">If the max freq is 1KHz that means that the waveform is only sampled 10 times per cycle so there could be a large step in volume </span></li>
-<li><span style="font-size: 115%;">Start up question as well - the board needs to be autocalibrated at startup </span></li>
-<li><span style="font-size: 115%;">May need hardware assist to cycle FSYNC at zero crossing</span></li>
-<li><span style="font-size: 115%;">May want to connect the data and clock to the MOSI and SCK lines instead of PIO lines to speed up transfers<br /></span></li>
-<li><span style="font-size: 115%;">May want to use logic analyzer to debug<br /></span></li>
-</ul>
-<li><span style="font-size: 115%;">Board layout is slightly under 50 mm x 100 mm to use SeeedStudio service ($30 for 10 pcs). </span></li>
-<li><span style="font-size: 115%;">Board has four mounting holes</span></li>
-<li><span style="font-size: 115%;">New schematic design using hierarchical sheets</span></li>
-<li><span style="font-size: 115%;">Split Power and ground planes (+12V/+5V) at center of card with jumper to connect GNDs </span></li>
-</ul>
-<p>&nbsp;</p>
-<h2><span style="font-size: 115%;">Block Diagram</span></h2>
-<p>&nbsp;</p>
-<p><img id="pbImage806131" src="/f/iThereminBlockX1.png" alt="" width="820" /></p>
-<p>&nbsp;</p>
-<h2><span style="font-size: 115%;">Connectors</span></h2>
-<p>&nbsp;</p>
-<p><span style="font-size: 115%;">J1 - Power Connector</span></p>
-<ol>
-<li><span style="font-size: 115%;">+12V</span></li>
-<li><span style="font-size: 115%;">Ground<br /></span></li>
-</ol>
-<p>&nbsp;</p>
-<p><span style="font-size: 115%;">J2 -Analog Output - RCA connector<br /></span></p>
-<p>&nbsp;</p>
-<p><span style="font-size: 115%;">J3 -USB-B Mini<br /></span></p>
-<p>&nbsp;</p>
-<p><span style="font-size: 115%;">J4 - 5-Way Switch</span></p>
-<ol>
-<li><span style="font-size: 115%;">Ground</span></li>
-<li><span style="font-size: 115%;">Voltage (+5V)</span></li>
-<li><span style="font-size: 115%;">Signal (Keypad)<br /></span></li>
-</ol>
-<p>&nbsp;</p>
-<p><span style="font-size: 115%;">J5 -Volume GVVS<br /></span></p>
-<ol>
-<li><span style="font-size: 115%;">Ground</span></li>
-<li><span style="font-size: 115%;">Emitter Voltage (5V @ 100 mA)<br /></span></li>
-<li><span style="font-size: 115%;">Sensor Voltage</span></li>
-<li><span style="font-size: 115%;">Sensor Output</span></li>
-</ol>
-<p>&nbsp;</p>
-<p><span style="font-size: 115%;">J6 - Frequency GVVS<br /></span></p>
-<ol>
-<li><span style="font-size: 115%;">Ground</span></li>
-<li><span style="font-size: 115%;">Emitter Voltage</span><span style="font-size: 115%;"> (5V @ 100 mA)</span></li>
-<li><span style="font-size: 115%;">Sensor Voltage</span></li>
-<li><span style="font-size: 115%;">Sensor Output</span></li>
-</ol>
-<p>&nbsp;</p>
-<p><span style="font-size: 115%;">J7 -Analog Spares<br /></span></p>
-<ol>
-<li><span style="font-size: 115%;">AD5</span></li>
-<li><span style="font-size: 115%;">AD4</span></li>
-<li><span style="font-size: 115%;">AREF</span></li>
-<li><span style="font-size: 115%;">GND</span></li>
-<li><span style="font-size: 115%;">AREF</span></li>
-<li><span style="font-size: 115%;">VCC</span></li>
-</ol>
-<p>&nbsp;</p>
-<p><span style="font-size: 115%;">J8 - TFT LCD</span></p>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
+<h3><span style="font-size: 130%;">Youth of Jesus</span></h3>
+<p><span style="font-size: 130%;">&nbsp;</span></p>
 <ul>
-</ul>
-<ol>
-<li><span style="font-size: 115%;">VCC</span></li>
-<li><span style="font-size: 115%;">Backlight (GND)</span></li>
-<li><span style="font-size: 115%;">RESET</span></li>
-<li><span style="font-size: 115%;">RS</span></li>
-<li><span style="font-size: 115%;">MISO</span></li>
-<li><span style="font-size: 115%;">MOSI</span></li>
-<li><span style="font-size: 115%;">SCK</span></li>
-<li><span style="font-size: 115%;">LCDCS</span></li>
-<li><span style="font-size: 115%;">SDCS</span></li>
-<li><span style="font-size: 115%;">GND</span></li>
-</ol> 
-<ul>
+<li><span style="font-size: 130%;">Flight to Egypt (Moses parallels)</span></li>
+<li><span style="font-size: 130%;">Life in Nazareth</span></li>
+<li><span style="font-size: 130%;">Visit to Jerusalem at 12 &ndash; self-perception</span></li>
+<li><span style="font-size: 130%;">Pre-ministry</span></li>
+<li><span style="font-size: 130%;">Did Jesus visit Britain, India, North America?</span></li>
+<li><span style="font-size: 130%;">Was Jesus Married?</span></li>
+<li><span style="font-size: 130%;">Temptation by Satan</span></li>
+<li><span style="font-size: 130%;">Wedding at Canaan</span></li>
+<li><span style="font-size: 130%;">Way paving ministry of John the Baptist</span></li>
+<li><span style="font-size: 130%;">Half-Brothers and Half-sisters of Jesus (Perpetual Virginity of Mary?)</span></li>
 </ul>
 <p>&nbsp;</p>
-<p><span style="font-size: 115%;">J9(X2)/J10(X1) - Ground jumper</span></p>
-<p style="margin-left: 40px;"><span style="font-size: 115%;">1-2 - GND to GNDA</span></p>
+<h3><span style="font-size: 130%;">Calling of Jesus</span></h3>
 <p>&nbsp;</p>
-<p><span style="font-size: 115%;">RV1 - Waveform Adjust</span></p>
+<ul>
+<li><span style="font-size: 130%;">Age at calling about 30 years</span></li>
+<li><span style="font-size: 130%;">Adoptionism rejected</span></li>
+<li><span style="font-size: 130%;">Baptism of Jesus</span></li>
+<li><span style="font-size: 130%;">Role of John the Baptist</span></li>
+<li><span style="font-size: 130%;">Role of God the Father</span></li>
+<li><span style="font-size: 130%;">Names/Titles of Jesus during His lifetime</span></li>
+</ul>
 <p>&nbsp;</p>
-<h2><span style="font-size: 115%;">Supported Peripherals</span></h2>
+<h3><span style="font-size: 130%;">Ministry of Jesus</span>\</h3>
 <p>&nbsp;</p>
-<p><span style="font-size: 115%;"><img id="pbImage940308" src="/f/LCD%20screen.png" alt="" /><br /></span></p>
+<ul>
+<li><span style="font-size: 130%;">Geography of Israel and the life of Jesus</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Roman Rulership worldwide</span></li>
+<li><span style="font-size: 130%;">Hostile territories</span></li>
+<li><span style="font-size: 130%;">Friendly territories</span></li>
+<li><span style="font-size: 130%;">Status of Galileans</span></li>
+</ul>
+<li><span style="font-size: 130%;">Parties at the time</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Saducees</span></li>
+<li><span style="font-size: 130%;">Pharisees</span></li>
+<li><span style="font-size: 130%;">Levites</span></li>
+<li><span style="font-size: 130%;">Scribes</span></li>
+<li><span style="font-size: 130%;">Lawyers</span></li>
+<li><span style="font-size: 130%;">Romans</span></li>
+<li><span style="font-size: 130%;">Other Gentiles</span></li>
+<li><span style="font-size: 130%;">Others</span></li>
+<li><span style="font-size: 130%;">Christians as a new party?</span></li>
+</ul>
+<li><span style="font-size: 130%;">The Apostles</span> </li>
+<ul>
+<li>
+<p><span style="font-size: 130%;">Callings of the Apostles</span><span style="font-size: 130%;">Relatives, prior relationships?</span></p>
+</li>
+<li>
+<p><span style="font-size: 130%;">Previous vocations of Apostles</span><span style="font-size: 130%;">Fishermen, tax collectors, publicans</span></p>
+</li>
+<li>
+<p><span style="font-size: 130%;">Seventy others also</span></p>
+</li>
+<li>
+<p><a href="http://www.ccel.org/ccel/bruce/twelve.toc.html" target="_blank"><span style="font-size: 130%;">On the job training</span></a></p>
+</li>
+<li>
+<p><span style="font-size: 130%;">Commissioning</span></p>
+</li>
+<li>
+<p><a href="/Paul+-+a+special+case"><span style="font-size: 130%;">Paul - a special case</span></a></p>
+</li>
+<li>
+<p><span style="font-size: 130%;">The harvest metaphor</span></p>
+</li>
+<li>
+<p><span style="font-size: 130%;">We could not heal this one</span></p>
+</li>
+<li>
+<p><span style="font-size: 130%;">Down to twelve then zero at the end</span></p>
+</li>
+<li>
+<p><span style="font-size: 130%;">Cost of discipleship</span></p>
+</li>
+<li>
+<p><span style="font-size: 130%;">Role of women</span></p>
+</li>
+</ul>
+<li>
+<p><span style="font-size: 130%;">Three Year Chart</span></p>
+</li>
+<li><span style="font-size: 130%;">Jesus as Wisdom, Servant, Prophet, Priest and King</span></li>
+<li><span style="font-size: 130%;">Ministry to Women</span></li>
+<li><span style="font-size: 130%;">Ministry to Children</span></li>
+<li><span style="font-size: 130%;">Ministry to Gentiles</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Faith of Gentiles</span></li>
+<li><span style="font-size: 130%;">Healing of Gentiles</span></li>
+<li><span style="font-size: 130%;">Preaching to Gentiles</span></li>
+<li><span style="font-size: 130%;">OT relationship to Gentiles</span></li>
+</ul>
+<li><span style="font-size: 130%;">Overlapping Ministry of John the Baptist</span></li>
+<li><span style="font-size: 130%;">Claims of Jesus about Himself</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Testimony of God the Father and The Holy Spirit</span></li>
+<li><span style="font-size: 130%;">Testimonies of other people</span></li>
+</ul>
+<li><span style="font-size: 130%;">Teachings of Jesus</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Worldview of Jesus</span></li>
+<li><span style="font-size: 130%;">Authoritative teaching style</span></li>
+<li><span style="font-size: 130%;">Claims of Jesus about God</span></li>
+<li><span style="font-size: 130%;">Claims of Jesus about others</span></li>
+<li><span style="font-size: 130%;">Public/private distinction</span></li>
+<li><span style="font-size: 130%;">Themes of teachings</span></li>
+<li><span style="font-size: 130%;">Forgiveness</span></li>
+<li><span style="font-size: 130%;">Brotherhood of man</span><span style="font-size: 130%;">&nbsp;</span></li>
+<li><span style="font-size: 130%;">Marriage/divorce</span></li>
+<li><a href="/Church-Discipline"><span style="font-size: 130%;">Church Discipline</span></a></li>
+<li><a href="/Parables-of-Jesus"><span style="font-size: 130%;">Parables of Jesus</span></a></li>
+<li><span style="font-size: 130%;">Purpose of using parables</span></li>
+<li><span style="font-size: 130%;">Categories of parables</span></li>
+<li><span style="font-size: 130%;">Hard Words of Jesus</span></li>
+<li><span style="font-size: 130%;"><a href="/Christianity-as-the-New-Law">Christianity as the New Law</a>?</span></li>
+<li><span style="font-size: 130%;">Moses / Jesus parallels in ministry</span></li>
+<li><span style="font-size: 130%;">Questions by scribes, Pharisees, and Saducees</span></li>
+<li><span style="font-size: 130%;">Relationship of Jesus to OT Law</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Corn eating by Apostles</span></li>
+<li><span style="font-size: 130%;">Healings on the Sabbath</span></li>
+<li><span style="font-size: 130%;">The ten commandments affirmed or repealed?</span></li>
+</ul>
+<li><span style="font-size: 130%;">Teachings of Jesus on the Holy Spirit</span></li>
+<li><span style="font-size: 130%;">Important textual variant</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Ending of Mark</span></li>
+<li><span style="font-size: 130%;">Woman caught in adultery &ndash; John 8</span></li>
+</ul>
+<li><span style="font-size: 130%;">Preaching of Jesus</span> </li>
+<ul>
+<li><a href="/A-Theology-of-Choice"><span style="font-size: 130%;">A Theology of Choice</span></a></li>
+<li><a href="/Expectation-of-faith"><span style="font-size: 130%;">Expectation of faith</span></a></li>
+</ul>
+<li><span style="font-size: 130%;"><a href="/Healings-by-Jesus">Healings by Jesus</a> (picture)</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Categories of healings</span></li>
+<li><a href="/Sickness-vs-Suffering"><span style="font-size: 130%;">Sickness vs Suffering</span></a></li>
+<li><span style="font-size: 130%;">Raising the dead as special case of healing (picture)</span></li>
+<li><span style="font-size: 130%;">Faith based</span></li>
+<li><span style="font-size: 130%;">Sovereign Grace based</span></li>
+<li><a href="/Relationship-to-the-atonement"><span style="font-size: 130%;">Relationship to the atonement</span></a></li>
+</ul>
+<li><span style="font-size: 130%;">Casting out of demons</span></li>
+<li><span style="font-size: 130%;">Forgiveness of sins</span></li>
+<li><span style="font-size: 130%;">Misc Miracles</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Curse of the tree</span></li>
+<li><span style="font-size: 130%;">Stilling the wind</span></li>
+<li><span style="font-size: 130%;">Feeding of 4000 or 5000?</span></li>
+<li><span style="font-size: 130%;">Walking on the water</span></li>
+</ul>
+<li><span style="font-size: 130%;">Relationship of Jesus and the Temple</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Cleansing of the temple</span></li>
+<li><span style="font-size: 130%;">Temple as His Body, His Body as Temple</span></li>
+<li><span style="font-size: 130%;">Temple taxes and Jesus</span></li>
+</ul>
+<li><span style="font-size: 130%;">Spiritual Disciplines of Jesus</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Prayer life</span></li>
+<li><span style="font-size: 130%;">Fasting</span></li>
+<li><span style="font-size: 130%;">Money for the poor</span></li>
+</ul>
+<li><span style="font-size: 130%;">Transfiguration</span></li>
+<li><span style="font-size: 130%;">Lord&rsquo;s Supper and Baptism ordinances to church&nbsp; (Picture)</span></li>
+<li><span style="font-size: 130%;">Reactions of other people</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Family members</span></li>
+</ul>
+</ul>
+</ul>
+<h3>&nbsp;</h3>
+<h3><span style="font-size: 130%;">Death of Jesus</span></h3>
 <p>&nbsp;</p>
-<p><img id="pbImage522671" src="/f/Sw5Way.png" alt="" /></p>
+<ul>
+<li><span style="font-size: 130%;">Triumphal Entry</span></li>
+<li><span style="font-size: 130%;">Lord&rsquo;s Supper commemorative event?</span></li>
+<li><span style="font-size: 130%;">Plots to kill Jesus</span></li>
+<li><span style="font-size: 130%;">Previous attempts to kill Jesus</span></li>
+<li><span style="font-size: 130%;">His own death was forseen by Jesus &ndash; response of Apostles</span></li>
+<li><span style="font-size: 130%;">Betrayal</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Pre-ordained</span></li>
+</ul>
+<li><span style="font-size: 130%;">Arrest</span></li>
+<li><span style="font-size: 130%;">Denial by closest friends</span></li>
+<li><a href="http://www.pbs.org/wgbh/pages/frontline/shows/religion/jesus/crucifixion.html" target="_blank"><span style="font-size: 130%;">Crucifixion</span></a></li>
+<li><span style="font-size: 130%;">Trials</span> </li>
+<ul>
+<li><span style="font-size: 130%;">The prosecution&rsquo;s case</span></li>
+<li><span style="font-size: 130%;">His defense</span></li>
+<li><span style="font-size: 130%;">False witnesses</span></li>
+<li><span style="font-size: 130%;">Barabbas and substitutionary death</span></li>
+</ul>
+<li><span style="font-size: 130%;">Road to the cross</span></li>
+<li><span style="font-size: 130%;">At the cross</span> </li>
+<ul>
+<li><a href="/Two-thieves"><span style="font-size: 130%;">Two thieves</span></a></li>
+<li><span style="font-size: 130%;">Soldiers, standersby, relatives</span></li>
+<li><span style="font-size: 130%;">Mary, Mary, Mary?</span></li>
+<li><span style="font-size: 130%;">Giving of His mother to John</span></li>
+<li><span style="font-size: 130%;">Last Words</span> </li>
+<ul>
+<li><span style="font-size: 130%;"><a href="/My-God-My-God-Why-have-you-forsaken-Me">My God, My God, Why have you forsaken Me</a>?</span></li>
+</ul>
+<li><a href="/The-Passover-and-the-Lamb-of-God"><span style="font-size: 130%;">The Passover and the Lamb of God</span></a><span style="font-size: 130%;">&nbsp;</span></li>
+</ul>
+<li><span style="font-size: 130%;">Resource: AT Robertson, "Harmony of the Gospels"</span></li>
+</ul>
 <p>&nbsp;</p>
-<p><img id="pbImage788005" src="/f/IR-horiz-top.png" alt="" /></p>
+<h3><span style="font-size: 130%;">Resurrection of Jesus</span></h3>
 <p>&nbsp;</p>
-<p><img id="pbImage414726" src="/f/IR-vert-top.png" alt="" /></p>
+<ul>
+<li><span style="font-size: 130%;">Burial</span></li>
+<li><span style="font-size: 130%;">Between cross and resurrection</span> </li>
+<ul>
+<li><a href="/Descended-into-Hell-v-%22today-you-will-be-with-Me-in-Paradise%22"><span style="font-size: 130%;">Descended into Hell v. "today you will be with Me in Paradise"</span></a></li>
+</ul>
+<li><span style="font-size: 130%;">Appearances of Jesus</span></li>
+<li><a href="/Reconciling-the-disparate-Gospel-accounts-of-the-resurrection"><span style="font-size: 130%;">Reconciling the disparate Gospel accounts of the resurrection</span></a> </li>
+<ul>
+<li><a href="/Parallel-Accounts-of-the-resurrection"><span style="font-size: 130%;">Parallel Accounts of the resurrection</span></a></li>
+<li><a href="/Gospel+in+a+nutshell+-+Paul's+independent+testimony+recorded"><span style="font-size: 130%;">Gospel in a nutshell - Paul's independent testimony recorded</span></a></li>
+</ul>
+<li><a href="/Nature-of-the-resurrection-body-of-Jesus-(Luke-24%3A39)"><span style="font-size: 130%;">Nature of the resurrection body of Jesus (Luke 24:39)</span></a></li>
+<li><span style="font-size: 130%;">Don&rsquo;t touch me</span></li>
+<li><a href="/Relationship-to-resurrection-of-believers"><span style="font-size: 130%;">Relationship to resurrection of believers</span></a> </li>
+<ul>
+<li><a href="/Exposition-of-1-Cor-15"><span style="font-size: 130%;">Exposition of 1 Cor 15</span></a></li>
+</ul>
+<li><span style="font-size: 130%;">Resources: John Wenham, "The Easter Enigma". Norman Geisler, "In Defense of the Resurrection".</span></li>
+</ul>
 <p>&nbsp;</p>
+<h2><span style="font-size: 130%;">Present Day Ministry of Jesus</span></h2>
 <p>&nbsp;</p>
+<ul>
+<li><span style="font-size: 130%;">Warnings about the present age from Jesus</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Persecution</span></li>
+<li><span style="font-size: 130%;">Divisions</span></li>
+<li><span style="font-size: 130%;">False teachers</span></li>
+<li><span style="font-size: 130%;">False prophets</span></li>
+</ul>
+</ul>
+<p>&nbsp;</p>
+<h3><span style="font-size: 130%;">Ascension of Jesus</span></h3>
+<p>&nbsp;</p>
+<ul>
+<li><span style="font-size: 130%;">Right Hand of God</span></li>
+<li><span style="font-size: 130%;">Clouds of Heaven</span></li>
+<li><span style="font-size: 130%;">Ancient of Days</span></li>
+</ul>
+<p>&nbsp;</p>
+<h3><span style="font-size: 130%;">Predictions about future by Jesus</span></h3>
+<p>&nbsp;</p>
+<ul>
+<li><span style="font-size: 130%;">Genre of apocalyptic materials</span></li>
+<li><span style="font-size: 130%;">Destruction of Temple/Destruction of Jerusalem</span></li>
+<li><span style="font-size: 130%;">How early Christians understood this subject</span></li>
+<li><span style="font-size: 130%;">Problem passages</span> </li>
+<ul>
+<li><span style="font-size: 130%;">"This generation"</span></li>
+</ul>
+<li><span style="font-size: 130%;">The Great Tribulation/Jacob&rsquo;s Trouble</span></li>
+<li><span style="font-size: 130%;">Second Coming</span> </li>
+<ul>
+<li><span style="font-size: 130%;">Rapture theories</span></li>
+</ul>
+<li><span style="font-size: 130%;">Millennial theories</span></li>
+</ul>
+<hr />
+<p><a href="/Bibliography"><span style="font-size: 130%;">Bibliography</span></a></p>
 <p>&nbsp;</p>
