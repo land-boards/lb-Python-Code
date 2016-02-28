@@ -9,8 +9,27 @@ Features
 * Program provides input field flexibility to allow for some column moving
 * There are two possible files output
 * Files are only produced for items which have not yet shippped.
-* One of the output formats is PauPal formated CSV file for US shipping
+* One of the output formats is PayPal multiple shipping formated CSV file for US shipping
 * The other output format is json file (used with bookmarklet.js and the USPS site for foreign shipping)
+
+-----
+Setup
+-----
+
+* Create a bookmark in Firefox and put the bookmarklet.js into the bookmark.
+
+-----
+Usage
+-----
+
+* Run this program selecting as many input files as you wish.
+* Typically only one Tindie file is selected.
+* More than one Kickstarter file can be selected.
+* Statistics will be shown for Kickstarter rewards (how many rewards, etc).
+* The PayPal file is loaded from inside PayPal Multi-Order Shipping.
+* The USPS file is run by copy-pasting one line at a time from the .json output.
+* Select the bookmark (setup in the Setup above) and do the copy-paste.
+* Being in wordwrap on NotePad++ helps for copy.
 
 -----------------
 Tindie Input File
