@@ -19,6 +19,7 @@ Setup
 
 * Create a bookmark in Firefox and put the bookmarklet.js script into the bookmark.
 * Properties, location, paste javascript:(funct...
+* Name as KickerMailScript
 
 -----
 Usage
@@ -56,7 +57,8 @@ How to export the file from Kickstarter
 * Export
 * All Reward Tiers
 * Save to ZIP
-* Extract/combine into CSV file(s)
+* Extract into CSV file(s)
+* This program can combine separate files/rewards
 
 -------------------
 PayPal Import Steps
@@ -79,6 +81,23 @@ PayPal Import Steps
 -----------------
 USPS Import Steps
 -----------------
+
+* Log into USPS website
+* Select Mail & Ship: Print & Ship
+* Should be in Create Label
+* Open the json program created by this program into NotePad++ (or equivalent)
+* Select KickerMailScript button on Bookmarks bar
+* Copy/paste a line from NotePad++
+* That will fill in most if not all of the page with default values
+* Shipping method, weight, etc can vary so verify that the defaults are OK
+* Select a service type
+* Select Continue to go to the next screen
+* Select the KickerMailScript button
+* This time the script will autofill the screen based on defaults
+* Verify the defaults are correct
+* Select Continue to go to the next screen
+* If there are more labels, select Create Another Label
+* Rinse and repeat for all labels
 
 ----
 Code
