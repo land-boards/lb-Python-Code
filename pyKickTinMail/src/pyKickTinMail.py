@@ -5,18 +5,20 @@ TindieMail.py - Automate Kickstarter and Tindie shipping lists.
 Features
 --------
 
-* Input is the csv file as exported from Kickstarter or Tindie 
+* Input is the csv file(s) as exported from Kickstarter or Tindie 
+* Intent of this program is to automate a lot of copy-pasting of data for shipping.
 * Program provides input field flexibility to allow for some column moving
-* There are two possible files output
-* Files are only produced for items which have not yet shippped.
+* There are two possible types of file output
 * One of the output formats is PayPal multiple shipping formated CSV file for US shipping
 * The other output format is json file (used with bookmarklet.js and the USPS site for foreign shipping)
+* Output Files are only produced for items which have not yet shippped.
 
 -----
 Setup
 -----
 
-* Create a bookmark in Firefox and put the bookmarklet.js into the bookmark.
+* Create a bookmark in Firefox and put the bookmarklet.js script into the bookmark.
+* Properties, location, paste javascript:(funct...
 
 -----
 Usage
@@ -55,6 +57,28 @@ How to export the file from Kickstarter
 * All Reward Tiers
 * Save to ZIP
 * Extract/combine into CSV file(s)
+
+-------------------
+PayPal Import Steps
+-------------------
+
+* Log into PayPal
+* Under Selling Tools
+* Select MultiOrder Shipping
+* Select Import From file: Import
+* Select from a file radio button
+* Browse and Select the File name to import
+* Click Import
+* Setup mapping and make sure to save the mapping 
+* If already set up, select this mapping
+* Select Done
+* Fix any errors and retry
+* Select Finished
+* You can select multiple rows and set them to use the same weight/service type
+
+-----------------
+USPS Import Steps
+-----------------
 
 ----
 Code
