@@ -9,8 +9,8 @@ Features
 * Program provides input field flexibility to allow for some column moving
 * There are two possible files output
 * Files are only produced for items which have not yet shippped.
-* One of the output formts is USPS formated CSV file (used fot foreign shipping)
-* The other output format is PauPal formated CSV file for US shipping
+* One of the output formats is PauPal formated CSV file for US shipping
+* The other output format is json file (used with bookmarklet.js and the USPS site for foreign shipping)
 
 -----------------
 Tindie Input File
@@ -110,7 +110,7 @@ class ControlClass:
 		defaultPath = defaultParmsClass.getKeyVal('DEFAULT_PATH')
 		# print 'defaultPath',defaultPath
 		myCSVFileReadClass = ReadCSVtoList()	# instantiate the class
-		myCSVFileReadClass.setVerboseMode(True)	# turn on verbose mode until all is working 
+		myCSVFileReadClass.setVerboseMode(False)	# turn on verbose mode until all is working 
 
 		doneReading = False
 		firstLine = []
@@ -173,7 +173,7 @@ class ControlClass:
 		outFileClass.appendOutFileName('.csv')
 		if uspsList != []:
 			uspsHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
-			outFileClass.writeOutList(fileToWriteUSPS, uspsHeader, uspsList)
+			# outFileClass.writeOutList(fileToWriteUSPS, uspsHeader, uspsList)
 			self.writeOutJSON(fileToWriteJSON, uspsHeader, uspsList)
 		if payPalList != []:
 			#print 'len of payPalList', len(payPalList)

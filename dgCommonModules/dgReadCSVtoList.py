@@ -92,7 +92,8 @@ class ReadCSVtoList():
 		#print 'findOpenReadCSV: got here'
 		inPathFilename = self.findInputCSVFile(defaultPath, dialogHeader)
 		if inPathFilename == '':
-			errorDialog('Input file was not selected')
+			if verboseMode:
+				errorDialog('Input file was not selected')
 			return []
 		lastPathFileName = inPathFilename
 		defaultPath = inPathFilename[0:inPathFilename.rfind('\\')+1]
