@@ -517,7 +517,7 @@ class ControlClass:
 		global surveyResponseColumn
 		outLine = []
 		outList = []
-		for row in theList[1:]:
+		for row in theList:
 			if len(row) > 12:
 				# print 'country', row[countryColumn]
 				if (row[rewardsSentColumn] == '') and (row[address1Column] != '') and (row[countryColumn] == 'United States'):
