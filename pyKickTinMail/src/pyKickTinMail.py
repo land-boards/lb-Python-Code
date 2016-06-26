@@ -173,7 +173,7 @@ class ControlClass:
 		# print 'defaultPath',defaultPath
 		myCSVFileReadClass = ReadCSVtoList()	# instantiate the class
 		myCSVFileReadClass.setVerboseMode(False)	# turn on verbose mode until all is working 
-
+		myCSVFileReadClass.setUseSnifferFlag(True)
 		doneReading = False
 		firstLine = []
 		accumList = []
@@ -443,6 +443,9 @@ class ControlClass:
 		global stateColumn
 		global zipColumn
 		global surveyResponseColumn
+		if address1Column == 99:
+			errorDialog("Not yet funded")
+			return []
 		outList = []
 		for row in theList:
 			if len(row) > 12:
@@ -515,6 +518,8 @@ class ControlClass:
 		global stateColumn
 		global zipColumn
 		global surveyResponseColumn
+		if address1Column == 99:
+			return []
 		outLine = []
 		outList = []
 		for row in theList:

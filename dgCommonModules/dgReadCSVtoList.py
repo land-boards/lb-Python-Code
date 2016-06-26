@@ -132,8 +132,8 @@ class ReadCSVtoList():
 		dialog.set_current_folder(defaultPath)
 		
 		filter = gtk.FileFilter()
-		filter.set_name("CSV Files")
-		filter.add_pattern("*.csv")
+		filter.set_name("CSV or TSV Files")
+		filter.add_pattern("*.*sv")
 		dialog.add_filter(filter)
 		
 		response = dialog.run()
@@ -169,9 +169,10 @@ class ReadCSVtoList():
 		# select the input file names and open the files
 		intFileHdl = open(inFileN, 'rb')
 		if useSniffer:
-			dialect = csv.Sniffer().sniff(intFileHdl.read(1024))
-			intFileHdl.seek(0)
-			reader = csv.reader(intFileHdl, dialect)
+			print 'using sniffer'
+			#dialect = csv.Sniffer().sniff(intFileHdl.read(2048))
+			#intFileHdl.seek(0)
+			reader = csv.reader(intFileHdl, delimiter='\t')
 		else:
 			reader = csv.reader(intFileHdl)
 		
