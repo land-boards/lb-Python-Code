@@ -27,6 +27,7 @@ import sys
 pygtk.require('2.0')
 
 sys.path.append('C:\\Users\\DGilliland\\Documents\\Subversion\\python\\dgCommonModules')
+sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules')
 from dgProgDefaults import *
 
 import gtk
@@ -52,7 +53,33 @@ def errorDialog(errorString):
 class WriteListtoCSV():
 	"""This is the class that has the methods which are used to write out a CSV list.
 	The typical method that is called is writeOutList(outPathFilename, header, csvListToWrite)
+	Alternately the file can be selected
 	"""
+	def selectOutputFileName(self,defaultPath):
+		"""
+		
+		:return: the name of the output csv file
+		
+		"""
+		dialog = gtk.FileChooserDialog(title="Save as", 
+			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
+		filter = gtk.FileFilter() 
+		if defaultPath != '':
+			dialog.set_current_folder(defaultPath)
+		filter.set_name("*.csv")
+		filter.add_pattern("*.csv") # whats the pattern for a folder 
+		dialog.add_filter(filter)
+		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+			retFileName = dialog.get_filename()
+			dialog.destroy()
+			return(retFileName)
+		elif response == gtk.RESPONSE_CANCEL: 
+			print 'Closed, no files selected'
+		dialog.destroy()
+		exit()
+	
 	def writeOutList(self, outPathFilename, header, csvListToWrite):
 		"""Write out the csvListToWrite
 		"""
@@ -103,6 +130,8 @@ class WriteListtoCSV():
 		:param inFileName: The pathfilename of the input file.
 		"""
 		global outFileNameAppendage
+		if outFileNameAppendage == '':
+			return inFileName
 		if inFileName[-4:0] != '.csv' and inFileName[-4:0] != '.CSV':
 			return(inFileName[0:-4] + outFileNameAppendage)
 		else:
