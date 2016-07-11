@@ -170,9 +170,17 @@ class ReadCSVtoList():
 		intFileHdl = open(inFileN, 'rb')
 		if useSniffer:
 			print 'using sniffer'
-			#dialect = csv.Sniffer().sniff(intFileHdl.read(2048))
-			#intFileHdl.seek(0)
-			reader = csv.reader(intFileHdl, delimiter='\t')
+			try:
+				dialect = csv.Sniffer().sniff(intFileHdl.read(2048))
+			except:
+				intFileHdl.seek(0)
+				reader = csv.reader(intFileHdl, delimiter='\t')
+				csvListIn = []
+				for row in reader:
+					csvListIn.append(row)
+				return csvListIn
+			intFileHdl.seek(0)
+			reader = csv.reader(intFileHdl, dialect)
 		else:
 			reader = csv.reader(intFileHdl)
 		
