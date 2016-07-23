@@ -39,7 +39,6 @@ import pygtk
 import sys
 pygtk.require('2.0')
 
-sys.path.append('C:\\Users\\DGilliland\\Documents\\Subversion\\python\\dgCommonModules')
 sys.path.append('C:\\Python27\\Lib\\site-packages\\dgCommonModules')
 
 try:
@@ -104,7 +103,7 @@ class ReadCSVtoList():
 			print self.extractFilenameFromPathfilename(inPathFilename)
 		if freshFlag:
 			myFreshCheck = CheckFreshness()
-			if not myFreshCheck.isFresh(xmlFileName):
+			if not myFreshCheck.isFresh(inPathFilename):
 				if verboseMode:
 					print 'fresh flag was set to check freshness for CSV files'
 				errorDialog("The CSV File is not fresh\nEither change the Options to ignore the freshness check\nor create/choose a fresh file")
@@ -213,6 +212,18 @@ class ReadCSVtoList():
 		"""
 		global lastPathFileName
 		return(lastPathFileName[0:lastPathFileName.rfind('\\')+1])
+
+	def getLastFileNameNoExt(self):
+		"""getLastFileNameNoExt - Used by external calling methods to determine what the filename 
+		of the last file that was read in was.
+		
+		:global lastPathFileName: the last path file name that was used
+		
+		:returns: the last path file name
+		
+		"""
+		global lastPathFileName
+		return lastPathFileName[lastPathFileName.rfind('\\')+1:-4]
 
 	def setVerboseMode(self,verboseFlag):
 		"""Set the verbose mode flag. 
