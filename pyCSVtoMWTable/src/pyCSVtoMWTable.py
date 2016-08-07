@@ -1,6 +1,32 @@
 """
+=================
 pyCSVtoMWTable.py
+=================
+
 Convert a CSV into a MediaWiki table.
+
+==========
+Background
+==========
+
+MediaWiki is a very common Wiki page format. 
+Wikipedia is the primary example that comes to mind for MediaWiki.
+htt;://land-boards.com/blwiki is another popular page.
+
+We wanted a way to easily load tables into Media Wiki.
+The tables were in .csv (EXCEL) format.
+
+=====
+Usage
+=====
+
+This program prompts for a path and file to select for input.
+The output file is created in the same path with a .MW output file name.
+
+===
+API
+===
+
 """
 
 import pygtk
@@ -38,7 +64,12 @@ def errorDialog(errorString):
 	
 class ControlClass:
 	def theExecutive(self):
-		"""The code that calls the other code
+		"""
+		:global lastPathFileName: The path and file name that was found by the browser.
+
+		The code that calls the other code.
+		This code uses the defaults library to handle the default path.
+		This code uses the read CSV library to read in the CSV file.
 		"""
 		global defaultPath
 		
@@ -67,14 +98,19 @@ class ControlClass:
 		self.writeOutMWTable(outFile, theInList)
 		
 	def writeOutMWTable(self, outFilePtr, theList):
+		"""
+		:param outFilePtr: Points to the output file.
+		:param theList: The list to write out.
+
+		"""
 		outFilePtr.write('{| class="wikitable"\n')
 		firstRow = True
 		for row in theList:
 			for cell in row:
 				if firstRow:
-					outFilePtr.write('!' + cell + '\n')					
+					outFilePtr.write('! ' + cell + '\n')					
 				else:
-					outFilePtr.write('|' + cell + '\n')
+					outFilePtr.write('| ' + cell + '\n')
 			firstRow = False
 			outFilePtr.write('|-\n')
 		outFilePtr.write('|}\n')

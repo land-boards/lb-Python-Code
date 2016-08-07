@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to pyDirCSV’s documentation! &mdash; pyUnivBom 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyUnivBom 1.0.1 documentation" href="#" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-pydircsv-s-documentation">
+<h1>Welcome to pyDirCSV&#8217;s documentation!<a class="headerlink" href="#welcome-to-pydircsv-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-pyDirCSV"></span><div class="section" id="pydircsv-py">
+<h2>pyDirCSV.py<a class="headerlink" href="#pydircsv-py" title="Permalink to this headline">¶</a></h2>
+<p>Read a directory structure into a CSV file</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>This can be used for things like comparing two directory trees in EXCEL</p>
+</div>
+<div class="section" id="installation-usage">
+<h2>Installation/Usage<a class="headerlink" href="#installation-usage" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Browse to the folder</li>
+</ul>
+</div>
+<div class="section" id="operation">
+<h2>Operation<a class="headerlink" href="#operation" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Performs a recursive directory and dumps to a file</li>
+<li>Parses the directory file and puts into a list</li>
+<li>Turns the list into a CSV file which can be read by EXCEL</li>
+</ul>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p>Columns are:</p>
+<ul class="simple">
+<li>[&#8216;Date&#8217;,&#8217;Time&#8217;,&#8217;Size&#8217;,&#8217;FileName&#8217;,&#8217;Path&#8217;]</li>
+</ul>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+</div>
+<dl class="class">
+<dt id="pyDirCSV.readDirectoryToList">
+<em class="property">class </em><code class="descclassname">pyDirCSV.</code><code class="descname">readDirectoryToList</code><a class="headerlink" href="#pyDirCSV.readDirectoryToList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to read a directory into a list</p>
+<dl class="method">
+<dt id="pyDirCSV.readDirectoryToList.browseToFolder">
+<code class="descname">browseToFolder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyDirCSV.readDirectoryToList.browseToFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a windows file browser to allow user to navigate to the directory to read
+returns the file name of the path that was selected</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyDirCSV.readDirectoryToList.dealWithCommandLine">
+<code class="descname">dealWithCommandLine</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyDirCSV.readDirectoryToList.dealWithCommandLine" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Path to the selected folder</td>
+</tr>
+</tbody>
+</table>
+<p>Support for drag and drop or command line execution.
+If the path can&#8217;t be determined returns an empty string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyDirCSV.readDirectoryToList.deleteTempFile">
+<code class="descname">deleteTempFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyDirCSV.readDirectoryToList.deleteTempFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the temporary file that was created</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyDirCSV.readDirectoryToList.doReadDir">
+<code class="descname">doReadDir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyDirCSV.readDirectoryToList.doReadDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>doReadDir -</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyDirCSV.readDirectoryToList.formCommandLine">
+<code class="descname">formCommandLine</code><span class="sig-paren">(</span><em>makeDirPath</em><span class="sig-paren">)</span><a class="headerlink" href="#pyDirCSV.readDirectoryToList.formCommandLine" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>makeDirPath</strong> &#8211; the path</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the command line string</td>
+</tr>
+</tbody>
+</table>
+<p>Forms the command line string</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyDirCSV.readDirectoryToList.parseDirTxt">
+<code class="descname">parseDirTxt</code><span class="sig-paren">(</span><em>filePtr</em><span class="sig-paren">)</span><a class="headerlink" href="#pyDirCSV.readDirectoryToList.parseDirTxt" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filePtr</strong> &#8211; file handle</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of directors contents</td>
+</tr>
+</tbody>
+</table>
+<p>Parse through the text file that was created when the directory was set up</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyDirCSV.selOutputFile">
+<em class="property">class </em><code class="descclassname">pyDirCSV.</code><code class="descname">selOutputFile</code><a class="headerlink" href="#pyDirCSV.selOutputFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class allows the user to select the output file name and opens the output file as a csv file</p>
+<dl class="method">
+<dt id="pyDirCSV.selOutputFile.openCSVFile">
+<code class="descname">openCSVFile</code><span class="sig-paren">(</span><em>csvName</em><span class="sig-paren">)</span><a class="headerlink" href="#pyDirCSV.selOutputFile.openCSVFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens the CSV output file as a CSV writer output</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyDirCSV.selOutputFile.selectOutputFileName">
+<code class="descname">selectOutputFileName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyDirCSV.selOutputFile.selectOutputFileName" title="Permalink to this definition">¶</a></dt>
+<dd><p># returns the name of the output csv file</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to pyDirCSV&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#pydircsv-py">pyDirCSV.py</a></li>
+<li><a class="reference internal" href="#background">Background</a></li>
+<li><a class="reference internal" href="#installation-usage">Installation/Usage</a></li>
+<li><a class="reference internal" href="#operation">Operation</a></li>
+<li><a class="reference internal" href="#output">Output</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2014, Doug Gilliland.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -15,7 +15,7 @@ Contents:
 
 .. autoclass:: ReadCSVtoList
 	:members:
-	
+
 Indices and tables
 ==================
 

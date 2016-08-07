@@ -25,23 +25,14 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="pyUnivBom 1.0.1 documentation" href="#" />
    
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
   <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">pyUnivBom 1.0.1 documentation</a> &raquo;</li> 
-      </ul>
-    </div>  
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -52,8 +43,6 @@
 <h1>Welcome to dgReadCSVtoList&#8217;s documentation!<a class="headerlink" href="#welcome-to-dgreadcsvtolist-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
-<ul class="simple">
-</ul>
 </div>
 <span class="target" id="module-dgReadCSVtoList"></span><div class="section" id="dgreadcsvtolist-py">
 <h2>dgReadCSVtoList.py<a class="headerlink" href="#dgreadcsvtolist-py" title="Permalink to this headline">¶</a></h2>
@@ -86,8 +75,7 @@
 <dd><dl class="method">
 <dt id="dgReadCSVtoList.ReadCSVtoList.extractFilenameFromPathfilename">
 <code class="descname">extractFilenameFromPathfilename</code><span class="sig-paren">(</span><em>fullPathFilename</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.extractFilenameFromPathfilename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract fileName without extension from pathfullPathName</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -97,13 +85,13 @@
 </tr>
 </tbody>
 </table>
+<p>Extract fileName without extension from pathfullPathName</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dgReadCSVtoList.ReadCSVtoList.findInputCSVFile">
 <code class="descname">findInputCSVFile</code><span class="sig-paren">(</span><em>defaultPath</em>, <em>bomFileString='Select File to Open'</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.findInputCSVFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Uses filechooser to browse for a CSV file.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -113,13 +101,13 @@
 </tr>
 </tbody>
 </table>
+<p>Uses filechooser to browse for a CSV file.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dgReadCSVtoList.ReadCSVtoList.findOpenReadCSV">
-<code class="descname">findOpenReadCSV</code><span class="sig-paren">(</span><em>self</em>, <em>defaultPath</em>, <em>dialogHeader</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.findOpenReadCSV" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the main method which calls the other methods in this class.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<code class="descname">findOpenReadCSV</code><span class="sig-paren">(</span><em>defaultPath=''</em>, <em>dialogHeader='Open File'</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.findOpenReadCSV" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -142,13 +130,13 @@
 </tr>
 </tbody>
 </table>
+<p>This is the main method which calls the other methods in this class.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dgReadCSVtoList.ReadCSVtoList.getFreshFlag">
 <code class="descname">getFreshFlag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.getFreshFlag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the value of the freshness check flag</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -162,14 +150,13 @@
 </tr>
 </tbody>
 </table>
+<p>Return the value of the freshness check flag</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dgReadCSVtoList.ReadCSVtoList.getLastPathFileName">
-<code class="descname">getLastPathFileName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.getLastPathFileName" title="Permalink to this definition">¶</a></dt>
-<dd><p>getLastPathFileName - Used by external calling methods to determine what the path/filename 
-of the last file that was read in was.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dt id="dgReadCSVtoList.ReadCSVtoList.getLastFileNameNoExt">
+<code class="descname">getLastFileNameNoExt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.getLastFileNameNoExt" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -180,13 +167,50 @@ of the last file that was read in was.</p>
 </tr>
 </tbody>
 </table>
+<p>getLastFileNameNoExt - Used by external calling methods to determine what the filename 
+of the last file that was read in was.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.getLastPath">
+<code class="descname">getLastPath</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.getLastPath" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Global lastPathFileName:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">the last path file name that was used</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the last path file name</td>
+</tr>
+</tbody>
+</table>
+<p>getLastPathFileName - Used by external calling methods to determine what the path/filename 
+of the last file that was read in was.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgReadCSVtoList.ReadCSVtoList.getLastPathFileName">
+<code class="descname">getLastPathFileName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.getLastPathFileName" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Global lastPathFileName:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">the last path file name that was used</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the last path file name</td>
+</tr>
+</tbody>
+</table>
+<p>getLastPathFileName - Used by external calling methods to determine what the path/filename 
+of the last file that was read in was.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dgReadCSVtoList.ReadCSVtoList.readInCSV">
 <code class="descname">readInCSV</code><span class="sig-paren">(</span><em>inFileN</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.readInCSV" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads a CSV file into a list. This method</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -199,16 +223,13 @@ of the last file that was read in was.</p>
 </tr>
 </tbody>
 </table>
+<p>Reads a CSV file into a list. This method</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dgReadCSVtoList.ReadCSVtoList.setFreshCheckFlag">
 <code class="descname">setFreshCheckFlag</code><span class="sig-paren">(</span><em>freshnessFlag</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.setFreshCheckFlag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the freshness check flag.
-This flag is used to determine whether or not to check the file freshness before opening it.
-If this flag is set the file has to be created on the same day that this method is invoked.
-This is intended to be set from other modules which use this class.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -222,16 +243,16 @@ This is intended to be set from other modules which use this class.</p>
 </tr>
 </tbody>
 </table>
+<p>Set the freshness check flag.
+This flag is used to determine whether or not to check the file freshness before opening it.
+If this flag is set the file has to be created on the same day that this method is invoked.
+This is intended to be set from other modules which use this class.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dgReadCSVtoList.ReadCSVtoList.setUseSnifferFlag">
 <code class="descname">setUseSnifferFlag</code><span class="sig-paren">(</span><em>snifferFlag</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.setUseSnifferFlag" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Set the flag for whether or not the CSV sniffer should be used when reading the CSV file.</dt>
-<dd>The sniffer can determine the input file style of the delimiter (comma separated, tab separated, etc.)</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -242,24 +263,25 @@ This is intended to be set from other modules which use this class.</p>
 </tr>
 </tbody>
 </table>
+<p>Set the flag for whether or not the CSV sniffer should be used when reading the CSV file.
+The sniffer can determine the input file style of the delimiter (comma separated, tab separated, etc.)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="dgReadCSVtoList.ReadCSVtoList.setVerboseMode">
 <code class="descname">setVerboseMode</code><span class="sig-paren">(</span><em>verboseFlag</em><span class="sig-paren">)</span><a class="headerlink" href="#dgReadCSVtoList.ReadCSVtoList.setVerboseMode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the verbose mode flag. 
-This flag is used by other functions to determine whether messages should be output to the console or not.</p>
-<table class="docutils field-list" frame="void" rules="none">
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Global verboseMode:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Flag value.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Always True</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>verboseFlag</strong> &#8211; Value To set verbose Flag True False</td>
 </tr>
 </tbody>
 </table>
+<p>Sets the verbose flag.
+The verbose flag can be used to see into the actions 
+of this module without changing the module in debug.
+The verbose messages go to the command prompt window.</p>
 </dd></dl>
 
 </dd></dl>
@@ -268,9 +290,9 @@ This flag is used by other functions to determine whether messages should be out
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
 </div>
 
@@ -291,7 +313,13 @@ This flag is used by other functions to determine whether messages should be out
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
-
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -302,14 +330,11 @@ This flag is used by other functions to determine whether messages should be out
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -320,12 +345,12 @@ This flag is used by other functions to determine whether messages should be out
       &copy;2014, Doug Gilliland.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
       <a href="_sources/index.txt"
-          rel="nofollow">Page source</a></li>
+          rel="nofollow">Page source</a>
     </div>
 
     

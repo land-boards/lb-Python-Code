@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to dgCheckFileFresh’s documentation! &mdash; pyUnivBom 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyUnivBom 1.0.1 documentation" href="#" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-dgcheckfilefresh-s-documentation">
+<h1>Welcome to dgCheckFileFresh&#8217;s documentation!<a class="headerlink" href="#welcome-to-dgcheckfilefresh-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-dgCheckFileFresh"></span><div class="section" id="pycheckfilefresh-py">
+<h2>pyCheckFileFresh.py<a class="headerlink" href="#pycheckfilefresh-py" title="Permalink to this headline">¶</a></h2>
+<p>This program allows a file to be checked for freshness.
+If the file was edited on the same date as this function is run then the file is considered to be fresh.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+</div>
+<dl class="class">
+<dt id="dgCheckFileFresh.CheckFreshness">
+<em class="property">class </em><code class="descclassname">dgCheckFileFresh.</code><code class="descname">CheckFreshness</code><a class="headerlink" href="#dgCheckFileFresh.CheckFreshness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class which checks a file to see if it is fresh</p>
+<dl class="method">
+<dt id="dgCheckFileFresh.CheckFreshness.getFreshFlag">
+<code class="descname">getFreshFlag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dgCheckFileFresh.CheckFreshness.getFreshFlag" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">fresh flag</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgCheckFileFresh.CheckFreshness.isFresh">
+<code class="descname">isFresh</code><span class="sig-paren">(</span><em>pathToFile</em><span class="sig-paren">)</span><a class="headerlink" href="#dgCheckFileFresh.CheckFreshness.isFresh" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pathToFile</strong> &#8211; The path/filename to check</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the file is fresh (saved today), False otherwise</td>
+</tr>
+</tbody>
+</table>
+<p>isFresh checks to see if the file was created today</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgCheckFileFresh.CheckFreshness.setFreshCheckFlag">
+<code class="descname">setFreshCheckFlag</code><span class="sig-paren">(</span><em>freshnessFlag</em><span class="sig-paren">)</span><a class="headerlink" href="#dgCheckFileFresh.CheckFreshness.setFreshCheckFlag" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>freshnessFlag</strong> &#8211; Flag that says whether or not to check freshness</td>
+</tr>
+</tbody>
+</table>
+<p>Sets the fresh check flag</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dgCheckFileFresh.CheckFreshness.setVerboseMode">
+<code class="descname">setVerboseMode</code><span class="sig-paren">(</span><em>verboseFlag</em><span class="sig-paren">)</span><a class="headerlink" href="#dgCheckFileFresh.CheckFreshness.setVerboseMode" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>verboseFlag</strong> &#8211; Value To set verbose Flag True False</td>
+</tr>
+</tbody>
+</table>
+<p>Sets the verbose flag.
+The verbose flag can be used to see into the actions 
+of this module without changing the module in debug.
+The verbose messages go to the command prompt window.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to dgCheckFileFresh&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#pycheckfilefresh-py">pyCheckFileFresh.py</a></li>
+<li><a class="reference internal" href="#background">Background</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2014, Doug Gilliland.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

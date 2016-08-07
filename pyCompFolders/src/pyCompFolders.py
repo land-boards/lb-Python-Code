@@ -1,4 +1,48 @@
-""" pyCompFolders.py - Compare two directory trees
+"""
+
+================
+pyCompFolders.py
+================
+
+Compare two directory trees
+
+==========
+Background
+==========
+
+==================
+Installation/Usage
+==================
+
+* Browse to first folder
+* Browse to second folder
+* Select output folder/file name
+
+======
+Output
+======
+
+Columns are:
+
+* Code	
+* FileNum	
+* Date	
+* Time	
+* Size	
+* FileName	
+* RelPath
+* AbsPath	
+* Date*	
+* Time*	
+* Size*	
+* FileName*	
+* RelPath*	
+* AbsPath*
+
+===
+API
+===
+
 """
 import pygtk
 pygtk.require('2.0')
@@ -19,14 +63,21 @@ import filecmp		# Used to compare files which have same name and size
 verboseFlag = 0
 folderStrucChangesFlag = 0
 
-# this class does all the work of reading a directory tree into a list
-# Includes the folder navigation and loading of the folder path
-# Returns a list of lists.
-# Each line has the directory elements (time, date, size, name, path).
 class ReadDirectoryToList:
-	# browseToFolder - Opens a windows file browser to allow user to navigate to the directory to read
-	# returns the file name of the path that was selected
+	"""
+	This class does all the work of reading a directory tree into a list
+	Includes the folder navigation and loading of the folder path
+	Returns a list of lists.
+	Each line has the directory elements (time, date, size, name, path).
+	"""
 	def browseToFolder(self, startPath):
+		"""
+		
+		:param startPath: Where to start searching
+		:return: Path to the selected folder
+
+		Opens a windows file browser to allow user to navigate to the directory to read
+		"""
 		dialog = gtk.FileChooserDialog(title="Select folder", 
 			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
 		filter = gtk.FileFilter() 
@@ -50,18 +101,29 @@ class ReadDirectoryToList:
 			dialog.destroy()
 			exit()
 		
-	# formCommandLine - Forms the command line string
-	# returns the command line string
 	def formCommandLine(self, makeDirPath):
+		"""
+		
+		:param makeDirPath: Path to output file
+		:return: The command line
+
+		Forms the command line string.
+		"""
 		makeDirPath = '"' + makeDirPath + '\"'		# path might have spaces, etc
 		commandLine = 'dir '
 		commandLine += makeDirPath
 		commandLine += ' /-c /n /s > c:\\temp\\tempDir.txt'
 		return(commandLine)
 			
-	# parse through the text file that was created when the directory was set up
-	# returns a list of lists
 	def parseDirTxt(self, filePtr, rootDirPath):
+		"""
+		
+		:param filePtr: Path to directory text file
+		:param rootDirPath: Path to root
+		:return: list of directory contents
+
+		parse through the text file that was created when the directory was set up
+		"""
 		dirFiles = []
 		dirName = ""
 		for textLine in filePtr:
@@ -94,8 +156,10 @@ class ReadDirectoryToList:
 				continue
 		return(dirFiles)
 	
-	# deleteTempFile - delete the temporary file that was created
 	def deleteTempFile(self):
+		"""
+		Delete the temporary file that was created
+		"""
 		try:
 			os.system('del c:\\temp\\tempDir.txt')
 		except:
@@ -103,8 +167,13 @@ class ReadDirectoryToList:
 			s = raw_input('--> ')
 			exit()
 	
-	# doReadDir - 
 	def doReadDir(self, pathToDir):
+		"""
+		
+		:param pathToDir: Path to directory
+		:return: the directory as a list
+
+		"""
 		commandString = self.formCommandLine(pathToDir)
 		rval = os.system(commandString)
 		if rval == 1:		# error because the c:\temp folder does not exist
@@ -121,8 +190,14 @@ class ReadDirectoryToList:
 		self.deleteTempFile()
 		return(dirFileL)
 	
-	# openCSVFile - opens the CSV output file as a CSV writer output
 	def openCSVFile(self, csvName):
+		"""
+		
+		:param csvName: Path file name
+		:return: file handle
+
+		Opens the CSV output file as a CSV writer output
+		"""
 		try:
 			myCSVFile = open(csvName, 'wb')
 		except:
@@ -138,9 +213,13 @@ class ReadDirectoryToList:
 		return(outFil)
 		
 class WriteDirectoryCSV:
-	# selectOutputFileName
-	# returns the name of the output csv file
 	def selectOutputFileName(self, startPath):
+		"""
+		
+		:param startPath: Path file name
+		:return: name of the output csv file
+		
+		"""
 		dialog = gtk.FileChooserDialog(title="Save as", 
 			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
 		filter = gtk.FileFilter() 
@@ -161,6 +240,10 @@ class WriteDirectoryCSV:
 		exit()
 
 def doCompFolders():
+	"""
+	
+	Commpare folders method
+	"""
 	myReadFolder = ReadDirectoryToList()							# create ReadDirectoryToList instance
 	pathToDir1 = myReadFolder.browseToFolder('')					# get first directory name from folder browser
 	print 'first folder : %s' % pathToDir1
@@ -462,6 +545,8 @@ def doCompFolders():
 
 
 class UIManager:
+	"""The User Interface - GTK based
+	"""
 	interface = """
 	<ui>
 		<menubar name="MenuBar">
@@ -484,8 +569,9 @@ class UIManager:
 	"""
 
 	def __init__(self):
-
-		# Create the top level window
+		"""
+		Create the top level window
+		"""
 		window = gtk.Window()
 		window.connect('destroy', lambda w: gtk.main_quit())
 		window.set_default_size(200, 200)
@@ -532,6 +618,8 @@ class UIManager:
 		window.show_all()
 
 	def openIF(self, b):
+		"""Single interface
+		"""
 		doCompFolders()
 		message = gtk.MessageDialog(type=gtk.MESSAGE_INFO, buttons=gtk.BUTTONS_OK)
 		message.set_markup("Comparison Completed")
@@ -541,12 +629,16 @@ class UIManager:
 		return
 
 	def about_pycompfolders(self, b):
+		"""About message
+		"""
 		message = gtk.MessageDialog(type=gtk.MESSAGE_INFO, buttons=gtk.BUTTONS_OK)
-		message.set_markup("About pyCompFolders\nAuthor: Doug Gilliland\n(c) 2014 - AAC - All rights reserved\npyCompFolders compares two folders and lists the differences")
+		message.set_markup("About pyCompFolders\nAuthor: Doug Gilliland\n(c) 2016 - AAC - All rights reserved\npyCompFolders compares two folders and lists the differences")
 		message.run()
 		message.destroy()
 		
 	def folderStrucChange(self, action, current):
+		"""Set folder structure change flag
+		"""
 		global folderStrucChangesFlag
 		text = current.get_name()
 		if (text == "StrucFold"):
@@ -558,6 +650,8 @@ class UIManager:
 		return
 		
 	def verboseSingle(self, action, current):
+		"""Set verbose
+		"""
 		global verboseFlag
 		text = current.get_name()
 		if (text == "Verbose"):
@@ -569,6 +663,8 @@ class UIManager:
 		return
 
 	def quit_application(self, widget):
+		"""quit
+		"""
 		gtk.main_quit()
 
 if __name__ == '__main__':

@@ -16,6 +16,9 @@ Contents:
 .. autoclass:: ReadDirectoryToList
     :members:
 
+.. autoclass:: UIManager
+    :members:
+
 Indices and tables
 ==================
 

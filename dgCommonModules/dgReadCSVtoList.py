@@ -74,17 +74,15 @@ def errorDialog(errorString):
 
 class ReadCSVtoList():
 	def findOpenReadCSV(self, defaultPath='', dialogHeader='Open File'):
-		"""findOpenReadCSV(self, defaultPath, dialogHeader)
-		This is the main method which calls the other methods in this class.
-		
+		"""
 		:global lastPathFileName: The path asset by this function based on the path found by the browser.
 		:global verboseMode: Set to true if you want diagnostic messages printed along the way. Verbose Mode can also be changed by calling setVerboseMode().
 
 		:param defaultPath: Optional default path. If none is entered defaults to empty.
 		:param dialogHeader: Optional headers that is printed on the top of the screen.
-
 		:return: The contents of the file as a list. If cancel was pressed on the file selector or the file is empty, returns an empty list.
 		
+		This is the main method which calls the other methods in this class.		
 		"""
 		global lastPathFileName
 		global verboseMode
@@ -114,12 +112,12 @@ class ReadCSVtoList():
 		return csvFileAsReadIn
 
 	def findInputCSVFile(self,defaultPath,bomFileString='Select File to Open'):
-		"""Uses filechooser to browse for a CSV file.
-		
+		"""
 		:param defaultPath: The path that was selected. The calling function is responsible for remembering the name.
 
 		:returns: pathfilename of the file that was selected or empty string if no file was selected.
 		
+		Uses filechooser to browse for a CSV file.		
 		"""
 		dialog = gtk.FileChooserDialog(bomFileString,
 													None,
@@ -145,24 +143,24 @@ class ReadCSVtoList():
 			return ''
 			
 	def extractFilenameFromPathfilename(self, fullPathFilename):
-		"""Extract fileName without extension from pathfullPathName
-
+		"""
 		:param fullPathFilename: The path and file name
 		
 		:returns: Path without the filename at the end
 
+		Extract fileName without extension from pathfullPathName
 		"""
 		return(fullPathFilename[fullPathFilename.rfind('\\')+1:])
 
 	def readInCSV(self, inFileN):
-		"""Reads a CSV file into a list. This method 
-		
+		"""
 		:global useSniffer: Flag which indicates whether or not to use the file sniffer. Set the sniffer flag by setUseSnifferFlag().
 		
 		:param inFileN: Input pathfilename
 
 		:returns: List which contains the contents of the CSV file
 		
+		Reads a CSV file into a list. This method 
 		"""
 		global useSniffer
 		# select the input file names and open the files
@@ -190,64 +188,65 @@ class ReadCSVtoList():
 		return csvListIn
 
 	def getLastPathFileName(self):
-		"""getLastPathFileName - Used by external calling methods to determine what the path/filename 
-		of the last file that was read in was.
-		
+		"""
 		:global lastPathFileName: the last path file name that was used
 		
 		:returns: the last path file name
 		
+		getLastPathFileName - Used by external calling methods to determine what the path/filename 
+		of the last file that was read in was.
 		"""
 		global lastPathFileName
 		return lastPathFileName
 
 	def getLastPath(self):
-		"""getLastPathFileName - Used by external calling methods to determine what the path/filename 
-		of the last file that was read in was.
-		
+		"""
 		:global lastPathFileName: the last path file name that was used
 		
 		:returns: the last path file name
 		
+		getLastPathFileName - Used by external calling methods to determine what the path/filename 
+		of the last file that was read in was.
 		"""
 		global lastPathFileName
 		return(lastPathFileName[0:lastPathFileName.rfind('\\')+1])
 
 	def getLastFileNameNoExt(self):
-		"""getLastFileNameNoExt - Used by external calling methods to determine what the filename 
-		of the last file that was read in was.
-		
+		"""
 		:global lastPathFileName: the last path file name that was used
 		
 		:returns: the last path file name
-		
+
+		getLastFileNameNoExt - Used by external calling methods to determine what the filename 
+		of the last file that was read in was.
 		"""
 		global lastPathFileName
 		return lastPathFileName[lastPathFileName.rfind('\\')+1:-4]
 
 	def setVerboseMode(self,verboseFlag):
-		"""Set the verbose mode flag. 
-		This flag is used by other functions to determine whether messages should be output to the console or not.
+		"""
+		:param verboseFlag: Value To set verbose Flag True False
 		
-		:global verboseMode: Flag value.
-		
-		:returns: Always True
-		
+		Sets the verbose flag.
+		The verbose flag can be used to see into the actions 
+		of this module without changing the module in debug.
+		The verbose messages go to the command prompt window.
 		"""
 		global verboseMode
 		verboseMode = verboseFlag
 		return True
 	
 	def setFreshCheckFlag(self,freshnessFlag):
-		"""Set the freshness check flag.
-		This flag is used to determine whether or not to check the file freshness before opening it.
-		If this flag is set the file has to be created on the same day that this method is invoked.
-		This is intended to be set from other modules which use this class.
-		
+		"""
 		:global freshFlag: Flag value stored as a global for use directly by other functions
 		:global verboseMode: Verbose flag.
 		
 		:returns: True always
+		
+		Set the freshness check flag.
+		This flag is used to determine whether or not to check the file freshness before opening it.
+		If this flag is set the file has to be created on the same day that this method is invoked.
+		This is intended to be set from other modules which use this class.		
 		"""
 		global freshFlag
 		global verboseMode
@@ -257,13 +256,13 @@ class ReadCSVtoList():
 		return True
 		
 	def getFreshFlag(self):
-		"""Return the value of the freshness check flag
-		
+		"""
 		:global freshFlag: Flag value stored as a global for use directly by other functions
 		:global verboseMode: Verbose flag.
 		
 		:returns: the value of the fresh check flag.
 
+		Return the value of the freshness check flag
 		"""
 		global freshFlag
 		global verboseMode
@@ -272,12 +271,13 @@ class ReadCSVtoList():
 		return freshFlag
 
 	def setUseSnifferFlag(self,snifferFlag):
-		"""Set the flag for whether or not the CSV sniffer should be used when reading the CSV file.
-		 The sniffer can determine the input file style of the delimiter (comma separated, tab separated, etc.)
-		
+		"""
 		:global useSniffer: Flag that determines whether or not to use the CSV sniffer.
 
 		:returns: True always
+				
+		Set the flag for whether or not the CSV sniffer should be used when reading the CSV file.
+		The sniffer can determine the input file style of the delimiter (comma separated, tab separated, etc.)
 		
 		"""
 		global useSniffer

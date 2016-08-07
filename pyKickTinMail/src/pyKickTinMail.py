@@ -5,7 +5,7 @@ TindieMail.py - Automate Kickstarter and Tindie shipping lists.
 Features
 --------
 
-* Input is the csv file(s) as exported from Kickstarter or Tindie 
+* Input is the csv or tsv file(s) as exported from Kickstarter or Tindie 
 * Intent of this program is to automate a lot of copy-pasting of data for shipping.
 * Program provides input field flexibility to allow for some column moving
 * There are two possible types of file output
@@ -17,6 +17,7 @@ Features
 Setup
 -----
 
+* For the USPS (Foreign shipment) output - 
 * Create a bookmark in Firefox and put the bookmarklet.js script into the bookmark.
 * Properties, location, paste javascript:(funct...
 * Name as KickerMailScript
@@ -149,10 +150,11 @@ pledgeAmountColumn = 99
 surveyResponseColumn = 99
 
 def errorDialog(errorString):
-	"""Prints an error message as a dialog box.
-
+	"""
 	:param errorDialog: The error message to print
 	
+	Prints an error message as a dialog box.
+
 	"""
 	message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
 	message.set_markup(errorString)
@@ -160,7 +162,7 @@ def errorDialog(errorString):
 	message.destroy()	# Takes down the dialog box
 
 class ControlClass:
-	"""Methods to read tindie file and write out USPS and PayPal lists.
+	"""Methods to read tindie or Kickstarter files and write out USPS and PayPal lists.
 	"""
 	def theExecutive(self):
 		"""The code that calls the other code
@@ -243,22 +245,48 @@ class ControlClass:
 			outFileClass.writeOutList(fileToWritePayPal, payPalHeader, payPalList)
 
 	def writeOutJSON(self, fileNameJSON, header, data):
+		"""
+		
+		:param fileNameJSON: 
+		:param header: 
+		:param data: 
+		:return: json_lines
+
+		"""
 		objects = self.flat_to_objects(header, data)
 		json_lines = '\n\n'.join(json.dumps(obj) for obj in objects)
 		with open(fileNameJSON, 'w') as f:
 			f.write(json_lines)
 
 	def flat_to_objects(self, js_like_header, data):
+		"""
+		
+		:param js_like_header: 
+		:param data: 
+		:return: objects
+
+		"""
 		return map(lambda row: self.row_to_dict(js_like_header, row), data)
 
 	def row_to_dict(self, js_like_header, row):
+		"""
+		
+		:param js_like_header: 
+		:param row: 
+		:return: dict
+
+		"""
 		result = {}
 		for (heading, data) in zip(js_like_header, row):
 			result[heading] = data
 		return result
 
 	def mapKickInList(self, header):
-		"""Map the column headers to an internal preferred ordering.
+		"""
+		:param header: The list header.
+		:return: Nothing
+		
+		Map the column headers to an internal preferred ordering.
 		Latest input format -
 		
 		* Backer Number,
@@ -283,9 +311,6 @@ class ControlClass:
 		* Shipping Country Name,			
 		* Shipping Country Code
 		
-		:param theInList: The entire input list.
-		:return: a mapping file with the columns mapped to a column number.
-
 		"""
 		global emailColumn
 		global countryColumn
@@ -337,14 +362,15 @@ class ControlClass:
 		return
 
 	def countKickBoards(self, theInList):
-		"""Count the boards and generate a snapshot of the data.
+		"""			
+		:param theInList: The entire list
+		:return: no value
+		
+		Count the boards and generate a snapshot of the data.
 		
 		* 4 - Shipping Amount, $5.00 USD
 		* 5 - Reward Minimum,
 		* 6 - Pledge Amount,
-			
-		:param theInList: The entire list
-		:return: no value
 		"""
 		global emailColumn
 		global countryColumn
@@ -404,7 +430,11 @@ class ControlClass:
 		errorDialog(outStr)
 	
 	def createKickUSPSAddrList(self, theList):
-		"""Write out the USPS Address book values.
+		"""
+		:param theList: list
+		:return: list
+		
+		Write out the USPS Address book values.
 		The output file is a CSV that can be read by the USPS Address Book Import.
 		
 		Output list -
@@ -425,10 +455,7 @@ class ControlClass:
 		* 13 - Fax Number,
 		* 14 - E Mail,
 		* 15 - Reference Number,
-		* 16 - Nickname,,,
-		
-		:param outFilePtr: points to the output file
-		:return: no return value
+		* 16 - Nickname,,,		
 		"""
 		global emailColumn
 		global countryColumn
@@ -479,7 +506,11 @@ class ControlClass:
 		return outList
 
 	def createKickPayPalAddrList(self, theList):
-		"""Write out the USPS Address book values.
+		"""
+		:param theList: the List
+		:return: List
+		
+		Write out the USPS Address book values.
 		The output file is a CSV that can be read by the USPS Address Book Import.
 		
 		Output list -
@@ -502,8 +533,6 @@ class ControlClass:
 		* 15 - Reference Number,
 		* 16 - Nickname,,,
 		
-		:param outFilePtr: points to the output file
-		:return: no return value
 		"""
 		global emailColumn
 		global countryColumn
@@ -552,9 +581,11 @@ class ControlClass:
 		return outList
 					
 	def determineInputFileType(self, theInList):
-		"""Look at the top row of the file to determine the input file type.
+		"""
+		:params theInList: in file list
 		
-		:params theInList: Top row of the file
+		Look at the top row of the file to determine the input file type.
+		
 		"""
 		if theInList[0] == 'Backer Id':	# Kickstarter
 			return 1
@@ -570,7 +601,11 @@ class ControlClass:
 			exit()
 	
 	def mapTindieInList(self, header):
-		"""Map the column headers to an internal preferred ordering.
+		"""
+		:param header: The list header.
+		:return: a mapping file with the columns mapped to a column number.
+		
+		Map the column headers to an internal preferred ordering.
 		Latest input format -
 		* ID
 		* Date
@@ -600,9 +635,6 @@ class ControlClass:
 		* Unit Price
 		* Total Price
 		* Model Number
-
-		:param theInList: The entire input list.
-		:return: a mapping file with the columns mapped to a column number.
 
 		"""
 		global emailColumn
@@ -648,7 +680,11 @@ class ControlClass:
 		return
 
 	def createTindieUSPSAddrList(self, theList):
-		"""Write out the USPS Address book values.
+		"""
+		:param theList: the List
+		:return: List
+		
+		Write out the USPS Address book values.
 		The output file is a CSV that can be read by the USPS Address Book Import.
 		
 		Output list -
@@ -671,8 +707,6 @@ class ControlClass:
 		* 15 - Reference Number,
 		* 16 - Nickname,,,
 		
-		:param outFilePtr: points to the output file
-		:return: no return value
 		"""
 		global emailColumn
 		global shippingFirstNameColumn
@@ -733,7 +767,11 @@ class ControlClass:
 		return outList
 
 	def createTindiePayPayAddrList(self, theList):
-		"""Write out the USPS Address book values.
+		"""
+		:param theList: the List
+		:return: List
+		
+		Write out the USPS Address book values.
 		The output file is a CSV that can be read by the USPS Address Book Import.
 		
 		Output list -
@@ -756,8 +794,6 @@ class ControlClass:
 		* 15 - Reference Number,
 		* 16 - Nickname,,,
 		
-		:param outFilePtr: points to the output file
-		:return: no return value
 		"""
 		global emailColumn
 		global shippingFirstNameColumn
@@ -890,6 +926,8 @@ class UIManager:
 		return
 
 	def quit_application(self, widget):
+		"""quit
+		"""
 		gtk.main_quit()
 
 if __name__ == '__main__':
