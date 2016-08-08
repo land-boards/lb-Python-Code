@@ -91,17 +91,22 @@ class processMouserParts:
 			partsList.append(row)
 		partsFilePtr.close()
 		return partsList
-		
-	def goThroughTheParts(self,newPartsList,partsFileName):
+
+	def processPL(self, newPartsList):
 		"""
 		:param newPartsList: location of the path/file name
-		:param partsFileName: location of the path/file name
-		:returns: True when completed
+		:returns: list of parts sorted by manufacturers
 		
-		Process the parts list.
+		Go through the list of parts and store the lines into a list.
+
+		List consists of 3 types of lines.
+		Example line(s):
+		
+		* Mouser #: ,279-CFR16J4K7
+		* Mfr. #: ,CFR16J4K7
+		* Desc.: ,Carbon Film Resistors - Through Hole4.7KOhm 1/4W 1200PPM,,100,$0.013,$1.30,100 Shipped ,7/25/2014 ,35662549
+		
 		"""
-		outPartsList = partsFileName[0:-4]
-		outPartsList += '_Parts.csv'
 		procPL = []
 		for row in newPartsList:
 			if row[0] == 'Mouser #:':
@@ -118,6 +123,17 @@ class processMouserParts:
 				procPLLine.append(orderQty)
 				procPL.append(procPLLine)
 		procPL = sorted(procPL, key = lambda errs: errs[0])
+		return procPL
+		
+	def goThroughTheParts(self,newPartsList,partsFileName):
+		"""
+		:param newPartsList: location of the path/file name
+		:param partsFileName: location of the path/file name
+		:returns: True when completed
+		
+		Process the parts list.
+		"""
+		procPL = self.processPL(newPartsList)
 		lastRow = []
 		cumQty = 0
 		newParts = []
@@ -142,6 +158,8 @@ class processMouserParts:
 		newPLRow.append(lastRow[2])
 		newPLRow.append(cumQty)
 		newParts.append(newPLRow)
+		outPartsList = partsFileName[0:-4]
+		outPartsList += '_Parts.csv'
 		outCSVFile = open(outPartsList, 'wb')
 		outwriter = csv.writer(outCSVFile, delimiter=',')
 		outwriter.writerows(newParts)

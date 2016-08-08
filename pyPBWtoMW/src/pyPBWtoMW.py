@@ -1,4 +1,4 @@
-'''pyPBWtoMW - Convert PBWorks wiki pages to MediaWiki wiki pages.
+'''Convert PBWorks wiki pages to MediaWiki wiki pages.
 Handles simpler html tags which make for most of the data.
 
 =====
@@ -325,25 +325,28 @@ def removeJunk(strToFormat):
 	
 	return strToFormat
 
-printParse = False
+def doConv():
+	printParse = False
 
-myFile = FindAFile()
-inFilePathName = myFile.findFile('')
+	myFile = FindAFile()
+	inFilePathName = myFile.findFile('')
 
-extensionColumn = string.rfind(inFilePathName, '.')
+	extensionColumn = string.rfind(inFilePathName, '.')
 
-outFilePathName = inFilePathName[0:extensionColumn] + '.mw'
+	outFilePathName = inFilePathName[0:extensionColumn] + '.mw'
 
-inPtr = open(inFilePathName, 'r')
-outPtr = open(outFilePathName, 'w')
+	inPtr = open(inFilePathName, 'r')
+	outPtr = open(outFilePathName, 'w')
 
-indentLevelUL = 0
-indentLevelOL = 0
-unorderedListFlag = True
+	indentLevelUL = 0
+	indentLevelOL = 0
+	unorderedListFlag = True
 
-for inLine in inPtr:
-	inLine = inLine.strip('\n\r')
-	outLine = ''
-	outLine = removeJunk(inLine)
-	outLine = reformatLine(outLine)
-	outPtr.write(outLine + '\n')
+	for inLine in inPtr:
+		inLine = inLine.strip('\n\r')
+		outLine = ''
+		outLine = removeJunk(inLine)
+		outLine = reformatLine(outLine)
+		outPtr.write(outLine + '\n')
+
+#doConv()

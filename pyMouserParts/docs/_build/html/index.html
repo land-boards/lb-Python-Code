@@ -95,6 +95,29 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="pyMouserParts.processMouserParts.processPL">
+<code class="descname">processPL</code><span class="sig-paren">(</span><em>newPartsList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.processPL" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>newPartsList</strong> &#8211; location of the path/file name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of parts sorted by manufacturers</td>
+</tr>
+</tbody>
+</table>
+<p>Go through the list of parts and store the lines into a list.</p>
+<p>List consists of 3 types of lines.
+Example line(s):</p>
+<ul class="simple">
+<li>Mouser #: ,279-CFR16J4K7</li>
+<li>Mfr. #: ,CFR16J4K7</li>
+<li>Desc.: ,Carbon Film Resistors - Through Hole4.7KOhm 1/4W 1200PPM,,100,$0.013,$1.30,100 Shipped ,7/25/2014 ,35662549</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
 <dt id="pyMouserParts.processMouserParts.readInParts">
 <code class="descname">readInParts</code><span class="sig-paren">(</span><em>partsFile</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.readInParts" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
