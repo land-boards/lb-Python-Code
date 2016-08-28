@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to pyMouserParts’s documentation! &mdash; pyUnivBom 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyUnivBom 1.0.1 documentation" href="#" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-pymouserparts-s-documentation">
+<h1>Welcome to pyMouserParts&#8217;s documentation!<a class="headerlink" href="#welcome-to-pymouserparts-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-pyMouserParts"></span><p>Reads in Mouser Order History file(s).</p>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Program is run by either typing python pyMouserParts.py or double clicking pyMouserParts.py.</p>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+</div>
+<dl class="class">
+<dt id="pyMouserParts.processMouserParts">
+<em class="property">class </em><code class="descclassname">pyMouserParts.</code><code class="descname">processMouserParts</code><a class="headerlink" href="#pyMouserParts.processMouserParts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to process the Mouser files.</p>
+<dl class="method">
+<dt id="pyMouserParts.processMouserParts.doParts">
+<code class="descname">doParts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.doParts" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True when completed</td>
+</tr>
+</tbody>
+</table>
+<p>The executive which calls all of the other functions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyMouserParts.processMouserParts.goThroughTheParts">
+<code class="descname">goThroughTheParts</code><span class="sig-paren">(</span><em>newPartsList</em>, <em>partsFileName</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.goThroughTheParts" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>newPartsList</strong> &#8211; location of the path/file name</li>
+<li><strong>partsFileName</strong> &#8211; location of the path/file name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True when completed</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Process the parts list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyMouserParts.processMouserParts.processPL">
+<code class="descname">processPL</code><span class="sig-paren">(</span><em>newPartsList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.processPL" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>newPartsList</strong> &#8211; location of the path/file name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of parts sorted by manufacturers</td>
+</tr>
+</tbody>
+</table>
+<p>Go through the list of parts and store the lines into a list.</p>
+<p>List consists of 3 types of lines.
+Example line(s):</p>
+<ul class="simple">
+<li>Mouser #: ,279-CFR16J4K7</li>
+<li>Mfr. #: ,CFR16J4K7</li>
+<li>Desc.: ,Carbon Film Resistors - Through Hole4.7KOhm 1/4W 1200PPM,,100,$0.013,$1.30,100 Shipped ,7/25/2014 ,35662549</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyMouserParts.processMouserParts.readInParts">
+<code class="descname">readInParts</code><span class="sig-paren">(</span><em>partsFile</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.readInParts" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>partsFile</strong> &#8211; location of the path/file name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">file contents as a list</td>
+</tr>
+</tbody>
+</table>
+<p>Read the parts file into a list for easier processing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyMouserParts.processMouserParts.selectMouserParts">
+<code class="descname">selectMouserParts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.selectMouserParts" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">path/name of the file that was selected. Empty string if none selected.</td>
+</tr>
+</tbody>
+</table>
+<p>This is the dialog which locates the Mouser files</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyMouserParts.UIManager">
+<em class="property">class </em><code class="descclassname">pyMouserParts.</code><code class="descname">UIManager</code><a class="headerlink" href="#pyMouserParts.UIManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>The UI</p>
+<dl class="method">
+<dt id="pyMouserParts.UIManager.about_pymouserparts">
+<code class="descname">about_pymouserparts</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.UIManager.about_pymouserparts" title="Permalink to this definition">¶</a></dt>
+<dd><p>The about message</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyMouserParts.UIManager.openIF">
+<code class="descname">openIF</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.UIManager.openIF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the file and process it</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyMouserParts.UIManager.quit_application">
+<code class="descname">quit_application</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.UIManager.quit_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>quit</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to pyMouserParts&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#output">Output</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2014, Doug Gilliland.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
