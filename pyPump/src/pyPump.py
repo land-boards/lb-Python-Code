@@ -104,7 +104,7 @@ class processPump:
 		"""
 		deliveredInsulinList = []
 		for row in newPumpList:
-			if row[33] == 'ResultDailyTotal':
+			if len(row) > 33 and row[33] == 'ResultDailyTotal':
 				print 'insulin',row[1],row[32]
 				deliveredInsulinRow = []
 				deliveredInsulinRow.append(row[1])
@@ -131,7 +131,7 @@ class processPump:
 		totalGlucose = 0.0
 		totalSamples = 0
 		for row in newPumpList:
-			if row[33] == 'BGCapturedOnPump':
+			if len(row) > 33 and (row[33] == 'BGCapturedOnPump' or row[33] == 'BGLifescan'):
 				currentDate = row[1]
 				# print 'currentDate',currentDate,'lastDate',lastDate
 				if lastDate == '':
@@ -177,7 +177,7 @@ class processPump:
 		totalCarbs = 0.0
 		totalSamples = 0
 		for row in newPumpList:
-			if row[33] == 'BolusWizardBolusEstimate':
+			if len(row) > 33 and row[33] == 'BolusWizardBolusEstimate':
 				currentDate = row[1]
 				# print 'currentDate',currentDate,'lastDate',lastDate
 				if lastDate == '':
@@ -225,13 +225,13 @@ class processPump:
 			print 'First line of pump header mismatched'
 			return False
 		expectedHeader = ['Index','Date','Time','Timestamp','New Device Time','BG Reading (mg/dL)','Linked BG Meter ID','Temp Basal Amount (U/h)','Temp Basal Type','Temp Basal Duration (hh:mm:ss)','Bolus Type','Bolus Volume Selected (U)','Bolus Volume Delivered (U)','Bolus Duration (hh:mm:ss)','Prime Type','Prime Volume Delivered (U)','Suspend','Rewind','BWZ Estimate (U)','BWZ Target High BG (mg/dL)','BWZ Target Low BG (mg/dL)','BWZ Carb Ratio (grams)','BWZ Insulin Sensitivity (mg/dL)','BWZ Carb Input (grams)','BWZ BG Input (mg/dL)','BWZ Correction Estimate (U)','BWZ Food Estimate (U)','BWZ Active Insulin (U)','Alarm','Sensor Calibration BG (mg/dL)','Sensor Glucose (mg/dL)','ISIG Value','Daily Insulin Total (U)','Raw-Type','Raw-Values','Raw-ID','Raw-Upload ID','Raw-Seq Num','Raw-Device Type']
-		if entirePumpList[10] != expectedHeader:
+		if entirePumpList[11] != expectedHeader:
 			print 'Column header mismatched, expected'
 			print expectedHeader
 			print 'got header'
-			print entirePumpList[10]
+			print entirePumpList[111]
 			offset = 0
-			for cell in entirePumpList[10]:
+			for cell in entirePumpList[11]:
 				if cell != expectedHeader[offset]:
 					print 'expected',expectedHeader[offset],'got',cell
 				offset += 1
