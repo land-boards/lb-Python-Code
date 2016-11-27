@@ -349,4 +349,4 @@ def doConv():
 		outLine = reformatLine(outLine)
 		outPtr.write(outLine + '\n')
 
-#doConv()
+doConv()
