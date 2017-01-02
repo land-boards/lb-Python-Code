@@ -335,6 +335,7 @@ class ControlClass:
 				countryColumn = itemNum
 			elif item == 'Shipping Amount':
 				shippingAmtColumn = itemNum
+				print 'shippingAmtColumn',shippingAmtColumn
 			elif item == 'Reward Minimum':
 				rewardMinimumColumn = itemNum
 			elif item == 'Pledge Amount':
@@ -393,13 +394,17 @@ class ControlClass:
 		pledgeTotal = 0.0
 		backers = 0
 		unshippedBackers = 0
+		shippingNum = 0.0
 		#print 'countKickBoards: theInList',theInList
 		for row in theInList:
 			num = 0.0
 			# print 'countKickBoards: row',row
-			shippingString = row[shippingAmtColumn][1:-4]
-			rewardString = row[rewardMinimumColumn][1:-4]
-			pledgeString = row[pledgeAmountColumn][1:-4]
+			shippingString = row[shippingAmtColumn][1:]
+			rewardString = row[rewardMinimumColumn][1:]
+			pledgeString = row[pledgeAmountColumn][1:]
+#			print 'shippingAmtColumn',shippingAmtColumn
+#			print 'row[shippingAmtColumn]',row[shippingAmtColumn]
+#			print 'shippingString',shippingString
 			shippingNum = float(shippingString)
 			shippingTotal += shippingNum
 			rewardNum = float(rewardString)
