@@ -17,8 +17,7 @@ import datetime
 import time
 import sys
 
-sys.path.append('C:\\Users\\DGilliland\\Documents\\Subversion\\python\\dgCommonModules')
-sys.path.append('C:\\Python27\\Lib\\site-packages\\dgCommonModules')
+sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules')
 
 from dgCheckFileFresh import *
 

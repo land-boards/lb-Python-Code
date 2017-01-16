@@ -124,6 +124,14 @@ class WriteListtoCSV():
 		"""
 		return(fullPathFilename[fullPathFilename.rfind('\\')+1:])
 		
+	def extractPathFromPathfilename(self, fullPathFilename):
+		"""Extract path from pathfullPathName
+		
+		:param fullPathFilename: The path/filename of the input file
+		:returns: the file name extracted out from the path
+		"""
+		return(fullPathFilename[0:fullPathFilename.rfind('\\')+1:])
+		
 	def createOutputFilename(self, inFileName):
 		"""Creates the output file name based on the input file name
 		
@@ -178,3 +186,7 @@ class WriteListtoCSV():
 		global outFileNameAppendage
 		outFileNameAppendage = outFileNameAppendString
 		
+	def setOutFileName(self,outFileName):
+		global inFileName
+		inFileName = outFileName
+	

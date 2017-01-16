@@ -70,10 +70,10 @@ class HandleDefault:
 				print 'loaded defaults file'
 		else:
 			if verboseMode:
-				print 'defaults file did not exist',
+				print 'defaults file did not exist'
 			self.createDefaults()
 			if verboseMode:
-				print 'created defaults file',
+				print 'created defaults file'
 			detailParmList = self.loadDefaults()
 			if verboseMode:
 				print 'loaded defaults file'
@@ -117,29 +117,34 @@ class HandleDefault:
 					print 'getKeyVal: found a match for key, match was', row[1]
 				return row[1]
 		if verboseMode:
-			print 'getKeyVal: did not find a match for the key'
+			print 'getKeyVal: did not find a match for the key',keyName
 		return ''
 	
 	def storeKeyValuePair(self,keyName,valueToWrite):
 		if verboseMode:
-			print 'storeKeyValuePair: storing value =',valueToWrite,
-			print 'to key =',keyName,
+			print 'storeKeyValuePair: storing value =', valueToWrite, 'to key =', keyName
 		if self.ifExistsDefaults() == False:
+			print 'had to create defaults'
 			self.createDefaults()
 		defaultFileHdl = open(defaultsFileNamePath, 'rb')
 		defaultListItem = csv.reader(defaultFileHdl)
 		newList = []
 		foundKey = False
 		for item in defaultListItem:
+			if verboseMode:
+				print 'item',item
 			newLine = []
 			if item[0] == keyName:
 				newLine.append(item[0])
 				newLine.append(valueToWrite)
 				foundKey = True
+				if verboseMode:
+					print 'found the key',foundKey
 			else:
 				newLine = item
 			newList.append(newLine)
-		if foundKey == False:
+		if not foundKey:
+			newLine = []
 			newLine.append(keyName)
 			newLine.append(valueToWrite)
 			newList.append(newLine)
