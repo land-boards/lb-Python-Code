@@ -1,0 +1,16 @@
+== land-boards Python Code ==
+
+* These are our [https://www.python.org/ Python] Code files.
+* Much of this [http://land-boards.com/blwiki/index.php?title=Python_Code Python Code] was created to exercise our [http://land-boards.com/blwiki/index.php cards]
+
+== Ownership ==
+
+* Some of these files (particularly libraries) were created by others.
+** There may be newer versions of these libraries "out there".
+** Some libraries even have the same names but don't work the same.
+* Many of these files were created by us based on the work of others.
+
+=== Warning ===
+
+* Use at your own risk.
+** If you brick your part or it melt to a puddle, it's on you not us.

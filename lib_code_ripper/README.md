@@ -1,5 +1,5 @@
-Library Code Ripper
-============
+Library of Congress Card Catalog Ripper
+=======================================
 
 Dependencies
 -----------
