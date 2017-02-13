@@ -2,7 +2,7 @@
 
 * This is our [https://www.python.org/ Python] Folder Comparison Code.
 * [http://htmlpreview.github.io/?https://github.com/douggilliland/lb-Python-Code/blob/master/pyCompFolders/docs/_build/html/index.
-html Doc pages for design]
+html Folder Comparison Doc pages]
 * Much of this [http://land-boards.com/blwiki/index.php?title=Python_Code Python Code] was created to exercise our [http://land-boards.com/blwiki/index.php cards]
 
 == Ownership ==
