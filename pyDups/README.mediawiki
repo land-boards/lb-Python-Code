@@ -1,8 +1,8 @@
-== land-boards Python CSV to Media Wiki Table Generation Code ==
+== land-boards Python Duplicate Directory Contents Check Code ==
 
-* This is our [https://www.python.org/ Python] CSV to Media Wiki Table Generation Code.
-* [http://htmlpreview.github.io/?https://github.com/douggilliland/lb-Python-Code/blob/master/pyCSVtoMWTable/docs/_build/html/index.
-html CSV to Media Wiki Table Generation Doc pages]
+* This is our [https://www.python.org/ Python] Directory to CSV Code.
+* [http://htmlpreview.github.io/?https://github.com/douggilliland/lb-Python-Code/blob/master/pyDups/docs/_build/html/index.
+html Duplicate Directory file check docs]
 * Much of this [http://land-boards.com/blwiki/index.php?title=Python_Code Python Code] was created to exercise our [http://land-boards.com/blwiki/index.php cards]
 
 == Ownership ==
