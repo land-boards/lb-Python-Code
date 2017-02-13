@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to pyMouserParts’s documentation! &mdash; pyUnivBom 1.0.1 documentation</title>
+    <title>Welcome to pyPump’s documentation! &#8212; pyUnivBom 1.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -39,15 +39,16 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-pymouserparts-s-documentation">
-<h1>Welcome to pyMouserParts&#8217;s documentation!<a class="headerlink" href="#welcome-to-pymouserparts-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="welcome-to-pypump-s-documentation">
+<h1>Welcome to pyPump&#8217;s documentation!<a class="headerlink" href="#welcome-to-pypump-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-pyMouserParts"></span><p>Reads in Mouser Order History file(s).</p>
+<span class="target" id="module-pyPump"></span><p>Reads in Minimed Insulin Pump CSV History file(s).</p>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<p>Program is run by either typing python pyMouserParts.py or double clicking pyMouserParts.py.</p>
+<p>Program is run by either typing python pyPump.py or double clicking pyPump.py.</p>
+<p>Select the Original reports then the Data Export (CSV).</p>
 </div>
 <div class="section" id="output">
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
@@ -56,12 +57,28 @@
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 </div>
 <dl class="class">
-<dt id="pyMouserParts.processMouserParts">
-<em class="property">class </em><code class="descclassname">pyMouserParts.</code><code class="descname">processMouserParts</code><a class="headerlink" href="#pyMouserParts.processMouserParts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to process the Mouser files.</p>
+<dt id="pyPump.processPump">
+<em class="property">class </em><code class="descclassname">pyPump.</code><code class="descname">processPump</code><a class="headerlink" href="#pyPump.processPump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to process the Pump data.</p>
 <dl class="method">
-<dt id="pyMouserParts.processMouserParts.doParts">
-<code class="descname">doParts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.doParts" title="Permalink to this definition">¶</a></dt>
+<dt id="pyPump.processPump.checkPumpFileHeader">
+<code class="descname">checkPumpFileHeader</code><span class="sig-paren">(</span><em>entirePumpList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyPump.processPump.checkPumpFileHeader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Medtronic Diabetes CareLink Personal Data Export File (v1.0.1) 
+PATIENT INFO
+Name,Douglas Gilliland
+Report Range,8/13/16,to,8/13/16
+DEVICE INFO
+Meter:,Linked Meter,#A6B7DB,,
+Pump:,Paradigm Revel - 723,#965788,VER 3.0B1.1,
+Data Exported on,8/13/16 10:05 AM
+DEVICE DATA (99 records)
+Data Range,8/13/16 00:00:00,to,8/13/16 09:50:55
+Index,Date,Time,Timestamp,New Device Time,BG Reading (mg/dL),Linked BG Meter ID,Temp Basal Amount (U/h),Temp Basal Type,Temp Basal Duration (hh:mm:ss),Bolus Type,Bolus Volume Selected (U),Bolus Volume Delivered (U),Bolus Duration (hh:mm:ss),Prime Type,Prime Volume Delivered (U),Suspend,Rewind,BWZ Estimate (U),BWZ Target High BG (mg/dL),BWZ Target Low BG (mg/dL),BWZ Carb Ratio (grams),BWZ Insulin Sensitivity (mg/dL),BWZ Carb Input (grams),BWZ BG Input (mg/dL),BWZ Correction Estimate (U),BWZ Food Estimate (U),BWZ Active Insulin (U),Alarm,Sensor Calibration BG (mg/dL),Sensor Glucose (mg/dL),ISIG Value,Daily Insulin Total (U),Raw-Type,Raw-Values,Raw-ID,Raw-Upload ID,Raw-Seq Num,Raw-Device Type</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyPump.processPump.doPumpProcessing">
+<code class="descname">doPumpProcessing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyPump.processPump.doPumpProcessing" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -74,15 +91,15 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="pyMouserParts.processMouserParts.goThroughTheParts">
-<code class="descname">goThroughTheParts</code><span class="sig-paren">(</span><em>newPartsList</em>, <em>partsFileName</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.goThroughTheParts" title="Permalink to this definition">¶</a></dt>
+<dt id="pyPump.processPump.goThruCarbsData">
+<code class="descname">goThruCarbsData</code><span class="sig-paren">(</span><em>newPumpList</em>, <em>pumpFileName</em><span class="sig-paren">)</span><a class="headerlink" href="#pyPump.processPump.goThruCarbsData" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>newPartsList</strong> &#8211; location of the path/file name</li>
-<li><strong>partsFileName</strong> &#8211; location of the path/file name</li>
+<li><strong>newPumpList</strong> &#8211; location of the path/file name</li>
+<li><strong>pumpFileName</strong> &#8211; location of the path/file name</li>
 </ul>
 </td>
 </tr>
@@ -95,31 +112,50 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="pyMouserParts.processMouserParts.processPL">
-<code class="descname">processPL</code><span class="sig-paren">(</span><em>newPartsList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.processPL" title="Permalink to this definition">¶</a></dt>
+<dt id="pyPump.processPump.goThruGlucoseData">
+<code class="descname">goThruGlucoseData</code><span class="sig-paren">(</span><em>newPumpList</em>, <em>pumpFileName</em><span class="sig-paren">)</span><a class="headerlink" href="#pyPump.processPump.goThruGlucoseData" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>newPartsList</strong> &#8211; location of the path/file name</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>newPumpList</strong> &#8211; location of the path/file name</li>
+<li><strong>pumpFileName</strong> &#8211; location of the path/file name</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of parts sorted by manufacturers</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True when completed</p>
+</td>
 </tr>
 </tbody>
 </table>
-<p>Go through the list of parts and store the lines into a list.</p>
-<p>List consists of 3 types of lines.
-Example line(s):</p>
-<ul class="simple">
-<li>Mouser #: ,279-CFR16J4K7</li>
-<li>Mfr. #: ,CFR16J4K7</li>
-<li>Desc.: ,Carbon Film Resistors - Through Hole4.7KOhm 1/4W 1200PPM,,100,$0.013,$1.30,100 Shipped ,7/25/2014 ,35662549</li>
-</ul>
+<p>Process the parts list.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyMouserParts.processMouserParts.readInParts">
-<code class="descname">readInParts</code><span class="sig-paren">(</span><em>partsFile</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.readInParts" title="Permalink to this definition">¶</a></dt>
+<dt id="pyPump.processPump.goThruInsulinData">
+<code class="descname">goThruInsulinData</code><span class="sig-paren">(</span><em>newPumpList</em>, <em>pumpFileName</em><span class="sig-paren">)</span><a class="headerlink" href="#pyPump.processPump.goThruInsulinData" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>newPumpList</strong> &#8211; location of the path/file name</li>
+<li><strong>pumpFileName</strong> &#8211; location of the path/file name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True when completed</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Process the parts list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyPump.processPump.readPumpData">
+<code class="descname">readPumpData</code><span class="sig-paren">(</span><em>partsFile</em><span class="sig-paren">)</span><a class="headerlink" href="#pyPump.processPump.readPumpData" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -134,8 +170,8 @@ Example line(s):</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyMouserParts.processMouserParts.selectMouserParts">
-<code class="descname">selectMouserParts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.processMouserParts.selectMouserParts" title="Permalink to this definition">¶</a></dt>
+<dt id="pyPump.processPump.selectPumpDataFile">
+<code class="descname">selectPumpDataFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyPump.processPump.selectPumpDataFile" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -150,24 +186,24 @@ Example line(s):</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="pyMouserParts.UIManager">
-<em class="property">class </em><code class="descclassname">pyMouserParts.</code><code class="descname">UIManager</code><a class="headerlink" href="#pyMouserParts.UIManager" title="Permalink to this definition">¶</a></dt>
+<dt id="pyPump.UIManager">
+<em class="property">class </em><code class="descclassname">pyPump.</code><code class="descname">UIManager</code><a class="headerlink" href="#pyPump.UIManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>The UI</p>
 <dl class="method">
-<dt id="pyMouserParts.UIManager.about_pymouserparts">
-<code class="descname">about_pymouserparts</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.UIManager.about_pymouserparts" title="Permalink to this definition">¶</a></dt>
+<dt id="pyPump.UIManager.about_pymouserparts">
+<code class="descname">about_pymouserparts</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#pyPump.UIManager.about_pymouserparts" title="Permalink to this definition">¶</a></dt>
 <dd><p>The about message</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyMouserParts.UIManager.openIF">
-<code class="descname">openIF</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.UIManager.openIF" title="Permalink to this definition">¶</a></dt>
+<dt id="pyPump.UIManager.openIF">
+<code class="descname">openIF</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#pyPump.UIManager.openIF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the file and process it</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyMouserParts.UIManager.quit_application">
-<code class="descname">quit_application</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="headerlink" href="#pyMouserParts.UIManager.quit_application" title="Permalink to this definition">¶</a></dt>
+<dt id="pyPump.UIManager.quit_application">
+<code class="descname">quit_application</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="headerlink" href="#pyPump.UIManager.quit_application" title="Permalink to this definition">¶</a></dt>
 <dd><p>quit</p>
 </dd></dl>
 
@@ -191,7 +227,7 @@ Example line(s):</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to pyMouserParts&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#">Welcome to pyPump&#8217;s documentation!</a><ul>
 <li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#output">Output</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>
@@ -231,7 +267,7 @@ Example line(s):</p>
       &copy;2014, Doug Gilliland.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
