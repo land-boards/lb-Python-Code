@@ -122,8 +122,12 @@ import os
 import sys
 import json
 
+import time
+from datetime import date
+
 sys.path.append('C:\\Users\\doug_000\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
 sys.path.append('C:\\Users\\DGilliland\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
+sys.path.append('C:\\Users\\Douglas\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
 
 from dgProgDefaults import *
 from dgReadCSVtoList import *
@@ -228,10 +232,17 @@ class ControlClass:
 			exit()
 		defaultPath = myCSVFileReadClass.getLastPath()
 		defaultParmsClass.storeKeyValuePair('DEFAULT_PATH',defaultPath)
+		dateToAppend = str(date.today())
 
-		fileToWriteUSPS = defaultPath + "orders_USPS.csv"
-		fileToWritePayPal = defaultPath + "orders_PayPal.csv"
-		fileToWriteJSON = defaultPath + "orders_USPS.json"
+		fileToWriteUSPS = defaultPath + "orders_USPS-"
+		fileToWriteUSPS += dateToAppend
+		fileToWriteUSPS += ".csv"
+		fileToWritePayPal = defaultPath + "orders_PayPal-"
+		fileToWritePayPal += dateToAppend
+		fileToWritePayPal += ".csv"
+		fileToWriteJSON = defaultPath + "orders_USPS-"
+		fileToWriteJSON += dateToAppend
+		fileToWriteJSON += ".json"
 
 		outFileClass = WriteListtoCSV()
 		outFileClass.appendOutFileName('.csv')
