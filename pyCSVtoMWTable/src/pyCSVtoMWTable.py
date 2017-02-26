@@ -45,6 +45,7 @@ import os
 import sys
 
 sys.path.append('C:\\Users\\doug_000\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
+sys.path.append('C:\\Users\\Douglas\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
 sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules')
 
 from dgProgDefaults import *
