@@ -271,9 +271,15 @@ class CompareTwoDirLists:
 		"""
 		filePath1 = ''
 		filePath2 = ''
-		filePath1 = path1 + '\\' + fileName1
-		filePath2 = path2 + '\\' + fileName2
-		return (filecmp.cmp(filePath1, filePath2))
+		filePath1 = unicode(path1 + '\\' + fileName1,errors='ignore')
+		filePath2 = unicode(path2 + '\\' + fileName2,errors='ignore')
+		try:
+			cmpVal = filecmp.cmp(filePath1, filePath2)
+		except:
+			print 'path read problem',filePath1
+			print 'path read problem',filePath2
+			cmpVal = True
+		return (cmpVal)
 
 	def addToErrorLines(self,inFileNum, errorLevel, errorString, line1String, line2String):
 		"""Adds the error to the errorLines list if the error exceeds the current message level option setting.
