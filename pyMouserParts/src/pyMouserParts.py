@@ -176,7 +176,7 @@ class processMouserParts:
 			errorDialog("Failed to open parts file")
 			return False
 		newPartsList = self.readInParts(partsFileName)
-		self.goThroughTheParts(self,newPartsList,partsFileName)
+		self.goThroughTheParts(newPartsList,partsFileName)
 		return True
 	
 class UIManager:
@@ -188,10 +188,6 @@ class UIManager:
 			<menu action="File">
 				<menuitem action="Open"/>
 				<menuitem action="Quit"/>
-			</menu>
-			<menu action="Options">
-				<menuitem action="BackAnn"/>
-				<menuitem action="Analyze"/>
 			</menu>
 			<menu action="Help">
 				<menuitem action="About"/>
@@ -230,10 +226,6 @@ class UIManager:
 			("Help", None, "_Help"),
 			("About", None, "_About", None, "About pyMouserParts", self.about_pymouserparts),
 			])
-		self.actiongroup.add_radio_actions([
-			("BackAnn", gtk.STOCK_PREFERENCES, "_Back Annotate", '<Control>B', "Back annotate schematic from cmp file", 0),
-			("Analyze", gtk.STOCK_PREFERENCES, "_Analyze", '<Control>A', "Analyze impact of backannotation", 1),
-			], 2, self.setSelProcess)
 		uimanager.insert_action_group(self.actiongroup, 0)
 		uimanager.add_ui_from_string(self.interface)
 		
