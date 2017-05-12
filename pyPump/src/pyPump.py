@@ -35,7 +35,7 @@ import os
 import sys
 import string
 
-# backAnnotate = True
+headerRow = 999
 
 def errorDialog(errorString):
 	"""
@@ -196,6 +196,7 @@ class processPump:
 					totalCarbs = float(row[23])
 					lastDate = currentDate
 					totalSamples = 1
+		carbsRow = []
 		carbsRow.append(lastDate)
 		carbsRow.append(totalCarbs)
 		carbsList.append(carbsRow)
@@ -221,11 +222,18 @@ class processPump:
 		Index,Date,Time,Timestamp,New Device Time,BG Reading (mg/dL),Linked BG Meter ID,Temp Basal Amount (U/h),Temp Basal Type,Temp Basal Duration (hh:mm:ss),Bolus Type,Bolus Volume Selected (U),Bolus Volume Delivered (U),Bolus Duration (hh:mm:ss),Prime Type,Prime Volume Delivered (U),Suspend,Rewind,BWZ Estimate (U),BWZ Target High BG (mg/dL),BWZ Target Low BG (mg/dL),BWZ Carb Ratio (grams),BWZ Insulin Sensitivity (mg/dL),BWZ Carb Input (grams),BWZ BG Input (mg/dL),BWZ Correction Estimate (U),BWZ Food Estimate (U),BWZ Active Insulin (U),Alarm,Sensor Calibration BG (mg/dL),Sensor Glucose (mg/dL),ISIG Value,Daily Insulin Total (U),Raw-Type,Raw-Values,Raw-ID,Raw-Upload ID,Raw-Seq Num,Raw-Device Type
 
 		"""
-		if entirePumpList[0][0].strip() != 'Medtronic Diabetes CareLink Personal Data Export File (v1.0.1)':
-			print 'First line of pump header mismatched'
+		global headerRow
+		rowIndex = 0
+		for row in entirePumpList:		
+			if row[0] <> 'Index':
+				rowIndex += 1
+			else:
+				headerRow = rowIndex
+		if headerRow == 999:
+			errorDialog('Could not find the header row.\nFirst element in the row must be Index')
 			return False
 		expectedHeader = ['Index','Date','Time','Timestamp','New Device Time','BG Reading (mg/dL)','Linked BG Meter ID','Temp Basal Amount (U/h)','Temp Basal Type','Temp Basal Duration (hh:mm:ss)','Bolus Type','Bolus Volume Selected (U)','Bolus Volume Delivered (U)','Bolus Duration (hh:mm:ss)','Prime Type','Prime Volume Delivered (U)','Suspend','Rewind','BWZ Estimate (U)','BWZ Target High BG (mg/dL)','BWZ Target Low BG (mg/dL)','BWZ Carb Ratio (grams)','BWZ Insulin Sensitivity (mg/dL)','BWZ Carb Input (grams)','BWZ BG Input (mg/dL)','BWZ Correction Estimate (U)','BWZ Food Estimate (U)','BWZ Active Insulin (U)','Alarm','Sensor Calibration BG (mg/dL)','Sensor Glucose (mg/dL)','ISIG Value','Daily Insulin Total (U)','Raw-Type','Raw-Values','Raw-ID','Raw-Upload ID','Raw-Seq Num','Raw-Device Type']
-		if entirePumpList[11] != expectedHeader:
+		if entirePumpList[headerRow] != expectedHeader:
 			print 'Column header mismatched, expected'
 			print expectedHeader
 			print 'got header'
@@ -245,6 +253,7 @@ class processPump:
 		
 		The executive which calls all of the other functions.
 		'''
+		global headerRow
 		pumpFileName = self.selectPumpDataFile()
 		if pumpFileName == '':
 			errorDialog("Failed to open file")
@@ -252,9 +261,9 @@ class processPump:
 		newPumpList = self.readPumpData(pumpFileName)
 		if not self.checkPumpFileHeader(newPumpList):
 			return False
-		self.goThruInsulinData(newPumpList[12:],pumpFileName)
-		self.goThruGlucoseData(newPumpList[12:],pumpFileName)
-		self.goThruCarbsData(newPumpList[12:],pumpFileName)
+		self.goThruInsulinData(newPumpList[headerRow+1:],pumpFileName)
+		self.goThruGlucoseData(newPumpList[headerRow+1:],pumpFileName)
+		self.goThruCarbsData(newPumpList[headerRow+1:],pumpFileName)
 		return True
 	
 class UIManager:
