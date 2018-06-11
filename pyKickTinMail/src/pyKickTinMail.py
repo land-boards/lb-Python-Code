@@ -172,7 +172,6 @@ class ControlClass:
 		"""The code that calls the other code
 		"""
 		global defaultPath
-		
 		defaultParmsClass = HandleDefault()
 		defaultParmsClass.initDefaults()
 		defaultPath = defaultParmsClass.getKeyVal('DEFAULT_PATH')
@@ -227,6 +226,10 @@ class ControlClass:
 			outMessage += '\nPayPal list lines : '
 			outMessage += str(len(payPalList))
 			errorDialog(outMessage)
+			inFileNameTindie = myCSVFileReadClass.getLastPathFileName()
+			renFileNameTindie = inFileNameTindie[0:-4] + "-Tindie-" + str(date.today()) + '.tsv'
+			#print 'changing file name from: ', inFileNameTindie, ' to: ', renFileNameTindie
+			os.rename(inFileNameTindie, renFileNameTindie)
 		else:
 			errorDialog('Could not determine input file type')
 			exit()
