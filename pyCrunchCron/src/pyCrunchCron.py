@@ -98,15 +98,15 @@ class ControlClass:
 		
 		myCSVFileWriteClass = WriteListtoCSV()
 		myCSVFileWriteClass.setVerboseMode(True)	# turn on verbose mode until all is working 
-		header = ['Date','Protein(g)','Fat(g)','Carbs(g)']
+		header = ['Date','Protein(g)','Fat(g)','Carbs(g)','Weight(lbs)']
 
 		servingsList = self.crunchServingsList(theServingsList)
 
 		biometricsList = self.crunchBiosList(theBiometricsList)
 
-#		theOutList = self.combineDataLists(theServingsList, theBiometricsList)
+		theOutList = self.combineDataLists(servingsList, biometricsList)
 		
-		myCSVFileWriteClass.writeOutList(fileToWrite, header, servingsList)
+		myCSVFileWriteClass.writeOutList(fileToWrite, header, theOutList)
 		
 	def crunchServingsList(self, servingsList):
 		"""
@@ -183,10 +183,11 @@ class ControlClass:
 		"""
 		:param outFilePtr: Points to the output file.
 		:param crunchBiosList: The biometrics list.
+		:returns: List of date, weight pairs
 		
 		12/14/2017,Weight (Nokia),lbs,183.731
 		12/14/2017,Body Fat (Nokia),%,19.751
-
+		
 		"""
 		biosHeader = ['Day','Metric','Unit','Amount']
 		biosDictionary = {}
@@ -202,7 +203,7 @@ class ControlClass:
 		amountColumn = int(biosDictionary['Amount'])
 		offsetRow = 1
 		for row in biometricsList[1:]:
-			if row[metricColumn] == 'Body Fat (Nokia)':
+			if row[metricColumn] == 'Weight (Nokia)':
 				lastDate = row[dateColumn]
 				lastWeight = float(row[amountColumn])
 				offsetRow += 1
@@ -213,15 +214,16 @@ class ControlClass:
 				dayRow = []
 				dayRow.append(lastDate)
 				dayRow.append(str(lastWeight))
-				shortBiosList.append(dayRow)
-				lastWeight = 9999.99
-			if row[metricColumn] == 'Body Fat (Nokia)':
-				if float(row[amountColumn]) < lastWeight:
-					lastWeight = row[amountColumn]
-		dayRow.append(lastDate)
-		dayRow.append(str(lastWeight))
-		shortBiosList.append(dayRow)
-		print shortBiosList
+				if row[metricColumn] == 'Weight (Nokia)':
+					shortBiosList.append(dayRow)
+					lastWeight = 9999.99
+					if float(row[amountColumn]) < lastWeight:
+						lastWeight = row[amountColumn]
+				lastDate = row[dateColumn]
+		if row[metricColumn] == 'Weight (Nokia)':
+			dayRow.append(lastDate)
+			dayRow.append(str(lastWeight))
+			shortBiosList.append(dayRow)
 		return shortBiosList
 			
 		
@@ -232,6 +234,19 @@ class ControlClass:
 		:param servingsList: The biometrics list.
 
 		"""
+		combinedList = []
+		for serving in servingsList:
+			for biometric in biometricsList:
+				if serving[0] == biometric[0]:
+					combinedElements = []
+					combinedElements.append(serving[0])
+					combinedElements.append(serving[1])
+					combinedElements.append(serving[2])
+					combinedElements.append(serving[3])
+					combinedElements.append(biometric[1])
+					combinedList.append(combinedElements)
+					break
+		return combinedList
 		
 class UIManager:
 	"""The UI manager
