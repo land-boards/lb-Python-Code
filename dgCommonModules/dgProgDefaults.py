@@ -4,7 +4,7 @@
 dgProgDefaults.py
 =================
 
-This program handles program defaults.
+This method handles program defaults.
 
 ==========
 Background
@@ -17,7 +17,7 @@ This file has those functions.
 Input File Types
 ================
 
-This program supports the following types of BOMs as inputs:
+This method supports the following types of BOMs as inputs:
 
 - DEFAULTS.csv -The defaults file
 

@@ -47,6 +47,7 @@ sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules')
 from dgProgDefaults import *
 from dgReadCSVtoList import *
 from dgWriteListtoCSV import *
+from dgHeaderDict import *
 defaultPath = '.'
 
 from sys import argv
@@ -146,45 +147,31 @@ class ControlClass:
 		'Omega-3 (g)','Omega-6 (g)','Polyunsaturated (g)','Saturated (g)','Trans-Fats (g)',\
 		'Cystine (g)','Histidine (g)','Isoleucine (g)','Leucine (g)','Lysine (g)','Methionine (g)',\
 		'Phenylalanine (g)','Protein (g)','Threonine (g)','Tryptophan (g)','Tyrosine (g)','Valine (g)']
-		servingsDictionary = {}
-		i = 0
-		for element in servingsHeader:
-			servingsDictionary[element] = i
-			i = i + 1
-		#print 'dictionary is: ', servingsDictionary
-		shortServingsList = []
-		dateColumnOffset = int(servingsDictionary['Day'])
-		proteinColumn = int(servingsDictionary['Protein (g)'])
-		fatColumn = int(servingsDictionary['Fat (g)'])
-		carbsColumn = int(servingsDictionary['Net Carbs (g)'])
+		myHeaderDictionary = headerDict()
+		servingsDictionary = myHeaderDictionary.makeHeaderDict(servingsHeader)
+		dateColumnOffset = int(myHeaderDictionary.getHeaderOffset('Day'))
+		proteinColumn = int(myHeaderDictionary.getHeaderOffset('Protein (g)'))
+		fatColumn = int(myHeaderDictionary.getHeaderOffset('Fat (g)'))
+		carbsColumn = int(myHeaderDictionary.getHeaderOffset('Net Carbs (g)'))
 		lastDay = servingsList[1][dateColumnOffset]
-		if servingsList[1][proteinColumn] != '':
-			lastProtein = float(servingsList[1][proteinColumn])
-		else:
-			lastProtein = 0.0
-		if servingsList[1][fatColumn] != '':
-			lastFat = float(servingsList[1][fatColumn])
-		else:
-			lastFat = 0.0
-		if servingsList[1][carbsColumn] != '':
-			lastCarbs = float(servingsList[1][carbsColumn])
-		else:
-			lastCarbs = 0.0
+		lastProtein = 0.0
+		lastFat = 0.0
+		lastCarbs = 0.0
 		totalProtein = 0.0
 		totalFat = 0.0
 		totalCarbs = 0.0
 		dayRow = []
-		for row in servingsList[2:]:
+		shortServingsList = []
+		for row in servingsList[1:]:
 			if row[dateColumnOffset] != lastDay:	# Write out the previous list
 				dayRow = []
 				dayRow.append(lastDay)
 				dayRow.append(str(totalProtein))
 				dayRow.append(str(totalFat))
 				dayRow.append(str(totalCarbs))
-				totalCals = 4.0 * totalFat + 9.0 * totalProtein + 4.0 * totalCarbs
+				totalCals = 9.0 * totalFat + 4.0 * totalProtein + 4.0 * totalCarbs
 				dayRow.append(str(totalCals))
 				shortServingsList.append(dayRow)
-#				print 'dayRow',dayRow
 				totalProtein = 0.0
 				totalFat = 0.0
 				totalCarbs = 0.0
@@ -247,11 +234,9 @@ class ControlClass:
 				dayRow.append(lastDate)
 				dayRow.append(str(lastWeight))
 				shortBiosList.append(dayRow)
-				#print 'date',lastDate,'weight',lastWeight
 				# Save the current values to use next time
 				lastDate = row[dateColumnOffset]
 				lastWeight = float(row[amountColumnOffset])
-#		print 'shortBiosList ', shortBiosList
 		newShortBioList = []
 		shortLine = shortBiosList[0]
 		shortLine.append('0.0')
