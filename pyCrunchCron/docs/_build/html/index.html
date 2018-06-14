@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to pyCSVtoMWTable’s documentation! &mdash; pyUnivBom 1.0.1 documentation</title>
+    <title>Welcome to pyCrunchCron’s documentation! &#8212; pyCrunchCron 1.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pyUnivBom 1.0.1 documentation" href="#" />
+    <link rel="top" title="pyCrunchCron 1.0.1 documentation" href="#" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -39,37 +39,88 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-pycsvtomwtable-s-documentation">
-<h1>Welcome to pyCSVtoMWTable&#8217;s documentation!<a class="headerlink" href="#welcome-to-pycsvtomwtable-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="welcome-to-pycrunchcron-s-documentation">
+<h1>Welcome to pyCrunchCron&#8217;s documentation!<a class="headerlink" href="#welcome-to-pycrunchcron-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-pyCSVtoMWTable"></span><div class="section" id="pycsvtomwtable-py">
-<h2>pyCSVtoMWTable.py<a class="headerlink" href="#pycsvtomwtable-py" title="Permalink to this headline">¶</a></h2>
-<p>Convert a CSV into a MediaWiki table.</p>
+<span class="target" id="module-pyCrunchCron"></span><div class="section" id="pycrunchcron-py">
+<h2>pyCrunchCron.py<a class="headerlink" href="#pycrunchcron-py" title="Permalink to this headline">¶</a></h2>
+<p>Crunch a set of Cronometer files.</p>
 </div>
 <div class="section" id="background">
 <h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
-<p>MediaWiki is a very common Wiki page format. 
-Wikipedia is the primary example that comes to mind for MediaWiki.
-htt;://land-boards.com/blwiki is another popular page.</p>
-<p>We wanted a way to easily load tables into Media Wiki.
-The tables were in .csv (EXCEL) format.</p>
+<p>Cronometer is a diet tracker.
+Cronometer dumps out data as a .csv (EXCEL) file.
+This program takes the output file from Cronometer and creates a reduced data set.</p>
 </div>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<p>This program prompts for a path and file to select for input.
-The output file is created in the same path with a .MW output file name.</p>
+<p>This program prompts for macros and biometrics files.
+The output file is created in the same path with as CronCrunch-YY-MM-DD.csv</p>
 </div>
 <div class="section" id="api">
 <h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 </div>
 <dl class="class">
-<dt id="pyCSVtoMWTable.ControlClass">
-<em class="property">class </em><code class="descclassname">pyCSVtoMWTable.</code><code class="descname">ControlClass</code><a class="headerlink" href="#pyCSVtoMWTable.ControlClass" title="Permalink to this definition">¶</a></dt>
+<dt id="pyCrunchCron.ControlClass">
+<em class="property">class </em><code class="descclassname">pyCrunchCron.</code><code class="descname">ControlClass</code><a class="headerlink" href="#pyCrunchCron.ControlClass" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="pyCSVtoMWTable.ControlClass.theExecutive">
-<code class="descname">theExecutive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyCSVtoMWTable.ControlClass.theExecutive" title="Permalink to this definition">¶</a></dt>
+<dt id="pyCrunchCron.ControlClass.combineDataLists">
+<code class="descname">combineDataLists</code><span class="sig-paren">(</span><em>servingsList</em>, <em>weightBiometricList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyCrunchCron.ControlClass.combineDataLists" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>outFilePtr</strong> &#8211; Points to the output file.</li>
+<li><strong>servingsList</strong> &#8211; The servings list.</li>
+<li><strong>servingsList</strong> &#8211; The biometrics list.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyCrunchCron.ControlClass.crunchServingsList">
+<code class="descname">crunchServingsList</code><span class="sig-paren">(</span><em>servingsList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyCrunchCron.ControlClass.crunchServingsList" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>servingsList</strong> &#8211; The servings list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of [&#8216;Date&#8217;,&#8217;Protein&#8217;,&#8217;Fat&#8217;,&#8217;Carbs&#8217;]</td>
+</tr>
+</tbody>
+</table>
+<p>Take the foods and sum up the Protein, Fat and Carbs for each food item.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyCrunchCron.ControlClass.crunchWeightList">
+<code class="descname">crunchWeightList</code><span class="sig-paren">(</span><em>weightBiometricList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyCrunchCron.ControlClass.crunchWeightList" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>weightBiometricList</strong> &#8211; The biometrics list.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">[&#8216;Date&#8217;,&#8217;Protein(g)&#8217;,&#8217;Fat(g)&#8217;,&#8217;Carbs(g)&#8217;,&#8217;Weight(lbs)&#8217;]</td>
+</tr>
+</tbody>
+</table>
+<p>12/14/2017,Weight (Nokia),lbs,183.731
+12/14/2017,Body Fat (Nokia),%,19.751
+1/4/2018,Blood Glucose,mg/dL,99
+5/13/2018,Ketones (Breath),ppm,4.1</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyCrunchCron.ControlClass.theExecutive">
+<code class="descname">theExecutive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyCrunchCron.ControlClass.theExecutive" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -82,23 +133,6 @@ The output file is created in the same path with a .MW output file name.</p>
 <p>The code that calls the other code.
 This code uses the defaults library to handle the default path.
 This code uses the read CSV library to read in the CSV file.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyCSVtoMWTable.ControlClass.writeOutMWTable">
-<code class="descname">writeOutMWTable</code><span class="sig-paren">(</span><em>outFilePtr</em>, <em>theList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyCSVtoMWTable.ControlClass.writeOutMWTable" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>outFilePtr</strong> &#8211; Points to the output file.</li>
-<li><strong>theList</strong> &#8211; The list to write out.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </dd></dl>
@@ -121,8 +155,8 @@ This code uses the read CSV library to read in the CSV file.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to pyCSVtoMWTable&#8217;s documentation!</a><ul>
-<li><a class="reference internal" href="#pycsvtomwtable-py">pyCSVtoMWTable.py</a></li>
+<li><a class="reference internal" href="#">Welcome to pyCrunchCron&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#pycrunchcron-py">pyCrunchCron.py</a></li>
 <li><a class="reference internal" href="#background">Background</a></li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#api">API</a></li>
@@ -159,10 +193,10 @@ This code uses the read CSV library to read in the CSV file.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2014, Doug Gilliland.
+      &copy;2018, Doug Gilliland.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |

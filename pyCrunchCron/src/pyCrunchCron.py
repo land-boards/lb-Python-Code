@@ -11,6 +11,7 @@ Background
 
 Cronometer is a diet tracker.
 Cronometer dumps out data as a .csv (EXCEL) file.
+This program takes the output file from Cronometer and creates a reduced data set.
 
 =====
 Usage
@@ -81,37 +82,58 @@ class ControlClass:
 		theServingsList = myCSVFileReadClass.findOpenReadCSV(defaultPath,'Select Servings CSV File')	# read in CSV into list
 		if theServingsList == []:
 			return False
-		theBiometricsList = myCSVFileReadClass.findOpenReadCSV(defaultPath,'Select Biometrics CSV File')	# read in CSV into list
-		if theBiometricsList == []:
+		servingsList = self.crunchServingsList(theServingsList)
+
+		biometricsList = myCSVFileReadClass.findOpenReadCSV(defaultPath,'Select Biometrics CSV File')	# read in CSV into list
+		if biometricsList == []:
 			return False
-		fileToWrite = myCSVFileReadClass.getLastPathFileName()[0:-4] + '_OUT.CSV'
-		#print 'fileToWrite',fileToWrite
+		weightFileToWrite = myCSVFileReadClass.getLastPath() + 'pyCronCrunch_Weight.CSV'
+		#print 'weightFileToWrite',weightFileToWrite
 		try:
-			outFile = open(fileToWrite, 'wb')
+			outFile = open(weightFileToWrite, 'wb')
 		except IOError:
 			errorDialog('ERROR - Cannot open the output file.\nIs the file already open?\nClose the file and return.')
 			try:
-				outFile = open(fileToWrite, 'wb')
+				outFile = open(weightFileToWrite, 'wb')
 			except IOError:
 				errorDialog('ERROR - Tried again,  - Is the file already open?')
 				exit()
 		
 		myCSVFileWriteClass = WriteListtoCSV()
 		myCSVFileWriteClass.setVerboseMode(True)	# turn on verbose mode until all is working 
-		header = ['Date','Protein(g)','Fat(g)','Carbs(g)','Weight(lbs)']
 
-		servingsList = self.crunchServingsList(theServingsList)
+		weightBiometricList = self.crunchWeightList(biometricsList)
+		header = ['Date','Protein(g)','Fat(g)','Carbs(g)','Calories','Weight(lbs)','Weight Change(lbs)']
+		theOutList = self.combineTwoLists(servingsList, weightBiometricList)
+		myCSVFileWriteClass.writeOutList(weightFileToWrite, header, theOutList)
 
-		biometricsList = self.crunchBiosList(theBiometricsList)
-
-		theOutList = self.combineDataLists(servingsList, biometricsList)
+		bloodGlucoseFileToWrite = myCSVFileReadClass.getLastPath() + 'pyCronCrunch_Glucose.CSV'
+		try:
+			outFile = open(bloodGlucoseFileToWrite, 'wb')
+		except IOError:
+			errorDialog('ERROR - Cannot open the output file.\nIs the file already open?\nClose the file and return.')
+			try:
+				outFile = open(bloodGlucoseFileToWrite, 'wb')
+			except IOError:
+				errorDialog('ERROR - Tried again,  - Is the file already open?')
+				exit()
 		
-		myCSVFileWriteClass.writeOutList(fileToWrite, header, theOutList)
+		myCSVFileWriteClass = WriteListtoCSV()
+		myCSVFileWriteClass.setVerboseMode(True)	# turn on verbose mode until all is working 
+
+		weightBiometricList = self.crunchGlucoseList(biometricsList)
+		header = ['Date','Protein(g)','Fat(g)','Carbs(g)','Calories','Blood Glucose(mg/dl)']
+		theOutList = self.combineTwoLists(servingsList, weightBiometricList)
+		myCSVFileWriteClass.writeOutList(bloodGlucoseFileToWrite, header, theOutList)
+
 		
 	def crunchServingsList(self, servingsList):
 		"""
-		:param outFilePtr: Points to the output file.
 		:param servingsList: The servings list.
+		
+		:returns: list of ['Date','Protein','Fat','Carbs','Calories']
+		
+		Take the foods and sum up the Protein, Fat and Carbs for each food item.
 		"""
 		servingsHeader = ['Day','Food Name','Amount','Energy (kcal)','Alcohol (g)',\
 		'Caffeine (mg)','Water (g)','B1 (Thiamine) (mg)','B2 (Riboflavin) (mg)',\
@@ -131,11 +153,11 @@ class ControlClass:
 			i = i + 1
 		#print 'dictionary is: ', servingsDictionary
 		shortServingsList = []
-		dateColumn = int(servingsDictionary['Day'])
+		dateColumnOffset = int(servingsDictionary['Day'])
 		proteinColumn = int(servingsDictionary['Protein (g)'])
 		fatColumn = int(servingsDictionary['Fat (g)'])
 		carbsColumn = int(servingsDictionary['Net Carbs (g)'])
-		lastDay = servingsList[1][dateColumn]
+		lastDay = servingsList[1][dateColumnOffset]
 		if servingsList[1][proteinColumn] != '':
 			lastProtein = float(servingsList[1][proteinColumn])
 		else:
@@ -153,24 +175,27 @@ class ControlClass:
 		totalCarbs = 0.0
 		dayRow = []
 		for row in servingsList[2:]:
-			if row[dateColumn] != lastDay:	# Write out the previous list
+			if row[dateColumnOffset] != lastDay:	# Write out the previous list
 				dayRow = []
 				dayRow.append(lastDay)
 				dayRow.append(str(totalProtein))
 				dayRow.append(str(totalFat))
 				dayRow.append(str(totalCarbs))
+				totalCals = 4.0 * totalFat + 9.0 * totalProtein + 4.0 * totalCarbs
+				dayRow.append(str(totalCals))
 				shortServingsList.append(dayRow)
 #				print 'dayRow',dayRow
 				totalProtein = 0.0
 				totalFat = 0.0
 				totalCarbs = 0.0
-				lastDay = row[dateColumn]
+				lastDay = row[dateColumnOffset]
 			if row[proteinColumn] != '':
 				totalProtein += float(row[proteinColumn])
 			if row[fatColumn] != '':
 				totalFat += float(row[fatColumn])
 			if row[carbsColumn] != '':
 				totalCarbs += float(row[carbsColumn])
+		dayRow = []
 		dayRow.append(lastDay)
 		dayRow.append(str(totalProtein))
 		dayRow.append(str(totalFat))
@@ -179,72 +204,132 @@ class ControlClass:
 #		print 'shortServingsList',shortServingsList
 		return shortServingsList
 		
-	def crunchBiosList(self, biometricsList):
+	def crunchWeightList(self, weightBiometricList):
 		"""
-		:param outFilePtr: Points to the output file.
-		:param crunchBiosList: The biometrics list.
-		:returns: List of date, weight pairs
+		:param weightBiometricList: The biometrics list.
+		:returns: ['Date','Weight(lbs)']
 		
 		12/14/2017,Weight (Nokia),lbs,183.731
 		12/14/2017,Body Fat (Nokia),%,19.751
-		
+		1/4/2018,Blood Glucose,mg/dL,99
+		5/13/2018,Ketones (Breath),ppm,4.1
+
 		"""
+		# Put the header into a dictionary to map the column numbers
 		biosHeader = ['Day','Metric','Unit','Amount']
+		# Mapping the header to column numbers allows access by header text
 		biosDictionary = {}
 		i = 0
 		for element in biosHeader:
 			biosDictionary[element] = i
 			i = i + 1
-		print 'dictionary is: ', biosDictionary
+		# print 'dictionary is: ', biosDictionary
 		shortBiosList = []
-		dateColumn = int(biosDictionary['Day'])
-		metricColumn = int(biosDictionary['Metric'])
-		unitColumn = int(biosDictionary['Unit'])
-		amountColumn = int(biosDictionary['Amount'])
-		offsetRow = 1
-		for row in biometricsList[1:]:
-			if row[metricColumn] == 'Weight (Nokia)':
-				lastDate = row[dateColumn]
-				lastWeight = float(row[amountColumn])
-				offsetRow += 1
-				break
+		dateColumnOffset = int(biosDictionary['Day'])
+		metricColumnOffset = int(biosDictionary['Metric'])
+		unitColumnOffset = int(biosDictionary['Unit'])
+		amountColumnOffset = int(biosDictionary['Amount'])
+		lastWeight = 999.9
+		reducedRows = []
+		# Shorten the table to just weights
+		for row in weightBiometricList[1:]:		# start after the header
+			if row[metricColumnOffset] == 'Weight (Nokia)':
+				reducedRows.append(row)
+		lastDate = reducedRows[0][dateColumnOffset]				# The first date
+		lastWeight = float(reducedRows[0][amountColumnOffset])	# The first weight
 		dayRow = []
-		for row in biometricsList[offsetRow:]:
-			if row[dateColumn] != lastDate:	# Write out the previous list
+		for row in reducedRows[1:]:
+			if row[dateColumnOffset] == lastDate:
+				if float(row[amountColumnOffset]) < lastWeight:
+					lastWeight = float(row[amountColumnOffset])
+			if row[dateColumnOffset] != lastDate:	# Write out the previous list
 				dayRow = []
 				dayRow.append(lastDate)
 				dayRow.append(str(lastWeight))
-				if row[metricColumn] == 'Weight (Nokia)':
-					shortBiosList.append(dayRow)
-					lastWeight = 9999.99
-					if float(row[amountColumn]) < lastWeight:
-						lastWeight = row[amountColumn]
-				lastDate = row[dateColumn]
-		if row[metricColumn] == 'Weight (Nokia)':
-			dayRow.append(lastDate)
-			dayRow.append(str(lastWeight))
-			shortBiosList.append(dayRow)
-		return shortBiosList
+				shortBiosList.append(dayRow)
+				#print 'date',lastDate,'weight',lastWeight
+				# Save the current values to use next time
+				lastDate = row[dateColumnOffset]
+				lastWeight = float(row[amountColumnOffset])
+#		print 'shortBiosList ', shortBiosList
+		newShortBioList = []
+		shortLine = shortBiosList[0]
+		shortLine.append('0.0')
+		newShortBioList.append(shortLine)
+		lastWeight = float(shortBiosList[0][1])
+		print 'lastWeight',lastWeight
+		for row in shortBiosList[1:]:		 # assembly the list with deltas column
+			shortLine = row
+			shortLine.append(float(row[1])-lastWeight)
+			lastWeight = float(row[1])
+			newShortBioList.append(shortLine)
+		return newShortBioList
 			
-		
-	def combineDataLists(self, servingsList, biometricsList):
+	def crunchGlucoseList(self, glucoseList):
 		"""
-		:param outFilePtr: Points to the output file.
-		:param servingsList: The servings list.
-		:param servingsList: The biometrics list.
+		:param weightBiometricList: The biometrics list.
+		:returns: ['Date','Protein(g)','Fat(g)','Carbs(g)','Weight(lbs)']
+		
+		12/14/2017,Weight (Nokia),lbs,183.731
+		12/14/2017,Body Fat (Nokia),%,19.751
+		1/4/2018,Blood Glucose,mg/dL,99
+		5/13/2018,Ketones (Breath),ppm,4.1
 
 		"""
+		# Put the header into a dictionary to map the column numbers
+		biosHeader = ['Day','Metric','Unit','Amount']
+		# Mapping the header to column numbers allows access by header text
+		biosDictionary = {}
+		i = 0
+		for element in biosHeader:
+			biosDictionary[element] = i
+			i = i + 1
+		# print 'dictionary is: ', biosDictionary
+		shortGlucoseList = []
+		dateColumnOffset = int(biosDictionary['Day'])
+		metricColumnOffset = int(biosDictionary['Metric'])
+		unitColumnOffset = int(biosDictionary['Unit'])
+		amountColumnOffset = int(biosDictionary['Amount'])
+		offsetRow = 1
+		for row in glucoseList[1:]:
+			if row[metricColumnOffset] == 'Blood Glucose':
+				lastDate = row[dateColumnOffset]
+				lastGlucose = float(row[amountColumnOffset])
+				offsetRow += 1
+				break
+		dayRow = []
+		for row in glucoseList[offsetRow:]:
+			if row[dateColumnOffset] != lastDate:	# Write out the previous list
+				dayRow = []
+				dayRow.append(lastDate)
+				dayRow.append(str(lastGlucose))
+				if row[metricColumnOffset] == 'Blood Glucose':
+					shortGlucoseList.append(dayRow)
+					lastGlucose = 0.0
+					if float(row[amountColumnOffset]) > lastGlucose:
+						lastGlucose = row[amountColumnOffset]
+				lastDate = row[dateColumnOffset]
+		if row[metricColumnOffset] == 'Blood Glucose':
+			dayRow.append(lastDate)
+			dayRow.append(str(lastGlucose))
+			shortGlucoseList.append(dayRow)
+		return shortGlucoseList
+			
+	def combineTwoLists(self, list1, list2):
+		"""
+		:param list1: The first list.
+		:param list2: The second list.
+		:returns: combined list
+		
+		Combines two lists.
+		Lists have date in the first column.
+		First list comes first. Second list comes second.
+		"""
 		combinedList = []
-		for serving in servingsList:
-			for biometric in biometricsList:
-				if serving[0] == biometric[0]:
-					combinedElements = []
-					combinedElements.append(serving[0])
-					combinedElements.append(serving[1])
-					combinedElements.append(serving[2])
-					combinedElements.append(serving[3])
-					combinedElements.append(biometric[1])
-					combinedList.append(combinedElements)
+		for rowList1 in list1:
+			for rowList2 in list2:
+				if rowList1[0] == rowList2[0]:
+					combinedList.append(rowList1 + rowList2[1:])
 					break
 		return combinedList
 		
