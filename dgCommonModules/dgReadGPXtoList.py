@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """
-===================
-dgReadXMLtoList.py
-===================
+==================
+dgReadGPXtoList.py
+==================
 
 This program 
 
@@ -20,6 +20,9 @@ import sys
 sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules')
 sys.path.append('C:\\Users\\Doug\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
 
+import gpxpy
+import gpxpy.gpx
+
 from dgCheckFileFresh import *
 
 import pygtk
@@ -31,11 +34,8 @@ if gtk.pygtk_version < (2,3,90):
 	print "PyGtk 2.3.90 or later required for this example"
 	raise SystemExit
 
-# Use the ElementTree module but alias it as "Xml"
-import xml.etree.ElementTree as Xml
-
-xmlFilePath = ''
-freshnessCheck = True
+gpxFilePath = ''
+gpxFileName = ''
 verboseMode = False
 
 def errorDialog(errorString):
@@ -50,54 +50,62 @@ def errorDialog(errorString):
 class XMLtoList:
 	"""Reads the XML file into a list and returns the list
 	"""
-	def findReadXMLSpreadsheet(self,startingPath):
+	def findReadGPXSpreadsheet(self,startingPath):
 		"""Find the XMP Spreadseet and read it into a list
+		   <trkpt lat="40.0070560" lon="-79.5889880">
+			<ele>290.5</ele>
+			<time>2018-07-27T10:40:00Z</time>
+			<extensions>
+			 <gpxtpx:TrackPointExtension>
+			  <gpxtpx:hr>67</gpxtpx:hr>
+
 		"""
-		global xmlFilePath
-		xmlFilePath = startingPath
-		xmlFileName = self.findXmlFile()
-		xmlFilePath = self.extractPathFromPathfilename(xmlFileName)
-		startingPathName = self.extractPathFromPathfilename(xmlFileName)
-		if xmlFileName == '':
+		global gpxFilePath
+		global gpxFileName
+		gpxFilePath = startingPath
+		gpxFileName = self.findGPXFile()
+		gpxFilePath = self.extractPathFromPathfilename(gpxFileName)
+		startingPathName = self.extractPathFromPathfilename(gpxFileName)
+		if gpxFileName == '':
 			return False
-		if freshnessCheck:
-			myFreshCheck = CheckFreshness()
-			if not myFreshCheck.isFresh(xmlFileName):
-				print 'xml file is not fresh... Exiting'
-				errorDialog("The XML File is not fresh\nEither change the Options to ignore the freshness check\nor create/choose a fresh file")
-				return []
-		xmlList = self.readSpreadsheetXML2List(xmlFileName)
-		return xmlList
+		gpx_file = open(gpxFileName, 'r')
+		gpxList = []
+		gpxLine = []
+		dateTime = ''
+		lat = ''
+		lon = ''
+		hr = ''
+		ele = ''
+		for line in gpx_file:
+			if '<trkpt' in line:	# <trkpt lat="40.0070560" lon="-79.5889880">
+				latStartOffset = line.find('lat=\"') + 5
+				latEndOffset = line.find('\" lon')
+				lonStartOffset = line.find('lon=') + 5
+				lonEndOffset = line.find('\">')
+				gpxLine = []
+#				print 'Lat:', line[latStartOffset:latEndOffset],
+#				print 'Lon:', line[lonStartOffset:lonEndOffset]
+				lat = line[latStartOffset:latEndOffset]
+				lon = line[lonStartOffset:lonEndOffset]
+			elif 'ele' in line:			# <ele>290.5</ele>
+#				print 'ele found'
+				ele = line[line.find('<ele>')+5:line.find('</ele>')]
+			elif 'time' in line:		# <time>2018-07-27T10:40:00Z</time>
+#				print 'time found'
+				dateTime = line[line.find('<time>')+6:line.find('</time>')]
+			elif 'gpxtpx:hr' in line:	# <gpxtpx:hr>67</gpxtpx:hr>
+#				print 'hr found'
+				hr = line[line.find('<gpxtpx:hr>')+11:line.find('</gpxtpx:hr>')]
+			elif '</trkpt>' in line:
+				gpxLine.append(dateTime)
+				gpxLine.append(lat)
+				gpxLine.append(lon)
+				gpxLine.append(ele)
+				gpxLine.append(hr)
+				print 'gpxLine',gpxLine
+				gpxList.append(gpxLine)
+		return gpxList
 		
-	def readSpreadsheetXML2List(self, inFileN):
-		global xmlFilePath
-		"""Returns a list which contains the XML spreadsheet data
-		
-		:param inFileN: The input Pathfilename (path and file name)
-		:returns: A list which contains the XML spreadsheet data
-		"""
-	
-		#Get the root by parsing the XML file and then using the "getroot" method 
-		root = Xml.parse(inFileN).getroot()
-
-		# Get the worksheet section by findall all of the worksheet tags (should only be one) then selecting the first 
-		worksheet = root.findall("{urn:schemas-microsoft-com:office:spreadsheet}Worksheet")[0]
-
-		# Get the table section
-		table = worksheet.findall('{urn:schemas-microsoft-com:office:spreadsheet}Table')[0]
-
-		# Make a new list to store the data read from the cells 
-		xmlData = []
-
-		# Loop through all the elements directly under the table 
-		for row in table.findall("{urn:schemas-microsoft-com:office:spreadsheet}Row"):
-			new_list = []			# Append a new list onto the results to store that row's data
-			xmlData.append(new_list)
-			for cell in row:		# Loop through all the cells in the row
-				if len(cell) > 0:
-					new_list.append(cell[0].text or "")	# Append the cell data to the new list
-		return xmlData
-
 	def setFreshCheckFlag(self,freshCheckValue):
 		global freshnessCheck
 		if verboseMode:
@@ -105,9 +113,16 @@ class XMLtoList:
 		freshnessCheck = freshCheckValue
 	
 	def getFilePath(self):
-		global xmlFilePath
-		return xmlFilePath
+		global gpxFilePath
+		return gpxFilePath
+	
+	def getLastPath(self):
+		return (self.extractPathFromPathfilename(self.getFilePath()))
 		
+	def getFullPathAndFileName(self):
+		global gpxFileName
+		return gpxFileName
+	
 	def	extractPathFromPathfilename(self,fullPathFilename):
 		""" Extracts the Path out of the PathFilename
 		
@@ -116,7 +131,7 @@ class XMLtoList:
 		"""
 		return(fullPathFilename[0:fullPathFilename.rfind('\\')+1])
 	
-	def findXmlFile(self):
+	def findGPXFile(self):
 		"""This is the dialog which locates the xml files
 		Function returns the path/name of the file that was selected
 		
@@ -124,8 +139,8 @@ class XMLtoList:
 		
 		:returns: String which has the Path/filename
 		"""
-		global xmlFilePath
-		csvFileString = "Select XML file"
+		global gpxFilePath
+		csvFileString = "Select GPX file"
 		dialog = gtk.FileChooserDialog(csvFileString,
 	                               None,
 	                               gtk.FILE_CHOOSER_ACTION_OPEN,
@@ -133,10 +148,10 @@ class XMLtoList:
 	                               gtk.STOCK_OPEN, gtk.RESPONSE_OK))
 		dialog.set_default_response(gtk.RESPONSE_OK)
 
-		dialog.set_current_folder(xmlFilePath)
+		dialog.set_current_folder(gpxFilePath)
 		filter = gtk.FileFilter()
-		filter.set_name("XML files")
-		filter.add_pattern("*.xml")
+		filter.set_name("GPX files")
+		filter.add_pattern("*.gpx")
 		dialog.add_filter(filter)
 
 		response = dialog.run()
