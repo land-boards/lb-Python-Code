@@ -33,7 +33,7 @@ class readDirectoryToList:
 		
 		:returns: file name of the path that was selected
 		"""
-		dialog = gtk.FileChooserDialog(title="Select folder", 
+		dialog = gtk.FileChooserDialog(title="Select folder to check...", 
 			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
 		filter = gtk.FileFilter() 
 		filter.set_name("Select Folder")
@@ -200,11 +200,12 @@ dirFileList = myReadFolder.doReadDir()						# read dir structure into a list
 
 myOutFile = selOutputFile()									# create output file class
 outCSVFileName = myOutFile.selectOutputFileName()			# get output file name
+if (outCSVFileName[-4:] != ".csv"):
+	outCSVFileName += '.csv'
 outFile = myOutFile.openCSVFile(outCSVFileName)				# Open the output csv file
 
 myDelFileName = outCSVFileName[0:-4] + '_DEL.bat'
 outDelFilePtr = open(myDelFileName, 'wb')
-
 
 dirFileList = sorted(dirFileList, key = lambda errs: errs[2])		# sort by size
 dirFileList = sorted(dirFileList, key = lambda errs: errs[3])		# sort by fileName
@@ -223,6 +224,9 @@ for row in dirFileList:
 			print row
 			print lastRow
 	lastRow = row
+
+outList = sorted(outList, key = lambda errs: errs[4])	# Sort by folder to put all of the similar path stuff together
+outList = sorted(outList, key = lambda errs: errs[3])	# Sort by File name to put all same files together
 
 # write out the file header followed by the file data
 outFile.writerow(['Date','Time','Size','FileName','Path'])	# File header
