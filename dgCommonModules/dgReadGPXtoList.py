@@ -102,7 +102,7 @@ class XMLtoList:
 				gpxLine.append(lon)
 				gpxLine.append(ele)
 				gpxLine.append(hr)
-				print 'gpxLine',gpxLine
+				#print 'gpxLine',gpxLine
 				gpxList.append(gpxLine)
 		return gpxList
 		

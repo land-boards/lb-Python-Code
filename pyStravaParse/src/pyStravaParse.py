@@ -52,6 +52,9 @@ defaultPath = '.'
 
 from sys import argv
 
+HRMax = '122'
+HRMin = '112'
+
 def errorDialog(errorString):
 	"""
 	Prints an error message as a dialog box
@@ -81,9 +84,8 @@ class ControlClass:
 		myXMLFileReadClass = XMLtoList()	# instantiate the class
 		myXMLFileReadClass.setVerboseMode(True)	# turn on verbose mode until all is working 
 		stravaList = myXMLFileReadClass.findReadGPXSpreadsheet(defaultPath)	# read in CSV into list
-		outputList = []
 
-		stravFileOutToWrite = myXMLFileReadClass.getFullPathAndFileName()[:-4] + '_Crunch.CSV'
+		stravFileOutToWrite = myXMLFileReadClass.getFullPathAndFileName()[:-4] + '_CR.CSV'
 		#print 'stravFileOutToWrite',stravFileOutToWrite
 		try:
 			outFile = open(stravFileOutToWrite, 'wb')
@@ -97,14 +99,15 @@ class ControlClass:
 		
 		myCSVFileWriteClass = WriteListtoCSV()
 		myCSVFileWriteClass.setVerboseMode(True)	# turn on verbose mode until all is working 
+		newStravaList = self.convertDate(stravaList)
 
-		header = ['Date_Time','Lat','Lon','Elev','Heart']
-		myCSVFileWriteClass.writeOutList(stravFileOutToWrite, header, stravaList)
+		header = ['Date_Time','Lat','Lon','Elev','Heart_Rate','HRmax','HRmin']
+		myCSVFileWriteClass.writeOutList(stravFileOutToWrite, header, newStravaList)
 		
 		defaultPath = myXMLFileReadClass.getLastPath()
 		defaultParmsClass.storeKeyValuePair('DEFAULT_PATH',defaultPath)
 		
-	def crunchStravaList(self, stravaList):
+	def convertDate(self, stravaList):
 		"""
 		:param stravaList: The servings list.
 		
@@ -112,8 +115,47 @@ class ControlClass:
 		
 		Take the foods and sum up the Protein, Fat and Carbs for each food item.
 		"""
-		return stravaList
+		outList = []
+		firstTime = self.pullTime(stravaList[0][0])
+		outRow = []
+		outRow.append('0')
+		outRow += stravaList[0][1:]
+		outRow.append(HRMax)
+		outRow.append(HRMin)
+		outList.append(outRow)
+		for row in stravaList[1:]:
+			outRow = []
+			theTime = self.pullTime(row[0])
+			outRow.append(theTime - firstTime)
+			outRow += row[1:]
+			outRow.append(HRMax)
+			outRow.append(HRMin)
+			outList.append(outRow)
+		return outList
 		
+	def pullTime(self, timeString):
+		"""2018-06-24T22:43:00Z
+		   00000000011111111112
+		   12345678901234567890
+		"""
+		timeString = timeString.replace('T',':')
+		timeString = timeString.replace('Z',':')
+		timeString = timeString.replace('-',':')
+		#print 'timeString',timeString
+		timeDate = []
+		timeDate = timeString.split(':')
+		#print 'timeDate',timeDate
+		year = int(timeDate[0])
+		month = int(timeDate[1])
+		day = int(timeDate[2])
+		hour = int(timeDate[3])
+		min = int(timeDate[4])
+		ticks = int(timeDate[5])
+		ticks += min*60
+		ticks += hour*60*60
+		ticks += day*24*60*60
+		return ticks
+
 class UIManager:
 	"""The UI manager
 	"""
