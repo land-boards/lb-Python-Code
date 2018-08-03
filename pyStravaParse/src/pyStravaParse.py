@@ -101,7 +101,7 @@ class ControlClass:
 		myCSVFileWriteClass.setVerboseMode(True)	# turn on verbose mode until all is working 
 		newStravaList = self.convertDate(stravaList)
 
-		header = ['Date_Time','Lat','Lon','Elev','Heart_Rate','HRmax','HRmin']
+		header = ['Time (secs)','Lat','Lon','Elev','Heart_Rate (bpm)','HRmax(bpm)','HRmin(bpm)']
 		myCSVFileWriteClass.writeOutList(stravFileOutToWrite, header, newStravaList)
 		
 		defaultPath = myXMLFileReadClass.getLastPath()
