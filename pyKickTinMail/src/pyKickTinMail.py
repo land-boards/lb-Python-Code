@@ -614,6 +614,8 @@ class ControlClass:
 			return 1
 		elif theInList[0] == '\xef\xbb\xbfID' or theInList[0] == 'ID':		# Tindie
 			return 2
+		elif theInList[0] == '\xef\xbb\xbfOrder ID' or theInList[0] == 'Order ID':		# Tindie
+			return 2
 		else:
 			print 'first line', theInList
 			errorDialog('determineInputFileType: Unable to detect the input file format\nExiting')
@@ -626,17 +628,17 @@ class ControlClass:
 		
 		Map the column headers to an internal preferred ordering.
 		Latest input format -
-		* ID
+		* Order ID
 		* Date
 		* First Name
 		* Last Name
+		* Email
 		* Street
 		* City
 		* State / Province
 		* Postal/Zip Code
 		* Country
 		* Additional Instructions
-		* Email
 		* Phone	
 		* Refunded
 		* Shipped
@@ -744,7 +746,7 @@ class ControlClass:
 			#print '',
 			if entryInRow == []:
 				break
-			if ((entryInRow[rewardsSentColumn] == 'False') or (entryInRow[rewardsSentColumn] == 'FALSE')) and (entryInRow[countryColumn] != 'United States'):
+			if ((entryInRow[rewardsSentColumn] == 'False') or (entryInRow[rewardsSentColumn] == 'FALSE')) and (entryInRow[countryColumn] != 'United States of America'):
 				outLine = []
 				outLine.append(entryInRow[shippingFirstNameColumn])
 				outLine.append('')
@@ -825,7 +827,7 @@ class ControlClass:
 		global rewardsSentColumn
 		outList = []
 		for row in theList:
-			if ((row[rewardsSentColumn] == 'False') or (row[rewardsSentColumn] == 'FALSE')) and (row[countryColumn] == 'United States'):
+			if ((row[rewardsSentColumn] == 'False') or (row[rewardsSentColumn] == 'FALSE')) and (row[countryColumn] == 'United States of America'):
 			#print 'country', row[countryColumn]
 				outLine = []
 				outLine.append(row[shippingFirstNameColumn])
