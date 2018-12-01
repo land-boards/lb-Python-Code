@@ -20,9 +20,6 @@ import sys
 sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules')
 sys.path.append('C:\\Users\\Doug\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
 
-import gpxpy
-import gpxpy.gpx
-
 from dgCheckFileFresh import *
 
 import pygtk
