@@ -9,6 +9,8 @@ boxIDs = []
 accum = 0	# Accumulated sum
 
 def dumpSame(string1,string2):
+	"""dumpSame - make a string from the same digits
+	"""
 	#print 'Dump the same chars between strings'
 	newString = ''
 	charOffset = 0
@@ -19,6 +21,8 @@ def dumpSame(string1,string2):
 	return newString
 
 def countDiffs(string1,string2):
+	"""countDiffs - count the number of different chars in a string
+	"""
 	#print 'counting differences between strings'
 	diffCount = 0
 	charOffset = 0
@@ -27,6 +31,7 @@ def countDiffs(string1,string2):
 			diffCount += 1
 		charOffset += 1
 	return diffCount
+
 # open file and read the content into an accumulated sum
 with open('input.txt', 'r') as filehandle:  
 	for line in filehandle:
@@ -40,4 +45,4 @@ for string1 in boxIDs:
 		if countDiffs(string1,string2) == 1:
 			print 'String1',string1
 			print 'String2',string2
-			print (dumpSame(string1,string2))
+			print 'Checksum',(dumpSame(string1,string2))
