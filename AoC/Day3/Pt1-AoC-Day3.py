@@ -3,22 +3,21 @@
 # Day 3
 # Part 1
 
-# define an empty list
-claimCards = []
-
 def checkOverlap(card1,card2):
 	"""checkOverlap - Check the two cards for overlap
 	cardX format [cardNumber,startX,startY,endX,endY]
 	:returns: True if the cards overlap, False if there's no overlap
 	"""
-	startXOffset = 1
-	startYOffset = 2
-	endXOffset = 3
-	endYOffset = 4
+	startX = 1
+	startY = 2
+	endX = 3
+	endY = 4
 	#print 'Checking card overlap'
-	if (card1[startXOffset] < card2[startXOffset] ) and (card1[endXOffset] > card2[startXOffset]):
-		if (card1[startYOffset] < card2[startYOffset]) and (card1[startYOffset] > card2[startYOffset]):
+	if (card2[startX] > card1[startX] ) and (card2[startX] < card1[endX]):
+		if (card2[startY] > card1[startY]) and (card2[startY] < card1[endY]):
+			print 'overlaps'
 			return True
+#	print 'does not overlap'
 	return False
 	
 def parseLine(claimCardRaw):
@@ -87,8 +86,10 @@ def parseLine(claimCardRaw):
 #	print 'list',listToReturn
 	return listToReturn
 
-overlappingCards = 0
+# define an empty list
 claimCards = []
+overlappingCards = 0	# Total of overlapping cards
+
 # open file and read the content into an accumulated sum
 with open('input.txt', 'r') as filehandle:  
 	for line in filehandle:
@@ -96,11 +97,17 @@ with open('input.txt', 'r') as filehandle:
 
 #print claimCards
 
+overlappingCards = []
+overlappingCardCount = 0
 cardNumber2 = 0
 for card1 in claimCards:
 	cardNumber2 += 1
 	for card2 in claimCards[cardNumber2:]:
-		if checkOverlap:
-			overlappingCards += 1
+		if checkOverlap(card1,card2):
+			overlappingCardCount += 1
+			print 'Card 1',card1
+			print 'Card 2',card2
+			overlappingCards.append(card1)
 		cardNumber2 != 1
-print 'Overlapping cards',overlappingCards
+print 'Overlapping card count',overlappingCardCount
+print 'List of overlapping cards',overlappingCards
