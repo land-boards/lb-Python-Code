@@ -44,9 +44,10 @@ import string
 import os
 import sys
 
-sys.path.append('C:\\Users\\doug_000\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
-sys.path.append('C:\\Users\\Douglas\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
-sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules')
+#sys.path.append('C:\\Users\\doug_000\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
+#sys.path.append('C:\\Users\\Douglas\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
+#sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules')
+sys.path.append('C:\\Users\\Doug\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
 
 from dgProgDefaults import *
 from dgReadCSVtoList import *
