@@ -2,6 +2,7 @@
 # 2018 Advent of Code
 # Day 3
 # Part 1
+# https://adventofcode.com/2018/day/3
 
 import time
 
@@ -50,34 +51,6 @@ If the Elves all proceed with their own plans, none of them will have enough fab
 
 """
 
-def getOverlappingArea(card1,card2):
-	"""getOverlappingArea
-	"""
-	startX = 0
-	startY = 1
-	endX = 2
-	endY = 3
-	x1 = card2[startX]
-	x2 = card1[endX-1]
-	y1 = card2[startY]
-	y2 = card1[endY-1]
-	return [x1,y1,x2,y2]
-
-def isPointInRectangle(card,checkX,checkY):
-	"""isPointInRectangle
-	[1, 2, 4, 5] x, y = 3 , 1
-	"""
-	print 'checking card',card,'x, y =',checkX,',',checkY
-	boxStartX = card[0]
-	boxStartY = card[1]
-	boxEndX = card[2]
-	boxEndY = card[3]
-	if (checkX >= boxStartX) and (checkX <= boxEndX):
-		if (checkY >= boxStartY) and (checkY <= boxEndY):
-			print 'point',checkX,checkY,' is in box',card
-			return True
-	return False
-
 def checkOverlap(card1,card2):
 	"""checkOverlap - Check the two cards for overlap
 	cardX format [cardNumber,startX,startY,endX,endY]
@@ -88,17 +61,22 @@ def checkOverlap(card1,card2):
 	
 	:returns: True if the cards overlap, False if there's no overlap
 	"""
-	print 'checking card',card1,'vs card',card2
-	if isPointInRectangle(card1,card2[0],card2[1]):
-		print 'overlaps'
-	if isPointInRectangle(card1,card2[2],card2[3]):
-		print 'overlaps'
-	if isPointInRectangle(card2,card1[0],card1[1]):
-		print 'overlaps'
-	if isPointInRectangle(card2,card1[2],card1[3]):
-		print 'overlaps'
-	print 'does not overlap'
-	return False
+	#print 'checkOverlap: checking card',card1,'vs card',card2
+	leftX = 0
+	lowerY = 1
+	rightX = 2
+	upperY = 3
+	if card1[leftX] > card2[rightX]:
+		return False
+	elif card1[rightX] < card2[leftX]:
+		return False
+	elif card1[lowerY] > card2[upperY]:
+		return False
+	elif card1[upperY] < card2[lowerY]:
+		return False
+	else:
+		#print 'overlaps'
+		return True
 	
 def parseLine(claimCardRaw):
 	"""parseLine example line #1 @ 7,589: 24x11
@@ -170,10 +148,10 @@ def isCardInArea(xValue,yValue,checkingCard):
 	"""isCardInArea - check to see if the current card is at a particular point
 	:returns: True if the x,y point is in the card
 	"""
-	cardStartX = checkingCard[1]
-	cardStartY = checkingCard[2]
-	cardEndX = checkingCard[3]
-	cardEndY = checkingCard[4]
+	cardStartX = checkingCard[0]
+	cardStartY = checkingCard[1]
+	cardEndX = checkingCard[2]
+	cardEndY = checkingCard[3]
 	if xValue < cardStartX:
 		return False
 	if xValue > cardEndX:
@@ -192,11 +170,11 @@ overlappingCards = 0	# Total of overlapping cards
 print 'Reading in file',time.strftime('%X %x %Z')
 
 # open file and read the content into an accumulated sum
-with open('input2.txt', 'r') as filehandle:  
+with open('input.txt', 'r') as filehandle:  
 	for line in filehandle:
 		claimCards.append(parseLine(line.strip('\n\r')))
 
-print 'claimCards',claimCards
+#print 'claimCards',claimCards
 
 overlappingCards = []
 overlappingCardCount = 0
@@ -206,32 +184,32 @@ print 'Getting list of overlapping areas',time.strftime('%X %x %Z')
 for card1 in claimCards:
 	cardNumber2 += 1
 	for card2 in claimCards[cardNumber2:]:
-		if checkOverlap(card1,card2):
-			print 'Card 1',card1
-			print 'Card 2',card2
-			if card1[0] not in overlappingCards:
+		if checkOverlap(card1,card2) or checkOverlap(card2,card1):
+			#print 'Card 1',card1, 
+			#print 'overlaps Card 2',card2
+			if card1 not in overlappingCards:
 				overlappingCards.append(card1)
 				overlappingCardCount += 1
-			overlappingArea = getOverlappingArea(card1,card2)
-			overlappingAreas.append(overlappingArea)
+			if card2 not in overlappingCards:
+				overlappingCards.append(card2)
+				overlappingCardCount += 1
 			
 		cardNumber2 != 1
-print 'Overlapping card count',overlappingCardCount
-print '\nList of overlapping cards',overlappingCards
-print '\nList of overlapping areas',overlappingAreas
+#print 'Overlapping card count',overlappingCardCount
+#print '\nList of overlapping cards',overlappingCards
 
 # Cycle through all 1000x1000 locations to count how many times each cell is in a list
 
 print 'Starting matrix check',time.strftime('%X %x %Z')
 totalCellsWithMoreThanOne = 0
 yValue = 0
-while yValue < 100:
+while yValue < 1024:
 	print '.',
 	xValue = 0
-	while xValue < 100:
+	while xValue < 1024:
 		cardCountInArea = 0
 		for checkingCard in overlappingCards:
-			print 'checkingCard',checkingCard
+#			print 'checkingCard',checkingCard
 			if isCardInArea(xValue,yValue,checkingCard):
 				cardCountInArea += 1
 		if cardCountInArea > 1:
