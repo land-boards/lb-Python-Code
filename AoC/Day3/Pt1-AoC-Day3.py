@@ -3,6 +3,16 @@
 # Day 3
 # Part 1
 
+def getOverlappingArea(card1,card2):
+	startX = 1
+	startY = 2
+	endX = 3
+	endY = 4
+	x1 = card2[startX]
+	x2 = card1[endX]
+	y1 = card2[startY]
+	y2 = card1[endY]
+
 def checkOverlap(card1,card2):
 	"""checkOverlap - Check the two cards for overlap
 	cardX format [cardNumber,startX,startY,endX,endY]
@@ -99,6 +109,7 @@ with open('input.txt', 'r') as filehandle:
 
 overlappingCards = []
 overlappingCardCount = 0
+overlappingAreas = []
 cardNumber2 = 0
 for card1 in claimCards:
 	cardNumber2 += 1
@@ -108,6 +119,8 @@ for card1 in claimCards:
 			print 'Card 1',card1
 			print 'Card 2',card2
 			overlappingCards.append(card1)
+			overlappingArea = getOverlappingArea(card1,card2)
+			overlappingAreas.append(overlappingArea)
 		cardNumber2 != 1
 print 'Overlapping card count',overlappingCardCount
 print 'List of overlapping cards',overlappingCards
