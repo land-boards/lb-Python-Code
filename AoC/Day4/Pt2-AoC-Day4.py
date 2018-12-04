@@ -84,14 +84,11 @@ def parseGuardLog(guardLog):
 	awakeTime = 0
 	sleepLog = []
 	for record in guardLog:
-		print 'record',record
 		newRecord = re.split('[\W]+',record[1:])		# make this really easy
-		print 'newRecord',newRecord
 		if (newRecord[5] == 'Guard'):
 			guardNumber = int(newRecord[6])
 		elif (newRecord[5] == 'falls'):
 			asleepTime = int(newRecord[4])
-			#print 'falls asleep at',asleepTime
 		elif (newRecord[5] == 'wakes'):
 			awakeTime = int(newRecord[4])
 			totalTimeAsleep = awakeTime - asleepTime
@@ -187,7 +184,7 @@ def getMaxMinute(guardMaxsByMins):
 	
 	return [foundGuardID,foundMaxMins,foundMinSlot]
 	
-guardLog = readTextFileToList('input2.txt')
+guardLog = readTextFileToList('input.txt')
 guardSleepWindows = parseGuardLog(guardLog)
 #print 'guardSleepWindows',guardSleepWindows
 guardMaxsByMins = getMaxHours(guardSleepWindows)
