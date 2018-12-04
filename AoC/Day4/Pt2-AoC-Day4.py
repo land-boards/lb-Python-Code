@@ -50,6 +50,8 @@ In the example above, Guard #99 spent minute 45 asleep more than any other guard
 
 What is the ID of the guard you chose multiplied by the minute you chose? (In the above example, the answer would be 99 * 45 = 4455.)
 
+Your puzzle answer was 7887.
+
 """
 
 def readTextFileToList(fileName):
@@ -71,51 +73,36 @@ def parseGuardLog(guardLog):
 	[1518-11-02 00:40] falls asleep
 	[1518-11-02 00:50] wakes up
 	"""
-	sleepLog = []
-	guardNumber = 0
 	totalTimeAsleep = 0
 	asleepTime = 0
 	awakeTime = 0
-	#print 'parseGuardLog: parsing raw log',guardLog
+	sleepLog = []
 	for record in guardLog:
-		timeMins10s = ord(record[15]) - ord('0')
-		timeMins1s = ord(record[16]) - ord('0')
-		timeMins = 10*timeMins10s + timeMins1s
-		#print 'time',timeMins,
-		if record[19] == 'G':	# Guard record
-			if record[25] != '#':	# verify record type is correct
-				print 'error - expected a pound'
-				exit()
-			lineOff = 26
-			if guardNumber != 0:
-				totalTimeAsleep = 0	# reset the time
-			guardNumber = 0
-			while (record[lineOff] != ' '):
-				guardNumber = guardNumber * 10
-				guardNumber += ord(record[lineOff]) - ord('0')
-				lineOff += 1
-			hourworthOfZeros = [0] * 60
-			#print 'guard',guardNumber
-		elif record[19] == 'f':
-			#print 'falls asleep at',timeMins,
-			asleepTime = timeMins
-		elif record[19] == 'w':
-			#print 'wakes up at',timeMins,
-			awakeTime = timeMins
-			totalTimeAsleep += awakeTime - asleepTime
+		newRecord = record
+		newRecord = newRecord.replace('[','')
+		newRecord = newRecord.replace(']','')
+		newRecord = newRecord.replace('-',',')
+		newRecord = newRecord.replace(':',',')
+		newRecord = newRecord.replace(' ',',')
+		newRecord = newRecord.split(',')
+		#print 'newRecord',newRecord
+		secs = int(newRecord[4])
+		if (newRecord[5] == 'Guard'):
+			guardNumber = int(newRecord[6][1:])
+		elif (newRecord[5] == 'falls'):
+			asleepTime = secs
+		elif (newRecord[5] == 'wakes'):
+			awakeTime = secs
+			totalTimeAsleep = awakeTime - asleepTime
 			sleepLogLine = []
 			sleepLogLine.append(guardNumber)
 			sleepLogLine.append(asleepTime)
 			sleepLogLine.append(awakeTime-1)
-			#sleepLogLine.append(totalTimeAsleep)
+			sleepLogLine.append(totalTimeAsleep)
 			sleepLog.append(sleepLogLine)
-			totalTimeAsleep = 0
-			#print 'slept for',totalTimeAsleep
-	#print 'sleepLog',sleepLog
 	guardHoursList = sorted(sleepLog, key = lambda errs: errs[0])		# sort by length column
-	#print guardHoursList
 	return guardHoursList
-
+	
 def fillMinsList(previousList,start,end):
 	"""
 	"""
