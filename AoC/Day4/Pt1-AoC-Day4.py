@@ -58,6 +58,8 @@ While this example listed the entries in chronological order, your entries are i
 
 What is the ID of the guard you chose multiplied by the minute you chose? (In the above example, the answer would be 10 * 24 = 240.)
 
+Your puzzle answer was 95199.
+
 """
 
 def readTextFileToList(fileName):
@@ -72,7 +74,66 @@ def readTextFileToList(fileName):
 		textFile.sort()
 	return textFile
 
+def filterInputLine(theLine):
+	"""filterInputLine - Filter the input line based on replace and split of the original lines.
+	Replace all spaces and other delimiters with commas into a single dimension list.
+	Three example record types with columns
+	[1518-11-01 23:58] Guard #99 begins shift
+	[1518-11-02 00:40] falls asleep
+	[1518-11-02 00:50] wakes up
+	Changes first line to
+	1518,11,01,23,58,Guard,99,begins,shift
+	YYYY,MM,DD,HH,MM,Key,Opt1,Opt2
+	0   ,1 ,2 ,3 ,4 ,5  ,6   ,7
+	"""
+	newRecord = theLine
+	newRecord = newRecord.replace('[','')
+	newRecord = newRecord.replace(']','')
+	newRecord = newRecord.replace('-',',')
+	newRecord = newRecord.replace(':',',')
+	newRecord = newRecord.replace('#','')
+	newRecord = newRecord.replace(' ',',')
+	newRecord = newRecord.split(',')
+	return newRecord
+	
 def parseGuardLog(guardLog):
+	"""parseGuardLog - Turns three record types into single records remembering the guard number in case it is not changed
+	[1518-11-01 23:58] Guard #99 begins shift
+	[1518-11-02 00:40] falls asleep
+	[1518-11-02 00:50] wakes up
+	Turned by filterInputLine to be
+	YYYY,MM,DD,HH,MM,Key,Opt1,d/c
+	0   ,1 ,2 ,3 ,4 ,5  ,6   ,7
+	Key is either Guard, falls or wakes
+	Opt1 is Guard number when Key is Guard
+	"""
+	totalTimeAsleep = 0
+	asleepTime = 0
+	awakeTime = 0
+	sleepLog = []
+	for record in guardLog:
+		newRecord = filterInputLine(record)
+		#print 'newRecord',newRecord
+		if (newRecord[5] == 'Guard'):
+			guardNumber = int(newRecord[6])
+		elif (newRecord[5] == 'falls'):
+			asleepTime = int(newRecord[4])
+		elif (newRecord[5] == 'wakes'):
+			awakeTime = int(newRecord[4])
+			totalTimeAsleep = awakeTime - asleepTime
+			sleepLogLine = []
+			sleepLogLine.append(guardNumber)
+			sleepLogLine.append(asleepTime)
+			sleepLogLine.append(awakeTime-1)
+			sleepLogLine.append(totalTimeAsleep)
+			sleepLog.append(sleepLogLine)
+		else:
+			print 'parseGuardLog: key error'
+			exit()
+	guardHoursList = sorted(sleepLog, key = lambda errs: errs[0])		# sort by length column
+	return guardHoursList
+	
+def oldParseGuardLog(guardLog):
 	"""
 	012345678901234567890123456789
 	[1518-11-01 23:58] Guard #99 begins shift
