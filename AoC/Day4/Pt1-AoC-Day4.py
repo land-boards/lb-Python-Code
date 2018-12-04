@@ -59,7 +59,7 @@ What is the ID of the guard you chose multiplied by the minute you chose? (In th
 
 """
 
-def parseLine(claimCardRaw):
+def parseLine(guardLog):
 	return listToReturn
 
 
@@ -68,5 +68,5 @@ print 'Reading in file',time.strftime('%X %x %Z')
 # open file and read the content into an accumulated sum
 with open('input.txt', 'r') as filehandle:  
 	for line in filehandle:
-		claimCards.append(parseLine(line.strip('\n\r')))
+		guardLog.append(parseLine(line.strip('\n\r')))
 
