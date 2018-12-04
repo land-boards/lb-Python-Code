@@ -1,4 +1,5 @@
 # Pt1-AoCDay4.py
+# Pt1-AoCDay4.py
 # 2018 Advent of Code
 # Day 4
 # Part 1
@@ -59,14 +60,157 @@ What is the ID of the guard you chose multiplied by the minute you chose? (In th
 
 """
 
-def parseLine(guardLog):
-	return listToReturn
+def readTextFileToList(fileName):
+	"""
+	"""
+	textFile = []
+	# open file and read the content into an accumulated sum
+	#print 'Reading in file',time.strftime('%X %x %Z')
+	with open(fileName, 'r') as filehandle:  
+		for line in filehandle:
+			textFile.append(line.strip('\n\r'))
+		textFile.sort()
+	return textFile
 
+def parseGuardLog(guardLog):
+	"""
+	012345678901234567890123456789
+	[1518-11-01 23:58] Guard #99 begins shift
+	[1518-11-02 00:40] falls asleep
+	[1518-11-02 00:50] wakes up
+	"""
+	sleepLog = []
+	guardNumber = 0
+	totalTimeAsleep = 0
+	asleepTime = 0
+	awakeTime = 0
+	#print 'parseGuardLog: parsing raw log',guardLog
+	for record in guardLog:
+		timeMins10s = ord(record[15]) - ord('0')
+		timeMins1s = ord(record[16]) - ord('0')
+		timeMins = 10*timeMins10s + timeMins1s
+		#print 'time',timeMins,
+		if record[19] == 'G':	# Guard record
+			if record[25] != '#':	# verify record type is correct
+				print 'error - expected a pound'
+				exit()
+			lineOff = 26
+			if guardNumber != 0:
+				totalTimeAsleep = 0	# reset the time
+			guardNumber = 0
+			while (record[lineOff] != ' '):
+				guardNumber = guardNumber * 10
+				guardNumber += ord(record[lineOff]) - ord('0')
+				lineOff += 1
+			hourworthOfZeros = [0] * 60
+			#print 'guard',guardNumber
+		elif record[19] == 'f':
+			#print 'falls asleep at',timeMins,
+			asleepTime = timeMins
+		elif record[19] == 'w':
+			#print 'wakes up at',timeMins,
+			awakeTime = timeMins
+			totalTimeAsleep += awakeTime - asleepTime
+			sleepLogLine = []
+			sleepLogLine.append(guardNumber)
+			sleepLogLine.append(asleepTime)
+			sleepLogLine.append(awakeTime-1)
+			sleepLogLine.append(totalTimeAsleep)
+			sleepLog.append(sleepLogLine)
+			totalTimeAsleep = 0
+			#print 'slept for',totalTimeAsleep
+	#print 'sleepLog',sleepLog
+	guardHoursList = sorted(sleepLog, key = lambda errs: errs[0])		# sort by length column
+	#print guardHoursList
+	return guardHoursList
 
-print 'Reading in file',time.strftime('%X %x %Z')
+def mostLikelyAsleepTime(selectedGuardHours):
+	"""
+	"""
+	print 'selectedGuardHours',selectedGuardHours
+	minutesList = [0 for i in range(61)]
+	for record in selectedGuardHours:
+		startTime = record[0]
+		endTime = record[1]
+		time = startTime
+		while(time <= endTime):
+			minutesList[time] += 1
+			time += 1
+	#print 'minutesList',minutesList
+	startTime = 0
+	endTime = 59
+	currentTime = 0
+	maxCountNumber = minutesList[1];
+	maxCountTime = 0
+	while(currentTime <= endTime):
+		#print 'time',currentTime,'count',minutesList[currentTime],'maxCountTime',maxCountTime
+		if minutesList[currentTime] > maxCountNumber:
+			maxCountNumber = minutesList[currentTime]
+			maxCountTime = currentTime
+			#print 'max at',currentTime
+		currentTime += 1
+	
+	return maxCountTime
 
-# open file and read the content into an accumulated sum
-with open('input.txt', 'r') as filehandle:  
-	for line in filehandle:
-		guardLog.append(parseLine(line.strip('\n\r')))
+def maxHours(guardIDvsHours):
+	"""
+	"""
+	maxHours = 0
+	selGuard = []
+	#print 'guardIDvsHours',guardIDvsHours
+	for guardIDTotalHours in guardIDvsHours:
+		#print 'guardID',guardIDTotalHours[0]
+		#print 'total hrs',guardIDTotalHours[1]
+		if guardIDTotalHours[1] > maxHours:
+			maxHours = guardIDTotalHours[1]
+			selGuard = guardIDTotalHours
+	#print 'selGuard',selGuard
+	return selGuard
 
+def getHoursByGuardID(guardLog):
+	"""
+	input list is in format:
+	[guardNumber, sleepStartTime, sleepEndTime, sleepTime]
+	"""
+	guardHours = {}
+	
+	for guardRecord in guardLog:
+		#print 'processing guardRecord',guardRecord
+		if guardRecord[0] in guardHours:
+			#print '  record exists'
+			#print 'hours before',guardHours[guardRecord[0]]
+			guardHours[guardRecord[0]] = guardHours[guardRecord[0]] + guardRecord[3]
+			#print 'hours after',guardHours[guardRecord[0]]
+		else:
+			#print '  new record guard number',guardRecord[0],
+			#print 'guard hours',guardRecord[3]
+			guardHours[guardRecord[0]] = guardRecord[3]
+	
+	#print 'guardHours',guardHours
+	guardHoursList = []
+	for key,value in guardHours.iteritems():
+		temp = [key,value]
+		guardHoursList.append(temp)
+	#print 'guardHoursList',guardHoursList
+	return guardHoursList
+
+def extractGuardRecords(guardList,selectedGuardID):
+	newList = []
+	for record in guardList:
+		if record[0] == selectedGuardID:
+			newList.append(record[1:])
+	print 'newList',newList
+	return newList
+
+guardLog = readTextFileToList('input.txt')
+guardList = parseGuardLog(guardLog)
+guardIDvsHours = getHoursByGuardID(guardList)
+maxHoursForAllGuards = maxHours(guardIDvsHours)
+print 'Total max hours [Guard ID, hours] =',maxHoursForAllGuards
+print 'Guard ID (guard with max total hours) =',maxHoursForAllGuards[0]
+print 'Total hours', maxHoursForAllGuards[1]
+timeRecords = extractGuardRecords(guardList,maxHoursForAllGuards[0])
+criticalTime = mostLikelyAsleepTime(timeRecords)
+
+print 'Critical Time to do job',criticalTime
+print 'PRODUCT=',maxHoursForAllGuards[0]*criticalTime
