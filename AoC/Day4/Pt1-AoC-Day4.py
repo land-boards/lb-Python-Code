@@ -128,7 +128,7 @@ def mostLikelyAsleepTime(selectedGuardHours):
 	"""
 	"""
 	#print 'selectedGuardHours',selectedGuardHours
-	minutesList = [0 for i in range(61)]
+	minutesList = [0 for i in range(60)]
 	for record in selectedGuardHours:
 		startTime = record[0]
 		endTime = record[1]
