@@ -6,6 +6,7 @@
 # https://adventofcode.com/2018/day/4
 
 import time
+import re
 
 """
 --- Day 4: Repose Record ---
@@ -67,28 +68,6 @@ def readTextFileToList(fileName):
 		textFile.sort()
 	return textFile
 
-def filterInputLine(theLine):
-	"""filterInputLine - Filter the input line based on replace and split of the original lines.
-	Replace all spaces and other delimiters with commas into a single dimension list.
-	Three example record types with columns
-	[1518-11-01 23:58] Guard #99 begins shift
-	[1518-11-02 00:40] falls asleep
-	[1518-11-02 00:50] wakes up
-	Changes first line to
-	1518,11,01,23,58,Guard,99,begins,shift
-	YYYY,MM,DD,HH,MM,Key,Opt1,Opt2
-	0   ,1 ,2 ,3 ,4 ,5  ,6   ,7
-	"""
-	newRecord = theLine
-	newRecord = newRecord.replace('[','')
-	newRecord = newRecord.replace(']','')
-	newRecord = newRecord.replace('-',',')
-	newRecord = newRecord.replace(':',',')
-	newRecord = newRecord.replace('#','')
-	newRecord = newRecord.replace(' ',',')
-	newRecord = newRecord.split(',')
-	return newRecord
-	
 def parseGuardLog(guardLog):
 	"""parseGuardLog - Turns three record types into single records remembering the guard number in case it is not changed
 	[1518-11-01 23:58] Guard #99 begins shift
@@ -105,12 +84,14 @@ def parseGuardLog(guardLog):
 	awakeTime = 0
 	sleepLog = []
 	for record in guardLog:
-		newRecord = filterInputLine(record)
-		#print 'newRecord',newRecord
+		print 'record',record
+		newRecord = re.split('[\W]+',record[1:])		# make this really easy
+		print 'newRecord',newRecord
 		if (newRecord[5] == 'Guard'):
 			guardNumber = int(newRecord[6])
 		elif (newRecord[5] == 'falls'):
 			asleepTime = int(newRecord[4])
+			#print 'falls asleep at',asleepTime
 		elif (newRecord[5] == 'wakes'):
 			awakeTime = int(newRecord[4])
 			totalTimeAsleep = awakeTime - asleepTime
@@ -193,7 +174,7 @@ def getMaxMinByMin(minuteByMinute):
 def getMaxMinute(guardMaxsByMins):
 	"""getMaxMinute
 	"""
-	print 'guardMaxsByMins',guardMaxsByMins
+	#print 'guardMaxsByMins',guardMaxsByMins
 	foundGuardID = -1
 	foundMaxMins = 0
 	for record in guardMaxsByMins:
@@ -206,7 +187,7 @@ def getMaxMinute(guardMaxsByMins):
 	
 	return [foundGuardID,foundMaxMins,foundMinSlot]
 	
-guardLog = readTextFileToList('input.txt')
+guardLog = readTextFileToList('input2.txt')
 guardSleepWindows = parseGuardLog(guardLog)
 #print 'guardSleepWindows',guardSleepWindows
 guardMaxsByMins = getMaxHours(guardSleepWindows)
