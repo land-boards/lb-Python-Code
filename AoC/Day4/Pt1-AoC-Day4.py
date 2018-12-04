@@ -127,7 +127,7 @@ def parseGuardLog(guardLog):
 def mostLikelyAsleepTime(selectedGuardHours):
 	"""
 	"""
-	print 'selectedGuardHours',selectedGuardHours
+	#print 'selectedGuardHours',selectedGuardHours
 	minutesList = [0 for i in range(61)]
 	for record in selectedGuardHours:
 		startTime = record[0]
@@ -149,7 +149,6 @@ def mostLikelyAsleepTime(selectedGuardHours):
 			maxCountTime = currentTime
 			#print 'max at',currentTime
 		currentTime += 1
-	
 	return maxCountTime
 
 def maxHours(guardIDvsHours):
@@ -199,18 +198,17 @@ def extractGuardRecords(guardList,selectedGuardID):
 	for record in guardList:
 		if record[0] == selectedGuardID:
 			newList.append(record[1:])
-	print 'newList',newList
+	#print 'newList',newList
 	return newList
 
 guardLog = readTextFileToList('input.txt')
 guardList = parseGuardLog(guardLog)
 guardIDvsHours = getHoursByGuardID(guardList)
 maxHoursForAllGuards = maxHours(guardIDvsHours)
-print 'Total max hours [Guard ID, hours] =',maxHoursForAllGuards
-print 'Guard ID (guard with max total hours) =',maxHoursForAllGuards[0]
+#print 'Total max hours [Guard ID, hours] =',maxHoursForAllGuards
+print 'Guard with the most total hours =',maxHoursForAllGuards[0]
 print 'Total hours', maxHoursForAllGuards[1]
 timeRecords = extractGuardRecords(guardList,maxHoursForAllGuards[0])
 criticalTime = mostLikelyAsleepTime(timeRecords)
-
-print 'Critical Time to do job',criticalTime
+#print 'Critical Time to do job',criticalTime
 print 'PRODUCT=',maxHoursForAllGuards[0]*criticalTime
