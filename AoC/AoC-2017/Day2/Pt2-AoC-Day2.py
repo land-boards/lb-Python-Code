@@ -29,7 +29,7 @@ In this example, the sum of the results would be 4 + 3 + 2 = 9.
 
 What is the sum of each row's result in your puzzle input?
 
-Your puzzle answer was 43074.
+Your puzzle answer was 280.
 
 """
 
@@ -47,18 +47,18 @@ def readTextFileToList(fileName):
 def isDivisible(num1,num2):
 	"""isDivisible - If the two numbers are evenly divisible between each other
 	"""
-	print 'comparing',num1,num2,
+	#print 'comparing',num1,num2,
 	division = num1/num2
 	product = num2*division
 	if product == num1:
-		print 'divisible returning',division
+		#print 'divisible returning',division
 		return division
 	division = num2/num1
 	product = num1*division
 	if product == num2:
-		print 'divisible returning',division
+		#print 'divisible returning',division
 		return division
-	print 'not divisible'
+	#print 'not divisible'
 	return 0
 	
 def checkNumbersInRow(row):
@@ -66,13 +66,13 @@ def checkNumbersInRow(row):
 	"""
 	num = 0
 	column = row.split()
-	print 'cells in the row',column
+	#print 'cells in the row',column
 	numColumns = len(column)
-	print 'number of cells in the row',numColumns
+	#print 'number of cells in the row',numColumns
 	currentColumn = 1
 	currCol2 = 0
 	for element in column:
-		print 'checking element',element
+		#print 'checking element',element
 		element1 = int(element)
 		currCol2 += 1
 		currentColumn = currCol2
@@ -85,10 +85,10 @@ def checkNumbersInRow(row):
 
 print 'Reading in file',time.strftime('%X %x %Z')
 dataArray = readTextFileToList('input.txt')		# replace filename string as needed
-print 'dataArray',dataArray
+#print 'dataArray',dataArray
 totalCount = 0
 for row in dataArray:
 	foundNum = checkNumbersInRow(row)
-	print 'foundNum',foundNum
+	#print 'foundNum',foundNum
 	totalCount += foundNum
 print 'totalCount',totalCount
