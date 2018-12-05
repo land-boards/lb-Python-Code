@@ -4,7 +4,6 @@
 # Part 2
 
 import time
-print 'started', time.strftime('%X %x %Z')
 
 def readTextFileToList(fileName):
 	"""readTextFileToList - read in file into list as integers
@@ -31,8 +30,10 @@ def findLoopPoint(changes):
 				return(currentFreqAccum)
 			freqsList.append(currentFreqAccum)	# add item to the list
 
+print 'started', time.strftime('%X %x %Z')
+
 freqChanges = readTextFileToList('input.txt')
-#print 'List of freq freqChanges = ',freqChanges
+
 accumFreq = findLoopPoint(freqChanges)
 
 print 'Ended',time.strftime('%X %x %Z')
