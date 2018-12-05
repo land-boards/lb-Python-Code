@@ -45,13 +45,13 @@ def readTextFileToList(fileName):
 
 print 'Reading in file',time.strftime('%X %x %Z')
 dataArray = readTextFileToList('input.txt')		# replace filename string as needed
-print 'dataArray',dataArray
+#print 'dataArray',dataArray
 totalCount = 0
 for row in dataArray:
 	rowMin = 9999
 	rowMax = 0
 	column = row.split()
-	print 'column',column
+	#print 'column',column
 	for element in column:
 		if int(element) > rowMax:
 			rowMax = int(element)
@@ -60,3 +60,4 @@ for row in dataArray:
 	rowSum = rowMax - rowMin
 	totalCount += rowSum
 print 'totalCount',totalCount
+print 'Finished',time.strftime('%X %x %Z')
