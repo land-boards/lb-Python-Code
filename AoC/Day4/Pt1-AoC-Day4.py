@@ -64,6 +64,7 @@ Your puzzle answer was 95199.
 
 def readTextFileAndSortToList(fileName):
 	"""readTextFileAndSrtToList - open file and read the content to a list
+	File is sorted to produce a date/time ordered file
 	:returns: the list sorted list
 	"""
 	textFile = []
@@ -112,7 +113,7 @@ def parseGuardLog(guardLog):
 		else:	
 			print 'parseGuardLog: Error - unsupported command type'
 			exit()
-	guardHoursList = sorted(sleepLog, key = lambda errs: errs[0])		# sort by length column
+	guardHoursList = sorted(sleepLog, key = lambda errs: errs[0])
 	return guardHoursList
 	
 def mostLikelyAsleepTime(selectedGuardHours):
