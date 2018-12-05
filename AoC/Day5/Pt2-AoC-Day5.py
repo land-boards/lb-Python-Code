@@ -1,0 +1,105 @@
+# Pt2-AoCDay5.py
+# 2018 Advent of Code
+# Day 5
+# Part 2
+# https://adventofcode.com/2018/day/5
+
+import time
+import re
+import string
+
+"""
+
+--- Part Two ---
+Time to improve the polymer.
+
+One of the unit types is causing problems; it's preventing the polymer from collapsing as much as it should. Your goal is to figure out which unit type is causing the most problems, remove all instances of it (regardless of polarity), fully react the remaining polymer, and measure its length.
+
+For example, again using the polymer dabAcCaCBAcCcaDA from above:
+
+Removing all A/a units produces dbcCCBcCcD. Fully reacting this polymer produces dbCBcD, which has length 6.
+Removing all B/b units produces daAcCaCAcCcaDA. Fully reacting this polymer produces daCAcaDA, which has length 8.
+Removing all C/c units produces dabAaBAaDA. Fully reacting this polymer produces daDA, which has length 4.
+Removing all D/d units produces abAcCaCBAcCcaA. Fully reacting this polymer produces abCBAc, which has length 6.
+In this example, removing all C/c units was best, producing the answer 4.
+
+What is the length of the shortest polymer you can produce by removing all units of exactly one type and fully reacting the result?
+"""
+
+def readTextFileToString(fileName):
+	"""readTextFileToList - Turn a text file into a list.
+	Every line is an element in the list.
+	"""
+	textFile = []
+	# open file and read the content into an accumulated sum
+	#print 'Reading in file',time.strftime('%X %x %Z')
+	with open(fileName, 'r') as filehandle: 
+		string = filehandle.read().strip()
+	return string
+	
+def removeLetterFromString(char1,stringToFix):
+	newString = ''
+	for letter in stringToFix:
+		if letter.upper() != char1.upper():
+			newString += letter
+	return newString
+
+def matchCheck(char1, char2):
+	#print 'checking',char1,char2
+	if char1.isupper() and char2.isupper():
+		#print 'mismatch1'
+		return False
+	if char1.islower() and char2.islower():
+		#print 'mismatch2'
+		return False
+	if char1.upper() != char2.upper():
+		#print 'mismatch3'
+		return False
+	#print 'match',char1,char2
+	return True
+	
+def reduceString(polymereString):
+	currentColumn = 0
+	newString = ''
+	changesFound = True
+	while changesFound:
+		changesFound = False
+		while currentColumn < len(polymereString):
+			if matchCheck(polymereString[currentColumn],polymereString[currentColumn+1]):
+				currentColumn += 2
+				changesFound = True
+			else:
+				newString += polymereString[currentColumn]
+				#print 'newString',newString
+				currentColumn += 1
+			if currentColumn == len(polymereString)-1:
+				newString += polymereString[currentColumn]
+				break
+		#print 'reached end of string'
+		polymereString = newString
+		newString = ''
+		currentColumn = 0
+	return polymereString
+	
+polymereString = readTextFileToString('input.txt')
+print 'polymereString',polymereString
+print 'len of polymereString before',len(polymereString)
+alphabet = list(string.ascii_lowercase)
+newList = []
+for letterInAlpha in alphabet:
+	testString = removeLetterFromString(letterInAlpha,polymereString)
+	newTestString = reduceString(testString)
+	print letterInAlpha, len(newTestString)
+	newListLine = []
+	newListLine.append(letterInAlpha)
+	newListLine.append(len(newTestString))
+	newList.append(newListLine)
+minVal = len(polymereString)
+minLetter = ''
+for line in newList:
+	if line[1] < minVal:
+		minVal = line[1]
+		minLetter = line[0]
+	
+print 'minVal',minVal
+print 'minLetter',minLetter
