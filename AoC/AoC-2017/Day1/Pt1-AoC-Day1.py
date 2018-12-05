@@ -31,7 +31,7 @@ def readTextFileToString(fileName):
 	return string
 
 print 'Reading in file',time.strftime('%X %x %Z')
-captchaString = readTextFileToString('input.txt')
+captchaString = readTextFileToString('input2.txt')
 print captchaString
 lastChar = captchaString[0]
 if captchaString[0] == captchaString[1]:
