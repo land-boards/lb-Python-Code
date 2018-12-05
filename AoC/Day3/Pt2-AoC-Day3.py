@@ -5,6 +5,7 @@
 # https://adventofcode.com/2018/day/3
 
 import time
+import re
 
 """
 --- Day 3: No Matter How You Slice It ---
@@ -49,25 +50,12 @@ The four square inches marked with X are claimed by both 1 and 2. (Claim 3, whil
 
 If the Elves all proceed with their own plans, none of them will have enough fabric. How many square inches of fabric are within two or more claims?
 
-Your puzzle answer was 117948.
+--- Part Two ---
+Amidst the chaos, you notice that exactly one claim doesn't overlap by even a single square inch of fabric with any other claim. If you can somehow draw attention to it, maybe the Elves will be able to make Santa's suit after all!
 
-[558, 359, 635, 380, 652], 
-[559, 720, 943, 745, 958], 
-[560, 921, 56, 943, 82], 
-[561, 331, 37, 342, 51], 
-[562, 417, 484, 445, 497], 
-[563, 648, 30, 673, 52], 
-[564, 392, 301, 413, 318], 
-[565, 562, 763, 574, 773], 
-[566, 460, 608, 482, 621], 
-[568, 499, 532, 510, 560], 
-[569, 7, 29, 13, 39], [570, 690,
- 317, 701, 331], [571, 769, 954, 778, 973], [572, 29, 947, 54, 973], [573, 206,
-815, 223, 830], [574, 314, 279, 329, 307], [575, 471, 449, 493, 469], [576, 49,
-920, 67, 947], [577, 202, 396, 230, 405], [578, 241, 571, 261, 596], [579, 596,
-129, 608, 156], [580, 457, 927, 470, 948], [581, 584, 915, 594, 934], [582, 417,
- 458, 443, 476], [583, 721, 311, 742, 331], [584, 503, 21, 525, 48], [585, 826,
-538, 854, 562], [586, 773, 512, 797, 523], [587, 479, 444, 491, 463], [588, 109,
+For example, in the claims above, only claim 3 is intact after all claims are made.
+
+What is the ID of the only claim that doesn't overlap?
 
 Your puzzle answer was 567.
 
@@ -101,69 +89,25 @@ def checkOverlap(card1,card2):
 		return True
 	
 def parseLine(claimCardRaw):
-	"""parseLine example line #1 @ 7,589: 24x11
-	:returns: [startX,startY,endX,endY]
+	"""parseLine example line 
+	#1 @ 7,589: 24x11
+	:returns: [cardID,startX,startY,endX,endY]
 	"""
-#	print 'parsing',claimCardRaw
-	parseCharColumn = 0
-	if claimCardRaw[parseCharColumn] != '#':
-		print 'first character in the row should be pound'
-		cardRawValue = [-1,0,0,0,0]
-#	else:
-#		print 'got a pound'
-	parseCharColumn += 1
-	accumCardNumber = 0
-	while claimCardRaw[parseCharColumn] != ' ':
-		currentDigit = ord(claimCardRaw[parseCharColumn]) - ord('0')
-		accumCardNumber = accumCardNumber * 10
-		accumCardNumber += currentDigit
-		parseCharColumn += 1
-#	print 'Card number',accumCardNumber
-	parseCharColumn += 1
-	if claimCardRaw[parseCharColumn] != '@':
-		print 'character should be asterisk'
-		cardRawValue = [-1,0,0,0,0]
-	parseCharColumn += 1
-	parseCharColumn += 1
-	accumStartX = 0
-	while claimCardRaw[parseCharColumn] != ',':
-		currentDigit = ord(claimCardRaw[parseCharColumn]) - ord('0')
-		accumStartX = accumStartX * 10
-		accumStartX += currentDigit
-		parseCharColumn += 1
-#	print 'startX',accumStartX
-	parseCharColumn += 1
-	accumStartY = 0
-	while claimCardRaw[parseCharColumn] != ':':
-		currentDigit = ord(claimCardRaw[parseCharColumn]) - ord('0')
-		accumStartY = accumStartY * 10
-		accumStartY += currentDigit
-		parseCharColumn += 1
-#	print 'startY',accumStartY
-	parseCharColumn += 1
-	parseCharColumn += 1
-	accumSizeX = 0
-	while claimCardRaw[parseCharColumn] != 'x':
-		currentDigit = ord(claimCardRaw[parseCharColumn]) - ord('0')
-		accumSizeX = accumSizeX * 10
-		accumSizeX += currentDigit
-		parseCharColumn += 1
-#	print 'sizeX',accumSizeX
-	parseCharColumn += 1
-	accumSizeY = 0
-	while parseCharColumn < len(claimCardRaw):
-		currentDigit = ord(claimCardRaw[parseCharColumn]) - ord('0')
-		accumSizeY = accumSizeY * 10
-		accumSizeY += currentDigit
-		parseCharColumn += 1
-#	print 'sizeY',accumSizeY
+	print 'claimCardRaw',claimCardRaw
+	inputLineList = re.split('[\D]+',claimCardRaw[1:])		# make this really easy
+	print 'inputLineList',inputLineList
+	accumCardNumber = int(inputLineList[0])
+	accumStartX = int(inputLineList[1])
+	accumStartY = int(inputLineList[2])
+	accumSizeX = int(inputLineList[3])
+	accumSizeY = int(inputLineList[4])
 	listToReturn = []
 	listToReturn.append(accumCardNumber)
 	listToReturn.append(accumStartX)
 	listToReturn.append(accumStartY)
 	listToReturn.append(accumStartX + accumSizeX - 1)
 	listToReturn.append(accumStartY + accumSizeY - 1)
-#	print 'list',listToReturn
+	print 'list',listToReturn
 	return listToReturn
 
 def isCardInArea(xValue,yValue,checkingCard):
@@ -216,13 +160,21 @@ for card1 in claimCards:
 				overlappingCards.append(card2)
 				overlappingCardCount += 1
 		cardNumber2 != 1
-print 'Overlapping card count',overlappingCardCount
+#print 'Overlapping card count',overlappingCardCount
 sortedOverlappingCards = sorted(overlappingCards, key = lambda errs: errs[0])		# sort by first column
-print 'claimCards',claimCards
-print 'sortedOverlappingCards',sortedOverlappingCards
+#print 'claimCards',claimCards
+#print 'sortedOverlappingCards',sortedOverlappingCards
 cardNumber = 0
+#print 'number Of OverlappingCards', len(sortedOverlappingCards)
 for cards in claimCards:
 	if cards[0] != sortedOverlappingCards[cardNumber][0]:
-		print 'Card number has no overlap', sortedOverlappingCards[cardNumber][0]-1
+		print 'Finished',time.strftime('%X %x %Z')
+		print 'Unmatched card has no overlap, number', sortedOverlappingCards[cardNumber][0]-1
 		exit();
 	cardNumber += 1
+	#print 'cards',cards
+	#print 'cardNumber',cardNumber
+	if cardNumber >= len(sortedOverlappingCards):
+		print 'Finished',time.strftime('%X %x %Z')
+		print 'Unmatched cards is the last card, number',cardNumber+1
+		exit()

@@ -4,6 +4,7 @@
 # Part 1
 # https://adventofcode.com/2018/day/3
 
+import re
 import time
 
 """
@@ -49,6 +50,8 @@ The four square inches marked with X are claimed by both 1 and 2. (Claim 3, whil
 
 If the Elves all proceed with their own plans, none of them will have enough fabric. How many square inches of fabric are within two or more claims?
 
+Your puzzle answer was 567.
+
 """
 
 def checkOverlap(card1,card2):
@@ -82,66 +85,20 @@ def parseLine(claimCardRaw):
 	"""parseLine example line #1 @ 7,589: 24x11
 	:returns: [startX,startY,endX,endY]
 	"""
-#	print 'parsing',claimCardRaw
-	parseCharColumn = 0
-	if claimCardRaw[parseCharColumn] != '#':
-		print 'first character in the row should be pound'
-		cardRawValue = [-1,0,0,0,0]
-#	else:
-#		print 'got a pound'
-	parseCharColumn += 1
-	accumCardNumber = 0
-	while claimCardRaw[parseCharColumn] != ' ':
-		currentDigit = ord(claimCardRaw[parseCharColumn]) - ord('0')
-		accumCardNumber = accumCardNumber * 10
-		accumCardNumber += currentDigit
-		parseCharColumn += 1
-#	print 'Card number',accumCardNumber
-	parseCharColumn += 1
-	if claimCardRaw[parseCharColumn] != '@':
-		print 'character should be asterisk'
-		cardRawValue = [-1,0,0,0,0]
-	parseCharColumn += 1
-	parseCharColumn += 1
-	accumStartX = 0
-	while claimCardRaw[parseCharColumn] != ',':
-		currentDigit = ord(claimCardRaw[parseCharColumn]) - ord('0')
-		accumStartX = accumStartX * 10
-		accumStartX += currentDigit
-		parseCharColumn += 1
-#	print 'startX',accumStartX
-	parseCharColumn += 1
-	accumStartY = 0
-	while claimCardRaw[parseCharColumn] != ':':
-		currentDigit = ord(claimCardRaw[parseCharColumn]) - ord('0')
-		accumStartY = accumStartY * 10
-		accumStartY += currentDigit
-		parseCharColumn += 1
-#	print 'startY',accumStartY
-	parseCharColumn += 1
-	parseCharColumn += 1
-	accumSizeX = 0
-	while claimCardRaw[parseCharColumn] != 'x':
-		currentDigit = ord(claimCardRaw[parseCharColumn]) - ord('0')
-		accumSizeX = accumSizeX * 10
-		accumSizeX += currentDigit
-		parseCharColumn += 1
-#	print 'sizeX',accumSizeX
-	parseCharColumn += 1
-	accumSizeY = 0
-	while parseCharColumn < len(claimCardRaw):
-		currentDigit = ord(claimCardRaw[parseCharColumn]) - ord('0')
-		accumSizeY = accumSizeY * 10
-		accumSizeY += currentDigit
-		parseCharColumn += 1
-#	print 'sizeY',accumSizeY
+	#print 'claimCardRaw',claimCardRaw
+	inputLineList = re.split('[\D]+',claimCardRaw[1:])		# make this really easy
+	#print 'inputLineList',inputLineList
+	accumCardNumber = int(inputLineList[0])
+	accumStartX = int(inputLineList[1])
+	accumStartY = int(inputLineList[2])
+	accumSizeX = int(inputLineList[3])
+	accumSizeY = int(inputLineList[4])
 	listToReturn = []
-#	listToReturn.append(accumCardNumber)
 	listToReturn.append(accumStartX)
 	listToReturn.append(accumStartY)
 	listToReturn.append(accumStartX + accumSizeX - 1)
 	listToReturn.append(accumStartY + accumSizeY - 1)
-#	print 'list',listToReturn
+	#print 'list',listToReturn
 	return listToReturn
 
 def isCardInArea(xValue,yValue,checkingCard):
