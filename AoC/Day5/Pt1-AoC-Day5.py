@@ -45,5 +45,44 @@ def readTextFileToString(fileName):
 		string = filehandle.read().strip()
 	return string
 
-polymereString = readTextFileToString('input.txt')
-print polymereString
+def matchCheck(char1, char2):
+	#print 'checking',char1,char2
+	if char1.isupper() and char2.isupper():
+		#print 'mismatch1'
+		return False
+	if char1.islower() and char2.islower():
+		#print 'mismatch2'
+		return False
+	if char1.upper() != char2.upper():
+		#print 'mismatch3'
+		return False
+	#print 'match',char1,char2
+	return True
+	
+polymereString = readTextFileToString('input2.txt')
+print 'polymereString',polymereString
+print 'len of polymereString before',len(polymereString)
+currentColumn = 0
+newString = ''
+changesFound = True
+while changesFound:
+	changesFound = False
+	while True:
+		if matchCheck(polymereString[currentColumn],polymereString[currentColumn+1]):
+			currentColumn += 2
+			changesFound = True
+		else:
+			newString += polymereString[currentColumn]
+			#print 'newString',newString
+			currentColumn += 1
+		if currentColumn == len(polymereString)-1:
+			newString += polymereString[currentColumn]
+			break
+	#print 'reached end of string'
+	polymereString = newString
+	newString = ''
+	currentColumn = 0
+	#print 'polymereString',polymereString
+print 'polymereString',polymereString
+print 'len of polymereString after',len(polymereString)
+
