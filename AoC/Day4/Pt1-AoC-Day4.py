@@ -63,12 +63,11 @@ Your puzzle answer was 95199.
 
 """
 
-def readTextFileToList(fileName):
-	"""
+def readTextFileAndSortToList(fileName):
+	"""readTextFileAndSrtToList - open file and read the content to a list
+	:returns: the list sorted list
 	"""
 	textFile = []
-	# open file and read the content into an accumulated sum
-	#print 'Reading in file',time.strftime('%X %x %Z')
 	with open(fileName, 'r') as filehandle:  
 		for line in filehandle:
 			textFile.append(line.strip())
@@ -80,24 +79,30 @@ def parseGuardLog(guardLog):
 	[1518-11-01 23:58] Guard #99 begins shift
 	[1518-11-02 00:40] falls asleep
 	[1518-11-02 00:50] wakes up
-	Turned by filterInputLine to be
+	Uses regular expressions to parse the input string into separate items in a list
 	YYYY,MM,DD,HH,MM,Key,Opt1,d/c
 	0   ,1 ,2 ,3 ,4 ,5  ,6   ,7
 	Key is either Guard, falls or wakes
 	Opt1 is Guard number when Key is Guard
 	"""
+	minOffset = 4
+	commandOffset = 5
+	opt1Offset = 6
 	totalTimeAsleep = 0
 	asleepTime = 0
 	awakeTime = 0
 	sleepLog = []
 	for record in guardLog:
-		newRecord = re.split('[\W]+',record[1:])		# make this really easy
-		if (newRecord[5] == 'Guard'):
-			guardNumber = int(newRecord[6])
-		elif (newRecord[5] == 'falls'):
-			asleepTime = int(newRecord[4])
-		elif (newRecord[5] == 'wakes'):
-			awakeTime = int(newRecord[4])
+		eachLogRecord = re.split('[\W]+',record[1:])		# regex makes this easy
+		if len(eachLogRecord) != 9 and len(eachLogRecord) != 7:
+			print 'parseGuardLog: Error - unexpected command length'
+			exit()
+		if (eachLogRecord[commandOffset] == 'Guard'):
+			guardNumber = int(eachLogRecord[opt1Offset])
+		elif (eachLogRecord[commandOffset] == 'falls'):
+			asleepTime = int(eachLogRecord[minOffset])
+		elif (eachLogRecord[commandOffset] == 'wakes'):
+			awakeTime = int(eachLogRecord[minOffset])
 			totalTimeAsleep = awakeTime - asleepTime
 			sleepLogLine = []
 			sleepLogLine.append(guardNumber)
@@ -105,8 +110,8 @@ def parseGuardLog(guardLog):
 			sleepLogLine.append(awakeTime-1)
 			sleepLogLine.append(totalTimeAsleep)
 			sleepLog.append(sleepLogLine)
-		else:
-			print 'parseGuardLog: key error'
+		else:	
+			print 'parseGuardLog: Error - unsupported command type'
 			exit()
 	guardHoursList = sorted(sleepLog, key = lambda errs: errs[0])		# sort by length column
 	return guardHoursList
@@ -188,7 +193,8 @@ def extractGuardRecords(guardList,selectedGuardID):
 	#print 'newList',newList
 	return newList
 
-guardLog = readTextFileToList('input.txt')
+print 'Reading in file',time.strftime('%X %x %Z')
+guardLog = readTextFileAndSortToList('input.txt')
 guardList = parseGuardLog(guardLog)
 guardIDvsHours = getHoursByGuardID(guardList)
 maxHoursForAllGuards = maxHours(guardIDvsHours)
