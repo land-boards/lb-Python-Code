@@ -27,7 +27,7 @@ def findLoopPoint(changes):
 		for currentFreqChange in changes:
 			currentFreqAccum += currentFreqChange
 			if currentFreqAccum in freqsList:
-				print 'Length of Frequency list loop',len(freqsList)
+				print '\nLength of Frequency list loop',len(freqsList)
 				return(currentFreqAccum)
 			freqsList.append(currentFreqAccum)	# add item to the list
 
@@ -35,6 +35,6 @@ freqChanges = readTextFileToList('input.txt')
 #print 'List of freq freqChanges = ',freqChanges
 accumFreq = findLoopPoint(freqChanges)
 
-print '\nEnded',time.strftime('%X %x %Z')
+print 'Ended',time.strftime('%X %x %Z')
 print '***Found first duplicated frequency***'
 print 'Repeated frequency=', accumFreq
