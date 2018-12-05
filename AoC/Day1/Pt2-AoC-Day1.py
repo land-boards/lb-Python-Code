@@ -6,37 +6,35 @@
 import time
 print 'started', time.strftime('%X %x %Z')
 
-# Read the input file into a list so it can be read over and over again
-changes = []
-print 'reading in list'
-with open('input.txt', 'r') as filehandle:  
-	for line in filehandle:
-		changes.append(int(line[:-1]))
-#print 'List of freq changes = ',changes
+def readTextFileToList(fileName):
+	"""readTextFileToList - read in file into list as integers
+	"""
+	freqChangesAsInts = []
+	# open file and read the content into an accumulated sum
+	#print 'Reading in file',time.strftime('%X %x %Z')
+	with open(fileName, 'r') as filehandle:  
+		for line in filehandle:
+			freqChangesAsInts.append(int(line.strip('\n\r')))
+	return freqChangesAsInts
 
-accumFreq = 0	# Accumulated frequency starts at 0
-# define an empty list
-freqsList = []
-freqsList.append(accumFreq)		# Put first 0 into the list
+def findLoopPoint(changes):
+	print 'Scanning for loop'
+	currentFreqAccum = 0					# Accumulated frequency starts at 0
+	freqsList = []							# define an empty list to hold all frequencies
+	freqsList.append(currentFreqAccum)		# Put first 0 into the list
+	while True:	# Loop through the list over and over
+		print '+',	# Print a plus every time through the list
+		for currentFreqChange in changes:
+			currentFreqAccum += currentFreqChange
+			if currentFreqAccum in freqsList:
+				print 'Length of Frequency list loop',len(freqsList)
+				return(currentFreqAccum)
+			freqsList.append(currentFreqAccum)	# add item to the list
 
-print 'searching list'
-loopCount = 0
-while 1:	# Loop through the list over and over
-	print '+',	# Print a plus every time through the list
-	for currentFreqChange in changes:
-#		print 'Current frequency =', accumFreq,
-#		print ', Input=', currentFreqChange,
-		accumFreq += currentFreqChange
-#		print ', Looking for value',accumFreq
-		#print 'in the list', freqsList
-		if accumFreq in freqsList:
-			print '***Found first duplicated frequency***'
-#			print 'list=',freqsList
-			print 'Repeated frequency=', accumFreq
-			print 'ended',time.strftime('%X %x %Z')
-			exit(0)
-		# add item to the list
-		else:
-			freqsList.append(accumFreq)
-#print 'list[]=',freqsList
-#print 'sorted list',sorted(freqsList)
+freqChanges = readTextFileToList('input.txt')
+#print 'List of freq freqChanges = ',freqChanges
+accumFreq = findLoopPoint(freqChanges)
+
+print '\nEnded',time.strftime('%X %x %Z')
+print '***Found first duplicated frequency***'
+print 'Repeated frequency=', accumFreq
