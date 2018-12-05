@@ -71,7 +71,7 @@ def readTextFileToList(fileName):
 	#print 'Reading in file',time.strftime('%X %x %Z')
 	with open(fileName, 'r') as filehandle:  
 		for line in filehandle:
-			textFile.append(line.strip('\n\r'))
+			textFile.append(line.strip())
 		textFile.sort()
 	return textFile
 
@@ -111,58 +111,6 @@ def parseGuardLog(guardLog):
 	guardHoursList = sorted(sleepLog, key = lambda errs: errs[0])		# sort by length column
 	return guardHoursList
 	
-def oldParseGuardLog(guardLog):
-	"""
-	012345678901234567890123456789
-	[1518-11-01 23:58] Guard #99 begins shift
-	[1518-11-02 00:40] falls asleep
-	[1518-11-02 00:50] wakes up
-	"""
-	sleepLog = []
-	guardNumber = 0
-	totalTimeAsleep = 0
-	asleepTime = 0
-	awakeTime = 0
-	#print 'parseGuardLog: parsing raw log',guardLog
-	for record in guardLog:
-		timeMins10s = ord(record[15]) - ord('0')
-		timeMins1s = ord(record[16]) - ord('0')
-		timeMins = 10*timeMins10s + timeMins1s
-		#print 'time',timeMins,
-		if record[19] == 'G':	# Guard record
-			if record[25] != '#':	# verify record type is correct
-				print 'error - expected a pound'
-				exit()
-			lineOff = 26
-			if guardNumber != 0:
-				totalTimeAsleep = 0	# reset the time
-			guardNumber = 0
-			while (record[lineOff] != ' '):
-				guardNumber = guardNumber * 10
-				guardNumber += ord(record[lineOff]) - ord('0')
-				lineOff += 1
-			hourworthOfZeros = [0] * 60
-			#print 'guard',guardNumber
-		elif record[19] == 'f':
-			#print 'falls asleep at',timeMins,
-			asleepTime = timeMins
-		elif record[19] == 'w':
-			#print 'wakes up at',timeMins,
-			awakeTime = timeMins
-			totalTimeAsleep += awakeTime - asleepTime
-			sleepLogLine = []
-			sleepLogLine.append(guardNumber)
-			sleepLogLine.append(asleepTime)
-			sleepLogLine.append(awakeTime-1)
-			sleepLogLine.append(totalTimeAsleep)
-			sleepLog.append(sleepLogLine)
-			totalTimeAsleep = 0
-			#print 'slept for',totalTimeAsleep
-	#print 'sleepLog',sleepLog
-	guardHoursList = sorted(sleepLog, key = lambda errs: errs[0])		# sort by length column
-	#print guardHoursList
-	return guardHoursList
-
 def mostLikelyAsleepTime(selectedGuardHours):
 	"""
 	"""
