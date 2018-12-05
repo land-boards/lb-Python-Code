@@ -20,6 +20,9 @@ For example:
 1234 produces 0 because no digit matches the next.
 91212129 produces 9 because the only digit that matches the next one is the last digit, 9.
 What is the solution to your captcha?
+
+Your puzzle answer was 1044.
+
 """
 
 def readTextFileToString(fileName):
@@ -31,27 +34,37 @@ def readTextFileToString(fileName):
 	return string
 
 print 'Reading in file',time.strftime('%X %x %Z')
-captchaString = readTextFileToString('input2.txt')
-print captchaString
-lastChar = captchaString[0]
-if captchaString[0] == captchaString[1]:
-	accum = int(captchaString[0])
-else:
-	accum = 0
-stringOff = 1
-reachedEnd = False
-while True:
-	currentChar = captchaString[stringOff]
-	print 'lastChar',lastChar,'currentChar',currentChar
-	if lastChar == currentChar:
-		accum += int(currentChar)
-		stringOff += 1
-	elif reachedEnd:
-		print 'accum',accum
-		exit()
+captchaString = readTextFileToString('input.txt')		# replace filename string as needed
+print 'captchaString',captchaString
+captchaList = list(captchaString)
+captchaList = []
+for inChar in captchaString:
+	captchaList.append(int(inChar))
+lastNumInList = captchaList[0]			# add the first digit to the end
+captchaList.append(lastNumInList)
+captchaList.append(0)
+print 'captchaList',captchaList
+sum = 0
+loopCount = 0
+loopMatchCount = 1
+lastNum = 0
+currentNum = 0
+while loopCount < len(captchaList):
+	currentNum = captchaList[loopCount]
+	#print 'currentNum',currentNum,
+	if currentNum == lastNum:
+		#print 'matched last',lastNum,'to current',currentNum
+		loopMatchCount += 1
 	else:
-		lastChar = currentChar
-		stringOff += 1
-	if stringOff == len(captchaString):
-		stringOff = 0
-		reachedEnd = True
+		print 'changed digit from',lastNum,'to',currentNum,
+		print 'loopMatchCount',loopMatchCount
+		if loopMatchCount == 2:
+			sum += lastNum
+		elif loopMatchCount > 2:
+			print 'loopMatchCount',loopMatchCount
+			sum += lastNum * (loopMatchCount-1)
+		#print 'sum',sum
+		loopMatchCount = 1
+	lastNum = currentNum
+	loopCount += 1
+print 'sum',sum
