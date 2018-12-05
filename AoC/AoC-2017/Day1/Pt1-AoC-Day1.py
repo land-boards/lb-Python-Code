@@ -35,7 +35,7 @@ def readTextFileToString(fileName):
 
 print 'Reading in file',time.strftime('%X %x %Z')
 captchaString = readTextFileToString('input.txt')		# replace filename string as needed
-print 'captchaString',captchaString
+#print 'captchaString',captchaString
 captchaList = list(captchaString)
 captchaList = []
 for inChar in captchaString:
@@ -43,7 +43,7 @@ for inChar in captchaString:
 lastNumInList = captchaList[0]			# add the first digit to the end
 captchaList.append(lastNumInList)
 captchaList.append(0)
-print 'captchaList',captchaList
+#print 'captchaList',captchaList
 sum = 0
 loopCount = 0
 loopMatchCount = 1
@@ -56,12 +56,12 @@ while loopCount < len(captchaList):
 		#print 'matched last',lastNum,'to current',currentNum
 		loopMatchCount += 1
 	else:
-		print 'changed digit from',lastNum,'to',currentNum,
-		print 'loopMatchCount',loopMatchCount
+		#print 'changed digit from',lastNum,'to',currentNum,
+		#print 'loopMatchCount',loopMatchCount
 		if loopMatchCount == 2:
 			sum += lastNum
 		elif loopMatchCount > 2:
-			print 'loopMatchCount',loopMatchCount
+			#print 'loopMatchCount',loopMatchCount
 			sum += lastNum * (loopMatchCount-1)
 		#print 'sum',sum
 		loopMatchCount = 1
