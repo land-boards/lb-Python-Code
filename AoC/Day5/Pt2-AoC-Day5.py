@@ -24,18 +24,21 @@ Removing all D/d units produces abAcCaCBAcCcaA. Fully reacting this polymer prod
 In this example, removing all C/c units was best, producing the answer 4.
 
 What is the length of the shortest polymer you can produce by removing all units of exactly one type and fully reacting the result?
+
+Your puzzle answer was 6484.
+
 """
 
 def readTextFileToString(fileName):
-	"""readTextFileToList - Turn a text file into a list.
-	Every line is an element in the list.
+	"""readTextFileToString - Turn a text file into a string.
+	Every character is an element in the string.
 	"""
 	textFile = []
 	# open file and read the content into an accumulated sum
 	#print 'Reading in file',time.strftime('%X %x %Z')
 	with open(fileName, 'r') as filehandle: 
-		string = filehandle.read().strip()
-	return string
+		string = filehandle.read()
+	return string.strip()
 	
 def removeLetterFromString(char1,stringToFix):
 	newString = ''
@@ -45,20 +48,24 @@ def removeLetterFromString(char1,stringToFix):
 	return newString
 
 def matchCheck(char1, char2):
-	#print 'checking',char1,char2
-	if char1.isupper() and char2.isupper():
-		#print 'mismatch1'
+	"""matchCheck - Check if two adjacent characters are the same but different case
+	Returns True if the characters are the same
+	"""
+	if char1.isupper() and char2.isupper():	# both are uppers
 		return False
-	if char1.islower() and char2.islower():
-		#print 'mismatch2'
+	if char1.islower() and char2.islower():	# both are lowers
 		return False
-	if char1.upper() != char2.upper():
-		#print 'mismatch3'
+	if char1.upper() != char2.upper():		# one is upper, one is lower but they are not the same char
 		return False
-	#print 'match',char1,char2
-	return True
+	return True								# only thing left is same chars different cases
 	
 def reduceString(polymereString):
+	"""reduceString - Go through the string and eliminate case switching adjacent characters.
+	Removes aA or Aa.
+	Doesn't remove aa or AA.
+	Repeatedly goes through the string until no more reductions can be made
+	returns shortened string
+	"""
 	currentColumn = 0
 	newString = ''
 	changesFound = True
@@ -70,20 +77,17 @@ def reduceString(polymereString):
 				changesFound = True
 			else:
 				newString += polymereString[currentColumn]
-				#print 'newString',newString
 				currentColumn += 1
-			if currentColumn == len(polymereString)-1:
+			if currentColumn == len(polymereString)-1:	# can't go past 1 from the last element
 				newString += polymereString[currentColumn]
 				break
-		#print 'reached end of string'
 		polymereString = newString
 		newString = ''
 		currentColumn = 0
 	return polymereString
 	
-polymereString = readTextFileToString('input.txt')
-print 'polymereString',polymereString
-print 'len of polymereString before',len(polymereString)
+polymereString = readTextFileToString('input2.txt')
+print 'Length of polymere before processing =',len(polymereString)
 alphabet = list(string.ascii_lowercase)
 newList = []
 for letterInAlpha in alphabet:
@@ -101,5 +105,5 @@ for line in newList:
 		minVal = line[1]
 		minLetter = line[0]
 	
-print 'minVal',minVal
-print 'minLetter',minLetter
+print 'Letter that results in the shortest polymer =',minLetter
+print 'Shortest polymere with letter removed =',minVal
