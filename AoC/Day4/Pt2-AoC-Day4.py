@@ -1,5 +1,4 @@
 # Pt1-AoCDay4.py
-# Pt1-AoCDay4.py
 # 2018 Advent of Code
 # Day 4
 # Part 1
