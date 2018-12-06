@@ -66,5 +66,5 @@ previousAddr = 0
 nextAddr = 0
 while nextAddr < len(dataArray):
 	nextAddr = dataArray[previousAddr]
-	dataArray[previousAddr] += 1
+	dataArray[previousAddr] = dataArray[previousAddress] + nextAddr + 1
 	print 'nextAddr',nextAddr
