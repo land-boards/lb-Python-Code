@@ -59,3 +59,52 @@ What is the size of the largest area that isn't infinite?
 
 """
 
+def readTextFileTo2DList(fileName):
+	"""readTextFileAndSrtToList - open file and read the content to a list
+	list is converted into a 2D array
+	:returns: the list sorted list
+	"""
+	with open(fileName, 'r') as filehandle: 
+		lineData = []
+		for line in filehandle:
+			lineData.append(line)
+	return lineData
+
+def turnTextListInto2DList(list):
+	array2D = []
+	for line in list:
+		lineDat = []
+		line = line.strip()
+		lineDatA = line.split(',')
+		lineDat.append(int(lineDatA[0]))
+		lineDat.append(int(lineDatA[1]))
+		array2D.append(lineDat)
+	return array2D
+
+def getMaxVals(list2D):
+	maxX = 0
+	maxY = 0
+	for row in list2D:
+		if row[0] > maxX:
+			maxX = row[0]
+		if row[1] > maxY:
+			maxY = row[1]
+	return [maxX,maxY]
+	
+def getMinVals(list2D):
+	minX = 9999
+	minY = 9999
+	for row in list2D:
+		if row[0] < minX:
+			minX = row[0]
+		if row[1] < minY:
+			minY = row[1]
+	return [minX,minY]
+	
+inputList = readTextFileTo2DList('input2.txt')
+list2D = turnTextListInto2DList(inputList)
+print 'list2D',list2D
+maxVals = getMaxVals(list2D)
+print 'maxVals',maxVals
+minVals = getMinVals(list2D)
+print 'maxVals',minVals
