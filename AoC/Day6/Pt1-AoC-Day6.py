@@ -180,8 +180,8 @@ def putRect(cellPoint,size,cell):
 				atLeastOneOutside = True
 	return [collisionVal,atLeastOneOK,atLeastOneOutside]
 
-list2D = turnTextListInto2DList(readTextFileTo2DList('input2.txt'))
-print 'list2D',list2D
+list2D = turnTextListInto2DList(readTextFileTo2DList('input.txt'))
+#print 'list2D',list2D
 minVals = getMinVals(list2D)
 #print 'minVals',minVals
 maxVals = getMaxVals(list2D)
@@ -196,9 +196,9 @@ item = 0
 for vals in list2D:
 	put(vals[0],vals[1],item)
 	item += 1
-print 'Array with first Points'
-dumpArray()
-print
+#print 'Array with first Points'
+#dumpArray()
+#print
 
 bloomSize = 1
 keepProcessingArray = True
@@ -215,7 +215,7 @@ while keepProcessingArray:
 			keepProcessingArray = True
 		if putRectStatus[2] == True:
 			if cellVal not in couldntPutRect:
-				print 'pushing cellVal',cellVal
+				#print 'pushing cellVal',cellVal
 				couldntPutRect.append(cellVal)
 #		elif putRectStatus[0] == True:
 #			print 'Any collisions cellVal =',cellVal
@@ -225,10 +225,10 @@ while keepProcessingArray:
 	if isArrayFull(maxVals):
 		print 'array is full'
 		keepProcessingArray = False
-	print 'Array after',bloomSize,'push'
-	dumpArray()
+	#print 'Array after',bloomSize,'push'
+	#dumpArray()
 	bloomSize += 1
-	print 
+	#print 
 
 print 'Array after bloom is full'
 dumpArray()
