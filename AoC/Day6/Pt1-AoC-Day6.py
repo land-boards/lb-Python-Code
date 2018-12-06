@@ -142,6 +142,33 @@ def clearArray(maxVals):
 		for x in range(maxVals[0]+2):
 			myListArray[y][x] = -1
 
+def getloc(id):
+	""" return the x,y of the id - the first point
+	"""
+	print 'id',id
+	return list2D[id]
+
+def manhattanDistance(x1,y1,x2,y2):
+	distance = abs(x1-x2) + abs(y1-y2)
+	return distance
+	
+def isEqualDistance(x,y,id1,id2):
+	"""isEqualDistance - if x,y location is equidistant to id1 and id2
+	:returns: True if the point is equidistant from the two cells
+	"""
+	isEqDist = True
+	if id1 == 9999 or id2 == 9999:
+		return True
+	id1LocXY = getloc(id1)
+	id2LocXY = getloc(id2)
+	if isEqDist:
+		print 'isEqualDistance',id1LocXY,id2LocXY,x,y
+	distance1 = manhattanDistance(id1LocXY[0],id1LocXY[1],x,y)
+	distance2 = manhattanDistance(id2LocXY[0],id2LocXY[1],x,y)
+	if distance1 == distance2:
+		return True
+	return False
+
 def put(x,y,val):
 	"""put val at x,y
 	Don't put if outside the array
@@ -164,6 +191,9 @@ def put(x,y,val):
 	elif myListArray[y][x] == val:
 		retVal = 'already at value'
 	else:
+		currentVal = myListArray[y][x]
+		if isEqualDistance(x,y,currentVal,val):
+			myListArray[y][x] = 9999
 		retVal = 'collision'
 	if debugFunct:
 		print retVal
@@ -188,7 +218,7 @@ def putRect(cellPoint,size,cell):
 				atLeastOneOutside = True
 	return [collisionVal,atLeastOneOK,atLeastOneOutside]
 
-list2D = turnTextListInto2DList(readTextFileTo2DList('input.txt'))
+list2D = turnTextListInto2DList(readTextFileTo2DList('input2.txt'))
 #print 'list2D',list2D
 minVals = getMinVals(list2D)
 #print 'minVals',minVals
@@ -231,15 +261,15 @@ while keepProcessingArray:
 #	if couldntPutRect:
 #		print 'Couldnt place cells',couldntPutRect
 	if isArrayFull(maxVals):
-		print 'array is full'
+		#print 'array is full'
 		keepProcessingArray = False
 	#print 'Array after',bloomSize,'push'
 	#dumpArray()
 	bloomSize += 1
 	#print 
 
-#print 'Array after bloom is full'
-#dumpArray()
+print 'Array after bloom is full'
+dumpArray()
 
 couldntPutRect.sort()
 #print 'infinite sized arrays',couldntPutRect
