@@ -100,11 +100,144 @@ def getMinVals(list2D):
 		if row[1] < minY:
 			minY = row[1]
 	return [minX,minY]
+
+def make2dList(cols,rows):
+	"""make2dList - Make a 2D list
+	"""
+	a=[]
+	for row in xrange(rows): a += [[0]*(cols+1)]
+	return a
+
+def get(x,y):
+	return(myListArray[x][y])
+
+def dumpArray():
+	for row in myListArray:
+		for cell in row:
+			if cell == -1:
+				print '_',
+			else:
+				print cell,
+		print
 	
-inputList = readTextFileTo2DList('input.txt')
-list2D = turnTextListInto2DList(inputList)
+def isArrayFull(maxVals):
+	for y in range(maxVals[1]+1):
+		for x in range(maxVals[0]+2):
+			if myListArray[y][x] == -1:
+				return False
+	return True
+	
+def clearArray(maxVals):
+	"""clearArray - Fill array with -1 values
+	"""
+	for y in range(maxVals[1]+1):
+		for x in range(maxVals[0]+2):
+			myListArray[y][x] = -1
+
+def put(x,y,val):
+	"""put val at x,y
+	Don't put if outside the array
+	Don't put if there's already a point there
+	:returns: putWasOK if able to put the value at the point, 
+	outside if unable to put the point due to infinite area constraint
+	alreadyFull
+	"""
+	debugFunct = False
+	if debugFunct:
+		print 'put at x,y',x,y,'value',val,
+	retVal = ''
+	if x < 0 or x > maxVals[0]+1:
+		retVal = 'outside'
+	elif y < 0 or y> maxVals[1]:
+		retVal = 'outside'
+	elif myListArray[y][x] == -1:
+		myListArray[y][x] = val
+		retVal = 'putWasOK'
+	elif myListArray[y][x] == val:
+		retVal = 'already at value'
+	else:
+		retVal = 'collision'
+	if debugFunct:
+		print retVal
+	return retVal
+
+def putRect(cellPoint,size,cell):
+	debugFunct = False
+	if debugFunct:
+		print 'putRect x',cellPoint[0],'y',cellPoint[1],'size',size,'cell',cell
+	collisionVal = False
+	atLeastOneOK = False
+	atLeastOneOutside = False
+	# result vector = [collisionVal,atLeastOneOK,atLeastOneOutside]		# [Collision,At_Least_One_OK,At_Least_One_Outside]
+	for y in range(size*2+1):
+		for x in range(size*2+1):
+			putStatus = put(cellPoint[0]+x-size,cellPoint[1]+y-size,cell)
+			if putStatus == 'collision':
+				collisionVal = True
+			elif putStatus == 'putWasOK':
+				atLeastOneOK = True	
+			elif putStatus == 'outside':
+				atLeastOneOutside = True
+	return [collisionVal,atLeastOneOK,atLeastOneOutside]
+
+list2D = turnTextListInto2DList(readTextFileTo2DList('input2.txt'))
 print 'list2D',list2D
 minVals = getMinVals(list2D)
-print 'minVals',minVals
+#print 'minVals',minVals
 maxVals = getMaxVals(list2D)
-print 'maxVals',maxVals
+inListLen = len(list2D)
+#print 'maxVals',maxVals
+myListArray = make2dList(maxVals[0]+1,maxVals[1]+1)
+clearArray(maxVals)
+# print 'Initial Array'
+# dumpArray()
+
+item = 0
+for vals in list2D:
+	put(vals[0],vals[1],item)
+	item += 1
+print 'Array with first Points'
+dumpArray()
+print
+
+bloomSize = 1
+keepProcessingArray = True
+couldntPutRect = []
+while keepProcessingArray:
+	keepProcessingArray = False
+	cellVal = 0
+	for point in list2D:
+		putRectStatus = putRect(point,bloomSize,cellVal)
+		# status vector = [collisionVal,atLeastOneOK,atLeastOneOutside]
+		#print 'putRectStatus [x,y]',point,'Size =',bloomSize,'cellVal =',cellVal,'cellVal =',putRectStatus
+		if putRectStatus[1] == True:
+			#print 'Was able to change cell',cellVal
+			keepProcessingArray = True
+		if putRectStatus[2] == True:
+			if cellVal not in couldntPutRect:
+				print 'pushing cellVal',cellVal
+				couldntPutRect.append(cellVal)
+#		elif putRectStatus[0] == True:
+#			print 'Any collisions cellVal =',cellVal
+		cellVal += 1
+#	if couldntPutRect:
+#		print 'Couldnt place cells',couldntPutRect
+	if isArrayFull(maxVals):
+		print 'array is full'
+		keepProcessingArray = False
+	print 'Array after',bloomSize,'push'
+	dumpArray()
+	bloomSize += 1
+	print 
+
+print 'Array after bloom is full'
+dumpArray()
+
+couldntPutRect.sort()
+#print 'infinite sized arrays',couldntPutRect
+finiteArrays = []
+for i in range(len(list2D)):
+	if i not in couldntPutRect:
+		finiteArrays.append(i)
+		
+print 'finiteArrays',finiteArrays
