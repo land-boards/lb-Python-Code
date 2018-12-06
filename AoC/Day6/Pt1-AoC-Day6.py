@@ -119,7 +119,15 @@ def dumpArray():
 			else:
 				print cell,
 		print
-	
+
+def countCellsInArray(cellNum):
+	retCount = 0
+	for row in myListArray:
+		for cell in row:
+			if cell == cellNum:
+				retCount += 1
+	return retCount
+				
 def isArrayFull(maxVals):
 	for y in range(maxVals[1]+1):
 		for x in range(maxVals[0]+2):
@@ -230,8 +238,8 @@ while keepProcessingArray:
 	bloomSize += 1
 	#print 
 
-print 'Array after bloom is full'
-dumpArray()
+#print 'Array after bloom is full'
+#dumpArray()
 
 couldntPutRect.sort()
 #print 'infinite sized arrays',couldntPutRect
@@ -241,3 +249,10 @@ for i in range(len(list2D)):
 		finiteArrays.append(i)
 		
 print 'finiteArrays',finiteArrays
+cellCounts = []
+for cellNumber in finiteArrays:
+	cellRow = []
+	cellRow.append(cellNumber)
+	cellRow.append(countCellsInArray(cellNumber))
+	cellCounts.append(cellRow)
+print 'cellCounts',cellCounts
