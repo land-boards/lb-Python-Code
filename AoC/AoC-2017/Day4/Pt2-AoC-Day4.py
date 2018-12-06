@@ -23,6 +23,8 @@ iiii oiii ooii oooi oooo is valid.
 oiii ioii iioi iiio is not valid - any of these words can be rearranged to form any other word.
 Under this new system policy, how many passphrases are valid?
 
+Your puzzle answer was 167.
+
 """
 
 def readTextFileToList(fileName):
@@ -38,29 +40,42 @@ def readTextFileToList(fileName):
 
 def areWordsAnnagrams(word1,word2):
 	wordList1 = list(word1)
+	wordList1.sort()
 	wordList2 = list(word2)
-	print 'wordList1',wordList1
-	print 'wordList2',wordList2
-	
+	wordList2.sort()
+	#print 'wordList1',wordList1
+	#print 'wordList2',wordList2
+	if wordList1 == wordList2:
+		return True
 	return False
 	
 def checkRowForAnnagrams(rowVals):
-	print 'row',rowVals
+	#print 'row',rowVals
 	newRowList = []
-	offset = 1
+	wordOffset = 1
 	for word in rowVals:
-		areWordsAnnagrams(word,rowVals[offset])
+		offset = wordOffset
+		while offset < len(rowVals):
+			if areWordsAnnagrams(word,rowVals[offset]):
+				return True
+			offset += 1
+		wordOffset += 1
+	return False
 
-print 'Reading in file',time.strftime('%X %x %Z')
-dataArray = readTextFileToList('input2.txt')		# replace filename string as needed
-print 'dataArray',dataArray
+#print 'Reading in file',time.strftime('%X %x %Z')
+dataArray = readTextFileToList('input.txt')		# replace filename string as needed
+#print 'dataArray',dataArray
 rowVals = []
-totalPassphrases = len(dataArray)
-badPassphrases = 0
+valid = 0
+invalid = 0
 for row in dataArray:
 	rowVals = re.split('[\W]+',row)
 	if checkRowForAnnagrams(rowVals):
-		print 'got an annagram'
+		invalid += 1
+		#print 'got an annagram'
 	else:
-		print 'was not an annagram'
-		
+		#print 'was not an annagram'
+		valid += 1
+
+print 'valid',valid
+print 'not valid',invalid
