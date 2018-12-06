@@ -1,11 +1,11 @@
-# Pt1-AoCDay4.py
+# Pt2-AoCDay4.py
 # 2017 Advent of Code
 # Day 4
-# Part 1
+# Part 2
 # Problem
-# https://adventofcode.com/2017/day/2
+# https://adventofcode.com/2017/day/4
 # Dataset
-# https://adventofcode.com/2017/day/2/input
+# https://adventofcode.com/2017/day/4/input
 
 import time
 import re
@@ -22,6 +22,7 @@ a ab abc abd abf abj is a valid passphrase, because all letters need to be used 
 iiii oiii ooii oooi oooo is valid.
 oiii ioii iioi iiio is not valid - any of these words can be rearranged to form any other word.
 Under this new system policy, how many passphrases are valid?
+
 """
 
 def readTextFileToList(fileName):
@@ -35,12 +36,20 @@ def readTextFileToList(fileName):
 			textFile.append(line.strip())
 	return textFile
 
+def areWordsAnnagrams(word1,word2):
+	wordList1 = list(word1)
+	wordList2 = list(word2)
+	print 'wordList1',wordList1
+	print 'wordList2',wordList2
+	
+	return False
+	
 def checkRowForAnnagrams(rowVals):
 	print 'row',rowVals
 	newRowList = []
 	offset = 1
-	for phrases in rowVals:
-		print phrases
+	for word in rowVals:
+		areWordsAnnagrams(word,rowVals[offset])
 
 print 'Reading in file',time.strftime('%X %x %Z')
 dataArray = readTextFileToList('input2.txt')		# replace filename string as needed
