@@ -101,10 +101,10 @@ def getMinVals(list2D):
 			minY = row[1]
 	return [minX,minY]
 	
-inputList = readTextFileTo2DList('input2.txt')
+inputList = readTextFileTo2DList('input.txt')
 list2D = turnTextListInto2DList(inputList)
 print 'list2D',list2D
+minVals = getMinVals(list2D)
+print 'minVals',minVals
 maxVals = getMaxVals(list2D)
 print 'maxVals',maxVals
-minVals = getMinVals(list2D)
-print 'maxVals',minVals
