@@ -105,8 +105,15 @@ def make2dList(cols,rows):
 	"""make2dList - Make a 2D list
 	"""
 	a=[]
-	for row in xrange(rows): a += [[0]*(cols+1)]
+	for row in xrange(rows): a += [[0]*(cols)]
 	return a
+
+def clearArray(maxVals):
+	"""clearArray - Fill array with -1 values
+	"""
+	for y in range(maxVal):
+		for x in range(maxVal):
+			myListArray[y][x] = -1
 
 def get(x,y):
 	return(myListArray[x][y])
@@ -115,7 +122,9 @@ def dumpArray():
 	for row in myListArray:
 		for cell in row:
 			if cell == -1:
-				print '_',
+				print 'X',
+			elif cell == 9999:
+				print '.',
 			else:
 				print cell,
 		print
@@ -135,13 +144,6 @@ def isArrayFull(maxVals):
 				return False
 	return True
 	
-def clearArray(maxVals):
-	"""clearArray - Fill array with -1 values
-	"""
-	for y in range(maxVals[1]+1):
-		for x in range(maxVals[0]+2):
-			myListArray[y][x] = -1
-
 def getloc(id):
 	""" return the x,y of the id - the first point
 	"""
@@ -241,84 +243,104 @@ def fillEqualDistantCells():
 		listToWorkOff.remove(cellOff1)
 		listToWorkOff.remove(closestCell)
 		cellOff1 += 1
-		# for y in range(maxVals[1]+1):
-			# for x in range(maxVals[0]+2):
-						# if isEqualDistance(x,y,cellOff1,cellOff2):
-							# put(x,y,9999)
-							# print 'cells are equidistant',x,y,list2D[cellOff1],list2D[cellOff2]
-						# cellOff2 += 1
-					# cellOff1 += 1
 
-list2D = turnTextListInto2DList(readTextFileTo2DList('input2.txt'))
-print 'list2D',list2D
-minVals = getMinVals(list2D)
-#print 'minVals',minVals
-maxVals = getMaxVals(list2D)
-inListLen = len(list2D)
-#print 'maxVals',maxVals
-myListArray = make2dList(maxVals[0]+1,maxVals[1]+1)
-clearArray(maxVals)
-# print 'Initial Array'
-# dumpArray()
-
-item = 0
-for vals in list2D:
-	put(vals[0],vals[1],item)
-	item += 1
-#print 'Array with first Points'
-#dumpArray()
-#print
-
-bloomSize = 1
-keepProcessingArray = True
-couldntPutRect = []
-while keepProcessingArray:
-	keepProcessingArray = False
-	cellVal = 0
+		
+def findDistanceToClosestPointsIn2DList(x,y):
+	shortestManhattanDistance = maxVal + 1
 	for point in list2D:
-		putRectStatus = putRect(point,bloomSize,cellVal)
-		# status vector = [collisionVal,atLeastOneOK,atLeastOneOutside]
-		#print 'putRectStatus [x,y]',point,'Size =',bloomSize,'cellVal =',cellVal,'cellVal =',putRectStatus
-		if putRectStatus[1] == True:
-			#print 'Was able to change cell',cellVal
-			keepProcessingArray = True
-		if putRectStatus[2] == True:
-			if cellVal not in couldntPutRect:
-				#print 'pushing cellVal',cellVal
-				couldntPutRect.append(cellVal)
-#		elif putRectStatus[0] == True:
-#			print 'Any collisions cellVal =',cellVal
-		cellVal += 1
-#	if couldntPutRect:
-#		print 'Couldnt place cells',couldntPutRect
-	if isArrayFull(maxVals):
-		#print 'array is full'
-		keepProcessingArray = False
-	#print 'Array after',bloomSize,'push'
-	#dumpArray()
-	bloomSize += 1
-	#print 
+		manhattanDist = manhattanDistance(x,y,point[0],point[1])
+		if manhattanDist < shortestManhattanDistance:
+			shortestManhattanDistance = manhattanDist
+	#print 'shortest distance from',x,y,
+	#print 'is',shortestManhattanDistance,
+	return shortestManhattanDistance
+		
+def countPointsAtParticularDistance(x,y,distance):
+	pointCount = 0
+	for point in list2D:
+		#print 'checking',x,y,distance,'to',point,'distance',
+		manhattanDist = manhattanDistance(x,y,point[0],point[1])
+		#print manhattanDist
+		if manhattanDist == distance:
+			pointCount += 1
+	return pointCount
 
-print 'Array after bloom is full'
-dumpArray()
+def findEdgeVals():
+	edgeValList = []
+	for x in range(maxVal):
+		y = 0
+		getVal = get(x,y)
+		if getVal not in edgeValList:
+			edgeValList.append(getVal)
+		y = maxVal-1
+		getVal = get(x,y)
+		if getVal not in edgeValList:
+			edgeValList.append(getVal)
+	for y in range(maxVal):
+		x = 0
+		getVal = get(x,y)
+		if getVal not in edgeValList:
+			edgeValList.append(getVal)
+		x = maxVal-1
+		getVal = get(x,y)
+		if getVal not in edgeValList:
+			edgeValList.append(getVal)
+	return edgeValList
+		
 
-couldntPutRect.sort()
-#print 'infinite sized arrays',couldntPutRect
-finiteArrays = []
-for i in range(len(list2D)):
-	if i not in couldntPutRect:
-		finiteArrays.append(i)
+def findOnePointAtParticularDistance(x,y,distance):
+	pointOffset = 0
+	for point in list2D:
+		#print 'checking',x,y,distance,'to',point,'distance',
+		manhattanDist = manhattanDistance(x,y,point[0],point[1])
+		#print manhattanDist
+		if manhattanDist == distance:
+			return pointOffset 
+		pointOffset += 1
+	print 'wft'
 
-fillEqualDistantCells()	
+list2D = turnTextListInto2DList(readTextFileTo2DList('input.txt'))
+maxVals = getMaxVals(list2D)
+maxVal = max(maxVals[0],maxVals[1]) + 1
+inListLen = len(list2D)
+myListArray = make2dList(maxVal,maxVal)
+clearArray(maxVals)
 
-print 'Array after filling equidistant cells'
-dumpArray()
+for x in range(maxVal):
+	for y in range(maxVal):
+		distance = findDistanceToClosestPointsIn2DList(x,y)
+		countOfPoints = countPointsAtParticularDistance(x,y,distance)
+		#print 'counted',countOfPoints,'at',x,y
+		if countOfPoints > 1:
+			put(x,y,9999)
+		else:
+			pairNumber = findOnePointAtParticularDistance(x,y,distance)
+			put(x,y,pairNumber)
 
-print 'finiteArrays',finiteArrays
-cellCounts = []
-for cellNumber in finiteArrays:
-	cellRow = []
-	cellRow.append(cellNumber)
-	cellRow.append(countCellsInArray(cellNumber))
-	cellCounts.append(cellRow)
-print 'cellCounts',cellCounts
+allCounts = []
+maxCount = 0
+for points in range(maxVal):
+	currentPointCount = 0
+	for x in range(maxVal):
+		for y in range(maxVal):
+			if get(x,y) == points:
+				currentPointCount += 1
+	allCountLine = []
+	allCountLine.append(points)
+	allCountLine.append(currentPointCount)
+	if currentPointCount != 0:
+		allCounts.append(allCountLine)
+	if currentPointCount > maxCount:
+		maxCount = currentPointCount
+
+edgeValues = findEdgeVals()
+edgeValues.sort()
+if 9999 in edgeValues:
+	edgeValues.remove(9999)
+
+maxPoint = 0
+for points in allCounts:
+	if points[0] not in edgeValues:
+		if points[1] > maxPoint:
+			maxPoint = points[1]
+print maxPoint
