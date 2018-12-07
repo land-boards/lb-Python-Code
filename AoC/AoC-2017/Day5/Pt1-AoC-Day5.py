@@ -1,11 +1,11 @@
-# Pt2-AoCDay4.py
+# Pt2-AoCDay5.py
 # 2017 Advent of Code
-# Day 4
-# Part 2
+# Day 5
+# Part 1
 # Problem
-# https://adventofcode.com/2017/day/4
+# https://adventofcode.com/2017/day/5
 # Dataset
-# https://adventofcode.com/2017/day/4/input
+# https://adventofcode.com/2017/day/5/input
 
 import time
 import re
