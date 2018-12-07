@@ -40,7 +40,7 @@ In this example, the exit is reached in 5 steps.
 
 How many steps does it take to reach the exit?
 
-
+Your puzzle answer was 342669.
 
 """
 
@@ -56,15 +56,20 @@ def readTextFileToList(fileName):
 	return textFile
 
 #print 'Reading in file',time.strftime('%X %x %Z')
-strArray = readTextFileToList('input2.txt')		# replace filename string as needed
+strArray = readTextFileToList('input.txt')		# replace filename string as needed
 dataArray = []
 for element in strArray:
 	dataArray.append(int(element))
-print 'dataArray',dataArray
 print 'length of dataArray',len(dataArray)
-previousAddr = 0
-nextAddr = 0
-while nextAddr < len(dataArray):
-	nextAddr = dataArray[previousAddr]
-	dataArray[previousAddr] = dataArray[previousAddress] + nextAddr + 1
-	print 'nextAddr',nextAddr
+#print 'dataArray'
+programCounter = 0
+programStepsExecuted = 0
+while True:
+	#print dataArray,'PC =',programCounter
+	nextAddr = dataArray[programCounter] + programCounter
+	dataArray[programCounter] = dataArray[programCounter] + 1
+	programCounter = nextAddr
+	programStepsExecuted += 1
+	if programCounter >= len(dataArray) or programCounter < 0:
+		print 'done in ',programStepsExecuted
+		exit()
