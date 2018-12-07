@@ -59,28 +59,6 @@ What is the size of the largest area that isn't infinite?
 
 """
 
-def readTextFileTo2DList(fileName):
-	"""readTextFileAndSrtToList - open file and read the content to a list
-	list is converted into a 2D array
-	:returns: the list sorted list
-	"""
-	with open(fileName, 'r') as filehandle: 
-		lineData = []
-		for line in filehandle:
-			lineData.append(line)
-	return lineData
-
-def turnTextListInto2DList(list):
-	array2D = []
-	for line in list:
-		lineDat = []
-		line = line.strip()
-		lineDatA = line.split(',')
-		lineDat.append(int(lineDatA[0]))
-		lineDat.append(int(lineDatA[1]))
-		array2D.append(lineDat)
-	return array2D
-
 def getMaxVals(list2D):
 	maxX = 0
 	maxY = 0
@@ -91,23 +69,6 @@ def getMaxVals(list2D):
 			maxY = row[1]
 	return [maxX,maxY]
 	
-def getMinVals(list2D):
-	minX = 9999
-	minY = 9999
-	for row in list2D:
-		if row[0] < minX:
-			minX = row[0]
-		if row[1] < minY:
-			minY = row[1]
-	return [minX,minY]
-
-def make2dList(cols,rows):
-	"""make2dList - Make a 2D list
-	"""
-	a=[]
-	for row in xrange(rows): a += [[0]*(cols)]
-	return a
-
 def clearArray(maxVals):
 	"""clearArray - Fill array with -1 values
 	"""
@@ -129,25 +90,9 @@ def dumpArray():
 				print cell,
 		print
 
-def countCellsInArray(cellNum):
-	retCount = 0
-	for row in myListArray:
-		for cell in row:
-			if cell == cellNum:
-				retCount += 1
-	return retCount
-				
-def isArrayFull(maxVals):
-	for y in range(maxVals[1]+1):
-		for x in range(maxVals[0]+2):
-			if myListArray[y][x] == -1:
-				return False
-	return True
-	
 def getloc(id):
 	""" return the x,y of the id - the first point
 	"""
-	#print 'id',id,
 	return list2D[id]
 
 def manhattanDistance(x1,y1,x2,y2):
@@ -170,6 +115,7 @@ def isEqualDistance(x,y,id1,id2):
 	if distance1 == distance2:
 		return True
 	return False
+
 
 def put(x,y,val):
 	"""put val at x,y
@@ -200,50 +146,6 @@ def put(x,y,val):
 	if debugFunct:
 		print retVal
 	return retVal
-
-def putRect(cellPoint,size,cell):
-	debugFunct = False
-	if debugFunct:
-		print 'putRect x',cellPoint[0],'y',cellPoint[1],'size',size,'cell',cell
-	collisionVal = False
-	atLeastOneOK = False
-	atLeastOneOutside = False
-	# result vector = [collisionVal,atLeastOneOK,atLeastOneOutside]		# [Collision,At_Least_One_OK,At_Least_One_Outside]
-	for y in range(size*2+1):
-		for x in range(size*2+1):
-			putStatus = put(cellPoint[0]+x-size,cellPoint[1]+y-size,cell)
-			if putStatus == 'collision':
-				collisionVal = True
-			elif putStatus == 'putWasOK':
-				atLeastOneOK = True	
-			elif putStatus == 'outside':
-				atLeastOneOutside = True
-			elif putStatus == 'already at value':
-				continue
-	return [collisionVal,atLeastOneOK,atLeastOneOutside]
-
-def fillEqualDistantCells():
-	listToWorkOff = []
-	listToWorkOff.extend(range(0, len(list2D)))
-	while len(listToWorkOff) > 1:
-		print 'listToWorkOff',listToWorkOff
-		cellOff1 = listToWorkOff[0]
-		cellOff2 = listToWorkOff[1]
-		manhattanMinDistance = 9999
-		closestCell = 9999
-		while cellOff2 < len(listToWorkOff):
-			print 'comparing cells',cellOff1,cellOff2
-			gotManhattanDistance = manhattanDistance(list2D[cellOff1][0],list2D[cellOff1][1],list2D[cellOff2][0],list2D[cellOff2][1])
-			print 'dist =',gotManhattanDistance
-			if  gotManhattanDistance < manhattanMinDistance:
-				manhattanMinDistance = gotManhattanDistance
-				closestCell = cellOff2
-			cellOff2 += 1
-		print 'closest cells',cellOff1,closestCell
-		listToWorkOff.remove(cellOff1)
-		listToWorkOff.remove(closestCell)
-		cellOff1 += 1
-
 		
 def findDistanceToClosestPointsIn2DList(x,y):
 	shortestManhattanDistance = maxVal + 1
@@ -251,16 +153,12 @@ def findDistanceToClosestPointsIn2DList(x,y):
 		manhattanDist = manhattanDistance(x,y,point[0],point[1])
 		if manhattanDist < shortestManhattanDistance:
 			shortestManhattanDistance = manhattanDist
-	#print 'shortest distance from',x,y,
-	#print 'is',shortestManhattanDistance,
 	return shortestManhattanDistance
 		
 def countPointsAtParticularDistance(x,y,distance):
 	pointCount = 0
 	for point in list2D:
-		#print 'checking',x,y,distance,'to',point,'distance',
 		manhattanDist = manhattanDistance(x,y,point[0],point[1])
-		#print manhattanDist
 		if manhattanDist == distance:
 			pointCount += 1
 	return pointCount
@@ -291,13 +189,40 @@ def findEdgeVals():
 def findOnePointAtParticularDistance(x,y,distance):
 	pointOffset = 0
 	for point in list2D:
-		#print 'checking',x,y,distance,'to',point,'distance',
 		manhattanDist = manhattanDistance(x,y,point[0],point[1])
-		#print manhattanDist
 		if manhattanDist == distance:
 			return pointOffset 
 		pointOffset += 1
 	print 'wft'
+
+def make2dList(cols,rows):
+	"""make2dList - Make a 2D list
+	"""
+	a=[]
+	for row in xrange(rows): a += [[0]*(cols)]
+	return a
+
+def readTextFileTo2DList(fileName):
+	"""readTextFileAndSrtToList - open file and read the content to a list
+	list is converted into a 2D array
+	:returns: the list sorted list
+	"""
+	with open(fileName, 'r') as filehandle: 
+		lineData = []
+		for line in filehandle:
+			lineData.append(line)
+	return lineData
+
+def turnTextListInto2DList(list):
+	array2D = []
+	for line in list:
+		lineDat = []
+		line = line.strip()
+		lineDatA = line.split(',')
+		lineDat.append(int(lineDatA[0]))
+		lineDat.append(int(lineDatA[1]))
+		array2D.append(lineDat)
+	return array2D
 
 list2D = turnTextListInto2DList(readTextFileTo2DList('input.txt'))
 maxVals = getMaxVals(list2D)
@@ -310,7 +235,6 @@ for x in range(maxVal):
 	for y in range(maxVal):
 		distance = findDistanceToClosestPointsIn2DList(x,y)
 		countOfPoints = countPointsAtParticularDistance(x,y,distance)
-		#print 'counted',countOfPoints,'at',x,y
 		if countOfPoints > 1:
 			put(x,y,9999)
 		else:
