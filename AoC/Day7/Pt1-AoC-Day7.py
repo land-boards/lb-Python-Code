@@ -63,8 +63,7 @@ print parsedInList
 originalListCopy = parsedInList
 
 choseString = ''
-count = 1000
-while len(originalListCopy)>0 and count > 0:
+while len(originalListCopy)>0:
 	firstLetterList = []
 	secondLetterList = []
 	for pair in originalListCopy:
@@ -73,17 +72,13 @@ while len(originalListCopy)>0 and count > 0:
 		if pair[1] not in secondLetterList:
 			secondLetterList.append(pair[1])
 	firstLetterList.sort()
-	#print 'firstLetterList',firstLetterList
 	secondLetterList.sort()
-	#print 'secondLetterList',secondLetterList
 	sll = []
 	for letter in firstLetterList:
 		if letter not in secondLetterList:
 			sll.append(letter)
 	sll.sort()
 	startingLetter = sll[0]
-	#print 'startingLetter(2)',startingLetter
-	
 	if startingLetter not in choseString:
 		choseString += startingLetter
 	if len(firstLetterList) == 1 and len(secondLetterList) == 1:
@@ -93,13 +88,7 @@ while len(originalListCopy)>0 and count > 0:
 	for pair in originalListCopy:
 		if pair[0] == startingLetter:
 			nextLetter = pair[1]
-			#print 'next letter',nextLetter
 			nextLettersList.append(pair[1])
 	nextLettersList.sort()
-	#print 'chose',nextLettersList[0]
-	
 	originalListCopy = removePair(startingLetter,nextLettersList[0],originalListCopy)
-	#print 'deleted pair and got back list'
-	#print originalListCopy
-	count -= 1
 print choseString
