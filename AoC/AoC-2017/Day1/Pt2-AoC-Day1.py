@@ -37,7 +37,7 @@ def readTextFileToString(fileName):
 	return string
 
 print 'Reading in file',time.strftime('%X %x %Z')
-captchaString = readTextFileToString('input.txt')		# replace filename string as needed
+captchaString = readTextFileToString('input2.txt')		# replace filename string as needed
 print 'captchaString',captchaString
 captchaList = []
 for inChar in captchaString:
