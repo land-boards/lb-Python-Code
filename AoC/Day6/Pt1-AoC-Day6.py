@@ -145,7 +145,7 @@ def clearArray(maxVals):
 def getloc(id):
 	""" return the x,y of the id - the first point
 	"""
-	print 'id',id
+	#print 'id',id,
 	return list2D[id]
 
 def manhattanDistance(x1,y1,x2,y2):
@@ -156,13 +156,13 @@ def isEqualDistance(x,y,id1,id2):
 	"""isEqualDistance - if x,y location is equidistant to id1 and id2
 	:returns: True if the point is equidistant from the two cells
 	"""
-	isEqDist = True
+	isEqDist = False
 	if id1 == 9999 or id2 == 9999:
 		return True
 	id1LocXY = getloc(id1)
 	id2LocXY = getloc(id2)
 	if isEqDist:
-		print 'isEqualDistance',id1LocXY,id2LocXY,x,y
+		print '\nisEqualDistance',id1LocXY,id2LocXY,'to',x,y,
 	distance1 = manhattanDistance(id1LocXY[0],id1LocXY[1],x,y)
 	distance2 = manhattanDistance(id2LocXY[0],id2LocXY[1],x,y)
 	if distance1 == distance2:
@@ -216,10 +216,41 @@ def putRect(cellPoint,size,cell):
 				atLeastOneOK = True	
 			elif putStatus == 'outside':
 				atLeastOneOutside = True
+			elif putStatus == 'already at value':
+				continue
 	return [collisionVal,atLeastOneOK,atLeastOneOutside]
 
+def fillEqualDistantCells():
+	listToWorkOff = []
+	listToWorkOff.extend(range(0, len(list2D)))
+	while len(listToWorkOff) > 1:
+		print 'listToWorkOff',listToWorkOff
+		cellOff1 = listToWorkOff[0]
+		cellOff2 = listToWorkOff[1]
+		manhattanMinDistance = 9999
+		closestCell = 9999
+		while cellOff2 < len(listToWorkOff):
+			print 'comparing cells',cellOff1,cellOff2
+			gotManhattanDistance = manhattanDistance(list2D[cellOff1][0],list2D[cellOff1][1],list2D[cellOff2][0],list2D[cellOff2][1])
+			print 'dist =',gotManhattanDistance
+			if  gotManhattanDistance < manhattanMinDistance:
+				manhattanMinDistance = gotManhattanDistance
+				closestCell = cellOff2
+			cellOff2 += 1
+		print 'closest cells',cellOff1,closestCell
+		listToWorkOff.remove(cellOff1)
+		listToWorkOff.remove(closestCell)
+		cellOff1 += 1
+		# for y in range(maxVals[1]+1):
+			# for x in range(maxVals[0]+2):
+						# if isEqualDistance(x,y,cellOff1,cellOff2):
+							# put(x,y,9999)
+							# print 'cells are equidistant',x,y,list2D[cellOff1],list2D[cellOff2]
+						# cellOff2 += 1
+					# cellOff1 += 1
+
 list2D = turnTextListInto2DList(readTextFileTo2DList('input2.txt'))
-#print 'list2D',list2D
+print 'list2D',list2D
 minVals = getMinVals(list2D)
 #print 'minVals',minVals
 maxVals = getMaxVals(list2D)
@@ -277,7 +308,12 @@ finiteArrays = []
 for i in range(len(list2D)):
 	if i not in couldntPutRect:
 		finiteArrays.append(i)
-		
+
+fillEqualDistantCells()	
+
+print 'Array after filling equidistant cells'
+dumpArray()
+
 print 'finiteArrays',finiteArrays
 cellCounts = []
 for cellNumber in finiteArrays:
