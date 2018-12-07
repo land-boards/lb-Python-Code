@@ -1,4 +1,4 @@
-# Pt2-AoCDay5.py
+# Pt1-AoCDay5.py
 # 2017 Advent of Code
 # Day 5
 # Part 1
