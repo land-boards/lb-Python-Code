@@ -55,11 +55,12 @@ def removePair(sL,nL,originalListCopy):
 	
 ###########################################
 ## Code
+###########################################
 
 print 'Reading in file',time.strftime('%X %x %Z')
 inFileList = readTextFileAndSortToList('input.txt')
 parsedInList = parseInFile(inFileList)
-print parsedInList
+#print parsedInList
 originalListCopy = parsedInList
 
 choseString = ''
@@ -91,4 +92,5 @@ while len(originalListCopy)>0:
 			nextLettersList.append(pair[1])
 	nextLettersList.sort()
 	originalListCopy = removePair(startingLetter,nextLettersList[0],originalListCopy)
+print 'Completed processing',time.strftime('%X %x %Z')
 print choseString
