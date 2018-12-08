@@ -43,6 +43,19 @@ What is the sum of all metadata entries?
 
 """
 
+def stringOfNumbersToList(str):
+	theList = []
+	num = 0
+	for letter in str:
+		if letter >= '0' and letter <= '9':
+			#print letter
+			num = num*10 + ord(letter)-ord('0')
+	#		print num
+		else:
+			theList.append(num)
+			num = 0
+	return theList
+
 def readTextFileToList(fileName):
 	"""readTextFileAndSrtToList - open file and read the content to a list
 	File is sorted to produce a date/time ordered file
@@ -53,8 +66,10 @@ def readTextFileToList(fileName):
 		for char in filehandle:
 			textFile += char
 	return textFile
-
 	
 textList = readTextFileToList('input.txt')
+#print textList
 
-print textList
+myList = stringOfNumbersToList(textList)
+
+print myList
