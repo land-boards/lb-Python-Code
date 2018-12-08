@@ -41,16 +41,22 @@ The first check done on the license file is to simply add up all of the metadata
 
 What is the sum of all metadata entries?
 
+Note: It's really more like this
+
+2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2
+A--                           -----
+    B----------- C--       --
+                     D-----
+
 """
+
 
 def stringOfNumbersToList(str):
 	theList = []
 	num = 0
 	for letter in str:
 		if letter >= '0' and letter <= '9':
-			#print letter
 			num = num*10 + ord(letter)-ord('0')
-	#		print num
 		else:
 			theList.append(num)
 			num = 0
@@ -67,9 +73,95 @@ def readTextFileToList(fileName):
 			textFile += char
 	return textFile
 	
-textList = readTextFileToList('input.txt')
+def pushNodeAtPoint(listOffset):
+	global nodeList
+	endNode = False
+	currentChildCountOffset = listOffset
+	currentChildCount = myList[listOffset]
+	if currentChildCount == 0:
+		currentMetaCountOffset = listOffset+2
+		endNode = True
+	else:
+		currentMetaCountOffset = -1
+	currentMetaCount = myList[listOffset + 1]
+	newNode = [currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount]
+	nodeList.append(newNode)
+	print 'pushNodeAtPoint',newNode
+	return endNode
+	
+def isNodeStored(listOffset):
+	global nodeList
+	currentChildCountOffset = listOffset
+	currentChildCount = myList[listOffset]
+	currentMetaCountOffset = listOffset + 1
+	currentMetaCount = myList[listOffset + 1]
+	nodeVal = [currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount]
+	for nodeVal in nodeList:
+		if nodeVal[0] == currentChildCountOffset and nodeVal[1] == currentChildCount and nodeVal[3] == currentMetaCount:
+			#print 'isNodeStored: was already stored',nodeVal
+			return True
+	#print 'isNodeStored: was not stored',nodeVal
+	return False
+
+def getNode(nodeNum):
+	global nodeList
+	return nodeList[nodeNum]
+
+def getNodeCount():
+	global nodeList
+	return len(nodeList)
+	
+def getChildCount(nodeNum):
+	return nodeList[nodeNum][0]
+
+def putMetaDataOffset(nodeCount,nodeOffset):
+	nodeList[nodeCount][2] = nodeOffset+2
+
+def dumpNodes():
+	global nodeList
+	print 'dumpNodes: length of nodes',len(nodeList)
+	for node in nodeList:
+		print '[chOff,chCt,metaOff,metaCount] =',
+		print node
+	#print 'done dumpNodes'
+
+textList = readTextFileToList('input2.txt')
 #print textList
 
 myList = stringOfNumbersToList(textList)
+#print 'main:',myList
 
-print myList
+nodeList = []
+
+listOffset = 0
+listLength = len(myList)
+#print 'main: listLength',listLength
+
+streamStates = ['qtyChildren','qtyMetadata']
+streamState = 'qtyChildren'
+
+pushNodeAtPoint(listOffset)	# prime with the first node
+# print 'main: initial nodes',
+# dumpNodes()
+
+nodeOffset = 0
+loopEnd = 5
+setEndNode = False
+storedNodeFlag = True
+while storedNodeFlag:
+	storedNodeFlag = False
+	nodeCount = getNodeCount()
+	while nodeCount > 0:
+		nodeVals = getNode(nodeOffset)
+		print 'main: checking node with nodeVals',nodeVals
+		nodeOffset = nodeVals[0] + 2
+		if not isNodeStored(nodeOffset):
+			if pushNodeAtPoint(nodeOffset):
+				lastNode = getNode(nodeCount)
+				print 'main: pushing Node relative to end node',lastNode
+				pushNodeAtPoint(lastNode[2]+lastNode[3])
+			storedNodeFlag = True
+		print 'main: was last node an end node?',setEndNode,'nodeCount',nodeCount,'nodeCount actual',getNodeCount()
+		nodeCount -= 1
+		nodeOffset = 0
+	dumpNodes()
