@@ -113,17 +113,20 @@ def getRecordCount(pushpushPair,offset):
 
 def availableLetterCount():
 	global originalListCopy
+	if len(originalListCopy) == 0:
+		return 0
 	pushPair2 = []
-	firstLetterList = fillFirstLetterList(originalListCopy)
-	secondLetterList = fillSecondLetterList(originalListCopy)
+	firstLetterList = fillFirstLetterList()
+	secondLetterList = fillSecondLetterList()
 	startingLetterList = addLetterToResultList(firstLetterList,secondLetterList)
 	startingLetter = startingLetterList[0]
-	nextLetter1 = getNextLetter(startingLetter,originalListCopy)
+	nextLetter1 = getNextLetter(startingLetter)
 	pushPair2.append(startingLetter)
 	return len(pushPair2)
 
+lastLetterOfAll = ''
+
 def getAvailableLettersList():
-	global originalListCopy
 	pushPair2 = []
 	firstLetterList = fillFirstLetterList()
 	secondLetterList = fillSecondLetterList()
@@ -163,25 +166,6 @@ def initWorkerSchedule(numberOfWorkers):
 		workerSchedule.append(['',0])
 	return True
 
-def freedWorker():
-	"""predict next worker to be freedWorker
-	"""
-	global workerSchedule
-	for theRecord in workerSchedule:
-		if theRecord[1] == 1 and theRecord[0] != '':
-			print 'found task that will complete next',theRecord[0]
-			return theRecord[0]
-	else:
-		return ''
-
-def findWorkerToReschedule():
-	global workerSchedule
-	for theRecord in workerSchedule:
-		if theRecord[1] == 0 and theRecord[0] != '':
-			return theRecord[0]
-		else:
-			return ''
-	
 def isWorkerAvailable():
 	"""isWorkerAvailable
 	"""
@@ -198,10 +182,9 @@ def scheduleAvailableWorkerForTask(taskLetter):
 	global workerSchedule
 	recordOffset = 0
 	while recordOffset < len(workerSchedule):
-		#print 'recordOffset',recordOffset
 		if workerSchedule[recordOffset][0] == '':
 			workerSchedule[recordOffset][0] = taskLetter
-			val = ord(taskLetter)-ord('A')+2
+			val = ord(taskLetter)-ord('A')+1+timeStep
 			workerSchedule[recordOffset][1] = val
 			return
 		recordOffset += 1
@@ -234,11 +217,9 @@ def getListActiveWorkers():
 
 def getLetterToPush(availableLetters,activeWorkers):
 	if availableLetters == activeWorkers:
-#		print 'getLetterToPush blocked',availableLetters,activeWorkers
 		return ''
 	for testLetter in availableLetters:
 		if testLetter not in activeWorkers:
-#			print 'getLetterToPush: testLetter',testLetter
 			return testLetter
 	return ''
 
@@ -277,13 +258,12 @@ choseString += lastChar
 print 'Part 1 string',choseString
 print 
 
-workerCount = 2
-timeStep = 1
+workerCount = 5
+timeStep = 60
 
-timeIncrement = 1
 timeCounter = 0
 
-inFileList = readTextFileAndSortToList('input2.txt')
+inFileList = readTextFileAndSortToList('input.txt')
 parsedInList = parseInFile(inFileList)
 originalListCopy = parsedInList
 
@@ -295,31 +275,34 @@ workerSchedule = []
 initWorkerSchedule(workerCount)
 
 busyWorkerList = []
+saveLastLetter = ''
 
-while timeCounter < 25:
+inLastLetter = False
+
+while True:
 	print 't =',timeCounter
-	print 'Worker sched',workerSchedule
-	loopMax = 10
-	loopTest = True
-	while loopTest:
-		if not isWorkerAvailable():
+	while isWorkerAvailable():
+		if len(originalListCopy) == 1:
+			lastLetter = originalListCopy[0][1]
+			inLastLetter = True
+		if availableLetterCount() == 0:
 			break
 		availableLetters = getAvailableLettersList()
 		availableLetters.sort()
 		activeWorkers = getListActiveWorkers()
 		activeWorkers.sort()
 		singleLetter = getLetterToPush(availableLetters,activeWorkers)
-		if singleLetter != '':
-			print '***scheduling letter',singleLetter
-			scheduleAvailableWorkerForTask(singleLetter)
-			busyWorkerList.append(singleLetter)
-			print 'busyWorkerList',busyWorkerList
-		else:
-			loopTest = False
-			break;
-		loopMax -= 1
-		if loopMax < 1:
-			exit()
+		if singleLetter == '':
+			break
+		scheduleAvailableWorkerForTask(singleLetter)
+		busyWorkerList.append(singleLetter)
+	if len(getListActiveWorkers()) == 0 and lastLetter != '':
+		scheduleAvailableWorkerForTask(lastLetter)
+		busyWorkerList.append(lastLetter)
+		lastLetter = ''
+	if len(busyWorkerList) == 0:
+		exit()
+	print 'Worker sched',workerSchedule
 	incrScheduleTimes()
 	removeExpiredWorkers()
 	timeCounter += 1
