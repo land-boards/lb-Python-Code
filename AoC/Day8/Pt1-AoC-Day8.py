@@ -73,7 +73,11 @@ def readTextFileToList(fileName):
 			textFile += char
 	return textFile
 	
-def pushNodeAtPoint(listOffset):
+def pushNodeAtPoint(listOffset,parentID):
+	"""pushNodeAtPoint
+	:returns: True if the node being pushed has no children
+	False if there are additional childre
+	"""
 	global nodeList
 	endNode = False
 	currentChildCountOffset = listOffset
@@ -84,9 +88,8 @@ def pushNodeAtPoint(listOffset):
 	else:
 		currentMetaCountOffset = -1
 	currentMetaCount = myList[listOffset + 1]
-	newNode = [currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount]
+	newNode = [currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID]
 	nodeList.append(newNode)
-	print 'pushNodeAtPoint',newNode
 	return endNode
 	
 def isNodeStored(listOffset):
@@ -98,9 +101,7 @@ def isNodeStored(listOffset):
 	nodeVal = [currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount]
 	for nodeVal in nodeList:
 		if nodeVal[0] == currentChildCountOffset and nodeVal[1] == currentChildCount and nodeVal[3] == currentMetaCount:
-			#print 'isNodeStored: was already stored',nodeVal
 			return True
-	#print 'isNodeStored: was not stored',nodeVal
 	return False
 
 def getNode(nodeNum):
@@ -112,20 +113,136 @@ def getNodeCount():
 	return len(nodeList)
 	
 def getChildCount(nodeNum):
-	return nodeList[nodeNum][0]
+	return nodeList[nodeNum][1]
 
-def putMetaDataOffset(nodeCount,nodeOffset):
-	nodeList[nodeCount][2] = nodeOffset+2
+def putMetaDataOffset(checkNodeNumber,nodeOffsetInFile):
+	nodeList[checkNodeNumber][2] = nodeOffsetInFile+2
+
+def getNumberOfChildrenForAnyParent(parentNodeNum):
+	childCount = 0
+	for record in nodeList[1:]:		# skip top of tree
+		if record[4] == parentNodeNum:
+			childCount += 1
+	return childCount
+
+def getLastChildWithParent(parentNodeNum):
+	recToReturn = []
+	for record in nodeList[1:]:
+		if record[4] == parentNodeNum:
+			recToReturn = record
+	return recToReturn
+
+def getLastChildWithParentNumber(parentNodeNum):
+	"""
+	"""
+	offsetNum = 1
+	valToReturn = 0
+	for record in nodeList[1:]:
+		if record[4] == parentNodeNum:
+			valToReturn = offsetNum
+		offsetNum += 1
+	return valToReturn
+
+def allChildrenAreComplete(parentNodeNum):
+	"""allChildrenAreComplete - checkes all of the children below a parent node to see if the metadata count is update
+	:returns" True if all of the children below that parent are completed
+	"""
+	for record in nodeList[1:]:
+		if record[4] == parentNodeNum:
+			if record[2] == -1:
+				return False
+	return True
+	
+def isTreeDone():
+	"""isTreeDone - scans the entire tree to see if all of the nodes have their metadata count updated
+	Filling the metadata count is the last step to being complete
+	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID
+	"""
+	for record in nodeList:
+		if record[2] == -1:
+			return False
+	return True
+
+def checkChildrenTree():
+	"""checkChildrenTree - scans the entire tree to see if any nodes can have their metadata count updated
+	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID
+	"""
+	recNum = 0
+	for record in nodeList:
+		#print 'checkChildrenTree: record',record
+		if record[2] == -1 and getNumberOfChildrenForAnyParent(recNum) == record[1]:	# record needs filled in better
+			if allChildrenAreComplete(recNum):
+				recNumLastChild = getLastChildWithParentNumber(recNum)
+				#print 'checkChildrenTree: fixable record = recNum',recNum
+				metaOffset = nodeList[recNumLastChild][2]+nodeList[recNumLastChild][3]
+				#print 'offset to metaContent',
+				nodeList[recNum][2] = metaOffset
+				print '.',
+				return True
+		recNum += 1
+	return False
 
 def dumpNodes():
+	"""dumpNodes - print out a dump of the nodes
+	Format is: chOff,chCt,metaOff,metaCt,parentID
+	chOff is the offset of the node itself
+	chCt is the count of the children from this node
+	metaOff is the offset to the start of the metadata
+	metaCt is the count of metadata elements
+	parentID is the ID of the parent to this node
+	"""
 	global nodeList
 	print 'dumpNodes: length of nodes',len(nodeList)
 	for node in nodeList:
-		print '[chOff,chCt,metaOff,metaCount] =',
+		print '[chOff,chCt,metaOff,metaCt,parentID] =',
 		print node
 	#print 'done dumpNodes'
 
-textList = readTextFileToList('input2.txt')
+def scanTree():
+	"""scanTree - This is the core of the code.
+	I put this into a function to make it easier to return out in the middle
+	This is a nested mess
+	It works with the data set but seems way to slow to be practical for real use
+	Solution is pure brute force
+	calling function primes pushNodeAtPoint() for the first node
+	"""
+	continueLooping = True
+	checkNodeNumber = 0
+	while continueLooping:
+		continueLooping = False
+		nodeOffset = 0
+		if getChildCount(checkNodeNumber) > 0:
+			nodeVect = getNode(checkNodeNumber)
+			nodeOffset = nodeVect[0] + 2
+			if not isNodeStored(nodeOffset):
+				continueLooping = True
+				if pushNodeAtPoint(nodeOffset,checkNodeNumber): # last point was an endpoint
+					while checkChildrenTree():
+						continue
+					if isTreeDone() == True:
+						return
+					lastNode = getNode(checkNodeNumber+1)
+					pushNodeAtPoint(lastNode[2]+lastNode[3],checkNodeNumber)
+					while checkChildrenTree():
+						continue
+					if isTreeDone() == True:
+						return
+		checkNodeNumber += 1
+		while checkChildrenTree():
+			continue
+		if isTreeDone():
+			return
+		if checkNodeNumber == getNodeCount():
+			checkNodeNumber = 0		
+		else:
+			continueLooping = True
+
+########################################################################
+## Code
+
+print 'Reading in file',time.strftime('%X %x %Z')
+
+textList = readTextFileToList('input.txt')
 #print textList
 
 myList = stringOfNumbersToList(textList)
@@ -137,31 +254,29 @@ listOffset = 0
 listLength = len(myList)
 #print 'main: listLength',listLength
 
-streamStates = ['qtyChildren','qtyMetadata']
-streamState = 'qtyChildren'
+# streamStates = ['qtyChildren','qtyMetadata']
+# streamState = 'qtyChildren'
 
-pushNodeAtPoint(listOffset)	# prime with the first node
-# print 'main: initial nodes',
-# dumpNodes()
+pushNodeAtPoint(listOffset,0)	# prime with the first node
 
-nodeOffset = 0
-loopEnd = 5
-setEndNode = False
-storedNodeFlag = True
-while storedNodeFlag:
-	storedNodeFlag = False
-	nodeCount = getNodeCount()
-	while nodeCount > 0:
-		nodeVals = getNode(nodeOffset)
-		print 'main: checking node with nodeVals',nodeVals
-		nodeOffset = nodeVals[0] + 2
-		if not isNodeStored(nodeOffset):
-			if pushNodeAtPoint(nodeOffset):
-				lastNode = getNode(nodeCount)
-				print 'main: pushing Node relative to end node',lastNode
-				pushNodeAtPoint(lastNode[2]+lastNode[3])
-			storedNodeFlag = True
-		print 'main: was last node an end node?',setEndNode,'nodeCount',nodeCount,'nodeCount actual',getNodeCount()
-		nodeCount -= 1
-		nodeOffset = 0
-	dumpNodes()
+print 'Scanning Tree',time.strftime('%X %x %Z')
+
+scanTree()
+
+print 'Done scanning tree',time.strftime('%X %x %Z')
+
+print
+dumpNodes()
+
+print 'Accumulate sums',time.strftime('%X %x %Z')
+
+accumMetaRecLens = 0
+for node in nodeList:
+	startSpan = node[2]
+	endSpan = node[2] + node[3]
+	while(startSpan < endSpan):
+		accumMetaRecLens += myList[startSpan]
+		startSpan += 1
+print '\nSum =',accumMetaRecLens
+
+	
