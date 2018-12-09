@@ -98,8 +98,7 @@ def pushNodeAtPoint(listOffset,parentID):
 	currentMetaCount = myList[listOffset + 1]
 	newNode = [currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID]
 	nodeList.append(newNode)
-	while checkChildrenTree():
-		continue
+	print '+',
 	return endNode
 	
 def isNodeStored(listOffset):
@@ -160,19 +159,10 @@ def getNumberOfChildrenForAnyParent(parentNodeNum):
 			childCount += 1
 	return childCount
 
-def getLastChildWithParent(parentNodeNum):
-	"""getLastChildWithParent - get the records for the last child with a parent
-	"""
-	global nodeList
-	recToReturn = []
-	for i in xrange(1,len(nodeList)):
-		if nodeList[i][4] == parentNodeNum:
-			recToReturn = record
-	return recToReturn
-
 def getLastChildWithParentNumber(parentNodeNum):
 	"""getLastChildWithParentNumber - scan the node list to find the last child that has a particular parent number
 	"""
+	global nodeList
 	for i in xrange(len(nodeList)-1, 0, -1):
 		if nodeList[i][4] == parentNodeNum:
 			return i
@@ -207,13 +197,14 @@ def checkChildrenTree():
 	global nodeList
 	recNum = 0
 	for record in nodeList:
-		if record[2] == -1 and getNumberOfChildrenForAnyParent(recNum) == record[1]:	# record needs filled in better
-			if allChildrenAreComplete(recNum):
-				recNumLastChild = getLastChildWithParentNumber(recNum)
-				metaOffset = nodeList[recNumLastChild][2]+nodeList[recNumLastChild][3]
-				nodeList[recNum][2] = metaOffset
-				print '.',
-				return True
+		if record[2] == -1:
+			if getNumberOfChildrenForAnyParent(recNum) == record[1]:	# record needs filled in better
+				if allChildrenAreComplete(recNum):
+					recNumLastChild = getLastChildWithParentNumber(recNum)
+					metaOffset = nodeList[recNumLastChild][2]+nodeList[recNumLastChild][3]
+					nodeList[recNum][2] = metaOffset
+					print '.',
+					return True
 		recNum += 1
 	return False
 
@@ -243,6 +234,7 @@ def scanTree():
 	Solution is pure brute force
 	calling function primes pushNodeAtPoint() for the first node
 	"""
+	global nodeList
 	continueLooping = True
 	checkNodeNumber = 0
 	while continueLooping:
@@ -254,10 +246,14 @@ def scanTree():
 			if not isNodeStored(nodeOffset):
 				continueLooping = True
 				if pushNodeAtPoint(nodeOffset,checkNodeNumber): # last point was an endpoint
+					while checkChildrenTree():
+						continue
 					if isTreeDone() == True:
 						return
 					lastNode = getNode(checkNodeNumber+1)
 					pushNodeAtPoint(lastNode[2]+lastNode[3],checkNodeNumber)
+					while checkChildrenTree():
+						continue
 					if isTreeDone() == True:
 						return
 		checkNodeNumber += 1
