@@ -50,6 +50,11 @@ A--                           -----
 
 2044 nodes
 
+Traceback (most recent call last):
+ line 98, in pushNodeAtPoint
+    currentMetaCount = myList[listOffset + 1]
+IndexError: list index out of range
+
 """
 
 
@@ -78,7 +83,7 @@ def stringOfNumbersToList(str):
 	return theList
 
 #####################################################################################
-## Functions which operate on the input file lists
+## Functions which operate on the input file and node lists
 
 def pushNodeAtPoint(listOffset,parentID):
 	"""pushNodeAtPoint
@@ -89,6 +94,8 @@ def pushNodeAtPoint(listOffset,parentID):
 	global myList
 	endNode = False
 	currentChildCountOffset = listOffset
+	if listOffset == len(myList):
+		return True
 	currentChildCount = myList[listOffset]
 	if currentChildCount == 0:
 		currentMetaCountOffset = listOffset+2
@@ -114,11 +121,6 @@ def isNodeStored(listOffset):
 
 #####################################################################################
 ## Functions which operate on the node list
-
-# def putMetaDataOffset(checkNodeNumber,nodeOffsetInFile):
-	# """putMetaDataOffset - 
-	# """
-	# nodeList[checkNodeNumber][2] = nodeOffsetInFile+2
 
 def getNode(nodeNum):
 	"""Pull the node from the node list by node number
@@ -267,7 +269,7 @@ def scanTree():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readTextFileToList('input.txt')
+textList = readTextFileToList('input2.txt')
 
 myList = stringOfNumbersToList(textList)
 
