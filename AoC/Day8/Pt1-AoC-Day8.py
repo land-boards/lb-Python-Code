@@ -51,17 +51,6 @@ A--                           -----
 """
 
 
-def stringOfNumbersToList(str):
-	theList = []
-	num = 0
-	for letter in str:
-		if letter >= '0' and letter <= '9':
-			num = num*10 + ord(letter)-ord('0')
-		else:
-			theList.append(num)
-			num = 0
-	return theList
-
 def readTextFileToList(fileName):
 	"""readTextFileAndSrtToList - open file and read the content to a list
 	File is sorted to produce a date/time ordered file
@@ -73,10 +62,26 @@ def readTextFileToList(fileName):
 			textFile += char
 	return textFile
 	
+def stringOfNumbersToList(str):
+	"""stringOfNumbersToList - Take the input file which is a really long list and turn it into a python list
+	"""
+	theList = []
+	num = 0
+	for letter in str:
+		if letter >= '0' and letter <= '9':
+			num = num*10 + ord(letter)-ord('0')
+		else:
+			theList.append(num)
+			num = 0
+	return theList
+
+#####################################################################################
+## Functions which operate on the input file lists
+
 def pushNodeAtPoint(listOffset,parentID):
 	"""pushNodeAtPoint
 	:returns: True if the node being pushed has no children
-	False if there are additional childre
+	False if there are additional children
 	"""
 	global nodeList
 	endNode = False
@@ -93,6 +98,8 @@ def pushNodeAtPoint(listOffset,parentID):
 	return endNode
 	
 def isNodeStored(listOffset):
+	"""isNodeStored - CHeck to see if a node is already stored in the node list
+	"""
 	global nodeList
 	currentChildCountOffset = listOffset
 	currentChildCount = myList[listOffset]
@@ -104,21 +111,36 @@ def isNodeStored(listOffset):
 			return True
 	return False
 
+#####################################################################################
+## Functions which operate on the node list
+
+# def putMetaDataOffset(checkNodeNumber,nodeOffsetInFile):
+	# """putMetaDataOffset - 
+	# """
+	# nodeList[checkNodeNumber][2] = nodeOffsetInFile+2
+
 def getNode(nodeNum):
+	"""Pull the node from the node list by node number
+	"""
 	global nodeList
 	return nodeList[nodeNum]
 
 def getNodeCount():
+	"""getNodeCount - Get the count of the number of nodes 
+	Used to terminate loops
+	"""
 	global nodeList
 	return len(nodeList)
 	
 def getChildCount(nodeNum):
+	"""getChildCount - ger the count of the children of a particular node
+	Used as a helper function to remember the name 
+	"""
 	return nodeList[nodeNum][1]
 
-def putMetaDataOffset(checkNodeNumber,nodeOffsetInFile):
-	nodeList[checkNodeNumber][2] = nodeOffsetInFile+2
-
 def getNumberOfChildrenForAnyParent(parentNodeNum):
+	"""getNumberOfChildrenForAnyParent - get the number of children populated in the nodeList for any parent
+	"""
 	childCount = 0
 	for record in nodeList[1:]:		# skip top of tree
 		if record[4] == parentNodeNum:
@@ -126,6 +148,8 @@ def getNumberOfChildrenForAnyParent(parentNodeNum):
 	return childCount
 
 def getLastChildWithParent(parentNodeNum):
+	"""getLastChildWithParent - get the records for the last child with a parent
+	"""
 	recToReturn = []
 	for record in nodeList[1:]:
 		if record[4] == parentNodeNum:
@@ -133,7 +157,7 @@ def getLastChildWithParent(parentNodeNum):
 	return recToReturn
 
 def getLastChildWithParentNumber(parentNodeNum):
-	"""
+	"""getLastChildWithParentNumber - scan the node list to find the last child that has a particular parent number
 	"""
 	offsetNum = 1
 	valToReturn = 0
@@ -165,7 +189,7 @@ def isTreeDone():
 
 def checkChildrenTree():
 	"""checkChildrenTree - scans the entire tree to see if any nodes can have their metadata count updated
-	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID
+	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID]
 	"""
 	recNum = 0
 	for record in nodeList:
@@ -197,6 +221,9 @@ def dumpNodes():
 		print '[chOff,chCt,metaOff,metaCt,parentID] =',
 		print node
 	#print 'done dumpNodes'
+
+########################################################################
+## This is the workhorse of this assignment
 
 def scanTree():
 	"""scanTree - This is the core of the code.
