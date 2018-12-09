@@ -48,6 +48,8 @@ A--                           -----
     B----------- C--       --
                      D-----
 
+2044 nodes
+
 """
 
 
@@ -186,7 +188,7 @@ def isTreeDone():
 		if record[2] == -1:
 			return False
 	return True
-
+	
 def checkChildrenTree():
 	"""checkChildrenTree - scans the entire tree to see if any nodes can have their metadata count updated
 	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID]
