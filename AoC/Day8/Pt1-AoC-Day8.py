@@ -138,44 +138,57 @@ def getChildCount(nodeNum):
 	"""getChildCount - ger the count of the children of a particular node
 	Used as a helper function to remember the name 
 	"""
+	global nodeList
 	return nodeList[nodeNum][1]
 
 def getNumberOfChildrenForAnyParent(parentNodeNum):
 	"""getNumberOfChildrenForAnyParent - get the number of children populated in the nodeList for any parent
 	"""
+	global nodeList
 	childCount = 0
-	for record in nodeList[1:]:		# skip top of tree
-		if record[4] == parentNodeNum:
+	for i in xrange(1,len(nodeList)):		# skip top of tree
+		if nodeList[i][4] == parentNodeNum:
 			childCount += 1
 	return childCount
 
 def getLastChildWithParent(parentNodeNum):
 	"""getLastChildWithParent - get the records for the last child with a parent
 	"""
+	global nodeList
 	recToReturn = []
-	for record in nodeList[1:]:
-		if record[4] == parentNodeNum:
+	for i in xrange(1,len(nodeList)):
+		if nodeList[i][4] == parentNodeNum:
 			recToReturn = record
 	return recToReturn
 
+# def getLastChildWithParentNumber(parentNodeNum):
+	# """getLastChildWithParentNumber - scan the node list to find the last child that has a particular parent number
+	# """
+	# global nodeList
+	# offsetNum = 1
+	# valToReturn = 0
+	# for i in xrange(1,len(nodeList)):
+		# if nodeList[i][4] == parentNodeNum:
+			# valToReturn = offsetNum
+		# offsetNum += 1
+	# return valToReturn
+	
 def getLastChildWithParentNumber(parentNodeNum):
 	"""getLastChildWithParentNumber - scan the node list to find the last child that has a particular parent number
 	"""
-	offsetNum = 1
-	valToReturn = 0
-	for record in nodeList[1:]:
-		if record[4] == parentNodeNum:
-			valToReturn = offsetNum
-		offsetNum += 1
-	return valToReturn
+	for i in xrange(len(nodeList)-1, 0, -1):
+		if nodeList[i][4] == parentNodeNum:
+			return i
+	return 0
 
 def allChildrenAreComplete(parentNodeNum):
 	"""allChildrenAreComplete - checkes all of the children below a parent node to see if the metadata count is update
 	:returns" True if all of the children below that parent are completed
 	"""
-	for record in nodeList[1:]:
-		if record[4] == parentNodeNum:
-			if record[2] == -1:
+	global nodeList
+	for i in xrange(1,len(nodeList)):
+		if nodeList[i][4] == parentNodeNum:
+			if nodeList[i][2] == -1:
 				return False
 	return True
 	
@@ -184,6 +197,7 @@ def isTreeDone():
 	Filling the metadata count is the last step to being complete
 	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID
 	"""
+	global nodeList
 	for record in nodeList:
 		if record[2] == -1:
 			return False
