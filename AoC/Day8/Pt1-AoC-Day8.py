@@ -86,6 +86,7 @@ def pushNodeAtPoint(listOffset,parentID):
 	False if there are additional children
 	"""
 	global nodeList
+	global myList
 	endNode = False
 	currentChildCountOffset = listOffset
 	currentChildCount = myList[listOffset]
@@ -100,16 +101,13 @@ def pushNodeAtPoint(listOffset,parentID):
 	return endNode
 	
 def isNodeStored(listOffset):
-	"""isNodeStored - CHeck to see if a node is already stored in the node list
+	"""isNodeStored - Check to see if a node is already stored in the node list
+	Ignores the metaOffset field
 	"""
 	global nodeList
-	currentChildCountOffset = listOffset
-	currentChildCount = myList[listOffset]
-	currentMetaCountOffset = listOffset + 1
-	currentMetaCount = myList[listOffset + 1]
-	nodeVal = [currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount]
+	global myList
 	for nodeVal in nodeList:
-		if nodeVal[0] == currentChildCountOffset and nodeVal[1] == currentChildCount and nodeVal[3] == currentMetaCount:
+		if nodeVal[0] == listOffset and nodeVal[1] == myList[listOffset] and nodeVal[3] == myList[listOffset + 1]:
 			return True
 	return False
 
@@ -127,6 +125,15 @@ def getNode(nodeNum):
 	global nodeList
 	return nodeList[nodeNum]
 
+def isNodeComplete(nodeNum):
+	"""
+	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID]
+	"""
+	global nodeList
+	if nodeList[nodeNum][2] != -1:
+		return True
+	return False
+
 def getNodeCount():
 	"""getNodeCount - Get the count of the number of nodes 
 	Used to terminate loops
@@ -135,7 +142,7 @@ def getNodeCount():
 	return len(nodeList)
 	
 def getChildCount(nodeNum):
-	"""getChildCount - ger the count of the children of a particular node
+	"""getChildCount - get the count of the children of a particular node
 	Used as a helper function to remember the name 
 	"""
 	global nodeList
