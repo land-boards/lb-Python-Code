@@ -98,6 +98,8 @@ def pushNodeAtPoint(listOffset,parentID):
 	currentMetaCount = myList[listOffset + 1]
 	newNode = [currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID]
 	nodeList.append(newNode)
+	while checkChildrenTree():
+		continue
 	return endNode
 	
 def isNodeStored(listOffset):
@@ -205,13 +207,10 @@ def checkChildrenTree():
 	global nodeList
 	recNum = 0
 	for record in nodeList:
-		#print 'checkChildrenTree: record',record
 		if record[2] == -1 and getNumberOfChildrenForAnyParent(recNum) == record[1]:	# record needs filled in better
 			if allChildrenAreComplete(recNum):
 				recNumLastChild = getLastChildWithParentNumber(recNum)
-				#print 'checkChildrenTree: fixable record = recNum',recNum
 				metaOffset = nodeList[recNumLastChild][2]+nodeList[recNumLastChild][3]
-				#print 'offset to metaContent',
 				nodeList[recNum][2] = metaOffset
 				print '.',
 				return True
@@ -255,14 +254,10 @@ def scanTree():
 			if not isNodeStored(nodeOffset):
 				continueLooping = True
 				if pushNodeAtPoint(nodeOffset,checkNodeNumber): # last point was an endpoint
-					while checkChildrenTree():
-						continue
 					if isTreeDone() == True:
 						return
 					lastNode = getNode(checkNodeNumber+1)
 					pushNodeAtPoint(lastNode[2]+lastNode[3],checkNodeNumber)
-					while checkChildrenTree():
-						continue
 					if isTreeDone() == True:
 						return
 		checkNodeNumber += 1
