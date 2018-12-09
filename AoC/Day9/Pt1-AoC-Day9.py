@@ -63,27 +63,28 @@ What is the winning Elf's score?
 
 """
 
-players = 464
-lastMarbleValue = 71730
+# players = 464
+# lastMarbleValue = 71730
 
-#####################################################################################
-## Functions which operate on the input file and node lists
-
+players = 10
+lastMarbleValue = 1618
 
 #####################################################################################
 ## Functions which operate on the node list
 
 
-########################################################################
-## This is the workhorse of this assignment
-
 
 ########################################################################
 ## Code
 
-print 'Reading in file',time.strftime('%X %x %Z')
+currentMarble = 0
+nextMarble = 0
+previousMarble = 0
 
-textList = readTextFileToList('input2.txt')
+marbleList = []
+addList = 
 
-myList = stringOfNumbersToList(textList)
+def addMarbleToList(direction):
+	
+
 

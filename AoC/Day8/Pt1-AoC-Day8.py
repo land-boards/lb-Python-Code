@@ -51,7 +51,7 @@ A--                           -----
 2044 nodes
 
 Traceback (most recent call last):
- line 98, in pushNodeAtPoint
+ line 98, in pushNodeAtPointToUnsolvedList
     currentMetaCount = myList[listOffset + 1]
 IndexError: list index out of range
 
@@ -83,90 +83,28 @@ def stringOfNumbersToList(str):
 	return theList
 
 #####################################################################################
-## Functions which operate on the input file and node lists
-
-def pushNodeAtPoint(listOffset,parentID):
-	"""pushNodeAtPoint
-	:returns: True if the node being pushed has no children
-	False if there are additional children
-	"""
-	global nodeList
-	global myList
-	endNode = False
-	currentChildCountOffset = listOffset
-	if listOffset == len(myList):
-		return True
-	currentChildCount = myList[listOffset]
-	if currentChildCount == 0:
-		currentMetaCountOffset = listOffset+2
-		endNode = True
-	else:
-		currentMetaCountOffset = -1
-	currentMetaCount = myList[listOffset + 1]
-	newNode = [currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID]
-	nodeList.append(newNode)
-	print '+',
-	return endNode
-	
-def isNodeStored(listOffset):
-	"""isNodeStored - Check to see if a node is already stored in the node list
-	Ignores the metaOffset field
-	"""
-	global nodeList
-	global myList
-	for nodeVal in nodeList:
-		if nodeVal[0] == listOffset and nodeVal[1] == myList[listOffset] and nodeVal[3] == myList[listOffset + 1]:
-			return True
-	return False
-
-#####################################################################################
 ## Functions which operate on the node list
 
-def getNode(nodeNum):
-	"""Pull the node from the node list by node number
+def getNumberOfChildrenForAnyParentBothLists(parentNodeNum):
+	"""getNumberOfChildrenForAnyParentBothLists - get the number of children populated in the unsolvedNodesList for any parent
 	"""
-	global nodeList
-	return nodeList[nodeNum]
-
-def isNodeComplete(nodeNum):
-	"""
-	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID]
-	"""
-	global nodeList
-	if nodeList[nodeNum][2] != -1:
-		return True
-	return False
-
-def getNodeCount():
-	"""getNodeCount - Get the count of the number of nodes 
-	Used to terminate loops
-	"""
-	global nodeList
-	return len(nodeList)
-	
-def getChildCount(nodeNum):
-	"""getChildCount - get the count of the children of a particular node
-	Used as a helper function to remember the name 
-	"""
-	global nodeList
-	return nodeList[nodeNum][1]
-
-def getNumberOfChildrenForAnyParent(parentNodeNum):
-	"""getNumberOfChildrenForAnyParent - get the number of children populated in the nodeList for any parent
-	"""
-	global nodeList
+	global unsolvedNodesList
+	global solvedNodesList
 	childCount = 0
-	for i in xrange(1,len(nodeList)):		# skip top of tree
-		if nodeList[i][4] == parentNodeNum:
+	for i in xrange(1,len(unsolvedNodesList)):		# skip top of tree
+		if unsolvedNodesList[i][4] == parentNodeNum:
+			childCount += 1
+	for i in xrange(0,len(solvedNodesList)):		# skip top of tree
+		if solvedNodesList[i][4] == parentNodeNum:
 			childCount += 1
 	return childCount
 
 def getLastChildWithParentNumber(parentNodeNum):
 	"""getLastChildWithParentNumber - scan the node list to find the last child that has a particular parent number
 	"""
-	global nodeList
-	for i in xrange(len(nodeList)-1, 0, -1):
-		if nodeList[i][4] == parentNodeNum:
+	global unsolvedNodesList
+	for i in xrange(len(unsolvedNodesList)-1, 0, -1):
+		if unsolvedNodesList[i][4] == parentNodeNum:
 			return i
 	return 0
 
@@ -174,56 +112,246 @@ def allChildrenAreComplete(parentNodeNum):
 	"""allChildrenAreComplete - checkes all of the children below a parent node to see if the metadata count is update
 	:returns" True if all of the children below that parent are completed
 	"""
-	global nodeList
-	for i in xrange(1,len(nodeList)):
-		if nodeList[i][4] == parentNodeNum:
-			if nodeList[i][2] == -1:
+	global unsolvedNodesList
+	for i in xrange(1,len(unsolvedNodesList)):
+		if unsolvedNodesList[i][4] == parentNodeNum:
+			if unsolvedNodesList[i][2] == -1:
 				return False
 	return True
 	
-def isTreeDone():
-	"""isTreeDone - scans the entire tree to see if all of the nodes have their metadata count updated
-	Filling the metadata count is the last step to being complete
-	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID
+def moveChildFromUnsolvedToSolvedNodesList(recNum):
 	"""
-	global nodeList
-	for record in nodeList:
-		if record[2] == -1:
-			return False
-	return True
-	
+	"""
+	global unsolvedNodesList
+	global solvedNodesList
+	#print 'moveChildFromUnsolvedToSolvedNodesList: recNum',recNum,'contents',unsolvedNodesList[recNum]
+	recordToMove = unsolvedNodesList[recNum]
+	#print 'moving record',recordToMove
+	unsolvedNodesList.remove(recordToMove)
+	solvedNodesList.append(recordToMove)
+	#print 'unsolvedNodesList',unsolvedNodesList
+	#print 'solvedNodesList',solvedNodesList
+
 def checkChildrenTree():
 	"""checkChildrenTree - scans the entire tree to see if any nodes can have their metadata count updated
-	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID]
+	unsolvedNodesList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentNodeNumber]
 	"""
-	global nodeList
+	global unsolvedNodesList
 	recNum = 0
-	for record in nodeList:
+	for record in unsolvedNodesList:
 		if record[2] == -1:
-			if getNumberOfChildrenForAnyParent(recNum) == record[1]:	# record needs filled in better
+			if getNumberOfChildrenForAnyParentBothLists(recNum) == record[1]:
 				if allChildrenAreComplete(recNum):
 					recNumLastChild = getLastChildWithParentNumber(recNum)
-					metaOffset = nodeList[recNumLastChild][2]+nodeList[recNumLastChild][3]
-					nodeList[recNum][2] = metaOffset
+					metaOffset = unsolvedNodesList[recNumLastChild][2]+unsolvedNodesList[recNumLastChild][3]
+					unsolvedNodesList[recNum][2] = metaOffset
 					print '.',
+					moveChildFromUnsolvedToSolvedNodesList(recNum)
 					return True
 		recNum += 1
 	return False
 
+def getSisterOffset(unsolvedNodesIndex):
+	"""If a node has a sister and the sister is not on the node list, then add it to the node list
+	unsolvedNodesList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentNodeNumber]
+	:returns: -1 if failed
+	otherwise offset to the start of the next record
+	"""
+	global unsolvedNodesList
+	global myList
+	nodeElement = unsolvedNodesList[unsolvedNodesIndex]
+	#print 'checkNodeForSister: nodeElement',nodeElement,
+	if nodeElement[2] == -1:	# Node itself is not resolved
+		#print 'node is not yet resolved'
+		return -1
+	nextNodeOffset = nodeElement[0] + nodeElement[2] + 1
+	#print 'nextNodeOffset',nextNodeOffset,
+	if nextNodeOffset >= len(myList):	# can't push past the end of the list
+		#print 'cant go past end of the node'
+		return -1
+	#print 'sister found'
+	return nextNodeOffset
+
+def getParentNodeNumberOfSisterAtLocation(nextOffset):
+	global unsolvedNodesList
+	global solvedNodesList
+	global myList
+	print 'getParentNodeNum...:nextOffset',nextOffset
+	for nodeVal in unsolvedNodesList:
+		if nodeVal[0] == nextOffset:
+			return nodeVal[4]
+	for nodeVal in solvedNodesList:
+		if nodeVal[0] == nextOffset:
+			return nodeVal[4]
+	print 'getParentNodeNum...: didnt find parent'
+	exit()
+
+def getChildCount(nodeNum):
+	"""getChildCount - get the count of the children of a particular node
+	Used as a helper function to remember the name 
+	"""
+	global unsolvedNodesList
+	#print 'getChildCount: with nodeNum',nodeNum,'from list',unsolvedNodesList[nodeNum][1]
+	return unsolvedNodesList[nodeNum][1]
+
+def checkNodeForSister(exampleOffset):
+	"""If a node has a sister and the sister is not on the node list, then add it to the node list
+	unsolvedNodesList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentNodeNumber]
+	:returns: -1 if failed
+	otherwise offset to the start of the next record
+	"""
+	global unsolvedNodesList
+	global myList
+	if len(unsolvedNodesList) <= exampleOffset:
+		print 'checkNodeForSister: offset too big',
+		print 'exampleOffset',exampleOffset
+		print 'len(unsolvedNodesList)',len(unsolvedNodesList)
+		exit()
+	nodeElement = unsolvedNodesList[exampleOffset]
+	#print 'checkNodeForSister: nodeElement',nodeElement,
+	if nodeElement[2] == -1:	# Node itself is not resolved
+		#print 'node is not yet resolved'
+		return False
+	nextNodeOffset = nodeElement[0] + nodeElement[2] + 1
+	#print 'nextNodeOffset',nextNodeOffset,
+	if nextNodeOffset >= len(myList):	# can't push past the end of the list
+		#print 'cant go past end of the node'
+		return False
+	#print 'sister found'
+	return True
+
+#####################################################################################
+## Functions which operate on the input file and node lists
+
+def isNodeStoredInUnsolvedNodesList(listOffset):
+	"""isNodeStoredInUnsolvedNodesList - Check to see if a node is already stored in the node list
+	Ignores the metaOffset field
+	"""
+	global unsolvedNodesList
+	global myList
+	for nodeVal in unsolvedNodesList:
+		if nodeVal[0] == listOffset and nodeVal[1] == myList[listOffset] and nodeVal[3] == myList[listOffset + 1]:
+			return True
+	return False
+
+def pushNodeAtPointToUnsolvedList(listOffset,parentNodeNumber):
+	"""pushNodeAtPointToUnsolvedList
+	:returns: True if the node being pushed has no children
+	False if there are additional children
+	"""
+	global unsolvedNodesList
+	global myList
+	global nodeNumber
+	print 'push...: pushing child @',listOffset#,'nodeNumber',nodeNumber
+	endNode = False
+	currentChildCountOffset = listOffset
+	if listOffset >= len(myList)-2:
+		return False
+	currentChildCount = myList[listOffset]
+	if currentChildCount == 0:
+		currentMetaCountOffset = listOffset+2
+		endNode = True
+	else:
+		currentMetaCountOffset = -1
+	currentMetaCount = myList[listOffset + 1]
+	newNode = [currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentNodeNumber,nodeNumber]
+	unsolvedNodesList.append(newNode)
+	nodeNumber = nodeNumber + 1
+	#print 'nodeNumber',nodeNumber
+	#print '+',
+	#print 'unsolvedNodesList',unsolvedNodesList
+	return endNode
+	
+def countSolvedNodesWithParentID(parentID):
+	global solvedNodesList
+	matchCount = 0
+	for record in solvedNodesList:
+		if record[4] == parentID:
+			matchCount += 1
+	#print 'countSolvedNodesWithParentID: lookiung for parentID',parentID,'matchCount =',matchCount
+	return matchCount
+
+def checkNodeForComplete(nodeToCheck):
+	global unsolvedNodesList
+	#print 'checkNodeForComplete: @',nodeToCheck,'val',
+	if unsolvedNodesList[nodeToCheck][2] != -1:
+		#print 'true'
+		return True
+	else:
+		#print 'false'
+		return False
+	
+def isChildInEitherList(listOffset):
+	"""isNodeStoredInUnsolvedNodesList - Check to see if a node is already stored in either node list
+	Ignores the metaOffset field
+	"""
+	global unsolvedNodesList
+	global solvedNodesList
+	global myList
+	#print 'isChildInEitherList: listOffset',listOffset,
+	for nodeVal in unsolvedNodesList:
+		if nodeVal[0] == listOffset:
+			#print 'in unsolved list'
+			return True
+	for nodeVal in solvedNodesList:
+		if nodeVal[0] == listOffset:
+			#print 'in solved list'
+			return True
+	#print 'in neither list'
+	return False
+
 def dumpNodes():
 	"""dumpNodes - print out a dump of the nodes
-	Format is: chOff,chCt,metaOff,metaCt,parentID
+	Format is: chOff,chCt,metaOff,metaCt,parentNodeNumber
 	chOff is the offset of the node itself
 	chCt is the count of the children from this node
 	metaOff is the offset to the start of the metadata
 	metaCt is the count of metadata elements
-	parentID is the ID of the parent to this node
+	parentNodeNumber is the ID of the parent to this node
 	"""
-	global nodeList
-	print 'dumpNodes: length of nodes',len(nodeList)
-	for node in nodeList:
-		print '[chOff,chCt,metaOff,metaCt,parentID] =',
+	global solvedNodesList
+	print 'dumpNodes: length of nodes',len(solvedNodesList)
+	print 'solved list'
+	for node in solvedNodesList:
+		print '[chOff,chCt,metaOff,metaCt,parentNodeNumber] =',
 		print node
+	print 'unsolved list'
+	for node in unsolvedNodesList:
+		print '[chOff,chCt,metaOff,metaCt,parentNodeNumber] =',
+		print node
+
+def findLastChildEndOffset(listItemNum):
+	"""
+	Format is: chOff,chCt,metaOff,metaCt,parentNodeNumber
+	
+	0 0 0 0  0  0  0 0 0 0 0  1 1 1 1 1
+	0 1 2 3  4  5  6 7 8 9 0  1 2 3 4 5
+	
+	2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2
+	A----------------------------------
+        B----------- C-----------
+                         D-----
+	"""
+	print '\nfindLastChildEndOffset: listItemNum',listItemNum
+	print 'findLastChildEndOffset: looking for children in solved list with me as parent in list'
+	print unsolvedNodesList[listItemNum]
+	print 'findLastChildEndOffset:\nsolvedNodesList'
+	for myItem in unsolvedNodesList:
+		print myItem
+	myID = unsolvedNodesList[listItemNum][5]
+	print 'myID',myID
+	maxVal = 0
+	matchingItem = []
+	for item in solvedNodesList:
+		if item[4] == myID and item[0] != 0:
+			if item[0] > maxVal:
+				maxVal = item[0]
+				matchingItem = item
+	print 'maxVal',maxVal
+	print 'matchingItem[]',matchingItem
+	newOff = matchingItem[2] + matchingItem[3]
+	print 'newOff',newOff,'\n'
+	return newOff
 
 ########################################################################
 ## This is the workhorse of this assignment
@@ -234,54 +362,80 @@ def scanTree():
 	This is a nested mess
 	It works with the data set but seems way to slow to be practical for real use
 	Solution is pure brute force
-	calling function primes pushNodeAtPoint() for the first node
+	calling function primes pushNodeAtPointToUnsolvedList() for the first node
 	"""
-	global nodeList
-	continueLooping = True
-	checkNodeNumber = 0
-	while continueLooping:
-		continueLooping = False
-		nodeOffset = 0
-		if getChildCount(checkNodeNumber) > 0:
-			nodeVect = getNode(checkNodeNumber)
-			nodeOffset = nodeVect[0] + 2
-			if not isNodeStored(nodeOffset):
-				continueLooping = True
-				if pushNodeAtPoint(nodeOffset,checkNodeNumber): # last point was an endpoint
-					while checkChildrenTree():
-						continue
-					if isTreeDone() == True:
-						return
-					lastNode = getNode(checkNodeNumber+1)
-					pushNodeAtPoint(lastNode[2]+lastNode[3],checkNodeNumber)
-					while checkChildrenTree():
-						continue
-					if isTreeDone() == True:
-						return
-		checkNodeNumber += 1
-		if checkNodeNumber == len(nodeList):
-			checkNodeNumber = 0		
-		else:
-			continueLooping = True
+	global unsolvedNodesList
+	global solvedNodesList
+	while len(unsolvedNodesList) > 0:
+		didSomethingInEntireList = False
+		for unsolvedNodesIndex in xrange(len(unsolvedNodesList)):
+			didSomethingInThisPass = True
+			#print 'scanTree: u-s-Index',unsolvedNodesIndex
+			if checkNodeForSister(unsolvedNodesIndex) and (isChildInEitherList(getSisterOffset(unsolvedNodesIndex)) == False):
+				nextOffset = getSisterOffset(unsolvedNodesIndex)
+				print 'scanTree: pushing sister node at',nextOffset,'to unsolved list',
+				parentNodeNumber = unsolvedNodesList[unsolvedNodesIndex][4]
+				print 'sisters parent ID is',parentNodeNumber
+				pushNodeAtPointToUnsolvedList(nextOffset,parentNodeNumber)
+				while checkChildrenTree():
+					continue
+			elif getChildCount(unsolvedNodesIndex) == 0:
+				#print 'scanTree: node has no children so move it to the solved list'
+				moveChildFromUnsolvedToSolvedNodesList(unsolvedNodesIndex)
+			elif getChildCount(unsolvedNodesIndex) == countSolvedNodesWithParentID(unsolvedNodesList[unsolvedNodesIndex][5]):
+				#print 'scanTree: moving node from unsolved to solved list',unsolvedNodesList[unsolvedNodesIndex]
+				unsolvedNodesList[unsolvedNodesIndex][2] = findLastChildEndOffset(unsolvedNodesIndex)
+				#print 'end',unsolvedNodesList[unsolvedNodesIndex][2]
+				moveChildFromUnsolvedToSolvedNodesList(unsolvedNodesIndex)					
+			elif checkNodeForComplete(unsolvedNodesIndex) == True:
+				#print 'scanTree: moving another solved one over to solved list',
+				moveChildFromUnsolvedToSolvedNodesList(unsolvedNodesIndex)					
+			elif not isChildInEitherList(unsolvedNodesList[unsolvedNodesIndex][0] + 2):
+				print 'scanTree: pushing new child to unsolved list',
+				countTimesThrough = 0
+				parentNodeNumber = unsolvedNodesList[unsolvedNodesIndex][5]
+				print 'parent is',parentNodeNumber,'from',unsolvedNodesList[unsolvedNodesIndex]
+				pushNodeAtPointToUnsolvedList(unsolvedNodesList[unsolvedNodesIndex][0] + 2,parentNodeNumber) # last point was an endpoint
+				while checkChildrenTree():
+					continue
+			else:
+				#print 'did nothing in this pass'
+				didSomethingInThisPass = False
+			if didSomethingInThisPass:
+				#print 'did someting in this pass'
+				didSomethingInEntireList = True
+				break
+		if not didSomethingInEntireList:
+			print 'finished the list except for',unsolvedNodesList
+			print 'solved',solvedNodesList,'\n\n'
+			unsolvedNodesList[0][2] = findLastChildEndOffset(0)
+			print 'end',unsolvedNodesList[0][2]
+			moveChildFromUnsolvedToSolvedNodesList(0)					
+			return
+	print 'wtf'
+	return
+		
 
 ########################################################################
 ## Code
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readTextFileToList('input.txt')
+textList = readTextFileToList('input2.txt')
 
 myList = stringOfNumbersToList(textList)
 
-nodeList = []
-listOffset = 0
-listLength = len(myList)
+nodeNumber = 0
 
-pushNodeAtPoint(listOffset,0)	# prime with the first node
+unsolvedNodesList = []
+pushNodeAtPointToUnsolvedList(0,0)	# prime with the first node
+
+solvedNodesList = []
 
 print 'Scanning Tree',time.strftime('%X %x %Z')
 
 scanTree()
+solvedNodesList = sorted(solvedNodesList, key = lambda errs: errs[5])
 
 print 'Done scanning tree',time.strftime('%X %x %Z')
 
@@ -291,7 +445,7 @@ dumpNodes()
 print 'Accumulate sums',time.strftime('%X %x %Z')
 
 accumMetaRecLens = 0
-for node in nodeList:
+for node in solvedNodesList:
 	startSpan = node[2]
 	endSpan = node[2] + node[3]
 	while(startSpan < endSpan):
