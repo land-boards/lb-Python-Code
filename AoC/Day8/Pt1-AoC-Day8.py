@@ -193,6 +193,7 @@ def checkChildrenTree():
 	"""checkChildrenTree - scans the entire tree to see if any nodes can have their metadata count updated
 	nodeList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentID]
 	"""
+	global nodeList
 	recNum = 0
 	for record in nodeList:
 		#print 'checkChildrenTree: record',record
