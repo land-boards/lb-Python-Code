@@ -269,7 +269,7 @@ def scanTree():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readTextFileToList('input2.txt')
+textList = readTextFileToList('input.txt')
 
 myList = stringOfNumbersToList(textList)
 
