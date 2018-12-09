@@ -161,18 +161,6 @@ def getLastChildWithParent(parentNodeNum):
 			recToReturn = record
 	return recToReturn
 
-# def getLastChildWithParentNumber(parentNodeNum):
-	# """getLastChildWithParentNumber - scan the node list to find the last child that has a particular parent number
-	# """
-	# global nodeList
-	# offsetNum = 1
-	# valToReturn = 0
-	# for i in xrange(1,len(nodeList)):
-		# if nodeList[i][4] == parentNodeNum:
-			# valToReturn = offsetNum
-		# offsetNum += 1
-	# return valToReturn
-	
 def getLastChildWithParentNumber(parentNodeNum):
 	"""getLastChildWithParentNumber - scan the node list to find the last child that has a particular parent number
 	"""
@@ -237,7 +225,6 @@ def dumpNodes():
 	for node in nodeList:
 		print '[chOff,chCt,metaOff,metaCt,parentID] =',
 		print node
-	#print 'done dumpNodes'
 
 ########################################################################
 ## This is the workhorse of this assignment
@@ -272,11 +259,7 @@ def scanTree():
 					if isTreeDone() == True:
 						return
 		checkNodeNumber += 1
-		while checkChildrenTree():
-			continue
-		if isTreeDone():
-			return
-		if checkNodeNumber == getNodeCount():
+		if checkNodeNumber == len(nodeList):
 			checkNodeNumber = 0		
 		else:
 			continueLooping = True
@@ -287,19 +270,12 @@ def scanTree():
 print 'Reading in file',time.strftime('%X %x %Z')
 
 textList = readTextFileToList('input.txt')
-#print textList
 
 myList = stringOfNumbersToList(textList)
-#print 'main:',myList
 
 nodeList = []
-
 listOffset = 0
 listLength = len(myList)
-#print 'main: listLength',listLength
-
-# streamStates = ['qtyChildren','qtyMetadata']
-# streamState = 'qtyChildren'
 
 pushNodeAtPoint(listOffset,0)	# prime with the first node
 
