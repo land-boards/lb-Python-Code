@@ -159,12 +159,28 @@ def countSolvedNodesWithParentID(parentID):
 	"""
 	[listOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentNodeNumber,nodeNumber]
 	"""
+	debug_countSolvedNodesWithParentID = True
 	global solvedNodesList
 	matchCount = 0
 	for record in solvedNodesList:
 		if record[parentNum] == parentID:
 			matchCount += 1
-	#print 'countSolvedNodesWithParentID: lookiung for parentID',parentID,'matchCount =',matchCount
+	if debug_countSolvedNodesWithParentID:
+		print 'countSolvedNodesWithParentID: nodes with parentID',parentID,'Count =',matchCount
+	return matchCount
+
+def countUnsolvedNodesWithParentID(parentID):
+	"""
+	[listOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentNodeNumber,nodeNumber]
+	"""
+	debug_countUnsolvedNodesWithParentID = True
+	global unsolvedNodesList
+	matchCount = 0
+	for record in unsolvedNodesList:
+		if record[parentNum] == parentID:
+			matchCount += 1
+	if debug_countUnsolvedNodesWithParentID:
+		print 'countUnsolvedNodesWithParentID: looking for parentID',parentID,'matchCount =',matchCount
 	return matchCount
 
 def checkNodeForComplete(nodeToCheck):
@@ -262,19 +278,27 @@ def getSisterOffset(unsolvedNodesIndex):
 	:returns: -1 if failed
 	otherwise offset to the start of the next record
 	"""
+	debug_getSisterOffset = True
 	global unsolvedNodesList
 	global myList
-	nodeElement = unsolvedNodesList[unsolvedNodesIndex]
-	#print 'checkNodeForSister: nodeElement',nodeElement,
-	if nodeElement[currentMtOff] == -1:	# Node itself is not resolved
-		#print 'node is not yet resolved'
-		return -1
-	nextNodeOffset = nodeElement[intFileListOff] + nodeElement[currentMtOff] + 1
-	#print 'nextNodeOffset',nextNodeOffset,
+	if debug_getSisterOffset:
+		print 'getSisterOffset: nodeElement',unsolvedNodesList[unsolvedNodesIndex][nodeNum],
+	# if nodeElement[currentMtOff] == -1:	# Node itself is not resolved
+		# #print 'node is not yet resolved'
+		# return -1
+	if debug_getSisterOffset:
+		print 'solved dau',countSolvedNodesWithParentID(unsolvedNodesIndex),
+		print 'unsolved dau',countUnsolvedNodesWithParentID(unsolvedNodesIndex),
+		print 'total children',unsolvedNodesList[unsolvedNodesIndex][currentChCt]
+	nextNodeOffset = unsolvedNodesList[unsolvedNodesIndex][intFileListOff] + unsolvedNodesList[unsolvedNodesIndex][currentMtOff] + 1
+	if debug_getSisterOffset:
+		print 'nextNodeOffset',nextNodeOffset,
 	if nextNodeOffset >= len(myList):	# can't push past the end of the list
-		#print 'cant go past end of the node'
+		if debug_getSisterOffset:
+			print 'cant go past end of the node'
 		return -1
-	#print 'sister found'
+	if debug_getSisterOffset:
+		print 'sister found'
 	return nextNodeOffset
 
 def checkNodeForSister(exampleOffset):
@@ -283,7 +307,7 @@ def checkNodeForSister(exampleOffset):
 	:returns: False if failed
 	otherwise True
 	"""
-	debug_checkNodeForSister = True
+	debug_checkNodeForSister = False
 	global unsolvedNodesList
 	global myList
 	if debug_checkNodeForSister:
@@ -294,6 +318,12 @@ def checkNodeForSister(exampleOffset):
 			print 'exampleOffset',exampleOffset
 			print 'len(unsolvedNodesList)',len(unsolvedNodesList)
 		exit()
+	if debug_checkNodeForSister:
+		print 'solved dau',countSolvedNodesWithParentID(exampleOffset),
+		print 'unsolved dau',countUnsolvedNodesWithParentID(exampleOffset),
+		print 'total children',unsolvedNodesList[exampleOffset][currentChCt]
+	if (countSolvedNodesWithParentID(exampleOffset) + countUnsolvedNodesWithParentID(exampleOffset)) < unsolvedNodesList[exampleOffset][currentChCt]:
+		return True
 	if unsolvedNodesList[exampleOffset][currentMtOff] == -1:	# Node itself is not resolved
 		if debug_checkNodeForSister:
 			print 'node is not yet resolved'
