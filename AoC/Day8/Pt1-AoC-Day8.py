@@ -208,7 +208,7 @@ class NodeFunctions():
 		global currentNodeNumber
 		global inputList
 		global inFileListOff
-		debug_createChildNodes = True
+		debug_createChildNodes = False
 		currNodeNum = self.getCurrentNodeNumber()
 		if debug_createChildNodes:
 			print 'createChildNodes: currNodeNum',currNodeNum
@@ -318,11 +318,17 @@ class NodeFunctions():
 					print 'processKids: next node number',currentNodeNumber
 			elif nodeVec[NUMOFKIDS] > 0:		# initialize kids
 				self.createChildNodes()
-				print 'processKids: created kids'
-				self.incrementCurrentNodeNumber()
+				if debug_processKids:
+					print 'processKids: created kids'
+				self.incrementCurrentNodeNumber()	# step down to the first kid
 				return True
+			elif nodeVec[NUMOFKIDS] == -1:
+				if debug_processKids:
+					print 'processKids: * * * * not sure if the node has kids or not'
+				return False
 			else:
-				print 'processKids: need to do stuff with number of kids'
+				if debug_processKids:
+					print 'processKids: need to do stuff with number of kids'
 				exit()
 			return True
 		else:
@@ -335,19 +341,21 @@ class NodeFunctions():
 		global currentNodeNumber
 		global nodeList
 		debug_checkKidsDone = True
-		if debug_checkKidsDone:
-			print 'checkKidsDone: current node number',currentNodeNumber
 		daughterDoneNodeNum = nodeList[currentNodeNumber][CURRCHNUM]
 		if debug_checkKidsDone:
+			print 'checkKidsDone: current node number',currentNodeNumber
 			print 'checkKidsDone: daughter node current node list number',daughterDoneNodeNum
-		if debug_checkKidsDone:
 			print 'checkKidsDone: daughter done? ',nodeList[daughterDoneNodeNum][NODECOMPL]
-		if nodeList[currentNodeNumber][NODECOMPL] == False:
+		if nodeList[currentNodeNumber][NODECOMPL] == False and nodeList[daughterDoneNodeNum][RTNODENUM] != -1:
 			nodeList[currentNodeNumber][CURRCHNUM] = nodeList[daughterDoneNodeNum][RTNODENUM]
+			currentNodeNumber = nodeList[daughterDoneNodeNum][RTNODENUM]
 			if debug_checkKidsDone:
 				print 'checkKidsDone: Need to advance node to next node to right of dau'
 				print 'checkKidsDone: node to right is',nodeList[currentNodeNumber][CURRCHNUM]
 			return True
+		elif nodeList[daughterDoneNodeNum][RTNODENUM] == -1:
+			print 'checkKidsDone:  NEEEEEEEEEEEDDDDDDD DDDONNEEE'
+			return False
 		return False
 	
 	def processNode(self):
@@ -360,16 +368,18 @@ class NodeFunctions():
 		nodeNumber = currentNodeNumber
 		debug_processNode = True
 		nodeVec = nodeList[nodeNumber]
+		atLeastOneNodeDidSomething = False
 		if debug_processNode:
 			print 'processNode: nodeNumber',nodeNumber,'vector',nodeVec
 		if self.processKids() == True:
 			print 'processNode: back from processKids'
-			return True
+			atLeastOneNodeDidSomething = True
 		if self.checkKidsDone() == True:
-			print 'processNode: Did something with a kid'
-			return True
-		print 'processNode: Exiting because nothing happened'
-		return False
+			print 'processNode: completed checkKidsDone'
+			atLeastOneNodeDidSomething = True
+		if not atLeastOneNodeDidSomething:
+			print 'processNode: Exiting because nothing happened'
+		return atLeastOneNodeDidSomething
 		
 	def dumpAllNodeVals(self):
 		i = 0
