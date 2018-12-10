@@ -68,15 +68,17 @@ class filer():
 	
 	def loadListFromFile(self,filename):
 		global inputList
+		debug_loadListFromFile = False
 		inFileString = self.readTextFileToList(filename)
 		self.stringOfNumbersToList(inFileString)
 		inFileListOff = 0
-		print 'Input File Length =',len(inputList)
+		if debug_loadListFromFile:
+			print 'loadListFromFile: Input File Length =',len(inputList)
 
 	def getNextNodeFromList(self):
 		global inputList
 		global inFileListOff
-		debug_getNextNodeFromList = True
+		debug_getNextNodeFromList = False
 		if debug_getNextNodeFromList:
 			print 'getNextNodeFromList: getting next node'
 		nextNode = [inputList[inFileListOff],inputList[inFileListOff+1]]
@@ -128,8 +130,67 @@ FILEOFFST = 7
 class NodeFunctions():
 	
 	
-	def createChildList(self):
+	def createChildNodes(self):
+		"""createChildnewNodes - Add the child newNodes to the newNodes list
+		"""
+		global nodeList
+		global currentNodeNumber
+		global inputList
+		global inFileListOff
+		debug_createChildNodes = True
+		currNodeNum = self.getCurrentNodeNumber()
+		if debug_createChildNodes:
+			print 'createChildNodes: currNodeNum',currNodeNum
+		currentNodeVec = nodeList[currNodeNum]
+		if debug_createChildNodes:
+			print 'createChildNodes: currentNodeVec',currentNodeVec
+		numberOfKids = currentNodeVec[NUMOFKIDS]
+		if debug_createChildNodes:
+			print 'createChildNodes: numberOfKids',numberOfKids
+		if not (numberOfKids > 0):
+			print 'ERROR - createChildnewNodes called with bad child count'
+			self.dumpAllNodeVals()
+			exit()
+		i = 1
+		rootNodeFileOffset = currentNodeVec[FILEOFFST]
+		while i < (numberOfKids+1):
+			newNode = [0,0,0,0,0,0,0,0]
+			# if debug_createChildNodes:
+				# print 'newNode',newNode
+			newNode[UPNODENUM] = currNodeNum
+			newNode[DNNODENUM] = -2
+			nodeList[currNodeNum][DNNODENUM] = currNodeNum + 1
+			newNode[METAOFFST] = -2
+			newNode[METALENGTH] = -1
+			newNode[RTNODENUM] = currNodeNum + i
+			newNode[LFNODENUM] = i - 1
+			newNode[FILEOFFST] = rootNodeFileOffset + (2*i)
+			newNode[NUMOFKIDS] = -1
+			if i == 1:
+				if debug_createChildNodes:
+					print 'createChildNodes: pushed first child'
+				newNode[NUMOFKIDS] = inputList[inFileListOff]  # children count are known
+				newNode[LFNODENUM] = -1
+			elif i == numberOfKids:
+				if debug_createChildNodes:
+					print 'createChildNodes: pushed last child'
+				newNode[RTNODENUM] = -1
+			else:
+				if debug_createChildNodes:
+					print 'createChildNodes: pushed middle child'
+				newNode[LFNODENUM] = i - 1
+				newNode[RTNODENUM] = -1
+			if debug_createChildNodes:
+				print 'newNode',newNode
+			self.pushNode(newNode)
+			i += 1
 		return
+
+	def pushNode(self,node):
+		"""pushNode - 
+		"""
+		global nodeList
+		nodeList.append(node)		
 		
 	def addFirstNode(self,firstNode,inFileOffset):
 		"""addFirstNode - add the first node
@@ -143,7 +204,7 @@ class NodeFunctions():
 		"""
 		global nodeList
 		global currentNodeNumber
-		debug_getNextNodeFromList = True
+		debug_getNextNodeFromList = False
 		currentNodeNumber = 0
 		node = [0,0,0,0,0,0,0,0]
 		node[UPNODENUM] = -1
@@ -153,8 +214,8 @@ class NodeFunctions():
 		node[NUMOFKIDS] = firstNode[0]
 		node[METAOFFST] = -2
 		node[METALENGTH] = firstNode[1]
-		node[FILEOFFST] = inFileOffset
-		nodeList.append(node)
+		node[FILEOFFST] = inFileOffset - 2
+		self.pushNode(node)
 		if debug_getNextNodeFromList:
 			print 'Added first node',node
 		return
@@ -163,10 +224,30 @@ class NodeFunctions():
 		"""processNode(nodeNumber) - Process the node
 
 		:param nodeNumber: The number of the current node
-		
+		:returns: True
 		"""
-		return False
+		debug_processNode = True
+		# if debug_processNode:
+			# self.dumpNodeVals(nodeNumber)
+		nodeVec = nodeList[nodeNumber]
+		if nodeVec[DNNODENUM] == -2:			# uninitialized down pointer
+			if nodeVec[NUMOFKIDS] == 0:			# node has no children
+				nodeVec[DNNODENUM] = -1		# node is an endpoint down
+			else:	# initialize kids
+				self.createChildNodes()
+		else:
+			return False	# fill in as I go along
+		return True
 		
+	def dumpAllNodeVals(self):
+		i = 0
+		print 'Dump of entire node table'
+		print 'node,[UP,DN,LEFT,RIGHT,KIDS,METAOFF,METALEN,FILEOFF]'
+		while i < len(nodeList):
+			print i,nodeList[i]
+#			self.dumpNodeVals(i)
+			i += 1
+	
 	def dumpNodeVals(self,nodeNumber):
 		"""dumpNodeVals
 		
@@ -201,11 +282,19 @@ class NodeFunctions():
 			exit()
 		else:
 			print ' Sister node to the right',nodeVec[RTNODENUM]
+		if nodeVec[NUMOFKIDS] == 0:
+			print ' Node has no children'
+		else:
+			print ' Node has',nodeVec[NUMOFKIDS],'children'
+		if nodeVec[METAOFFST] == -2:
+			print ' Metadata offset is not yet known'
+		else:
+			print ' Metadata offset',nodeVec[METAOFFST]
+		print ' Metadata offset',nodeVec[FILEOFFST]
 
-			
-
-def getCurrentNodeNumber():
-	return currentNodeNumber
+	def getCurrentNodeNumber(self):
+		global currentNodeNumber
+		return currentNodeNumber
 	
 ########################################################################
 ## Code
@@ -219,16 +308,16 @@ InputListHandler.loadListFromFile(inFileName)
 
 NodeHandler = NodeFunctions()
 firstNode = InputListHandler.getNextNodeFromList()
-print 'firstNode is',firstNode
+#print 'firstNode is',firstNode
 
 inFileOff = InputListHandler.getFileOffset()	# should return 0
 NodeHandler.addFirstNode(firstNode,inFileOff)
-NodeHandler.dumpNodeVals(getCurrentNodeNumber())
+#print 'node',NodeHandler.getCurrentNodeNumber()
 
 while True:
 	inFileOff = InputListHandler.getFileOffset()
-	currentNode = getCurrentNodeNumber()
-	if not NodeHandler.processNode(inFileOff):
+	currentNodeNumber = NodeHandler.getCurrentNodeNumber()
+	if not NodeHandler.processNode(currentNodeNumber):
 		break
 
-print 'done'
+print 'done', NodeHandler.dumpAllNodeVals()
