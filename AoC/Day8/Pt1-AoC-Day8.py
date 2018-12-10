@@ -101,8 +101,10 @@ def getChildCount(nodeNum):
 	"""getChildCount - get the count of the children of a particular node
 	Used as a helper function to remember the name 
 	"""
+	debug_getChildCount = False
 	global unsolvedNodesList
-	#print 'getChildCount: with nodeNum',nodeNum,'from list',unsolvedNodesList[nodeNum][currentChCt]
+	if debug_getChildCount:
+		print 'getChildCount: with nodeNum',nodeNum,'from list',unsolvedNodesList[nodeNum][currentChCt]
 	return unsolvedNodesList[nodeNum][currentChCt]
 
 #####################################################################################
@@ -159,7 +161,7 @@ def countSolvedNodesWithParentID(parentID):
 	"""
 	[listOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentNodeNumber,nodeNumber]
 	"""
-	debug_countSolvedNodesWithParentID = True
+	debug_countSolvedNodesWithParentID = False
 	global solvedNodesList
 	matchCount = 0
 	for record in solvedNodesList:
@@ -173,7 +175,7 @@ def countUnsolvedNodesWithParentID(parentID):
 	"""
 	[listOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentNodeNumber,nodeNumber]
 	"""
-	debug_countUnsolvedNodesWithParentID = True
+	debug_countUnsolvedNodesWithParentID = False
 	global unsolvedNodesList
 	matchCount = 0
 	for record in unsolvedNodesList:
@@ -278,7 +280,7 @@ def getSisterOffset(unsolvedNodesIndex):
 	:returns: -1 if failed
 	otherwise offset to the start of the next record
 	"""
-	debug_getSisterOffset = True
+	debug_getSisterOffset = False
 	global unsolvedNodesList
 	global myList
 	if debug_getSisterOffset:
@@ -302,7 +304,7 @@ def getSisterOffset(unsolvedNodesIndex):
 	return nextNodeOffset
 
 def checkNodeForSister(exampleOffset):
-	"""If a node has a sister and the sister is not on the node list, then add it to the node list
+	"""If a node has a sister
 	unsolvedNodesList format is -[currentChildCountOffset,currentChildCount,currentMetaCountOffset,currentMetaCount,parentNodeNumber]
 	:returns: False if failed
 	otherwise True
@@ -339,6 +341,61 @@ def checkNodeForSister(exampleOffset):
 		print 'sister found'
 	return True
 
+def findMaxSisterOff(nodeToFind):
+	print 'nodeToFindParent',nodeToFind
+	maxOff = 0
+	for myNodes in unsolvedNodesList:
+		if myNodes[parentNum] == nodeToFind[parentNum]:
+			if myNodes[intFileListOff] > maxOff:
+				maxOff = myNodes[intFileListOff]
+	print 'retval=',maxOff+2
+	exit()
+
+def sisterSolution(unsolvedNodesIndex):
+	"""
+	"""
+	global unsolvedNodesList
+	global solvedNodesList
+	debug_sisterSolution = True
+	# if unsolvedNodesList[unsolvedNodesIndex][nodeNum] >= 106:
+		# debug_sisterSolution = True
+	if debug_sisterSolution:
+		print 'sisterSolution: vect',unsolvedNodesList[unsolvedNodesIndex],
+	if unsolvedNodesList[unsolvedNodesIndex][nodeNum] == 0:
+		if debug_sisterSolution:
+			print 'node 0 is a special case'
+		return False
+	if checkNodeForSister(unsolvedNodesIndex):
+		if debug_sisterSolution:
+			print 'node has a sister, parentID',unsolvedNodesList[unsolvedNodesIndex][parentNum]
+		maxSisterOffset = findMaxSisterOff(unsolvedNodesList[unsolvedNodesIndex])
+		
+		if isChildInEitherList(getSisterOffset(unsolvedNodesIndex)) == False:
+			nextOffset = getSisterOffset(unsolvedNodesIndex)
+			parentNodeNumber = unsolvedNodesList[unsolvedNodesIndex][parentNum]
+			if debug_sisterSolution:
+				print 'sisterSolution: pushing sister node at',nextOffset,'to unsolved list'
+				print 'sisterSolution: sisters parent ID is',parentNodeNumber,
+			pushNodeAtPointToUnsolvedList(nextOffset,parentNodeNumber)
+			if debug_sisterSolution:
+				print 'returns True'
+			return True
+		else:
+			pass
+			if debug_sisterSolution:
+				print 'isChildInEitherList returned', False
+	if debug_sisterSolution:
+		print 'returns False'
+	return False
+	
+def doneNodesSolution(unsolvedNodesIndex):
+	if getChildCount(unsolvedNodesIndex) == 0:
+		#print 'scanTree: node has no children so move it to the solved list'
+		moveChildFromUnsolvedToSolvedNodesList(unsolvedNodesIndex)
+		return True
+	else:
+		return False
+	
 ########################################################################
 ## This is the workhorse of this assignment
 
@@ -358,22 +415,11 @@ def scanTree():
 		didSomethingInEntireList = False
 		for unsolvedNodesIndex in xrange(len(unsolvedNodesList)):
 			didSomethingInThisPass = True
-			if checkNodeForSister(unsolvedNodesIndex) and (isChildInEitherList(getSisterOffset(unsolvedNodesIndex)) == False):
-				nextOffset = getSisterOffset(unsolvedNodesIndex)
-				#print 'scanTree: pushing sister node at',nextOffset,'to unsolved list',
-				parentNodeNumber = unsolvedNodesList[unsolvedNodesIndex][parentNum]
-				#print 'sisters parent ID is',parentNodeNumber
-				pushNodeAtPointToUnsolvedList(nextOffset,parentNodeNumber)
 			#print 'scanTree: u-s-Index',unsolvedNodesIndex
-			elif checkNodeForSister(unsolvedNodesIndex) and (isChildInEitherList(getSisterOffset(unsolvedNodesIndex)) == False):
-				nextOffset = getSisterOffset(unsolvedNodesIndex)
-				#print 'scanTree: pushing sister node at',nextOffset,'to unsolved list',
-				parentNodeNumber = unsolvedNodesList[unsolvedNodesIndex][parentNum]
-				#print 'sisters parent ID is',parentNodeNumber
-				pushNodeAtPointToUnsolvedList(nextOffset,parentNodeNumber)
-			elif getChildCount(unsolvedNodesIndex) == 0:
-				#print 'scanTree: node has no children so move it to the solved list'
-				moveChildFromUnsolvedToSolvedNodesList(unsolvedNodesIndex)
+			if sisterSolution(unsolvedNodesIndex):
+				pass
+			elif doneNodesSolution(unsolvedNodesIndex):
+				pass
 			elif getChildCount(unsolvedNodesIndex) == countSolvedNodesWithParentID(unsolvedNodesList[unsolvedNodesIndex][nodeNum]):
 				#print 'scanTree: moving node from unsolved to solved list',unsolvedNodesList[unsolvedNodesIndex]
 				#print 'scanTree: getChildCount(unsolvedNodesIndex)',getChildCount(unsolvedNodesIndex)
@@ -423,7 +469,7 @@ currentMtCt = 3
 parentNum = 4
 nodeNum = 5
 
-textList = readTextFileToList('input.txt')
+textList = readTextFileToList('input2.txt')
 
 myList = stringOfNumbersToList(textList)
 print 'length of input file',len(myList)
