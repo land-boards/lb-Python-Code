@@ -144,8 +144,7 @@ class NodeFunctions():
 		debug_dumpNodeVals = True
 		print 'Dump of node Number',nodeNumber
 		if nodeNumber > len(nodeList) - 1:
-			print 'dumpNodeVals: ERROR - Offset is not in list, exiting...'
-			exit()
+			abbyTerminate('dumpNodeVals: Offset is not in list, exiting...')
 		nodeVec = nodeList[nodeNumber]
 		if nodeVec[UPNODENUM] == DONE:
 			print ' This is node 0'
@@ -166,8 +165,7 @@ class NodeFunctions():
 		if nodeVec[RTNODENUM] == DONE:
 			print ' No sister to the right'
 		elif nodeVec[RTNODENUM] == UNINIT:
-			print 'ERROR - uninitialized sister node - should never happen'
-			exit()
+			abbyTerminate('ERROR - dumpNodeVals: uninitialized sister node - should never happen')
 		else:
 			print ' Sister node to the right',nodeVec[RTNODENUM]
 		if nodeVec[NUMOFKIDS] == 0:
@@ -206,7 +204,7 @@ class NodeFunctions():
 		global currentNodeNumber
 		currentNodeNumber += 1
 		
-	def createChildNodes(self):
+	def createChildNode(self):
 		"""createChildnewNodes - Add the child newNodes to the newNodes list
 
 		0 0 0 0  0  0  0 0 0 0 1  1 1 1 1 1
@@ -220,64 +218,40 @@ class NodeFunctions():
 		global nodeList
 		global currentNodeNumber
 		global inputList
-		debug_createChildNodes = False
-		if debug_createChildNodes:
+		debug_createChildNode = True
+		if debug_createChildNode:
 			print '.',
 		currNodeNum = self.getCurrentNodeNumber()
-		if debug_createChildNodes:
-			print 'createChildNodes: currNodeNum',currNodeNum
+		if debug_createChildNode:
+			print 'createChildNode: currNodeNum',currNodeNum
 		currentNodeVec = nodeList[currNodeNum]
-		if debug_createChildNodes:
-			print 'createChildNodes: currentNodeVec',currentNodeVec
+		if debug_createChildNode:
+			print 'createChildNode: currentNodeVec',currentNodeVec
 		numberOfKids = currentNodeVec[NUMOFKIDS]
-		if debug_createChildNodes:
-			print 'createChildNodes: numberOfKids',numberOfKids
+		if debug_createChildNode:
+			print 'createChildNode: numberOfKids',numberOfKids
 		if not (numberOfKids > 0):
-			print 'ERROR - createChildnewNodes called with bad child count'
-#			self.dumpAllNodeVals()
-			exit()
-		i = 1
-		rootNodeFileOffset = currentNodeVec[FILEOFFST]
-		while i < (numberOfKids+1):
-			newNode = [0,0,0,0,0,0,0,0,0,0,0]
-			# if debug_createChildNodes:
-				# print 'newNode',newNode
-			newNode[UPNODENUM] = currNodeNum
-			newNode[DNNODENUM] = UNINIT
-			nodeList[currNodeNum][DNNODENUM] = currNodeNum + 1
-			newNode[METAOFFST] = UNINIT
-			newNode[METALENGTH] = inputList[rootNodeFileOffset + (2*i) + 1]
-			newNode[RTNODENUM] = currNodeNum + i + 1
-			newNode[LFNODENUM] = i - 1
-			newNode[FILEOFFST] = rootNodeFileOffset + (2*i)
-			newNode[NUMOFKIDS] = inputList[rootNodeFileOffset + (2*i)]
-			newNode[NODECOMPL] = False
-			newNode[CURRCHWIP] = True
-			newNode[CURRCHNUM] = DONE
-			if i == numberOfKids:		## has to be first for the case where there's only one child
-				if debug_createChildNodes:
-					print 'createChildNodes: pushed last child'
-				newNode[RTNODENUM] = DONE
-				if numberOfKids == 1:
-					newNode[LFNODENUM] = -1
-					nodeList[currNodeNum][CURRCHNUM] = currNodeNum + 1	# point upper list to first child
-			elif i == 1:
-				if debug_createChildNodes:
-					print 'createChildNodes: pushed first child'
-					print 'createChildNodes: newNode[RTNODENUM]',newNode[RTNODENUM]
-				nodeList[currNodeNum][CURRCHNUM] = currNodeNum + 1	# point upper list to first child
-				newNode[METALENGTH] = inputList[rootNodeFileOffset + (2*i) + 1]
-				newNode[NUMOFKIDS] = inputList[rootNodeFileOffset + (2*i)]  # children count are known
-				newNode[LFNODENUM] = DONE
-			else:
-				if debug_createChildNodes:
-					print 'createChildNodes: pushed middle child'
-				newNode[LFNODENUM] = i - 1
-				newNode[RTNODENUM] = i + 1
-			if debug_createChildNodes:
-				print 'createChildNodes: newNode',newNode
-			self.pushNode(newNode)
-			i += 1
+			abbyTerminate('createChildnewNodes: called with bad child count')
+		# do adjustments to the parent
+		nodeList[currNodeNum][DNNODENUM] = currNodeNum + 1
+		nodeList[currNodeNum][CURRCHNUM] = currNodeNum + 1
+		# make the child
+		node = [0,0,0,0,0,0,0,0,0,0,0]
+		node[UPNODENUM] = currNodeNum
+		node[DNNODENUM] = UNINIT
+		node[METAOFFST] = UNINIT
+		node[METALENGTH] = inputList[nodeList[currNodeNum][FILEOFFST]+3]
+		node[RTNODENUM] = UNINIT
+		node[LFNODENUM] = -1
+		node[FILEOFFST] = nodeList[currNodeNum][FILEOFFST] + 2
+		node[NUMOFKIDS] = inputList[nodeList[currNodeNum][FILEOFFST]+2]
+		node[NODECOMPL] = False
+		node[CURRCHWIP] = False
+		node[CURRCHNUM] = DONE
+		self.pushNode(node)
+		if debug_createChildNode:
+			print 'createChildNode: created a single child at node number',currNodeNum+1
+			self.dumpAllNodeVals()
 		return
 
 	def addFirstNode(self):
@@ -304,7 +278,7 @@ class NodeFunctions():
 		node[METALENGTH] = inputList[1]
 		node[FILEOFFST] = 0
 		node[NODECOMPL] = False
-		node[CURRCHWIP] = True
+		node[CURRCHWIP] = False
 		node[CURRCHNUM] = UNINIT
 		self.pushNode(node)
 		if debug_addFirstNode:
@@ -364,17 +338,19 @@ class NodeFunctions():
 		global nodeList
 		global inputList
 		nodeNumber = currentNodeNumber
-		debug_processKids = False
+		debug_processKids = True
 		nodeVec = nodeList[nodeNumber]
 		if debug_processKids:
 			print 'processKids: current node number',nodeNumber
 			print '[UP,DN,LT,RT,KIDS,METAOFF,METALEN,FILEOFF,NODECOMP,CURRCHIP,CURRCHNUM]'
 			print 'processKids: current Node vector',nodeVec
+		if nodeNumber < 0:
+			abbyTerminate('ERROR processKids: Node number')
 		if nodeVec[DNNODENUM] == UNINIT:			# uninitialized down pointer
 			if nodeVec[NUMOFKIDS] == 0:			# node has no children
 				self.endNode()
 			elif nodeVec[NUMOFKIDS] > 0:		# initialize kids
-				self.createChildNodes()
+				self.createChildNode()
 				if debug_processKids:
 					print 'processKids: created kids'
 				self.incrementCurrentNodeNumber()	# step down to the first kid
@@ -392,25 +368,23 @@ class NodeFunctions():
 					nodeList[nodeNumber][METAOFFST] = nodeVec[FILEOFFST] + 2
 				return True
 			else:
-				print 'processKids: need to do stuff with number of kids'
-#				self.dumpAllNodeVals()
-				exit()
+				abbyTerminate('processKids: need to do stuff with number of kids')
 				return True
-		elif nodeVec[CURRCHNUM] != -1:
+		elif nodeVec[CURRCHNUM] != DONE:
 			if debug_processKids:
 				print 'processKids: CURRCHNUM case node number',currentNodeNumber
 			if (nodeList[nodeVec[CURRCHNUM]][NODECOMPL] == True) and (nodeList[nodeVec[CURRCHNUM]][RTNODENUM] == -1):
 				nodeList[nodeNumber][NODECOMPL] = True
-				if currentNodeNumber != 0:
+				if currentNodeNumber > 0:
 					currentNodeNumber = nodeList[nodeNumber][UPNODENUM]
+					if debug_processKids:
+						print 'processKids: node number',currentNodeNumber
 				else:
 					return False
 			return True	# fill in as I go along
 			self.dumpAllNodeVals()
 		else:
-			print 'processKids: exiting at node number',currentNodeNumber
-			self.dumpAllNodeVals()
-			exit()
+			abbyTerminate('ERROR processKids: exiting at node number',currentNodeNumber)
 			return False	# fill in as I go along
 		
 	def checkKidsDone(self):
@@ -426,7 +400,7 @@ class NodeFunctions():
 		"""
 		global currentNodeNumber
 		global nodeList
-		debug_checkKidsDone = False
+		debug_checkKidsDone = True
 		daughterDoneNodeNum = nodeList[currentNodeNumber][CURRCHNUM]
 		if debug_checkKidsDone:
 			print 'checkKidsDone: current node number',currentNodeNumber
@@ -440,11 +414,9 @@ class NodeFunctions():
 				print 'checkKidsDone: Need to advance node to next node to right of dau'
 				print 'checkKidsDone: node to right is',nodeList[currentNodeNumber][CURRCHNUM]
 			return True
-		# elif nodeList[daughterDoneNodeNum][RTNODENUM] == DONE:
-			# print 'checkKidsDone: TBD'
-			# self.dumpAllNodeVals()
-			# exit()
-			# return True
+		elif nodeList[daughterDoneNodeNum][RTNODENUM] == DONE:
+			abbyTerminate('ERROR checkKidsDone: TBD')
+			return True
 		return False
 	
 	def checkAnotherCase(self):
@@ -485,7 +457,7 @@ class NodeFunctions():
 		global currentNodeNumber
 		global nodeList
 		nodeNumber = currentNodeNumber
-		debug_processNode = False
+		debug_processNode = True
 		nodeVec = nodeList[nodeNumber]
 		atLeastOneNodeDidSomething = False
 		if debug_processNode:
@@ -511,13 +483,18 @@ class NodeFunctions():
 ########################################################################
 ## Code
 
+def abbyTerminate(string):
+	print 'ERROR Terminating due to',string
+	NodeHandler.dumpAllNodeVals()
+	exit()
+
 def coreCode():
 	count = 0
 	while True:
-		count += 1
-		if count == 10:
-			NodeHandler.dumpAllNodeVals()
-			exit()
+		# count += 1
+		# if count == 10:			
+			# NodeHandler.dumpAllNodeVals()
+			# exit()
 		if not NodeHandler.processNode():
 			print 'coreCode: ended on node',NodeHandler.getCurrentNodeNumber()
 			return
