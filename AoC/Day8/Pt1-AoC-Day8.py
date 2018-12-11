@@ -209,26 +209,35 @@ class NodeFunctions():
 		if debug_createSister:
 			print 'createSister: reached function'
 			print 'createSister: node number',currentNodeNumber
+		parentNode = nodeList[currentNodeNumber][UPNODENUM]
 		currentDaughterNodeNum = nodeList[currentNodeNumber][CURRCHNUM]
+		sisterFileOffset = nodeList[currentDaughterNodeNum][FILEOFFST]
+		sisterMetaOffset = nodeList[currentDaughterNodeNum][METAOFFST]
+		sisterMetaLength = nodeList[currentDaughterNodeNum][METALENGTH]
+		myStartOffset = sisterMetaOffset + sisterMetaLength
 		if debug_createSister:
 			print 'createSister: currentDaughterNodeNum',currentDaughterNodeNum
+			print 'createSister: sisters file offset',sisterFileOffset
+			print 'createSister: sisterMetaOffset',sisterMetaOffset
+			print 'createSister: sisterMetaLength',sisterMetaLength
+			print 'createSister: myStartOffset',myStartOffset
 		node = [0,0,0,0,0,0,0,0,0,0,0,0]	# manual  copy of default node
 		node[UPNODENUM] = currentNodeNumber
 		node[DNNODENUM] = UNINIT
 		node[METAOFFST] = UNINIT
-		node[METALENGTH] = nodeList[currentDaughterNodeNum][FILEOFFST] + 0
+		node[METALENGTH] = inputList[myStartOffset+1]
 		node[RTNODENUM] = UNINIT
 		node[LFNODENUM] = currentDaughterNodeNum
-		node[FILEOFFST] = nodeList[currentDaughterNodeNum][FILEOFFST] + 0
-		node[NUMOFKIDS] = nodeList[currentDaughterNodeNum][FILEOFFST] + 0
-		node[NUMOFKIDS] = nodeList[currentDaughterNodeNum][FILEOFFST] + 0
+		node[FILEOFFST] = myStartOffset
+		node[NUMOFKIDS] = inputList[myStartOffset]
 		node[NODECOMPL] = False
 		node[CURRCHWIP] = False
 		node[CURRCHNUM] = UNINIT
-		node[SISTERCNT] = 1
+		nodeList[currentNodeNumber][SISTERCNT] = nodeList[currentNodeNumber][SISTERCNT] + 1
+		nodeList[currentDaughterNodeNum][RTNODENUM] = len(nodeList)
 		self.pushNode(node)
 		self.dumpAllNodeVals()
-		exit()
+#		exit()
 
 	def createChildNode(self):
 		"""createChildnewNodes - Add the child newNodes to the newNodes list
@@ -246,7 +255,7 @@ class NodeFunctions():
 		global inputList
 		debug_createChildNode = False
 		if debug_createChildNode:
-#			print '.',
+			print '.',
 			print 'createChildNode: reached function'
 			self.dumpNodeVals(currentNodeNumber)
 		currNodeNum = self.getCurrentNodeNumber()
@@ -453,7 +462,7 @@ class NodeFunctions():
 		global nodeList
 		debug_checkSister = True
 		if debug_checkSister:
-			print '\n\ncheckSister: reached function'
+			print 'checkSister: reached function'
 		parentNode = nodeList[currentNodeNumber][UPNODENUM]
 		if debug_checkSister:
 			print 'checkSister: current node number',currentNodeNumber
@@ -470,21 +479,26 @@ class NodeFunctions():
 		if nodeList[currentNodeNumber][SISTERCNT] == nodeList[currentNodeNumber][NUMOFKIDS]:
 			pass
 			if debug_checkSister:
-				print 'checkSister: all the sisters are in the house'
-			nodeList[currentNodeNumber][NODECOMPL] = True
-			nodeList[currentNodeNumber][CURRCHWIP] = False
-			childNodeNum = nodeList[currentNodeNumber][CURRCHNUM]
+				print '\n\ncheckSister: all the sisters are in the house'
+				self.dumpAllNodeVals()
+			childNodeNum = nodeList[currentNodeNumber][SISTERCNT]
 			childMetaEnd = nodeList[childNodeNum][METAOFFST] + nodeList[childNodeNum][METALENGTH] + 1
 			if debug_checkSister:
+				print 'checkSister: currentNodeNumber',currentNodeNumber
 				print 'checkSister: child node',childNodeNum
-				print 'childMetaEnd',childMetaEnd
+				print 'checkSister: childMetaEnd',childMetaEnd
 			nodeList[currentNodeNumber][METAOFFST] = childMetaEnd
+			nodeList[parentNode][SISTERCNT] = nodeList[currentNodeNumber][DNNODENUM]
+			nodeList[parentNode][NODECOMPL] = False
+			nodeList[parentNode][CURRCHWIP] = True
 			self.changeNodeNumber(nodeList[currentNodeNumber][UPNODENUM])
 			if debug_checkSister:
 				print 'checkSister: moved to node',currentNodeNumber
 				print 'checkSister: after the meta is loaded'
-			self.dumpAllNodeVals()
-			exit()
+				self.dumpAllNodeVals()
+			if currentNodeNumber < 0:
+				abbyTerminate("Bad stuff")
+				exit()
 			return True
 		if nodeList[currentNodeNumber][NODECOMPL] == False:
 			daughterDoneNodeNum = nodeList[currentNodeNumber][CURRCHNUM]
@@ -505,7 +519,8 @@ class NodeFunctions():
 			pass
 			if debug_checkSister:
 				print 'checkSister: need to make a sister node'
-				self.createSister()
+			self.createSister()
+			return True
 		return False
 	
 	def checkAnotherCase(self):
@@ -546,7 +561,7 @@ class NodeFunctions():
 		global currentNodeNumber
 		global nodeList
 		nodeNumber = currentNodeNumber
-		debug_processNode = True
+		debug_processNode = False
 		nodeVec = nodeList[nodeNumber]
 		atLeastOneNodeDidSomething = False
 		if debug_processNode:
