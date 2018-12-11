@@ -238,7 +238,7 @@ class NodeFunctions():
 		global currentNodeNumber
 		global inputList
 		global inFileListOff
-		debug_createChildNodes = True
+		debug_createChildNodes = False
 		currNodeNum = self.getCurrentNodeNumber()
 		if debug_createChildNodes:
 			print 'createChildNodes: currNodeNum',currNodeNum
@@ -262,11 +262,11 @@ class NodeFunctions():
 			newNode[DNNODENUM] = UNINIT
 			nodeList[currNodeNum][DNNODENUM] = currNodeNum + 1
 			newNode[METAOFFST] = UNINIT
-			newNode[METALENGTH] = UNINIT
+			newNode[METALENGTH] = inputList[rootNodeFileOffset + (2*i) + 1]
 			newNode[RTNODENUM] = currNodeNum + i + 1
 			newNode[LFNODENUM] = i - 1
 			newNode[FILEOFFST] = rootNodeFileOffset + (2*i)
-			newNode[NUMOFKIDS] = UNINIT
+			newNode[NUMOFKIDS] = inputList[rootNodeFileOffset + (2*i)]
 			newNode[NODECOMPL] = False
 			newNode[CURRCHWIP] = True
 			newNode[CURRCHNUM] = DONE
@@ -288,7 +288,7 @@ class NodeFunctions():
 				if debug_createChildNodes:
 					print 'createChildNodes: pushed middle child'
 				newNode[LFNODENUM] = i - 1
-				newNode[RTNODENUM] = DONE
+				newNode[RTNODENUM] = i + 1
 			if debug_createChildNodes:
 				print 'createChildNodes: newNode',newNode
 			self.pushNode(newNode)
@@ -376,6 +376,7 @@ class NodeFunctions():
 		"""
 		global currentNodeNumber
 		global nodeList
+		global inputList
 		nodeNumber = currentNodeNumber
 		debug_processKids = False
 		nodeVec = nodeList[nodeNumber]
@@ -398,8 +399,11 @@ class NodeFunctions():
 				return False
 			elif nodeVec[FILEOFFST] >= 0 and nodeVec[NUMOFKIDS] == UNINIT:
 				print 'processKids: fixing up length and kid counts, etc'
-				self.dumpAllNodeVals()
-				exit()
+				nodeList[nodeNumber][METALENGTH] = inputList[nodeVec[FILEOFFST] + 1]
+				nodeList[nodeNumber][NUMOFKIDS] = inputList[nodeVec[FILEOFFST]]
+				if nodeList[nodeNumber][NUMOFKIDS] == 0:
+					nodeList[nodeNumber][DNNODENUM] = DONE
+					nodeList[nodeNumber][METAOFFST] = nodeVec[FILEOFFST] + 2
 				return True
 			else:
 				print 'processKids: need to do stuff with number of kids'
@@ -415,7 +419,7 @@ class NodeFunctions():
 		"""
 		global currentNodeNumber
 		global nodeList
-		debug_checkKidsDone = False
+		debug_checkKidsDone = True
 		daughterDoneNodeNum = nodeList[currentNodeNumber][CURRCHNUM]
 		if debug_checkKidsDone:
 			print 'checkKidsDone: current node number',currentNodeNumber
@@ -431,6 +435,8 @@ class NodeFunctions():
 			return True
 		elif nodeList[daughterDoneNodeNum][RTNODENUM] == DONE:
 			print 'checkKidsDone: TBD'
+			self.dumpAllNodeVals()
+			exit()
 			return False
 		return False
 	
@@ -448,7 +454,7 @@ class NodeFunctions():
 		global currentNodeNumber
 		global nodeList
 		nodeNumber = currentNodeNumber
-		debug_checkAnotherCase = True
+		debug_checkAnotherCase = False
 		leftSisterNodeNum = nodeList[currentNodeNumber][LFNODENUM]
 		if debug_checkAnotherCase:
 			print 'checkAnotherCase: leftSisterNodeNum',leftSisterNodeNum
@@ -506,7 +512,7 @@ def coreCode():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input2.txt'
+inFileName = 'input.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
