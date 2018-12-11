@@ -188,7 +188,7 @@ class NodeFunctions():
 		
 	def changeNodeNumber(self,newNodeNumber):
 		global currentNodeNumber
-		debug_changeNodeNumber = False
+		debug_changeNodeNumber = True
 		if debug_changeNodeNumber:
 			print 'changeNodeNumber: old node number',currentNodeNumber,'new node number',newNodeNumber
 		currentNodeNumber = newNodeNumber
@@ -205,7 +205,7 @@ class NodeFunctions():
 		"""
 		global currentNodeNumber
 		global nodeList
-		debug_createSister = True
+		debug_createSister = False
 		if debug_createSister:
 			print 'createSister: reached function'
 			print 'createSister: node number',currentNodeNumber
@@ -237,7 +237,6 @@ class NodeFunctions():
 		nodeList[currentDaughterNodeNum][RTNODENUM] = len(nodeList)
 		self.pushNode(node)
 		self.dumpAllNodeVals()
-#		exit()
 
 	def createChildNode(self):
 		"""createChildnewNodes - Add the child newNodes to the newNodes list
@@ -387,7 +386,8 @@ class NodeFunctions():
 		debug_processKids = False
 		nodeVec = nodeList[nodeNumber]
 		if debug_processKids:
-			print 'processKids: nodes',nodeList
+			print '\n\nprocessKids: currentNodeNumber',currentNodeNumber
+			self.dumpAllNodeVals()
 			print 'processKids: current node number',nodeNumber
 			print defaultNodeDescr
 			print 'processKids: current Node vector',nodeVec
@@ -476,29 +476,29 @@ class NodeFunctions():
 			print 'checkSister: sister count',nodeList[currentNodeNumber][SISTERCNT]
 			print 'checkSister: number of kids',nodeList[currentNodeNumber][NUMOFKIDS]
 			self.dumpAllNodeVals()
-		if nodeList[currentNodeNumber][SISTERCNT] == nodeList[currentNodeNumber][NUMOFKIDS]:
+		if (nodeList[currentNodeNumber][SISTERCNT] == nodeList[currentNodeNumber][NUMOFKIDS]) and (nodeList[currentNodeNumber][NODECOMPL] != False):
 			pass
 			if debug_checkSister:
-				print '\n\ncheckSister: all the sisters are in the house'
+				print '\n\ncheckSister: sisters are in the house'
 				self.dumpAllNodeVals()
 			childNodeNum = nodeList[currentNodeNumber][SISTERCNT]
 			childMetaEnd = nodeList[childNodeNum][METAOFFST] + nodeList[childNodeNum][METALENGTH] + 1
 			if debug_checkSister:
 				print 'checkSister: currentNodeNumber',currentNodeNumber
-				print 'checkSister: child node',childNodeNum
+				print 'checkSister: last child node',childNodeNum
 				print 'checkSister: childMetaEnd',childMetaEnd
 			nodeList[currentNodeNumber][METAOFFST] = childMetaEnd
-			nodeList[parentNode][SISTERCNT] = nodeList[currentNodeNumber][DNNODENUM]
-			nodeList[parentNode][NODECOMPL] = False
-			nodeList[parentNode][CURRCHWIP] = True
-			self.changeNodeNumber(nodeList[currentNodeNumber][UPNODENUM])
+			nodeList[currentNodeNumber][NODECOMPL] = False
+			nodeList[currentNodeNumber][CURRCHWIP] = True
+			nextNodeVal = self.findNextNode()
+			self.changeNodeNumber(nextNodeVal)
 			if debug_checkSister:
 				print 'checkSister: moved to node',currentNodeNumber
 				print 'checkSister: after the meta is loaded'
 				self.dumpAllNodeVals()
 			if currentNodeNumber < 0:
 				abbyTerminate("Bad stuff")
-				exit()
+			print '\n\n'
 			return True
 		if nodeList[currentNodeNumber][NODECOMPL] == False:
 			daughterDoneNodeNum = nodeList[currentNodeNumber][CURRCHNUM]
@@ -508,20 +508,43 @@ class NodeFunctions():
 			if nodeList[daughterDoneNodeNum][RTNODENUM] == UNINIT:
 				print 'checkSister: node',currentNodeNumber
 				print 'checkSister: right isnt initialized'
-				exit()
 			nodeList[currentNodeNumber][CURRCHNUM] = nodeList[daughterDoneNodeNum][RTNODENUM]
 			self.changeNodeNumber(nodeList[daughterDoneNodeNum][RTNODENUM])
 			if debug_checkSister:
 				print 'checkSister: Need to advance node to next node to right of dau'
 				print 'checkSister: node to right is',nodeList[currentNodeNumber][CURRCHNUM]
 			return True
-		if nodeList[currentNodeNumber][SISTERCNT] < nodeList[currentNodeNumber][NUMOFKIDS]:
+		if (nodeList[currentNodeNumber][SISTERCNT] < nodeList[currentNodeNumber][NUMOFKIDS]) and (nodeList[currentNodeNumber][NODECOMPL] != False):
 			pass
 			if debug_checkSister:
 				print 'checkSister: need to make a sister node'
 			self.createSister()
 			return True
 		return False
+	
+	def findNextNode(self):
+		"""go across daughters to find the first unsolved daughter
+		"""
+		global currentNodeNumber
+		global nodeList
+		debug_findNextNode = True
+		firstNodeToCheck = nodeList[currentNodeNumber][DNNODENUM]
+		if debug_findNextNode:
+			print 'findNextNode: reached function'
+			print 'findNextNode: currentNodeNumber',currentNodeNumber
+			print 'findNextNode: firstNodeToCheck',firstNodeToCheck
+		nodeToCheck = firstNodeToCheck
+		while nodeList[nodeToCheck][NODECOMPL] != False:
+			nodeToCheck = nodeList[nodeToCheck][RTNODENUM]
+			if debug_findNextNode:
+				print 'findNextNode: loop nodeToCheck',nodeToCheck
+				if nodeToCheck < 0:
+					abbyTerminate('findNextNode - looped back past 0')
+		if debug_findNextNode:
+			print 'findNextNode: first node which is undone',nodeToCheck
+		return nodeToCheck
+		
+		exit()
 	
 	def checkAnotherCase(self):
 		"""checkAnotherCase
@@ -555,8 +578,7 @@ class NodeFunctions():
 	def processNode(self):
 		"""processNode(nodeNumber) - Process the node
 
-		:param nodeNumber: The number of the current node
-		:returns: True
+		:returns: True if something was down in the loop
 		"""
 		global currentNodeNumber
 		global nodeList
