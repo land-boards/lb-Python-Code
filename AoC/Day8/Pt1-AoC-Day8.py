@@ -225,12 +225,20 @@ class NodeFunctions():
 		
 	def createChildNodes(self):
 		"""createChildnewNodes - Add the child newNodes to the newNodes list
+
+		0 0 0 0  0  0  0 0 0 0 1  1 1 1 1 1
+		0 1 2 3  4  5  6 7 8 9 0  1 2 3 4 5
+		
+		2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2
+		A----------------------------------
+			B----------- C-----------
+							 D-----
 		"""
 		global nodeList
 		global currentNodeNumber
 		global inputList
 		global inFileListOff
-		debug_createChildNodes = False
+		debug_createChildNodes = True
 		currNodeNum = self.getCurrentNodeNumber()
 		if debug_createChildNodes:
 			print 'createChildNodes: currNodeNum',currNodeNum
@@ -254,25 +262,28 @@ class NodeFunctions():
 			newNode[DNNODENUM] = UNINIT
 			nodeList[currNodeNum][DNNODENUM] = currNodeNum + 1
 			newNode[METAOFFST] = UNINIT
-			newNode[METALENGTH] = inputList[rootNodeFileOffset + (2*i) + 1]
+			newNode[METALENGTH] = UNINIT
 			newNode[RTNODENUM] = currNodeNum + i + 1
 			newNode[LFNODENUM] = i - 1
 			newNode[FILEOFFST] = rootNodeFileOffset + (2*i)
-			newNode[NUMOFKIDS] = DONE
+			newNode[NUMOFKIDS] = UNINIT
 			newNode[NODECOMPL] = False
 			newNode[CURRCHWIP] = True
 			newNode[CURRCHNUM] = DONE
-			if i == 1:
+			if i == numberOfKids:		## has to be first for the case where there's only one child
+				if debug_createChildNodes:
+					print 'createChildNodes: pushed last child'
+				newNode[RTNODENUM] = DONE
+				if numberOfKids == 1:
+					newNode[LFNODENUM] = -1
+			elif i == 1:
 				if debug_createChildNodes:
 					print 'createChildNodes: pushed first child'
 					print 'createChildNodes: newNode[RTNODENUM]',newNode[RTNODENUM]
 				nodeList[currNodeNum][CURRCHNUM] = currNodeNum + 1	# point upper list to first child
+				newNode[METALENGTH] = inputList[rootNodeFileOffset + (2*i) + 1]
 				newNode[NUMOFKIDS] = inputList[inFileListOff]  # children count are known
 				newNode[LFNODENUM] = DONE
-			elif i == numberOfKids:
-				if debug_createChildNodes:
-					print 'createChildNodes: pushed last child'
-				newNode[RTNODENUM] = DONE
 			else:
 				if debug_createChildNodes:
 					print 'createChildNodes: pushed middle child'
@@ -323,6 +334,7 @@ class NodeFunctions():
 
 		0 0 0 0  0  0  0 0 0 0 1  1 1 1 1 1
 		0 1 2 3  4  5  6 7 8 9 0  1 2 3 4 5
+		
 		2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2
 		A----------------------------------
 			B----------- C-----------
@@ -331,17 +343,20 @@ class NodeFunctions():
 		global currentNodeNumber
 		global nodeList
 		nodeNumber = currentNodeNumber
-		debug_endNode = True
+		debug_endNode = False
 		nodeVec = nodeList[nodeNumber]
 		nodeVec[DNNODENUM] = DONE			# node is an endpoint down
 		nodeList[currentNodeNumber][NODECOMPL] = True	# mark node complete
 		nodeList[currentNodeNumber][CURRCHWIP] = False
-		nodeList[currentNodeNumber][METAOFFST] = nodeVec[FILEOFFST] + 1
+		leftSisterNodeNum = nodeList[currentNodeNumber][LFNODENUM]
+		if debug_endNode:
+			print 'left sister node number is',leftSisterNodeNum
+		nodeList[currentNodeNumber][METAOFFST] = nodeList[currentNodeNumber][FILEOFFST] + 2
 		parentNode = nodeVec[UPNODENUM]
 		currentNodeNumber = parentNode	# move up to parent node
 		# move parent's pointer to child
 		if debug_endNode:
-			print 'endNode: no kids, do stuff'
+			print 'endNode: no kids, nodeVec',nodeVec
 			print '[UP,DN,LT,RT,KIDS,METAOFF,METALEN,FILEOFF,NODECOMP,CURRCHIP,CURRCHNUM]'
 			print 'endNode: nodeList[nodeNumber][NODECOMPL]',nodeList[nodeNumber][NODECOMPL]
 			print 'endNode: current node number',nodeNumber
@@ -349,10 +364,20 @@ class NodeFunctions():
 		return
 		
 	def processKids(self):
+		"""
+		0 0 0 0  0  0  0 0 0 0 1  1 1 1 1 1
+		0 1 2 3  4  5  6 7 8 9 0  1 2 3 4 5
+		
+		2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2
+		A----------------------------------
+			B----------- C-----------
+							 D-----
+							 
+		"""
 		global currentNodeNumber
 		global nodeList
 		nodeNumber = currentNodeNumber
-		debug_processKids = True
+		debug_processKids = False
 		nodeVec = nodeList[nodeNumber]
 		if debug_processKids:
 			print 'processKids: current node number',nodeNumber
@@ -371,9 +396,14 @@ class NodeFunctions():
 				if debug_processKids:
 					print 'processKids: * * * * not sure if the node has kids or not'
 				return False
+			elif nodeVec[FILEOFFST] >= 0 and nodeVec[NUMOFKIDS] == UNINIT:
+				print 'processKids: fixing up length and kid counts, etc'
+				self.dumpAllNodeVals()
+				exit()
+				return True
 			else:
-				if debug_processKids:
-					print 'processKids: need to do stuff with number of kids'
+				print 'processKids: need to do stuff with number of kids'
+				self.dumpAllNodeVals()
 				exit()
 			return True
 		else:
@@ -385,7 +415,7 @@ class NodeFunctions():
 		"""
 		global currentNodeNumber
 		global nodeList
-		debug_checkKidsDone = True
+		debug_checkKidsDone = False
 		daughterDoneNodeNum = nodeList[currentNodeNumber][CURRCHNUM]
 		if debug_checkKidsDone:
 			print 'checkKidsDone: current node number',currentNodeNumber
@@ -394,14 +424,44 @@ class NodeFunctions():
 		if nodeList[currentNodeNumber][NODECOMPL] == False and nodeList[daughterDoneNodeNum][RTNODENUM] != DONE:
 			nodeList[currentNodeNumber][CURRCHNUM] = nodeList[daughterDoneNodeNum][RTNODENUM]
 			currentNodeNumber = nodeList[daughterDoneNodeNum][RTNODENUM]
+			self.dumpAllNodeVals()
 			if debug_checkKidsDone:
 				print 'checkKidsDone: Need to advance node to next node to right of dau'
 				print 'checkKidsDone: node to right is',nodeList[currentNodeNumber][CURRCHNUM]
 			return True
 		elif nodeList[daughterDoneNodeNum][RTNODENUM] == DONE:
-			print 'checkKidsDone:  NEEEEEEEEEEEDDDDDDD DDDONNEEE'
+			print 'checkKidsDone: TBD'
 			return False
 		return False
+	
+	def checkAnotherCase(self):
+		"""checkAnotherCase
+		There is a solved node to the left but my node hasn't been resolved
+		0 0 0 0  0  0  0 0 0 0 1  1 1 1 1 1
+		0 1 2 3  4  5  6 7 8 9 0  1 2 3 4 5
+		
+		2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2
+		A----------------------------------
+			B----------- C-----------
+							 D-----
+		"""
+		global currentNodeNumber
+		global nodeList
+		nodeNumber = currentNodeNumber
+		debug_checkAnotherCase = True
+		leftSisterNodeNum = nodeList[currentNodeNumber][LFNODENUM]
+		if debug_checkAnotherCase:
+			print 'checkAnotherCase: leftSisterNodeNum',leftSisterNodeNum
+		if nodeList[currentNodeNumber][LFNODENUM] != -1:
+			if debug_checkAnotherCase:
+				print 'checkAnotherCase: '
+			self.dumpAllNodeVals()
+			nodeList[currentNodeNumber][FILEOFFST] = nodeList[leftSisterNodeNum][METAOFFST] + nodeList[leftSisterNodeNum][METALENGTH]
+			nodeList[currentNodeNumber][METALENGTH] = inputList[nodeList[leftSisterNodeNum][METAOFFST] + nodeList[leftSisterNodeNum][METALENGTH] + 1]
+			nodeList[currentNodeNumber][NUMOFKIDS] = inputList[nodeList[leftSisterNodeNum][METAOFFST] + nodeList[leftSisterNodeNum][METALENGTH]]
+			return True
+		else:
+			return False
 	
 	def processNode(self):
 		"""processNode(nodeNumber) - Process the node
@@ -410,20 +470,28 @@ class NodeFunctions():
 		:returns: True
 		"""
 		global currentNodeNumber
+		global nodeList
 		nodeNumber = currentNodeNumber
-		debug_processNode = True
+		debug_processNode = False
 		nodeVec = nodeList[nodeNumber]
 		atLeastOneNodeDidSomething = False
 		if debug_processNode:
 			print 'processNode: nodeNumber',nodeNumber,'vector',nodeVec
 		if self.processKids() == True:
-			print 'processNode: back from processKids'
+			if debug_processNode:
+				print 'processNode: back from processKids'
 			atLeastOneNodeDidSomething = True
 		if self.checkKidsDone() == True:
-			print 'processNode: completed checkKidsDone'
+			if debug_processNode:
+				print 'processNode: completed checkKidsDone'
 			atLeastOneNodeDidSomething = True
+		if self.checkAnotherCase() == True:
+			if debug_processNode:
+				print 'processNode: completed checkAnotherCase'
+			atLeastOneNodeDidSomething = True		
 		if not atLeastOneNodeDidSomething:
-			print 'processNode: Exiting because nothing happened'
+			if debug_processNode:
+				print 'processNode: Exiting because nothing happened'
 		return atLeastOneNodeDidSomething
 		
 	
