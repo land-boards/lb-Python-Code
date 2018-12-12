@@ -482,7 +482,7 @@ class NodeFunctions():
 			return [EARLY_EXIT_FOR_DEBUG,inFileOffset,theNodeNumber]
 		elif currentActionsFlag == TREE_COMPLETED:
 			return [TREE_DONE,inFileOffset,theNodeNumber]
-		self.doMovement(theNodeNumber,currentActionsFlag)
+		theNodeNumber = self.doMovement(theNodeNumber,currentActionsFlag)
 		if (currentNodeVec[DNNODENUM] != DONE) and (CURRCHWIP != DONE):
 			return [TREE_IN_PROGRESS,inFileOffset,theNodeNumber]
 		else:
@@ -504,14 +504,14 @@ def moveInListToTree(currentNodePtr,inputListOffset):
 	Create the kids based on the pairs
 	This method sits outside of the list and node handlers since it spans both
 	"""
-	debug_moveInListToTree = False
+	debug_moveInListToTree = True
 	inPair = InputListHandler.getInputPair(inputListOffset)
 	if debug_moveInListToTree:
-		print "read inPair",inPair
+		print "moveInListToTree: read inPair",inPair
 	childNodeNum = NodeHandler.addChildrenToNodeList(inPair,inputListOffset)	# pass the child count and meta count to the creator
 	if debug_moveInListToTree:
-		print "added childNodeNum",childNodeNum
-		print 'currentNodePtr',currentNodePtr
+		print "moveInListToTree: added childNodeNum",childNodeNum
+		print 'moveInListToTree: currentNodePtr',currentNodePtr
 	nodeList[currentNodePtr][DNNODENUM] = childNodeNum
 	return
 
@@ -529,6 +529,8 @@ def newCoreCode():
 	NodeHandler.addFirstNode()
 	nodeToGet = [TREE_IN_PROGRESS,inputFileOffset,theNodeNumber]
 	inFileOffset = 0
+	if debug_newCoreCode:
+		print 'newCoreCode: calling moveInListToTree'
 	moveInListToTree(theNodeNumber,inFileOffset)
 	if debug_newCoreCode:
 		print 'newCoreCode: starting loop'
