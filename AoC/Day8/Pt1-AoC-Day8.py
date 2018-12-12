@@ -382,10 +382,12 @@ class NodeFunctions():
 		:returns: the new node number
 		"""
 		global nodeList
-		debug_doMovement = True
+		debug_doMovement = False
 		if debug_doMovement:
-			print actionFlag
+			print 'doMovement: actionFlag',actionFlag
 		if actionFlag == NEED_TO_MOVE_DOWN:
+			if debug_doMovement:
+				print 'doMovement: Moving down to node',nodeList[theNodeNumber][DNNODENUM]
 			return nodeList[theNodeNumber][DNNODENUM]
 		else:
 			exit()
@@ -439,6 +441,8 @@ class NodeFunctions():
 		- Node 1 meta offset should be unknown - it's only known in this case since the child count is zero - made unknown
 		"""
 		debug_doAllActionsAtCurrentPoint = True
+		if debug_doAllActionsAtCurrentPoint:
+			print 'doAllActionsAtCurrentPoint: Reached function'
 		currentNodeVec = nodeList[theNodeNumber]
 		if debug_doAllActionsAtCurrentPoint:
 			self.dumpNodeVals(theNodeNumber)
@@ -468,7 +472,7 @@ class NodeFunctions():
 		flag = DONE when tree is completed, UNINIT when tree is not completed
 		fileOffset is the location in the input file that the next string will come from
 		"""
-		debug_processTree = True
+		debug_processTree = False
 		if debug_processTree:
 			print '\nprocessTree: reached function'
 			print 'processTree: theNodeNumber',theNodeNumber
@@ -504,7 +508,7 @@ def moveInListToTree(currentNodePtr,inputListOffset):
 	Create the kids based on the pairs
 	This method sits outside of the list and node handlers since it spans both
 	"""
-	debug_moveInListToTree = True
+	debug_moveInListToTree = False
 	inPair = InputListHandler.getInputPair(inputListOffset)
 	if debug_moveInListToTree:
 		print "moveInListToTree: read inPair",inPair
@@ -521,7 +525,7 @@ def newCoreCode():
 	Operates on return value
 	"""
 	global nodeList
-	debug_newCoreCode = True
+	debug_newCoreCode = False
 	inputFileOffset = 0
 	theNodeNumber = 0
 	NodeHandler.changeNodeNumber(theNodeNumber)
@@ -538,16 +542,17 @@ def newCoreCode():
 		nodeToGet = NodeHandler.processTree(inFileOffset,theNodeNumber)
 		if debug_newCoreCode:
 			print 'newCoreCode: nodeToGet returned ',nodeToGet,
-			if (nodeToGet[0] == TREE_DONE):
-				print 'tree done'
-				return
-			elif nodeToGet[0] == EARLY_EXIT_FOR_DEBUG:
-				print 'early exit for debugging'
-				return
-			elif nodeToGet[0] == TREE_IN_PROGRESS:
-				print 'tree in progress'
-			elif nodeToGet[0] == GET_NEXT_NODE:
-				print 'pull next address'
+		if (nodeToGet[0] == TREE_DONE):
+			print 'tree done'
+			return
+		elif nodeToGet[0] == EARLY_EXIT_FOR_DEBUG:
+			print 'newCoreCode: early exit for debugging at ',
+			print 'node',nodeToGet[2]
+			return
+		elif nodeToGet[0] == TREE_IN_PROGRESS:
+			print 'tree in progress'
+		elif nodeToGet[0] == GET_NEXT_NODE:
+			print 'pull next address'
 		NodeHandler.dumpAllNodeVals()
 		if nodeToGet[0] == TREE_DONE:
 			return
