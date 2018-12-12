@@ -108,20 +108,20 @@ class filer():
 
 nodeList = []
 currentNodeNumber = 0
-UPNODENUM = 0
-DNNODENUM = 1
-LFNODENUM = 2
-RTNODENUM = 3
-NUMOFKIDS = 4
-METAOFFST = 5
-METALENGTH = 6
-FILEOFFST = 7
+NUMOFKIDS = 0
+FILEOFFST = 1
+METAOFFST = 2
+METALENGTH = 3
+UPNODENUM = 4
+DNNODENUM = 5
+LFNODENUM = 6
+RTNODENUM = 7
 NODECOMPL = 8
 CURRCHWIP = 9
 CURRCHNUM = 10
 SISTERCNT = 11
 defaultNode = [0,0,0,0,0,0,0,0,0,0,0,0]
-defaultNodeDescr = '[UP,DN,LT,RT,KDS,METOF,METCT,FILOF,NDCMPL,CURCHIP,CURCHNM,SISCT]'
+defaultNodeDescr = '[KDS,FILOF,METOF,METCT,UP,DN,LT,RT,NDCMPL,CURCHIP,CURCHNM,SISCT]'
 
 DONE = -1
 UNINIT = -2
@@ -171,10 +171,6 @@ class NodeFunctions():
 		self.dumpBitVal('Current child number being processed',CURRCHNUM)
 		self.dumpBitVal('Current Sister count',SISTERCNT)
 		
-	def getCurrentNodeNumber(self):
-		global currentNodeNumber
-		return currentNodeNumber
-	
 	def pushNode(self,node):
 		"""pushNode - 
 		"""
@@ -188,7 +184,7 @@ class NodeFunctions():
 		
 	def changeNodeNumber(self,newNodeNumber):
 		global currentNodeNumber
-		debug_changeNodeNumber = True
+		debug_changeNodeNumber = False
 		if debug_changeNodeNumber:
 			print 'changeNodeNumber: old node number',currentNodeNumber,'new node number',newNodeNumber
 		currentNodeNumber = newNodeNumber
@@ -207,7 +203,7 @@ class NodeFunctions():
 		global nodeList
 		debug_createSister = False
 		if debug_createSister:
-			print 'createSister: reached function'
+			print '\ncreateSister: reached function'
 			print 'createSister: node number',currentNodeNumber
 		parentNode = nodeList[currentNodeNumber][UPNODENUM]
 		currentDaughterNodeNum = nodeList[currentNodeNumber][CURRCHNUM]
@@ -257,7 +253,7 @@ class NodeFunctions():
 			print '.',
 			print 'createChildNode: reached function'
 			self.dumpNodeVals(currentNodeNumber)
-		currNodeNum = self.getCurrentNodeNumber()
+		currNodeNum = currentNodeNumber
 		newNodeNum = currNodeNum + 1
 		currentNodeVec = nodeList[currNodeNum]
 		if debug_createChildNode:
@@ -343,9 +339,9 @@ class NodeFunctions():
 		nodeVec = nodeList[nodeNumber]
 		parentNode = nodeVec[UPNODENUM]
 		if debug_endNode:
-			print 'endNode: reached function'
+			print '\nendNode: reached function'
 			print 'endNode: end node number is',currentNodeNumber,'before'
-			self.dumpNodeVals(currentNodeNumber)
+			self.dumpAllNodeVals()
 			print 'endNode: parent node number is',parentNode
 			print 'endNode: contents of parent before change'
 			self.dumpNodeVals(parentNode)
@@ -353,9 +349,15 @@ class NodeFunctions():
 		nodeList[currentNodeNumber][NODECOMPL] = True	# mark node complete
 		nodeList[currentNodeNumber][CURRCHWIP] = False
 		nodeList[currentNodeNumber][METAOFFST] = nodeList[currentNodeNumber][FILEOFFST] + 2
-		nodeList[parentNode][NODECOMPL] = True
-		nodeList[parentNode][CURRCHWIP] = False
-		nodeList[parentNode][SISTERCNT] = 1
+		nodeList[parentNode][SISTERCNT] = 1	# TBD - starts at 1 should it start at 0?
+		if debug_endNode:
+			print 'endNode: after updating the nodeList values for end node'
+			self.dumpAllNodeVals()
+		if nodeList[parentNode][NUMOFKIDS] == 1:
+			if debug_endNode:
+				print 'endNode: IS THIS AT THE WRONG POINT???'
+			nodeList[parentNode][METAOFFST] = nodeList[currentNodeNumber][METAOFFST] + nodeList[currentNodeNumber][METALENGTH]
+			nodeList[parentNode][CURRCHWIP] = False
 		self.changeNodeNumber(parentNode)	# move up to parent node
 		# move parent's pointer to child
 		if debug_endNode:
@@ -430,6 +432,7 @@ class NodeFunctions():
 			if (nodeList[nodeVec[CURRCHNUM]][NODECOMPL] == True) and (nodeList[nodeVec[CURRCHNUM]][RTNODENUM] == -1):
 				nodeList[nodeNumber][NODECOMPL] = True
 			if nodeNumber > 0:
+				pass
 				if debug_processKids:
 					print 'processKids: changing node number'
 				self.changeNodeNumber(nodeList[nodeNumber][UPNODENUM])
@@ -460,23 +463,30 @@ class NodeFunctions():
 		"""
 		global currentNodeNumber
 		global nodeList
-		debug_checkSister = True
+		debug_checkSister = False
 		if debug_checkSister:
-			print 'checkSister: reached function'
+			print '\n\ncheckSister: reached function'
 		parentNode = nodeList[currentNodeNumber][UPNODENUM]
 		if debug_checkSister:
 			print 'checkSister: current node number',currentNodeNumber
 			print 'checkSister: parent node number',parentNode
 		if nodeList[currentNodeNumber][DNNODENUM] == UNINIT:
 			if debug_checkSister:
-				print 'checkSister: No down vector is populated'
+				print 'checkSister: No down vector is populated - returning'
 			return False
 		if debug_checkSister:
 			print 'checkSister: there is a down node'
 			print 'checkSister: sister count',nodeList[currentNodeNumber][SISTERCNT]
 			print 'checkSister: number of kids',nodeList[currentNodeNumber][NUMOFKIDS]
+			print 'checkSister: current node complete',nodeList[currentNodeNumber][NODECOMPL]
 			self.dumpAllNodeVals()
-		if (nodeList[currentNodeNumber][SISTERCNT] == nodeList[currentNodeNumber][NUMOFKIDS]) and (nodeList[currentNodeNumber][NODECOMPL] != False):
+		if nodeList[currentNodeNumber][NUMOFKIDS] == 0:
+			nextNodeVal = nodeList[currentNodeNumber][UPNODENUM]
+			if debug_checkSister:
+				print 'checkSister: move up a level to node',nodeList[currentNodeNumber][UPNODENUM]
+			self.changeNodeNumber(nextNodeVal)
+			return True			
+		if (nodeList[currentNodeNumber][SISTERCNT] == nodeList[currentNodeNumber][NUMOFKIDS]) and (nodeList[currentNodeNumber][NODECOMPL] == True):
 			pass
 			if debug_checkSister:
 				print '\n\ncheckSister: sisters are in the house'
@@ -488,9 +498,9 @@ class NodeFunctions():
 				print 'checkSister: last child node',childNodeNum
 				print 'checkSister: childMetaEnd',childMetaEnd
 			nodeList[currentNodeNumber][METAOFFST] = childMetaEnd
-			nodeList[currentNodeNumber][NODECOMPL] = False
+			nodeList[currentNodeNumber][NODECOMPL] = True
 			nodeList[currentNodeNumber][CURRCHWIP] = True
-			nextNodeVal = self.findNextNode()
+			nextNodeVal = self.findNextNode(currentNodeNumber)
 			self.changeNodeNumber(nextNodeVal)
 			if debug_checkSister:
 				print 'checkSister: moved to node',currentNodeNumber
@@ -498,18 +508,22 @@ class NodeFunctions():
 				self.dumpAllNodeVals()
 			if currentNodeNumber < 0:
 				abbyTerminate("Bad stuff")
-			print '\n\n'
+#			print '\n\n'
 			return True
 		if nodeList[currentNodeNumber][NODECOMPL] == False:
 			daughterDoneNodeNum = nodeList[currentNodeNumber][CURRCHNUM]
 			if debug_checkSister:
-				print 'checkSister: node',currentNodeNumber
+				print 'checkSister: daughterDoneNodeNum',daughterDoneNodeNum
+				print 'checkSister: sista is not done, node',currentNodeNumber
 				self.dumpNodeVals(currentNodeNumber)
-			if nodeList[daughterDoneNodeNum][RTNODENUM] == UNINIT:
-				print 'checkSister: node',currentNodeNumber
-				print 'checkSister: right isnt initialized'
-			nodeList[currentNodeNumber][CURRCHNUM] = nodeList[daughterDoneNodeNum][RTNODENUM]
-			self.changeNodeNumber(nodeList[daughterDoneNodeNum][RTNODENUM])
+			self.findNextNode(nodeList[daughterDoneNodeNum][RTNODENUM])
+			# if nodeList[daughterDoneNodeNum][RTNODENUM] == UNINIT:
+				# print 'checkSister: node',currentNodeNumber
+				# print 'checkSister: right isnt initialized'
+			# self.createSister()
+			# nodeList[currentNodeNumber][CURRCHNUM] = nodeList[daughterDoneNodeNum][RTNODENUM]
+			# self.changeNodeNumber(nodeList[daughterDoneNodeNum][RTNODENUM])
+#			exit()
 			if debug_checkSister:
 				print 'checkSister: Need to advance node to next node to right of dau'
 				print 'checkSister: node to right is',nodeList[currentNodeNumber][CURRCHNUM]
@@ -522,24 +536,29 @@ class NodeFunctions():
 			return True
 		return False
 	
-	def findNextNode(self):
-		"""go across daughters to find the first unsolved daughter
+	def findNextNode(self,passedStart):
+		"""findNextNode
+		go across daughters to find the first unsolved daughter
 		"""
 		global currentNodeNumber
 		global nodeList
-		debug_findNextNode = True
-		firstNodeToCheck = nodeList[currentNodeNumber][DNNODENUM]
+		debug_findNextNode = False
+		firstNodeToCheck = nodeList[passedStart][DNNODENUM]
 		if debug_findNextNode:
-			print 'findNextNode: reached function'
-			print 'findNextNode: currentNodeNumber',currentNodeNumber
+			print '\nfindNextNode: reached function'
+			print 'findNextNode: currentNodeNumber',passedStart
 			print 'findNextNode: firstNodeToCheck',firstNodeToCheck
+		if nodeList[passedStart] == True:
+			return DONE
 		nodeToCheck = firstNodeToCheck
 		while nodeList[nodeToCheck][NODECOMPL] != False:
+			if nodeList[nodeToCheck][RTNODENUM] == DONE:
+				return nodeToCheck
 			nodeToCheck = nodeList[nodeToCheck][RTNODENUM]
 			if debug_findNextNode:
 				print 'findNextNode: loop nodeToCheck',nodeToCheck
-				if nodeToCheck < 0:
-					abbyTerminate('findNextNode - looped back past 0')
+			if nodeToCheck < 0:
+				abbyTerminate('findNextNode - looped back past 0')
 		if debug_findNextNode:
 			print 'findNextNode: first node which is undone',nodeToCheck
 		return nodeToCheck
@@ -582,23 +601,27 @@ class NodeFunctions():
 		"""
 		global currentNodeNumber
 		global nodeList
-		nodeNumber = currentNodeNumber
-		debug_processNode = False
-		nodeVec = nodeList[nodeNumber]
+		debug_processNode = True
 		atLeastOneNodeDidSomething = False
 		if debug_processNode:
-			print 'processNode: nodeNumber',nodeNumber
-			print 'processNode: vector',nodeVec
+			print 'processNode: nodeNumber',currentNodeNumber
+			self.dumpAllNodeVals()
 		if self.processKids() == True:
 			atLeastOneNodeDidSomething = True
+			if debug_processNode:
+				print 'processNode: did something'
 		if debug_processNode:
-			print 'processNode: back from processKids'
+				print 'processNode: completed processKids'
 		if self.checkSister() == True:
 			atLeastOneNodeDidSomething = True
+			if debug_processNode:
+				print 'processNode: did something'
 		if debug_processNode:
 			print 'processNode: completed checkSister'
 		if self.checkAnotherCase() == True:
 			atLeastOneNodeDidSomething = True		
+			if debug_processNode:
+				print 'processNode: did something'
 		if debug_processNode:
 			print 'processNode: completed checkAnotherCase'
 		if not atLeastOneNodeDidSomething:
@@ -616,6 +639,7 @@ def abbyTerminate(string):
 	exit()
 
 def coreCode():
+	global currentNodeNumber
 	count = 0
 	while True:
 		# count += 1
@@ -623,7 +647,7 @@ def coreCode():
 			# NodeHandler.dumpAllNodeVals()
 			# exit()
 		if not NodeHandler.processNode():
-			print 'coreCode: ended on node',NodeHandler.getCurrentNodeNumber()
+			print 'coreCode: ended on node',currentNodeNumber
 			return
 
 print 'Reading in file',time.strftime('%X %x %Z')
