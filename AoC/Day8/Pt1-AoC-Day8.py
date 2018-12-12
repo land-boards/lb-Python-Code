@@ -235,8 +235,38 @@ class NodeFunctions():
 		self.pushNode(node)
 		self.dumpAllNodeVals()
 
+	def createKidList(self,numberOfKids):
+		""" creates a list of kids in the nodeList and returns the offset to the first kid
+		"""
+		global nodeList
+		global currentNodeNumber
+		kidNum = 1
+		parentNum = currentNodeNumber
+		while kidNum <= numberOfKids:
+			node = [0,0,0,0,0,0,0,0,0,0,0,0]	# manual  copy of default node
+			node[UPNODENUM] = parentNum
+			node[DNNODENUM] = UNINIT
+			node[METAOFFST] = UNINIT
+			node[METALENGTH] = UNINIT
+			if kidNum <= numberOfKids:
+				node[RTNODENUM] = DONE
+			else:
+				node[RTNODENUM] = kidNum + parentNum
+			if kidNum == 0:
+				node[LFNODENUM] = DONE
+			else:
+				node[LFNODENUM] = kidNum - 1
+			node[FILEOFFST] = UNKNOWN
+			node[NUMOFKIDS] = UNKNOWN
+			node[NODECOMPL] = False
+			node[CURRCHNUM] = 1
+			node[DAUSETCT] = 1
+			self.pushNode(node)
+			kidNum += 1
+		return parentNum + 1
+	
 	def createChildNode(self):
-		"""createChildnewNodes - Add the child newNodes to the newNodes list
+		"""createChildnewNodes - Add the child node to the nodeList
 
 		0 0 0 0  0  0  0 0 0 0 1  1 1 1 1 1
 		0 1 2 3  4  5  6 7 8 9 0  1 2 3 4 5
@@ -427,24 +457,24 @@ class NodeFunctions():
 				nodeList[nodeNumber][DNNODENUM] = DONE
 				nodeList[nodeNumber][METAOFFST] = nodeVec[FILEOFFST] + 2
 			return True
-		# if nodeVec[CURRCHNUM] != DONE:
-			# if debug_processKids:
-				# print 'processKids: CURRCHNUM case node number',nodeNumber
-			# if (nodeList[nodeVec[CURRCHNUM]][NODECOMPL] == True) and (nodeList[nodeVec[CURRCHNUM]][RTNODENUM] == -1):
-				# nodeList[nodeNumber][NODECOMPL] = True
-				# nodeList[nodeNumber][CURRCHWIP] = False
-			# if nodeNumber > 0:
-				# pass
-				# if debug_processKids:
-					# print 'processKids: changing node number'
-				# self.changeNodeNumber(nodeList[nodeNumber][UPNODENUM])
-				# if debug_processKids:
-					# print 'processKids (2): node number',nodeNumber
-				# else:
-					# return False
-			# return True	# fill in as I go along
-		# if debug_processKids:
-			# self.dumpAllNodeVals()
+		if nodeVec[NODECOMPL] != DONE:
+			if debug_processKids:
+				print 'processKids: CURRCHNUM case node number',nodeNumber
+			if (nodeList[nodeVec[CURRCHNUM]][NODECOMPL] == True) and (nodeList[nodeVec[CURRCHNUM]][RTNODENUM] == -1):
+				nodeList[nodeNumber][NODECOMPL] = True
+				nodeList[nodeNumber][CURRCHWIP] = False
+			if nodeNumber > 0:
+				pass
+				if debug_processKids:
+					print 'processKids: changing node number'
+				self.changeNodeNumber(nodeList[nodeNumber][UPNODENUM])
+				if debug_processKids:
+					print 'processKids (2): node number',nodeNumber
+				else:
+					return False
+				return True	# fill in as I go along
+		if debug_processKids:
+			self.dumpAllNodeVals()
 		return False	# fill in as I go along
 		
 	def checkSister(self):
