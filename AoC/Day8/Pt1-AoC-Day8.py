@@ -142,17 +142,18 @@ UNINIT = -2
 WIP = -3
 
 # Tree status
-TREE_DONE = 0
-TREE_IN_PROGRESS = 1
-GET_NEXT_NODE = 2
+TREE_DONE = -4
+TREE_IN_PROGRESS = -5
+GET_NEXT_NODE = -6
 
 CURRENT_POINT_DONE = 1
 NEED_TO_MOVE_DOWN = 2
 NEED_TO_MOVE_RIGHT = 3
 NEED_TO_MOVE_UP = 4
-NODE_COMPLETED = 5
-TREE_COMPLETED = 6
-EARLY_EXIT_FOR_DEBUG = 7
+NEED_TO_MOVE_TO_CURRENT_DAUGHTER = 5
+NODE_COMPLETED = 6
+TREE_COMPLETED = 7
+EARLY_EXIT_FOR_DEBUG = 8
 
 class NodeFunctions():
 
@@ -166,15 +167,16 @@ class NodeFunctions():
 			print i,nodeList[i]
 		return
 	
-	def dumpBitVal(self,myStr,theFieldVal):
-		global currentNodeNumber
+	def dumpBitVal(self,myStr,nodeNumber,theFieldVal):
 		print '', myStr,
-		if nodeList[currentNodeNumber][theFieldVal] == UNINIT:
+		if nodeList[nodeNumber][theFieldVal] == UNINIT:
 			print 'is uninitialized'
-		elif nodeList[currentNodeNumber][theFieldVal] == DONE:
+		elif nodeList[nodeNumber][theFieldVal] == DONE:
 			print 'is done'
+		elif nodeList[nodeNumber][theFieldVal] == WIP:
+			print 'is WIP'
 		else:
-			print 'value =', nodeList[currentNodeNumber][theFieldVal]
+			print 'value =', nodeList[nodeNumber][theFieldVal]
 		
 	def dumpNodeVals(self,nodeNumber):
 		"""dumpNodeVals
@@ -188,68 +190,18 @@ class NodeFunctions():
 		if nodeNumber > len(nodeList) - 1:
 			abbyTerminate('dumpNodeVals: Offset is not in list, exiting...')
 		nodeVec = nodeList[nodeNumber]
-		self.dumpBitVal('Up node number',UPNODENUM)
-		self.dumpBitVal('Down node number',DNNODENUM)
-		self.dumpBitVal('Left node number',LFNODENUM)
-		self.dumpBitVal('Sister to right',RTNODENUM)
-		self.dumpBitVal('Number of kids',NUMOFKIDS)
-		self.dumpBitVal('File Offset',FILEOFFST)
-		self.dumpBitVal('Metadata offset',METAOFFST)
-		self.dumpBitVal('Node done status',NODECOMPL)
-		self.dumpBitVal('Current Child WIP status',CURRCHWIP)
-		self.dumpBitVal('Current child number being processed',CURRCHNUM)
-		self.dumpBitVal('Current child number being processed',CHILDNUM)
-		
-	def endNode(self):
-		"""endNode - this is the very special case where the current point is the bottom of a branch
-		Need to do a bunch of things.
-		set the node complete flag to true
-		Set the current channel WIP flag to false since there's nothing to do below this point
-
-		0 0 0 0  0  0  0 0 0 0 1  1 1 1 1 1
-		0 1 2 3  4  5  6 7 8 9 0  1 2 3 4 5
-		
-		2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2
-		A----------------------------------
-			B----------- C-----------
-							 D-----
-		"""
-		global currentNodeNumber
-		global nodeList
-		nodeNumber = currentNodeNumber
-		debug_endNode = False
-		nodeVec = nodeList[nodeNumber]
-		parentNode = nodeVec[UPNODENUM]
-		if debug_endNode:
-			print '\nendNode: reached function'
-			print 'endNode: end node number is',currentNodeNumber,'before'
-			self.dumpAllNodeVals()
-			print 'endNode: parent node number is',parentNode
-			print 'endNode: contents of parent before change'
-			self.dumpNodeVals(parentNode)
-		nodeVec[DNNODENUM] = DONE			# node is an endpoint down
-		nodeList[currentNodeNumber][NODECOMPL] = True	# mark node complete
-		nodeList[currentNodeNumber][CURRCHWIP] = UNINIT
-		nodeList[currentNodeNumber][METAOFFST] = nodeList[currentNodeNumber][FILEOFFST] + 2
-		if debug_endNode:
-			print 'endNode: after updating the nodeList values for end node'
-			self.dumpAllNodeVals()
-		if nodeList[parentNode][NUMOFKIDS] == 1:
-			if debug_endNode:
-				print 'endNode: IS THIS AT THE WRONG POINT???'
-			nodeList[parentNode][METAOFFST] = nodeList[currentNodeNumber][METAOFFST] + nodeList[currentNodeNumber][METALENGTH]
-			nodeList[parentNode][CURRCHWIP] = UNINIT
-		self.changeNodeNumber(parentNode)	# move up to parent node
-		# move parent's pointer to child
-		if debug_endNode:
-			print 'endNode: node after change',currentNodeNumber
-			self.dumpNodeVals(currentNodeNumber)
-			print defaultNodeDescr
-			print 'endNode: nodeList[nodeNumber][NODECOMPL]',nodeList[nodeNumber][NODECOMPL]
-			print 'endNode: current node number',nodeNumber
-			print 'endNode: next node number',currentNodeNumber
-			self.dumpAllNodeVals()
-		return
+		self.dumpBitVal('Up node number',nodeNumber,UPNODENUM)
+		self.dumpBitVal('Down node number',nodeNumber,DNNODENUM)
+		self.dumpBitVal('Left node number',nodeNumber,LFNODENUM)
+		self.dumpBitVal('Sister to right',nodeNumber,RTNODENUM)
+		self.dumpBitVal('Number of kids',nodeNumber,NUMOFKIDS)
+		self.dumpBitVal('File Offset',nodeNumber,FILEOFFST)
+		self.dumpBitVal('Metadata offset',nodeNumber,METAOFFST)
+		self.dumpBitVal('Metadata count',nodeNumber,METALENGTH)
+		self.dumpBitVal('Node done status',nodeNumber,NODECOMPL)
+		self.dumpBitVal('Current Child WIP status',nodeNumber,CURRCHWIP)
+		self.dumpBitVal('Current child number being processed',nodeNumber,CURRCHNUM)
+		self.dumpBitVal('Total Number of Children',nodeNumber,CHILDNUM)
 		
 	def pushNode(self,node):
 		"""pushNode - 
@@ -269,8 +221,8 @@ class NodeFunctions():
 			print 'changeNodeNumber: old node number',currentNodeNumber,'new node number',newNodeNumber
 		currentNodeNumber = newNodeNumber
 		
-	def addFirstNode(self):
-		"""addFirstNode - add the first node
+	def createNewNode(self,childOffsetInList,theNodeNumber):
+		"""createNewNode - add the first node
 		Initialize the pointers for the first node
 		Special values for pointers are
 		DONE dead end (will not be updated later)
@@ -280,29 +232,38 @@ class NodeFunctions():
 		:returns: True when done
 		"""
 		global nodeList
-		global currentNodeNumber
-		debug_addFirstNode = False
-		self.changeNodeNumber(0);
+		debug_createNewNode = False
 		node = [0,0,0,0,0,0,0,0,0,0,0,0]
-		node[UPNODENUM] = DONE
-		node[DNNODENUM] = UNINIT
+		if theNodeNumber == 0:
+			node[UPNODENUM] = DONE
+		else:
+			node[UPNODENUM] = theNodeNumber
+		if inputList[childOffsetInList] == 0:	# Number of Children = 0 case
+			node[DNNODENUM] = DONE
+			node[METAOFFST] = childOffsetInList + 2
+			node[NODECOMPL] = True
+			node[CURRCHWIP] = DONE
+		else:
+			node[DNNODENUM] = UNINIT
+			node[METAOFFST] = UNINIT
+			node[NODECOMPL] = False
+			node[CURRCHWIP] = UNINIT
+		if theNodeNumber == 0:
+			node[METAOFFST] = len(inputList) - inputList[childOffsetInList+1] 
+		node[CURRCHNUM] = 1
+		node[CHILDNUM] = inputList[childOffsetInList]
 		node[LFNODENUM] = DONE
 		node[RTNODENUM] = DONE
-		node[NUMOFKIDS] = inputList[0]
-		node[METAOFFST] = UNINIT
-		node[METALENGTH] = inputList[1]
-		node[FILEOFFST] = 0
-		node[NODECOMPL] = False
-		node[CURRCHWIP] = UNINIT
-		node[CURRCHNUM] = UNINIT
-		node[CHILDNUM] = 1
+		node[NUMOFKIDS] = inputList[childOffsetInList]
+		node[METALENGTH] = inputList[childOffsetInList+1]
+		node[FILEOFFST] = childOffsetInList
 		self.pushNode(node)
-		if debug_addFirstNode:
+		if debug_createNewNode:
 			print 'Added first node',node
 			self.dumpAllNodeVals()
 		return
 	
-	def addChildrenToNodeList(self,inPair,inputListOffset):
+	def addChildrenToNodeList(self,inPair,inputListOffset,nodeNumber):
 		""" creates a list of kids in the nodeList and returns the offset to the first kid
 		Other observations about child creation
 		- Nodes 1 and 2 should have had the meta count set when the children were set up
@@ -310,17 +271,16 @@ class NodeFunctions():
 		- Node 1 has the wrong METOF in it - looks like it got loaded with the address of the meta off rather than the content
 		"""
 		global nodeList
-		global currentNodeNumber
 		debug_addChildrenToNodeList = False
 		numberOfKids = inPair[0]
 		metaCountAdr = inPair[1]
 		if debug_addChildrenToNodeList:
 			print '\naddChildrenToNodeList: reached function'
-			print 'addChildrenToNodeList: numberOfKids',
+			print 'addChildrenToNodeList: numberOfKids',numberOfKids
 			print 'addChildrenToNodeList: metaCountAdr,',metaCountAdr
 		kidNum = 1
 		endOfNodes = len(nodeList)		# add to end of the current nodes
-		parentNum = currentNodeNumber
+		parentNum = nodeNumber
 		while kidNum <= numberOfKids:
 			node = [0,0,0,0,0,0,0,0,0,0,0,0]	# manual  copy of default node
 			node[UPNODENUM] = parentNum
@@ -342,7 +302,7 @@ class NodeFunctions():
 			node[METAOFFST] = UNINIT
 			node[NODECOMPL] = False
 			node[CURRCHWIP] = UNINIT
-			node[CURRCHNUM] = UNINIT
+			node[CURRCHNUM] = 1
 			node[CHILDNUM] = kidNum
 			self.pushNode(node)
 			kidNum += 1
@@ -384,11 +344,27 @@ class NodeFunctions():
 		global nodeList
 		debug_doMovement = False
 		if debug_doMovement:
+			print 'doMovement: theNodeNumber',theNodeNumber
+		if debug_doMovement:
 			print 'doMovement: actionFlag',actionFlag
 		if actionFlag == NEED_TO_MOVE_DOWN:
 			if debug_doMovement:
 				print 'doMovement: Moving down to node',nodeList[theNodeNumber][DNNODENUM]
 			return nodeList[theNodeNumber][DNNODENUM]
+		elif actionFlag == NEED_TO_MOVE_UP:
+			if debug_doMovement:
+				print 'doMovement: Moving up to node',nodeList[theNodeNumber][UPNODENUM]
+			return nodeList[theNodeNumber][UPNODENUM]
+		elif actionFlag == NEED_TO_MOVE_RIGHT:
+			if debug_doMovement:
+				print 'doMovement: Moving up to node',nodeList[theNodeNumber][RTNODENUM]
+			return nodeList[theNodeNumber][RTNODENUM]
+		elif actionFlag == NEED_TO_MOVE_TO_CURRENT_DAUGHTER:
+			if debug_doMovement:
+				print 'doMovement: Moving up to current daughter',nodeList[theNodeNumber][CURRCHNUM]
+			return nodeList[theNodeNumber][CURRCHNUM]
+		elif actionFlag == CURRENT_POINT_DONE:
+			return theNodeNumber
 		else:
 			exit()
 		
@@ -406,7 +382,7 @@ class NodeFunctions():
 		NODECOMPL = 8	# Node complete flag (True = all daughters below are completely resolved, False = work to do)
 		CURRCHWIP = 9	# Current Channel is Work in Progress (True = current channel is being worked on, False = Done)
 		CURRCHNUM = 10	# Current Channel number that is being processed 
-		CHILDNUM = 11	# Node number of child currently being processed in the sisters list
+		CHILDNUM = 11	# Offset number of child currently being processed in the sisters list starting at 1
 		return when completed
 		
 		0 0 0 0  0  0  0 0 0 0 1  1 1 1 1 1
@@ -416,12 +392,6 @@ class NodeFunctions():
 		A----------------------------------
 			B----------- C-----------
 							 D-----
-		
-		# Flags to operate on - first three lines of the input file
-		# node,[UP, DN, LT, RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHIP,CURCHNM,CHNUM]
-		# 	 0 [-1,  1, -1, -1,  2,    0,   -2,    3, False,     -2,     -2,    1]
-		#	 1 [0,  -2, -1,  2,  0,    2,   -2,    3, False,     -2,     -2,    1]
-		#	 2 [0,  -2,  1, -1, -2,   -2,   -2,   -2, False,     -2,     -2,    2]
 		
 		Observations about node 0
 		- Node is not complete
@@ -439,30 +409,134 @@ class NodeFunctions():
 		- Node 1 should have had the child count set when the children were set up - Fixed
 		- Node 1 has the wrong METOF in it - fixed
 		- Node 1 meta offset should be unknown - it's only known in this case since the child count is zero - made unknown
+		
+		# Flags to operate on - first three lines of the input file
+		# node,[UP, DN, LT, RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHIP,CURCHNM,CHNUM]
+		# 	 0 [-1,  1, -1, -1,  2,    0,   -2,    3, False,     -2,     -2,    1]
+		#	 1 [ 0, -2, -1,  2,  0,    2,   -2,    3, False,     -2,     -2,    1]
+		#	 2 [ 0, -2,  1, -1, -2,   -2,   -2,   -2, False,     -2,     -2,    2]
+		
 		"""
-		debug_doAllActionsAtCurrentPoint = True
+		global nodeList
+		debug_doAllActionsAtCurrentPoint = False
 		if debug_doAllActionsAtCurrentPoint:
-			print 'doAllActionsAtCurrentPoint: Reached function'
+			print '\ndoAllActionsAtCurrentPoint: Reached function, node',theNodeNumber
 		currentNodeVec = nodeList[theNodeNumber]
-		if debug_doAllActionsAtCurrentPoint:
-			self.dumpNodeVals(theNodeNumber)
-		if currentNodeVec[NODECOMPL]:						# Current node has completed
-			if (theNodeNumber == 0):
-				if debug_doAllActionsAtCurrentPoint:
-					print 'Tree is done!'
-				return TREE_COMPLETED						# Tree is done!!!
-			elif (theNodeNumber > 0):
-				return NEED_TO_MOVE_UP						# Need to move up the tree
+		# if debug_doAllActionsAtCurrentPoint:
+			# self.dumpAllNodeVals()
+		# if currentNodeVec[NODECOMPL]:						# Current node has completed
+			# if (theNodeNumber == 0):
+				# if debug_doAllActionsAtCurrentPoint:
+					# print 'doAllActionsAtCurrentPoint: Tree is done!'
+				# return TREE_COMPLETED						# Tree is done!!!
+			# else:
+				# if debug_doAllActionsAtCurrentPoint:
+					# print 'doAllActionsAtCurrentPoint: debugging point'
+				# return EARLY_EXIT_FOR_DEBUG
 		if not currentNodeVec[NODECOMPL]:					# Current node has not completed
-			if currentNodeVec[CURRCHWIP] == UNINIT:			# kick off processing lower node
+			if debug_doAllActionsAtCurrentPoint:
+				print 'doAllActionsAtCurrentPoint: Node is not yet completed'
+			# need to do something below
+			if currentNodeVec[NUMOFKIDS] == 0:	
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: No kids'
+				currentNodeVec[CURRCHWIP] = DONE
+				currentNodeVec[CURRCHNUM] = 1
+				currentNodeVec[NODECOMPL] = True
+				currentNodeVec[METAOFFST] = currentNodeVec[FILEOFFST] + 2
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: dealt with no kids case'
+					self.dumpAllNodeVals()
+				return NEED_TO_MOVE_UP
+			elif currentNodeVec[CURRCHWIP] == UNINIT:			# kick off processing lower node
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: UNINIT node'
+					self.dumpNodeVals(theNodeNumber)
 				currentNodeVec[CURRCHWIP] = WIP
-				currentNodeVec[CURRCHNUM] = currentNodeVec[DNNODENUM]
-				# currentNodeVec[CHILDNUM] should have been set by the initial setup
-				return NEED_TO_MOVE_DOWN
+				if currentNodeVec[DNNODENUM] >= 0:
+					currentNodeVec[CURRCHNUM] = currentNodeVec[DNNODENUM]
+					return NEED_TO_MOVE_DOWN
+				# child below needs to be created
+				childOffsetInList = currentNodeVec[FILEOFFST] + 2
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: need to create a child at',childOffsetInList
+				self.createNewNode(childOffsetInList,theNodeNumber)
+				childNodeNum = len(nodeList)-1
+				currentNodeVec[DNNODENUM] = childNodeNum
+				currentNodeVec[CHILDNUM] = currentNodeVec[NUMOFKIDS]
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: After making the new node childNodeNum',childNodeNum
+					self.dumpAllNodeVals()
+				return CURRENT_POINT_DONE		## TBD
+				return EARLY_EXIT_FOR_DEBUG		## TBD
 			elif currentNodeVec[CURRCHWIP] == WIP:			# Node is WIP but 
-				pass										## TBD
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: Tree is WIP'
+				downNode = currentNodeVec[DNNODENUM]
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: down node number',downNode
+				endOfDownNodeInListPlusOne = nodeList[downNode][METAOFFST] + nodeList[downNode][METALENGTH]
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: endOfDownNodeInList',endOfDownNodeInListPlusOne
+					self.dumpAllNodeVals()
+				if (nodeList[downNode][NODECOMPL] == True) and (currentNodeVec[CURRCHNUM] == currentNodeVec[CHILDNUM]):
+					if debug_doAllActionsAtCurrentPoint:
+						print 'doAllActionsAtCurrentPoint: finished a node moving up'
+						print 'doAllActionsAtCurrentPoint: do the meta calc here'
+						self.dumpAllNodeVals()
+						print 'doAllActionsAtCurrentPoint: this is the last node in the list - downNode',downNode
+						self.dumpNodeVals(downNode)
+					metaStartAddress = nodeList[downNode][METAOFFST] + nodeList[downNode][METALENGTH]
+					currentNodeVec[METAOFFST] = metaStartAddress
+					print 'for node',theNodeNumber,'setting METAOFFST to ',currentNodeVec[METAOFFST]
+					currentNodeVec[NODECOMPL] = True
+					return NEED_TO_MOVE_UP
+				# advance to the next siser if there is one
+				
+				sisterInputFilePair = InputListHandler.getInputPair(endOfDownNodeInListPlusOne)
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: sisterInputFilePair',sisterInputFilePair
+				sistersNodeNumber = nodeList[downNode][RTNODENUM]
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: sistersNodeNumber',sistersNodeNumber
+				nodeList[sistersNodeNumber][FILEOFFST] = endOfDownNodeInListPlusOne
+				nodeList[sistersNodeNumber][METALENGTH] = sisterInputFilePair[1]
+				nodeList[sistersNodeNumber][NUMOFKIDS] = sisterInputFilePair[0]
+				currentNodeVec[CURRCHWIP] = DONE
+				if currentNodeVec[CHILDNUM] < currentNodeVec[NUMOFKIDS]:
+					currentNodeVec[CHILDNUM] = currentNodeVec[CHILDNUM] + 1
+				else:
+					pass	## TBD this is where the list ends
+				# set the meta offset for the current channel from the metaoffset of the daughter
+				#return EARLY_EXIT_FOR_DEBUG
+				self.dumpAllNodeVals()
+				return CURRENT_POINT_DONE
 			elif currentNodeVec[CURRCHWIP] == DONE:
-				pass										## TBD
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: Current channel is done'
+					self.dumpNodeVals(theNodeNumber)
+				if currentNodeVec[CURRCHNUM] < currentNodeVec[CHILDNUM]:
+					if debug_doAllActionsAtCurrentPoint:
+						print 'doAllActionsAtCurrentPoint: Move to the next daughter'
+					currentNodeVec[CURRCHNUM] = currentNodeVec[CURRCHNUM] + 1
+					return NEED_TO_MOVE_TO_CURRENT_DAUGHTER
+				currentNodeVec[NODECOMPL] = True
+				# get the offset here
+				
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: set node complete to true'
+					self.dumpNodeVals(theNodeNumber)
+				if theNodeNumber > 0:
+					return NEED_TO_MOVE_UP
+				else:
+					if debug_doAllActionsAtCurrentPoint:
+						print 'doAllActionsAtCurrentPoint: got to the top node'				
+					return CURRENT_POINT_DONE
+			else:
+				pass
+				if debug_doAllActionsAtCurrentPoint:
+					print 'doAllActionsAtCurrentPoint: wtf'
+					self.dumpNodeVals(theNodeNumber)
 		return EARLY_EXIT_FOR_DEBUG
 	
 	def processTree(self,inFileOffset,theNodeNumber):
@@ -478,7 +552,8 @@ class NodeFunctions():
 			print 'processTree: theNodeNumber',theNodeNumber
 			print 'processTree: inFileOffset',inFileOffset
 		currentNodeVec = nodeList[theNodeNumber]
-		self.dumpNodeVals(theNodeNumber)
+		if debug_processTree:
+			self.dumpNodeVals(theNodeNumber)
 		if debug_processTree:
 			print 'processTree: currentNodeVec',currentNodeVec
 		currentActionsFlag = self.doAllActionsAtCurrentPoint(theNodeNumber)
@@ -487,6 +562,8 @@ class NodeFunctions():
 		elif currentActionsFlag == TREE_COMPLETED:
 			return [TREE_DONE,inFileOffset,theNodeNumber]
 		theNodeNumber = self.doMovement(theNodeNumber,currentActionsFlag)
+		if debug_processTree:
+			print 'processTree: doMovement moving to node',theNodeNumber
 		if (currentNodeVec[DNNODENUM] != DONE) and (CURRCHWIP != DONE):
 			return [TREE_IN_PROGRESS,inFileOffset,theNodeNumber]
 		else:
@@ -512,7 +589,7 @@ def moveInListToTree(currentNodePtr,inputListOffset):
 	inPair = InputListHandler.getInputPair(inputListOffset)
 	if debug_moveInListToTree:
 		print "moveInListToTree: read inPair",inPair
-	childNodeNum = NodeHandler.addChildrenToNodeList(inPair,inputListOffset)	# pass the child count and meta count to the creator
+	childNodeNum = NodeHandler.addChildrenToNodeList(inPair,inputListOffset,currentNodePtr)	# pass the child count and meta count to the creator
 	if debug_moveInListToTree:
 		print "moveInListToTree: added childNodeNum",childNodeNum
 		print 'moveInListToTree: currentNodePtr',currentNodePtr
@@ -530,7 +607,7 @@ def newCoreCode():
 	theNodeNumber = 0
 	NodeHandler.changeNodeNumber(theNodeNumber)
 	InputListHandler.setInputListPtr(inputFileOffset)
-	NodeHandler.addFirstNode()
+	NodeHandler.createNewNode(inputFileOffset,theNodeNumber)
 	nodeToGet = [TREE_IN_PROGRESS,inputFileOffset,theNodeNumber]
 	inFileOffset = 0
 	if debug_newCoreCode:
@@ -543,30 +620,46 @@ def newCoreCode():
 		if debug_newCoreCode:
 			print 'newCoreCode: nodeToGet returned ',nodeToGet,
 		if (nodeToGet[0] == TREE_DONE):
-			print 'tree done'
+			if debug_newCoreCode:
+				print 'tree done'
 			return
 		elif nodeToGet[0] == EARLY_EXIT_FOR_DEBUG:
-			print 'newCoreCode: early exit for debugging at ',
-			print 'node',nodeToGet[2]
+			if debug_newCoreCode:
+				print 'newCoreCode: nodeToGet returned ',nodeToGet,
+				print 'newCoreCode: early exit for debugging at',
+				print 'node',nodeToGet[2]
 			return
-		elif nodeToGet[0] == TREE_IN_PROGRESS:
-			print 'tree in progress'
 		elif nodeToGet[0] == GET_NEXT_NODE:
-			print 'pull next address'
-		NodeHandler.dumpAllNodeVals()
-		if nodeToGet[0] == TREE_DONE:
-			return
+			if debug_newCoreCode:
+				print 'newCoreCode: pull next address'
+			pass
 		elif nodeToGet[0] == TREE_IN_PROGRESS:
 			pass
-		elif nodeToGet[0] == GET_NEXT_NODE:
-			moveInListToTree(nodeToGet[1],nodeToGet[2])
+		if debug_newCoreCode:
+			NodeHandler.dumpAllNodeVals()
+		theNodeNumber = nodeToGet[2]
+
+currentMtOff = 6
+currentMtCt = 7
+
+def sumTheMetaStuff():
+	accumMetaRecLens = 0
+	for node in nodeList:
+		startSpan = node[currentMtOff]
+		endSpan = node[currentMtOff] + node[currentMtCt]
+		while(startSpan < endSpan):
+			accumMetaRecLens += inputList[startSpan]
+			startSpan += 1
+	print '\nSum =',accumMetaRecLens
+
+			
 
 ##############################################################################
 ## Code follows
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input2.txt'
+inFileName = 'input.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
@@ -579,4 +672,7 @@ newCoreCode()
 
 print 'main: processing is done'
 NodeHandler.dumpAllNodeVals()
+
+sumTheMetaStuff()
+
 exit()
