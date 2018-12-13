@@ -158,7 +158,8 @@ EARLY_EXIT_FOR_DEBUG = 8
 class NodeFunctions():
 
 	def dumpAllNodeVals(self):
-	
+		"""
+		"""
 		i = 0
 		print '*** Node table ***'
 		print 'dumpAllNodeVals: nodes in table - length is',len(nodeList)
@@ -168,6 +169,8 @@ class NodeFunctions():
 		return
 	
 	def dumpBitVal(self,myStr,nodeNumber,theFieldVal):
+		"""
+		"""
 		print '', myStr,
 		if nodeList[nodeNumber][theFieldVal] == UNINIT:
 			print 'is uninitialized'
@@ -183,9 +186,8 @@ class NodeFunctions():
 		
 		:param: nodeNumber the offset to the node in array
 		"""
-		debug_dumpNodeVals = True
-		print 'dumpNodeVals:'
-		print 'Node Number',nodeNumber
+		debug_dumpNodeVals = False
+		print 'dumpNodeVals: at node',nodeNumber
 		print nodeList[nodeNumber]
 		if nodeNumber > len(nodeList) - 1:
 			abbyTerminate('dumpNodeVals: Offset is not in list, exiting...')
@@ -213,6 +215,11 @@ class NodeFunctions():
 		nodeList.append(node)
 		if debug_pushNode:
 			self.dumpAllNodeVals()
+		
+	def getNodeNumber(self):
+		"""getNodeNumber
+		"""
+		return currentNodeNumber
 		
 	def changeNodeNumber(self,newNodeNumber):
 		global currentNodeNumber
@@ -259,8 +266,7 @@ class NodeFunctions():
 		node[FILEOFFST] = childOffsetInList
 		self.pushNode(node)
 		if debug_createNewNode:
-			print 'Added first node',node
-			self.dumpAllNodeVals()
+			print 'createNewNode: created node',node
 		return
 	
 	def addChildrenToNodeList(self,inPair,inputListOffset,nodeNumber):
@@ -368,6 +374,33 @@ class NodeFunctions():
 		else:
 			exit()
 		
+	def processTree(self,inFileOffset,theNodeNumber):
+		"""If anything can be done, do it
+		determineAction based on state of currentNodeNumber
+		:returns: [flag,fileOffset,currentNodeNumber]
+		flag = DONE when tree is completed, UNINIT when tree is not completed
+		fileOffset is the location in the input file that the next string will come from
+		"""
+		debug_processTree = False
+		if debug_processTree:
+			print '\nprocessTree: reached function'
+			print 'processTree: theNodeNumber',theNodeNumber
+			print 'processTree: inFileOffset',inFileOffset
+		if debug_processTree:
+			self.dumpNodeVals(theNodeNumber)
+		if debug_processTree:
+			print 'processTree: nodeList[theNodeNumber]',nodeList[theNodeNumber]
+		currentActionsFlag = self.doAllActionsAtCurrentPoint(theNodeNumber)
+		if currentActionsFlag == EARLY_EXIT_FOR_DEBUG:
+			print 'processTree: early exit for debug'
+			return [EARLY_EXIT_FOR_DEBUG,inFileOffset,theNodeNumber]
+		elif currentActionsFlag == TREE_COMPLETED:
+			return [TREE_DONE,inFileOffset,theNodeNumber]
+		theNodeNumber = self.doMovement(theNodeNumber,currentActionsFlag)
+		if debug_processTree:
+			print 'processTree: doMovement moving to node',theNodeNumber
+		return [TREE_IN_PROGRESS,inFileOffset,theNodeNumber]
+		
 	def doAllActionsAtCurrentPoint(self,theNodeNumber):
 		"""Look around the node and find all of the actions that can be done at the node.
 		Does not do any movement but does as much as possible to the cells in the row, the row above and the row below
@@ -418,7 +451,7 @@ class NodeFunctions():
 		
 		"""
 		global nodeList
-		debug_doAllActionsAtCurrentPoint = False
+		debug_doAllActionsAtCurrentPoint = True
 		if debug_doAllActionsAtCurrentPoint:
 			print '\ndoAllActionsAtCurrentPoint: Reached function, node',theNodeNumber
 		if not nodeList[theNodeNumber][NODECOMPL]:					# Current node has not completed
@@ -428,12 +461,12 @@ class NodeFunctions():
 			if nodeList[theNodeNumber][CURRCHWIP] == UNINIT:			# kick off processing lower node
 				if debug_doAllActionsAtCurrentPoint:
 					print 'doAllActionsAtCurrentPoint: UNINIT node'
-					#self.dumpNodeVals(theNodeNumber)
+					self.dumpNodeVals(theNodeNumber)
 				nodeList[theNodeNumber][CURRCHWIP] = WIP
 				if nodeList[theNodeNumber][NUMOFKIDS] == 0:	
 					if debug_doAllActionsAtCurrentPoint:
 						print 'doAllActionsAtCurrentPoint: this is the no kids case  node',theNodeNumber
-						#self.dumpNodeVals(theNodeNumber)
+						self.dumpNodeVals(theNodeNumber)
 					nodeList[theNodeNumber][CURRCHWIP] = DONE
 					nodeList[theNodeNumber][CURRCHNUM] = 1
 					nodeList[theNodeNumber][NODECOMPL] = True
@@ -445,18 +478,21 @@ class NodeFunctions():
 				elif nodeList[theNodeNumber][DNNODENUM] >= 0:
 					nodeList[theNodeNumber][CURRCHNUM] = nodeList[theNodeNumber][DNNODENUM]
 					return NEED_TO_MOVE_DOWN
-				else: # child below needs to be created
+				else: # the first child below current node needs to be created
+					if debug_doAllActionsAtCurrentPoint:
+						self.dumpNodeVals(theNodeNumber)
 					childOffsetInList = nodeList[theNodeNumber][FILEOFFST] + 2
 					if debug_doAllActionsAtCurrentPoint:
-						print 'doAllActionsAtCurrentPoint: need to create a child at',childOffsetInList
+						print 'doAllActionsAtCurrentPoint: need to create first child below node',theNodeNumber
+						print 'doAllActionsAtCurrentPoint: child offset into inList ',childOffsetInList
 					self.createNewNode(childOffsetInList,theNodeNumber)
 					childNodeNum = len(nodeList)-1
 					nodeList[theNodeNumber][DNNODENUM] = childNodeNum
-					nodeList[theNodeNumber][CHILDNUM] = nodeList[theNodeNumber][NUMOFKIDS]
+					nodeList[childNodeNum][CHILDNUM] = 1
 					if debug_doAllActionsAtCurrentPoint:
-						print 'doAllActionsAtCurrentPoint: After making the new node childNodeNum',childNodeNum
-						self.dumpAllNodeVals()
-					return CURRENT_POINT_DONE
+						print 'doAllActionsAtCurrentPoint: Before making the new node moving to node',childNodeNum
+						self.dumpNodeVals(theNodeNumber)
+					return NEED_TO_MOVE_DOWN	# move down into the child
 			elif nodeList[theNodeNumber][CURRCHWIP] == WIP:			# Node is WIP but 
 				downNode = nodeList[theNodeNumber][DNNODENUM]
 				endOfDownNodeInListPlusOne = nodeList[downNode][METAOFFST] + nodeList[downNode][METALENGTH]
@@ -492,9 +528,8 @@ class NodeFunctions():
 						nodeList[theNodeNumber][CHILDNUM] = nodeList[theNodeNumber][CHILDNUM] + 1
 					else:
 						pass	## TBD this is where the list ends
-					# set the meta offset for the current channel from the metaoffset of the daughter
-					#return EARLY_EXIT_FOR_DEBUG
-					self.dumpAllNodeVals()
+					if debug_doAllActionsAtCurrentPoint:
+						self.dumpAllNodeVals()
 					return CURRENT_POINT_DONE
 			elif nodeList[theNodeNumber][CURRCHWIP] == DONE:
 				if debug_doAllActionsAtCurrentPoint:
@@ -505,7 +540,8 @@ class NodeFunctions():
 						print 'doAllActionsAtCurrentPoint: Move to the next daughter'
 					nodeList[theNodeNumber][CURRCHNUM] = nodeList[theNodeNumber][CURRCHNUM] + 1
 					return NEED_TO_MOVE_TO_CURRENT_DAUGHTER
-				nodeList[theNodeNumber][NODECOMPL] = True
+				nodeList[theNodeNumber][NODECOMPL] = True	## TBD broken here
+				## broken because the current channel number was broken earlier (was originally set up)
 				# get the offset here
 				
 				if debug_doAllActionsAtCurrentPoint:
@@ -519,39 +555,21 @@ class NodeFunctions():
 					return CURRENT_POINT_DONE
 			else:
 				pass
-				print 'doAllActionsAtCurrentPoint: wtf'
+				print 'doAllActionsAtCurrentPoint: wtf-1'
 				self.dumpNodeVals(theNodeNumber)
-		return EARLY_EXIT_FOR_DEBUG
-	
-	def processTree(self,inFileOffset,theNodeNumber):
-		"""If anything can be done, do it
-		determineAction based on state of currentNodeNumber
-		:returns: [flag,fileOffset,currentNodeNumber]
-		flag = DONE when tree is completed, UNINIT when tree is not completed
-		fileOffset is the location in the input file that the next string will come from
-		"""
-		debug_processTree = False
-		if debug_processTree:
-			print '\nprocessTree: reached function'
-			print 'processTree: theNodeNumber',theNodeNumber
-			print 'processTree: inFileOffset',inFileOffset
-		if debug_processTree:
+		else:	# node is complete at the point
+			if debug_doAllActionsAtCurrentPoint:
+				print 'doAllActionsAtCurrentPoint: node is complete'
+			if theNodeNumber == 0:
+				return TREE_COMPLETED
+			else:
+				return NEED_TO_MOVE_UP
+			print 'wtf-4'
 			self.dumpNodeVals(theNodeNumber)
-		if debug_processTree:
-			print 'processTree: nodeList[theNodeNumber]',nodeList[theNodeNumber]
-		currentActionsFlag = self.doAllActionsAtCurrentPoint(theNodeNumber)
-		if currentActionsFlag == EARLY_EXIT_FOR_DEBUG:
-			return [EARLY_EXIT_FOR_DEBUG,inFileOffset,theNodeNumber]
-		elif currentActionsFlag == TREE_COMPLETED:
-			return [TREE_DONE,inFileOffset,theNodeNumber]
-		theNodeNumber = self.doMovement(theNodeNumber,currentActionsFlag)
-		if debug_processTree:
-			print 'processTree: doMovement moving to node',theNodeNumber
-		if (nodeList[theNodeNumber][DNNODENUM] != DONE) and (CURRCHWIP != DONE):
-			return [TREE_IN_PROGRESS,inFileOffset,theNodeNumber]
-		else:
-			return [TREE_DONE,inFileOffset,theNodeNumber]
-		
+			self.dumpAllNodeVals()
+			exit()
+			return EARLY_EXIT_FOR_DEBUG
+	
 ########################################################################
 ## Code
 
@@ -609,8 +627,7 @@ def newCoreCode():
 		elif nodeToGet[0] == EARLY_EXIT_FOR_DEBUG:
 			if debug_newCoreCode:
 				print 'newCoreCode: nodeToGet returned ',nodeToGet,
-				print 'newCoreCode: early exit for debugging at',
-				print 'node',nodeToGet[2]
+				print 'newCoreCode: early exit for debugging at node',nodeToGet[2]
 			return
 		elif nodeToGet[0] == GET_NEXT_NODE:
 			if debug_newCoreCode:
@@ -649,6 +666,7 @@ NodeHandler = NodeFunctions()
 newCoreCode()
 
 print 'main: processing is done'
+print 'node at the end was',NodeHandler.getNodeNumber()
 NodeHandler.dumpAllNodeVals()
 
 sumTheMetaStuff()
