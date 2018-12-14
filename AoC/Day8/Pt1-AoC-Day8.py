@@ -171,7 +171,7 @@ NODE_COMPLETED = 7
 TREE_COMPLETED = 8
 EARLY_EXIT_FOR_DEBUG = 9
 
-debugAllModules = True
+debugAllModules = False
 
 class NodeFunctions():
 
@@ -377,10 +377,11 @@ class NodeFunctions():
 		"""
 		global nodeList
 		global debugAllModules
+		retVal = -1
 		if debugAllModules:
 			debug_doMovement = True
 		else:
-			debug_doMovement = False
+			debug_doMovement = True
 		if actionFlag == NEED_TO_MOVE_DOWN:
 			if debug_doMovement:
 				print 'doMovement: Moving from node',theNodeNumber,'down to node',nodeList[theNodeNumber][DNNODENUM]
@@ -389,17 +390,6 @@ class NodeFunctions():
 			if debug_doMovement:
 				print 'doMovement: Moving from node',theNodeNumber,'up to node',nodeList[theNodeNumber][UPNODENUM]
 			return nodeList[theNodeNumber][UPNODENUM]
-		elif actionFlag == NEED_TO_MOVE_DOWN_THEN_RIGHT:
-			if debug_doMovement:
-				print 'doMovement: Moving from node',theNodeNumber,'down and right to node',nodeList[theNodeNumber][RTNODENUM]
-			downNode = nodeList[theNodeNumber][DNNODENUM]
-			startingNode = nodeList[downNode][RTNODENUM]
-			if debug_doMovement:
-				print 'doMovement: Moving from node',theNodeNumber,'down and right to node',nodeList[theNodeNumber][RTNODENUM]
-				print 'doMovement: startingNode',startingNode
-				print 'doMovement: numberOfNodes',numberOfNodes
-#				exit()
-			return nodeList[theNodeNumber][RTNODENUM]
 		elif actionFlag == NEED_TO_MOVE_RIGHT:
 			if debug_doMovement:
 				print 'doMovement: Moving from node',theNodeNumber,'right to node',nodeList[theNodeNumber][RTNODENUM]
@@ -411,7 +401,7 @@ class NodeFunctions():
 		elif actionFlag == CURRENT_POINT_DONE:
 			return theNodeNumber
 		else:
-			print 'wtf-119'
+			print 'wtf-550pm'
 			exit()
 		
 	def prepForRightMove(self,theNodeNumber):
@@ -481,7 +471,7 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_doIncompleteChannelNotDone = True
 		else:
-			debug_doIncompleteChannelNotDone = False
+			debug_doIncompleteChannelNotDone = True
 		if debug_doIncompleteChannelNotDone:
 			print '\n**************************\ndoIncompleteChannelNotDone: possibly still active children, at node',theNodeNumber
 			self.dumpAllNodeVals()
@@ -529,9 +519,16 @@ class NodeFunctions():
 				pause
 				return self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
 			else:	# node below is done and there's a sister to the right
-				if self.prepForRightMove(theNodeNumber) == False:
-					return theNodeNumber
+				if debug_doIncompleteChannelNotDone:
+					print 'doIncompleteChannelNotDone: wtf-542pm'
+				if self.prepForRightMove(theNodeNumber) < 0:
+					if debug_doIncompleteChannelNotDone:
+						print 'doIncompleteChannelNotDone: prepForRightMove returned False'
+					return self.doMovement(theNodeNumber,CURRENT_POINT_DONE)
 				else:
+					if debug_doIncompleteChannelNotDone:
+						print 'doIncompleteChannelNotDone:  prepForRightMove returned wtf-545pm'
+						self.dumpAllNodeVals()
 					return self.doMovement(theNodeNumber,NEED_TO_MOVE_RIGHT)
 		elif nodeList[theNodeNumber][NUMOFKIDS] != 0: # the first child below current node needs to be created			
 			if debug_doIncompleteChannelNotDone:
@@ -550,7 +547,7 @@ class NodeFunctions():
 				self.addChildrenToNodeList(inPair,childOffsetInList,theNodeNumber)
 				nodeList[theNodeNumber][DNNODENUM] = nextChildNodeNumber	# down should only point to first in the list not the last in the list
 				if debug_doIncompleteChannelNotDone:
-					print 'doIncompleteChannelNotDone: Before making the new node moving to node',childNodeNum
+					print 'doIncompleteChannelNotDone: Before making the new node moving to node nextChildNodeNumber',nextChildNodeNumber
 					self.dumpNodeVals(theNodeNumber)
 			elif inPair[0] == 0:
 				childOffsetInList = nodeList[theNodeNumber][FILEOFFST] + 2
@@ -739,7 +736,7 @@ class NodeFunctions():
 #			exit()
 			return self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
 		else:
-			print 'doNodeCompleteNode: at node',theNodeNumber,'reached terminal count of node'
+			print '\n*************\ndoNodeCompleteNode: at node',theNodeNumber,'reached terminal count of node'
 			self.dumpNodeVals(theNodeNumber)
 			print 'doNodeCompleteNode: nodeList[parentNodeNumber][CURCHLDNUM]',nodeList[parentNodeNumber][CURCHLDNUM]
 			self.dumpAllNodeVals()
@@ -770,6 +767,9 @@ class NodeFunctions():
 		if debug_processTree:
 			print 'processTree: nodeList[theNodeNumber]',nodeList[theNodeNumber]
 		theNodeNumber = self.doAllActionsAtCurrentPoint(theNodeNumber)
+		if theNodeNumber < 0:
+			print 'wtf-538pm'
+			exit()
 		if theNodeNumber == 0:
 				return [TREE_DONE,inFileOffset,theNodeNumber]
 		return [TREE_IN_PROGRESS,inFileOffset,theNodeNumber]
@@ -816,29 +816,36 @@ class NodeFunctions():
 		- Node 1 meta offset should be unknown - it's only known in this case since the child count is zero - made unknown
 		
 		# Flags to operate on - first three lines of the input file
-		# node,[UP, DN, LT, RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHIP,CURCHNM,CHNUM]
-		# 	 0 [-1,  1, -1, -1,  2,    0,   -2,    3, False,     -2,     -2,    1]
-		#	 1 [ 0, -2, -1,  2,  0,    2,   -2,    3, False,     -2,     -2,    1]
-		#	 2 [ 0, -2,  1, -1, -2,   -2,   -2,   -2, False,     -2,     -2,    2]
-		
+		dumpAllNodeVals: nodes in table - length is 4
+		node, [UP, DN, LT, RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHDN,CHIP,CURCHLDNUM]
+		0  [-1,  1, -1, -1,  2,    0,   13,    3,  True,   True,   2,         1]
+		1   [0, -1, -1,  2,  0,    2,    4,    3,  True,   True,   1,         1]
+		2   [0,  3, 1,  -1,  1,    7,   12,    1,  True,   True,   1,         1]
+		3   [2, -1, -1, -1,  0,    9,   11,    1,  True,   True,   1,         1]
+		13 15
+		4 6
+		12 12
+		11 11
+		Sum = 138		
 		"""
 		global nodeList
 		global debugAllModules
 		if debugAllModules:
 			debug_doAllActionsAtCurrentPoint = True
 		else:
-			debug_doAllActionsAtCurrentPoint = True
+			debug_doAllActionsAtCurrentPoint = False
 		if debug_doAllActionsAtCurrentPoint:
 			print 'doAllActionsAtCurrentPoint: Reached function, node,',theNodeNumber
 			if theNodeNumber < 0:
 				print '\ndoAllActionsAtCurrentPoint: wtf-300pm - boy that went really bad'
-			if theNodeNumber >= len(nodeList):
-				print 'doAllActionsAtCurrentPoint: the node number is out of sync with the list'
-				## seems like a count got off by an add
 				exit()
+			if theNodeNumber >= len(nodeList):
+				print 'doAllActionsAtCurrentPoint: wtf-533pm the node number is out of sync with the list'
+				exit()
+				## seems like a count got off by an add
 		if not nodeList[theNodeNumber][NODECOMPL]:		# Current node has not completed
 			if debug_doAllActionsAtCurrentPoint:
-				print 'not complete'
+				print 'doAllActionsAtCurrentPoint: not complete'
 			return self.doNodeIncompleteNode(theNodeNumber)
 		else:											# node is complete at the point
 			if debug_doAllActionsAtCurrentPoint:
