@@ -1,5 +1,4 @@
 # Pt1-AoCDay8.py
-# Pt1-AoCDay8.py
 # 2018 Advent of Code
 # Day 8
 # Part 1
@@ -47,6 +46,9 @@ What is the sum of all metadata entries?
 
 Note: It's really more like this
 
+0 0 0 0  0  0  0 0 0 0 1  1 1 1 1 1
+0 1 2 3  4  5  6 7 8 9 0  1 2 3 4 5
+
 2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2
 A--                           -----
     B----------- C--       --
@@ -93,7 +95,11 @@ class filer():
 		"""Get the input pair at inputListPtr
 		"""
 		global inputList
-		debug_getInputPair= False
+		global debugAllModules
+		if debugAllModules:
+			debug_getInputPair = True
+		else:
+			debug_getInputPair = False
 		global debugAllModules
 		if debugAllModules:
 			debug_getInputPair = True
@@ -101,8 +107,7 @@ class filer():
 			debug_getInputPair = False
 		pair = [inputList[fileOffset],inputList[fileOffset+1]]
 		if debug_getInputPair:
-			print 'getInputPair: getting pair at file offset',fileOffset
-			print 'returned pair',pair
+			print 'getInputPair: getting pair at file offset',fileOffset,'returned pair',pair
 		return pair
 	
 	def setInputListPtr(self,pointer):
@@ -145,7 +150,7 @@ CHANNELIP = 10	# Count of the Current Channel that is being processed
 CURCHLDNUM = 11	# Count of the channel that is being loaded
 
 defaultNode = [0,0,0,0,0,0,0,0,0,0,0,0]
-defaultNodeDescr = '[UP,DN,LT,RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHDN,CHLDNUM]'
+defaultNodeDescr = '[UP,DN,LT,RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHDN,CHIP,CURCHLDNUM]'
 
 DONE = -1
 UNINIT = -2
@@ -238,8 +243,8 @@ class NodeFunctions():
 		if debug_pushNode:
 			self.dumpAllNodeVals()
 		
-	def createFirstNodeBelowCurrentNode(self,childOffsetInList,theNodeNumber):
-		"""createFirstNodeBelowCurrentNode - add a node
+	def createSingleNodeBelowCurrentNode(self,childOffsetInList,theNodeNumber):
+		"""createSingleNodeBelowCurrentNode - add a node
 		Initialize the pointers for the first node
 		Special values for pointers are
 		DONE dead end (will not be updated later)
@@ -251,38 +256,39 @@ class NodeFunctions():
 		global nodeList
 		global debugAllModules
 		if debugAllModules:
-			debug_createFirstNodeBelowCurrentNode = True
+			debug_createSingleNodeBelowCurrentNode = True
 		else:
-			debug_createFirstNodeBelowCurrentNode = False
-		if debug_createFirstNodeBelowCurrentNode:
-			print 'childOffsetInList,theNodeNumber',childOffsetInList,theNodeNumber
+			debug_createSingleNodeBelowCurrentNode = False
+		if debug_createSingleNodeBelowCurrentNode:
+			print 'createSingleNodeBelowCurrentNode: childOffsetInList',childOffsetInList
+			print 'createSingleNodeBelowCurrentNode: theNodeNumber',theNodeNumber
 		node = [0,0,0,0,0,0,0,0,0,0,0,0]
+		node[RTNODENUM] = DONE
 		if theNodeNumber == 0:
 			node[UPNODENUM] = DONE
+			node[NODECOMPL] = False
 		else:
 			node[UPNODENUM] = theNodeNumber
+			node[NODECOMPL] = True
 		if inputList[childOffsetInList] == 0:	# Number of Children = 0 case
 			node[DNNODENUM] = DONE
 			node[METAOFFST] = childOffsetInList + 2
-			node[NODECOMPL] = False
 			node[CURRCHDONE] = True
 		else:
 			node[DNNODENUM] = UNINIT
 			node[METAOFFST] = UNINIT
-			node[NODECOMPL] = False
 			node[CURRCHDONE] = False
 		if theNodeNumber == 0:
 			node[METAOFFST] = len(inputList) - inputList[childOffsetInList+1] 
 		node[CHANNELIP] = 1
 		node[CURCHLDNUM] = 1
 		node[LFNODENUM] = DONE
-		node[RTNODENUM] = UNINIT
 		node[NUMOFKIDS] = inputList[childOffsetInList]
 		node[METALENGTH] = inputList[childOffsetInList+1]
 		node[FILEOFFST] = childOffsetInList
 		self.pushNode(node)
-		if debug_createFirstNodeBelowCurrentNode:
-			print 'createFirstNodeBelowCurrentNode: created node',node
+		if debug_createSingleNodeBelowCurrentNode:
+			print 'createSingleNodeBelowCurrentNode: created node',node
 		return
 		
 	def addChildrenToNodeList(self,inPair,inputListOffset,nodeNumber):
@@ -305,7 +311,7 @@ class NodeFunctions():
 			print 'addChildrenToNodeList: numberOfKids',numberOfKids
 			print 'addChildrenToNodeList: metaCountAdr,',metaCountAdr
 		kidNum = 1
-		endOfNodes = len(nodeList)		# add to end of the current nodes
+		firstNewNodeNumber = len(nodeList)		# add to end of the current nodes
 		parentNum = nodeNumber
 		while kidNum <= numberOfKids:
 			node = [0,0,0,0,0,0,0,0,0,0,0,0]	# manual  copy of default node
@@ -333,8 +339,9 @@ class NodeFunctions():
 			self.pushNode(node)
 			kidNum += 1
 		if debug_addChildrenToNodeList:
-			print 'addChildrenToNodeList: returning endOfNodes',endOfNodes
-		return endOfNodes				# node number of first added child
+			print 'addChildrenToNodeList: returning firstNewNodeNumber',firstNewNodeNumber
+			self.dumpAllNodeVals()
+		return firstNewNodeNumber				# node number of first added child
 	
 	def doMovement(self,theNodeNumber,actionFlag):
 		"""doMovement
@@ -470,7 +477,11 @@ class NodeFunctions():
 			B----------- C-----------
 							 D-----
 		"""
-		debug_doIncompleteChannelNotDone = False
+		global debugAllModules
+		if debugAllModules:
+			debug_doIncompleteChannelNotDone = True
+		else:
+			debug_doIncompleteChannelNotDone = False
 		if debug_doIncompleteChannelNotDone:
 			print '\n**************************\ndoIncompleteChannelNotDone: possibly still active children, at node',theNodeNumber
 			self.dumpAllNodeVals()
@@ -530,12 +541,31 @@ class NodeFunctions():
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: child offset into inList ',childOffsetInList
 			inPair = InputListHandler.getInputPair(childOffsetInList)
-			nextChildNodeNumber = len(nodeList)
-			self.addChildrenToNodeList(inPair,childOffsetInList,theNodeNumber)
-			nodeList[theNodeNumber][DNNODENUM] = nextChildNodeNumber	# down should only point to first in the list not the last in the list
 			if debug_doIncompleteChannelNotDone:
-				print 'doIncompleteChannelNotDone: Before making the new node moving to node',childNodeNum
-				self.dumpNodeVals(theNodeNumber)
+				print 'doIncompleteChannelNotDone: the input pair was',inPair
+			if inPair[0] != 0:
+				if debug_doIncompleteChannelNotDone:
+					print 'doIncompleteChannelNotDone: the input pair [0] was',inPair[0]
+				nextChildNodeNumber = len(nodeList)
+				self.addChildrenToNodeList(inPair,childOffsetInList,theNodeNumber)
+				nodeList[theNodeNumber][DNNODENUM] = nextChildNodeNumber	# down should only point to first in the list not the last in the list
+				if debug_doIncompleteChannelNotDone:
+					print 'doIncompleteChannelNotDone: Before making the new node moving to node',childNodeNum
+					self.dumpNodeVals(theNodeNumber)
+			elif inPair[0] == 0:
+				childOffsetInList = nodeList[theNodeNumber][FILEOFFST] + 2
+				newNodeNum = len(nodeList)
+				if debug_doIncompleteChannelNotDone:
+					print 'doIncompleteChannelNotDone: got zero kids - need to fix up stufffff'
+					print 'doIncompleteChannelNotDone: childOffsetInList',childOffsetInList
+				self.createSingleNodeBelowCurrentNode(childOffsetInList,theNodeNumber)
+				nodeList[theNodeNumber][METAOFFST] = nodeList[newNodeNum][METAOFFST] + nodeList[newNodeNum][METALENGTH]
+				nodeList[theNodeNumber][DNNODENUM] = newNodeNum
+				nodeList[theNodeNumber][NODECOMPL] = True
+				nodeList[theNodeNumber][CURRCHDONE] = True
+				if debug_doIncompleteChannelNotDone:
+					self.dumpAllNodeVals()
+				return self.doMovement(theNodeNumber,CURRENT_POINT_DONE)
 			return self.doMovement(theNodeNumber,NEED_TO_MOVE_DOWN)	# move down into the child
 		else:
 			print 'wtf-725am'
@@ -837,9 +867,13 @@ def newCoreCode():
 	inputFileOffset = 0
 	theNodeNumber = 0
 	InputListHandler.setInputListPtr(inputFileOffset)
-	NodeHandler.createFirstNodeBelowCurrentNode(inputFileOffset,theNodeNumber)
+	NodeHandler.createSingleNodeBelowCurrentNode(inputFileOffset,theNodeNumber)
+	nextNodeNum = len(nodeList)
+	nodeList[0][DNNODENUM] = nextNodeNum
+	inPair = InputListHandler.getInputPair(inputFileOffset)
+	NodeHandler.addChildrenToNodeList(inPair,inputFileOffset,theNodeNumber)
 	nodeToGet = [TREE_IN_PROGRESS,inputFileOffset,theNodeNumber]
-	inFileOffset = 2
+	inFileOffset = 0
 	if debug_newCoreCode:
 		print 'newCoreCode: starting loop'
 	while True:
