@@ -406,10 +406,14 @@ class NodeFunctions():
 		
 	def prepForRightMove(self,theNodeNumber):
 		"""prepForRightMove
+		returns true or false
+		and returns a number
+		not good
+		wtf-613pm
 		"""
 		global debugAllModules
 		if debugAllModules:
-			debug_prepForRightMove = False
+			debug_prepForRightMove = True
 		else:
 			debug_prepForRightMove = False
 		parentNode = nodeList[theNodeNumber][UPNODENUM]
@@ -425,7 +429,7 @@ class NodeFunctions():
 			newNodeNum = self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)		# have to go up to create uncle
 			if debug_prepForRightMove:
 				print 'prepForRightMove: the new node number will be',newNodeNum
-			return newNodeNum
+			return False
 #		os.system("pause")
 		## should ONLY increment the CHANNELIP when it completes the channel
 		print 'prepForRightMove: wtf-1235'
@@ -521,13 +525,13 @@ class NodeFunctions():
 			else:	# node below is done and there's a sister to the right
 				if debug_doIncompleteChannelNotDone:
 					print 'doIncompleteChannelNotDone: wtf-542pm'
-				if self.prepForRightMove(theNodeNumber) < 0:
+				if not self.prepForRightMove(theNodeNumber):
 					if debug_doIncompleteChannelNotDone:
 						print 'doIncompleteChannelNotDone: prepForRightMove returned False'
 					return self.doMovement(theNodeNumber,CURRENT_POINT_DONE)
 				else:
 					if debug_doIncompleteChannelNotDone:
-						print 'doIncompleteChannelNotDone:  prepForRightMove returned wtf-545pm'
+						print 'doIncompleteChannelNotDone:  prepForRightMove returned True'
 						self.dumpAllNodeVals()
 					return self.doMovement(theNodeNumber,NEED_TO_MOVE_RIGHT)
 		elif nodeList[theNodeNumber][NUMOFKIDS] != 0: # the first child below current node needs to be created			
@@ -763,6 +767,7 @@ class NodeFunctions():
 			print 'processTree: theNodeNumber',theNodeNumber
 			print 'processTree: inFileOffset',inFileOffset
 		if debug_processTree:
+			self.dumpNodeVals(theNodeNumber)
 			self.dumpNodeVals(theNodeNumber)
 		if debug_processTree:
 			print 'processTree: nodeList[theNodeNumber]',nodeList[theNodeNumber]
