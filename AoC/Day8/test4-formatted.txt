@@ -1,0 +1,37 @@
+0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 
+
+4 6 0 5 1 2 3 4 5 1 1 0 2 1 2 9 0 4 1 2 3 4 1 4 1 5 0 7 1 2 3 4 5 6 7 1 2 3 4 5 1 2 3 4 1 2 3 4 5 6
+
+0--------------------------------------------------------------------------------------------------
+    1------------ 2------------ 3---------- 4 ------------------------------------------
+	                  5 -----                   6 -----------------------------
+					                                7 ---------------
+													
+dumpFormattedAllNodeVals: nodes in table - length is 6
+ Node  UP    DN    LT    RT   KDS  FILOF METOF METCT  NDCMP  CHDN CHIP
+  0    DN     1    DN    DN     4     0   <16>    6     0     0     2
+  1     0    DN    DN     2     0     2     4     5     1     1     1
+  2     0     5     1    DN     1     9    15     1     1     1     1
+  3     0    UN     2     4    UN    UN    UN    UN     0     0     1
+  4     0    UN     3    DN    UN    UN    UN    UN     0     0     1
+  5     2    DN    DN    DN     0    11    13     2     1     1     1
+  
+At a node:
+	get pair from input file (child count and meta count)
+	create a node for the current input
+	if child count == 0
+		Mark current node done
+		Increment the child in progress number
+		Move up one node
+	if child count > 0 and children have not been populated (DNNODENUM == UNINIT)
+		add children to the list
+	Is the node below populated (Child Count > 0 and DNNODENUM > 0)
+		Yes - move down one node
+		No - populate all the children
+	Is there a populated sibling?
+		move to the sibling
+	Is there an unpopulated sibling?
+		fill in sibling string
+		move up?
+
