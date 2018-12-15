@@ -147,10 +147,9 @@ METALENGTH = 7	# Number of elements in the metadata
 NODECOMPL = 8	# Node complete flag (True = all daughters below are completely resolved, False = work to do)
 CURRCHDONE = 9	# Current Channel is Done (False = current channel is being worked on, True = Done)
 CHANNELIP = 10	# Count of the Current Channel that is being processed
-CURCHLDNUM = 11	# Count of the channel that is being loaded
 
-defaultNode = [0,0,0,0,0,0,0,0,0,0,0,0]
-defaultNodeDescr = '[UP,DN,LT,RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHDN,CHIP,CURCHLDNUM]'
+defaultNode = [0,0,0,0,0,0,0,0,0,0,0]
+defaultNodeDescr = '[UP,DN,LT,RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHDN,CHIP]'
 
 DONE = -1
 UNINIT = -2
@@ -166,10 +165,9 @@ NEED_TO_MOVE_DOWN = 2
 NEED_TO_MOVE_RIGHT = 3
 NEED_TO_MOVE_DOWN_THEN_RIGHT = 4
 NEED_TO_MOVE_UP = 5
-NEED_TO_MOVE_TO_CURRENT_DAUGHTER = 6
-NODE_COMPLETED = 7
-TREE_COMPLETED = 8
-EARLY_EXIT_FOR_DEBUG = 9
+NODE_COMPLETED = 6
+TREE_COMPLETED = 6
+EARLY_EXIT_FOR_DEBUG = 8
 
 debugAllModules = False
 
@@ -186,6 +184,38 @@ class NodeFunctions():
 			print i,nodeList[i]
 		return
 	
+	def dumpFormattedAllNodeVals(self):
+		"""
+		"""
+		print '*** Node table ***'
+		print 'dumpAllNodeVals: nodes in table - length is',len(nodeList)
+		print 'node,',defaultNodeDescr
+		i = 0
+		for item in nodeList:
+			if i < 10:
+				print '  ',
+			elif i< 100:
+				print ' ',
+			print i,
+			for element in item:
+				if element == UNINIT:
+					print ' UN',
+				elif element == DONE:
+					print ' DN',
+				elif element >= 10:
+					print element,
+				elif element >= 0:
+					print ' ',element,
+				elif element == False:
+					print ' F',
+				elif element == True:
+					print ' T',
+				else:
+					print element,
+			print
+			i += 1
+		return
+		
 	def dumpBitVal(self,myStr,nodeNumber,theFieldVal):
 		"""
 		"""
@@ -221,7 +251,6 @@ class NodeFunctions():
 		self.dumpBitVal('Node done status',nodeNumber,NODECOMPL)
 		self.dumpBitVal('Current Child Done status',nodeNumber,CURRCHDONE)
 		self.dumpBitVal('Current child number being processed',nodeNumber,CHANNELIP)
-		self.dumpBitVal('Current child number being loaded',nodeNumber,CURCHLDNUM)
 		
 	def pushNode(self,node):
 		"""pushNode - 
@@ -262,7 +291,7 @@ class NodeFunctions():
 		if debug_createSingleNodeBelowCurrentNode:
 			print 'createSingleNodeBelowCurrentNode: childOffsetInList',childOffsetInList
 			print 'createSingleNodeBelowCurrentNode: theNodeNumber',theNodeNumber
-		node = [0,0,0,0,0,0,0,0,0,0,0,0]
+		node = [0,0,0,0,0,0,0,0,0,0,0]
 		node[RTNODENUM] = DONE
 		if theNodeNumber == 0:
 			node[UPNODENUM] = DONE
@@ -281,7 +310,6 @@ class NodeFunctions():
 		if theNodeNumber == 0:
 			node[METAOFFST] = len(inputList) - inputList[childOffsetInList+1] 
 		node[CHANNELIP] = 1
-		node[CURCHLDNUM] = 1
 		node[LFNODENUM] = DONE
 		node[NUMOFKIDS] = inputList[childOffsetInList]
 		node[METALENGTH] = inputList[childOffsetInList+1]
@@ -314,7 +342,7 @@ class NodeFunctions():
 		firstNewNodeNumber = len(nodeList)		# add to end of the current nodes
 		parentNum = nodeNumber
 		while kidNum <= numberOfKids:
-			node = [0,0,0,0,0,0,0,0,0,0,0,0]	# manual  copy of default node
+			node = [0,0,0,0,0,0,0,0,0,0,0]	# manual  copy of default node
 			node[UPNODENUM] = parentNum
 			node[DNNODENUM] = UNINIT
 			if kidNum == numberOfKids:
@@ -335,7 +363,6 @@ class NodeFunctions():
 			node[NODECOMPL] = False
 			node[CURRCHDONE] = False
 			node[CHANNELIP] = 1
-			node[CURCHLDNUM] = 1
 			self.pushNode(node)
 			kidNum += 1
 		if debug_addChildrenToNodeList:
@@ -394,10 +421,6 @@ class NodeFunctions():
 			if debug_doMovement:
 				print 'doMovement: Moving from node',theNodeNumber,'right to node',nodeList[theNodeNumber][RTNODENUM]
 			return nodeList[theNodeNumber][RTNODENUM]
-		elif actionFlag == NEED_TO_MOVE_TO_CURRENT_DAUGHTER:
-			if debug_doMovement:
-				print 'doMovement: Moving from node',theNodeNumber,'up to current daughter',nodeList[theNodeNumber][CHANNELIP]
-			return nodeList[theNodeNumber][CHANNELIP]
 		elif actionFlag == CURRENT_POINT_DONE:
 			return theNodeNumber
 		else:
@@ -519,7 +542,7 @@ class NodeFunctions():
 				if debug_doIncompleteChannelNotDone:
 					print 'doIncompleteChannelNotDone: wtf-1209pm node',theNodeNumber
 					self.dumpNodeVals(theNodeNumber)
-					self.dumpAllNodeVals()
+					self.dumpFormattedAllNodeVals()
 				pause
 				return self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
 			else:	# node below is done and there's a sister to the right
@@ -638,24 +661,14 @@ class NodeFunctions():
 			if theNodeNumber < 0:
 				print 'doNodeCompleteNode: wtf-259pm'
 				exit()
-			print 'doNodeCompleteNode: table before'
-			self.dumpAllNodeVals()
+			# print 'doNodeCompleteNode: table before'
+			# self.dumpAllNodeVals()
 		# node is complete but the parent may not be done yet
 		parentNodeNumber = nodeList[theNodeNumber][UPNODENUM]
 		if debug_doNodeCompleteNode:
 			print 'doNodeCompleteNode: parentNodeNumber',parentNodeNumber
 		parentOffset = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
 		nodeList[parentNodeNumber][METAOFFST] = parentOffset
-		## ****************************************
-		## problem is that I am using the channel count for two purposes
-		## one purpose is to count the channels as they loadListFromFile
-		## the other purpose is to count across the line when I am working off channels
-		## need to either create a channelLoadingCount with a differen channelWorkingCount
-		## or need to set back the channel count after the last element is loaded in the line
-		## can't set the count back since they can be worked off as they go along
-		## alternately can I do a check to see if the channel count is the terminal count yet?
-		## I thought I was doing that check already
-		
 		if nodeList[parentNodeNumber][CHANNELIP] == nodeList[parentNodeNumber][NUMOFKIDS]:
 			nodeList[parentNodeNumber][NODECOMPL] = True
 			nodeList[parentNodeNumber][CURRCHDONE] = True
@@ -668,12 +681,12 @@ class NodeFunctions():
 			if debug_doNodeCompleteNode:
 				print 'doNodeCompleteNode: Next Node number is',nextNodeVal
 			return nextNodeVal
-		elif nodeList[parentNodeNumber][CURCHLDNUM] < nodeList[parentNodeNumber][NUMOFKIDS]:
+		elif nodeList[parentNodeNumber][CHANNELIP] < nodeList[parentNodeNumber][NUMOFKIDS]:
 			if nodeList[theNodeNumber][RTNODENUM] < 0:	## uninitialized node to the right
 				## wtf-227 I think these will be eliminated since I'm going to be creating lists as I go down
 				if debug_doNodeCompleteNode:
 					print 'doNodeCompleteNode: need a node to the right of me'
-					print 'doNodeCompleteNode: nodeList[parentNodeNumber][CURCHLDNUM]',nodeList[parentNodeNumber][CURCHLDNUM]
+					print 'doNodeCompleteNode: nodeList[parentNodeNumber][CHANNELIP]',nodeList[parentNodeNumber][CHANNELIP]
 					print 'doNodeCompleteNode: nodeList[parentNodeNumber][NUMOFKIDS]',nodeList[parentNodeNumber][NUMOFKIDS]
 					#os.system("pause")
 				offsetInFile = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
@@ -683,16 +696,7 @@ class NodeFunctions():
 				nodeList[theNodeNumber][DNNODENUM] = nextChildNodeNumber	# down should only point to first in the list not the last in the list
 				if debug_doNodeCompleteNode:
 					self.dumpAllNodeVals()
-					print 'wtf-227'
-					os.system("pause")
-				## need to move the parent count up by one
-				## should only increment the CHANNELIP when it creates a new sibling
-				## or should it only increment the CHANNELIP when it actually moves to the right?
-				## commented next line out because it was being incremented in two places
-				nodeList[parentNodeNumber][CURCHLDNUM] = nodeList[parentNodeNumber][CURCHLDNUM] + 1
-				if debug_doNodeCompleteNode:
-					pass
-					#os.system("pause")
+				nodeList[parentNodeNumber][CHANNELIP] = nodeList[parentNodeNumber][CHANNELIP] + 1
 				if debug_doNodeCompleteNode:
 					print 'doNodeCompleteNode: staying at the same node but causing re-run'
 					self.dumpAllNodeVals()
@@ -740,10 +744,13 @@ class NodeFunctions():
 #			exit()
 			return self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
 		else:
-			print '\n*************\ndoNodeCompleteNode: at node',theNodeNumber,'reached terminal count of node'
+			print 'doNodeCompleteNode: fell past all of the if and elif clauses node',theNodeNumber
+			print 'doNodeCompleteNode: , parent channel pointer',nodeList[parentNodeNumber][CHANNELIP]
+			print 'doNodeCompleteNode: , nodeList[parentNodeNumber][CHANNELIP]',nodeList[parentNodeNumber][CHANNELIP]
+			print 'doNodeCompleteNode: , nodeList[parentNodeNumber][NUMOFKIDS]',nodeList[parentNodeNumber][NUMOFKIDS]
 			self.dumpNodeVals(theNodeNumber)
-			print 'doNodeCompleteNode: nodeList[parentNodeNumber][CURCHLDNUM]',nodeList[parentNodeNumber][CURCHLDNUM]
-			self.dumpAllNodeVals()
+			print 'doNodeCompleteNode: nodeList[parentNodeNumber][CHANNELIP]',nodeList[parentNodeNumber][CHANNELIP]
+			self.dumpFormattedAllNodeVals()
 			print 'doNodeCompleteNode: parentNodeNumber',parentNodeNumber
 			print 'doNodeCompleteNode: parent vector'
 			self.dumpNodeVals(parentNodeNumber)
@@ -822,11 +829,11 @@ class NodeFunctions():
 		
 		# Flags to operate on - first three lines of the input file
 		dumpAllNodeVals: nodes in table - length is 4
-		node, [UP, DN, LT, RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHDN,CHIP,CURCHLDNUM]
-		0  [-1,  1, -1, -1,  2,    0,   13,    3,  True,   True,   2,         1]
-		1   [0, -1, -1,  2,  0,    2,    4,    3,  True,   True,   1,         1]
-		2   [0,  3, 1,  -1,  1,    7,   12,    1,  True,   True,   1,         1]
-		3   [2, -1, -1, -1,  0,    9,   11,    1,  True,   True,   1,         1]
+		node, [UP, DN, LT, RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHDN,CHIP]
+		0  [-1,  1, -1, -1,  2,    0,   13,    3,  True,   True,      2]
+		1   [0, -1, -1,  2,  0,    2,    4,    3,  True,   True,      1]
+		2   [0,  3, 1,  -1,  1,    7,   12,    1,  True,   True,      1]
+		3   [2, -1, -1, -1,  0,    9,   11,    1,  True,   True,      1]
 		13 15
 		4 6
 		12 12
