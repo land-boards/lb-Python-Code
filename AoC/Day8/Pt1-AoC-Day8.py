@@ -422,10 +422,9 @@ class NodeFunctions():
 		
 	def prepForRightMove(self,theNodeNumber):
 		"""prepForRightMove
-		returns true or false
-		and returns a number
-		not good
-		wtf-613pm
+		:returns: true or false
+		True = can make the move to the right
+		False = cant make the move to the right - should be designed out by fixes to calling routines
 		"""
 		global debugAllModules
 		if debugAllModules:
@@ -445,6 +444,8 @@ class NodeFunctions():
 			newNodeNum = self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)		# have to go up to create uncle
 			if debug_prepForRightMove:
 				print 'prepForRightMove: the new node number will be',newNodeNum
+			print 'prepForRightMove: returning false'
+			exit()
 			return False
 #		os.system("pause")
 		## should ONLY increment the CHANNELIP when it completes the channel
@@ -496,7 +497,7 @@ class NodeFunctions():
 			print '\n**************************\ndoIncompleteChannelNotDone: possibly still active children, at node',theNodeNumber
 			self.dumpAllNodeVals()
 		## if my child count is not exhausted and the child below me has UNINIT as the pointer then create a child to the right 
-		if nodeList[theNodeNumber][DNNODENUM] != -2:
+		if nodeList[theNodeNumber][DNNODENUM] >= 0:
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: Move down to the child already below this node'
 				#self.dumpNodeVals(theNodeNumber)
@@ -521,7 +522,7 @@ class NodeFunctions():
 			parentNode = nodeList[theNodeNumber][UPNODENUM]
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: parent node number',parentNode
-			if nodeList[theNodeNumber][CHANNELIP] == nodeList[theNodeNumber][NUMOFKIDS]:
+			if nodeList[theNodeNumber][CHANNELIP] == nodeList[theNodeNumber][NUMOFKIDS]:	# reached the last child
 				if debug_doIncompleteChannelNotDone:
 					print 'doIncompleteChannelNotDone: parent has reached the last child'
 				nodeList[theNodeNumber][NODECOMPL] = True
@@ -538,12 +539,13 @@ class NodeFunctions():
 					self.dumpFormattedAllNodeVals()
 				pause
 				return self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
-			else:	# node below is done and there's a sister to the right
+			else:	# node below is done and there's already a sister to the right
 				if debug_doIncompleteChannelNotDone:
 					print 'doIncompleteChannelNotDone: wtf-542pm'
 				if not self.prepForRightMove(theNodeNumber):
 					if debug_doIncompleteChannelNotDone:
 						print 'doIncompleteChannelNotDone: prepForRightMove returned False'
+						exit()
 					return self.doMovement(theNodeNumber,CURRENT_POINT_DONE)
 				else:
 					if debug_doIncompleteChannelNotDone:
@@ -700,7 +702,8 @@ class NodeFunctions():
 				print 'doNodeCompleteNode: still kids to the right of the parent'
 				print 'wtf-1039am'
 				if self.prepForRightMove(theNodeNumber) == False:
-					return theNodeNumber
+					print 'wtf-724pm'
+					exit()
 				else:
 					return theNodeNumber
 			if debug_doNodeCompleteNode:
@@ -891,6 +894,7 @@ def newCoreCode():
 		print 'newCoreCode: starting loop'
 	while True:
 		nodeToGet = NodeHandler.processTree(inFileOffset,theNodeNumber)
+		os.system("pause")
 		if debug_newCoreCode:
 			print 'newCoreCode: nodeToGet returned ',nodeToGet,
 		if (nodeToGet[0] == TREE_DONE):
