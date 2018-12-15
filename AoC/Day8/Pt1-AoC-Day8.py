@@ -146,8 +146,9 @@ CURRCHDONE = 9	# Current Channel is Done (False = current channel is being worke
 CHANNELIP = 10	# Count of the Current Channel that is being processed
 
 defaultNode = [0,0,0,0,0,0,0,0,0,0,0]
-defaultNodeDescr = '[UP,DN,LT,RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHDN,CHIP]'
+defaultNodeDescr = ' Node  UP    DN    LT    RT   KDS  FILOF METOF METCT  NDCMP  CHDN CHIP'
 
+DONE = -1
 DONE = -1
 UNINIT = -2
 WIP = -3
@@ -168,45 +169,28 @@ EARLY_EXIT_FOR_DEBUG = 8
 
 class NodeFunctions():
 
-	def dumpAllNodeVals(self):
-		"""
-		"""
-		i = 0
-		print '*** Node table ***'
-		print 'dumpAllNodeVals: nodes in table - length is',len(nodeList)
-		print 'node,',defaultNodeDescr
-		for i in xrange(len(nodeList)):
-			print i,nodeList[i]
-		return
-	
 	def dumpFormattedAllNodeVals(self):
 		"""
 		"""
 		print '*** Node table ***'
-		print 'dumpAllNodeVals: nodes in table - length is',len(nodeList)
-		print 'node,',defaultNodeDescr
+		print 'dumpFormattedAllNodeVals: nodes in table - length is',len(nodeList)
+		print defaultNodeDescr
 		i = 0
 		for item in nodeList:
-			if i < 10:
-				print '  ',
-			elif i< 100:
-				print ' ',
-			print i,
+			print '%3d' % (i),
 			for element in item:
 				if element == UNINIT:
-					print ' UN',
+					print '%5s' % ('UN'),
 				elif element == DONE:
-					print ' DN',
-				elif element >= 10:
-					print element,
+					print '%5s' % ('DN'),
 				elif element >= 0:
-					print ' ',element,
+					print '%5d' % (element),
 				elif element == False:
-					print ' F',
+					print '%5s' % ('F'),
 				elif element == True:
-					print ' T',
-				else:
-					print element,
+					print '%5s' % ('T'),
+				elif element >= 0:
+					print '%5d' % (element),
 			print
 			i += 1
 		return
@@ -256,16 +240,17 @@ class NodeFunctions():
 			debug_pushNode = True
 		else:
 			debug_pushNode = False
-		print len(nodeList)
+		if debug_pushNode:
+			print len(nodeList)
 		if len(nodeList) > 200:
-			self.dumpAllNodeVals()
+			self.dumpFormattedAllNodeVals()
 			exit()
 		debug_pushNode = False
 		if debug_pushNode:
 			print 'pushNode: node is',node,'previous offset',len(nodeList)-1
 		nodeList.append(node)
 		if debug_pushNode:
-			self.dumpAllNodeVals()
+			self.dumpFormattedAllNodeVals()
 		
 	def createSingleNodeBelowCurrentNode(self,childOffsetInList,theNodeNumber):
 		"""createSingleNodeBelowCurrentNode - add a node
@@ -362,7 +347,7 @@ class NodeFunctions():
 			kidNum += 1
 		if debug_addChildrenToNodeList:
 			print 'addChildrenToNodeList: returning firstNewNodeNumber',firstNewNodeNumber
-			self.dumpAllNodeVals()
+			self.dumpFormattedAllNodeVals()
 		return firstNewNodeNumber				# node number of first added child
 	
 	def doMovement(self,theNodeNumber,actionFlag):
@@ -439,17 +424,17 @@ class NodeFunctions():
 				print 'prepForRightMove: when children list was created this node was only partly populated'
 				print 'prepForRightMove: need to create a new node to the right of this node before moving to the node'
 				print 'prepForRightMove: will need to pass the sibling the address and my node number'
-				print 'repForRightMove: it would be better to move up a level and let the parent make siblings'
-				self.dumpAllNodeVals()
+				print 'prepForRightMove: it would be better to move up a level and let the parent make siblings'
+				self.dumpFormattedAllNodeVals()
 			newNodeNum = self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)		# have to go up to create uncle
 			if debug_prepForRightMove:
 				print 'prepForRightMove: the new node number will be',newNodeNum
-			print 'prepForRightMove: returning false'
-			exit()
+				print 'prepForRightMove: returning false'
 			return False
 #		os.system("pause")
 		## should ONLY increment the CHANNELIP when it completes the channel
-		print 'prepForRightMove: wtf-1235'
+		if debug_prepForRightMove:
+			print 'prepForRightMove: wtf-1235'
 		nodeList[parentNode][CHANNELIP] = nodeList[parentNode][CHANNELIP] + 1
 		nodeList[parentNode][NODECOMPL] = False
 		if debug_prepForRightMove:
@@ -474,7 +459,7 @@ class NodeFunctions():
 		if debug_prepForRightMove:
 			print 'prepForRightMove: node tree after action'
 			#self.dumpNodeVals(theNodeNumber)
-			self.dumpAllNodeVals()
+			self.dumpFormattedAllNodeVals()
 		return True
 				
 	def doIncompleteChannelNotDone(self,theNodeNumber):
@@ -487,6 +472,7 @@ class NodeFunctions():
 		A----------------------------------
 			B----------- C-----------
 							 D-----
+							 D-----
 		"""
 		global debugAllModules
 		if debugAllModules:
@@ -495,7 +481,7 @@ class NodeFunctions():
 			debug_doIncompleteChannelNotDone = False
 		if debug_doIncompleteChannelNotDone:
 			print '\n**************************\ndoIncompleteChannelNotDone: possibly still active children, at node',theNodeNumber
-			self.dumpAllNodeVals()
+			self.dumpFormattedAllNodeVals()
 		## if my child count is not exhausted and the child below me has UNINIT as the pointer then create a child to the right 
 		if nodeList[theNodeNumber][DNNODENUM] >= 0:
 			if debug_doIncompleteChannelNotDone:
@@ -507,7 +493,7 @@ class NodeFunctions():
 				print 'doIncompleteChannelNotDone: No node below and number of kids is zero here'
 				print 'doIncompleteChannelNotDone: node tree before action'
 				#self.dumpNodeVals(theNodeNumber)
-				self.dumpAllNodeVals()
+				self.dumpFormattedAllNodeVals()
 				print 'doIncompleteChannelNotDone: no children below node so metadata follows'
 			nodeList[theNodeNumber][METAOFFST] = nodeList[theNodeNumber][FILEOFFST] + 2
 			if debug_doIncompleteChannelNotDone:
@@ -529,7 +515,7 @@ class NodeFunctions():
 				if debug_doIncompleteChannelNotDone:
 					print 'doIncompleteChannelNotDone: node tree after action'
 					#self.dumpNodeVals(theNodeNumber)
-					self.dumpAllNodeVals()
+					self.dumpFormattedAllNodeVals()
 				## TBD should I move up or right here? 
 				## If there's a right to do then I should move right. 
 				## If the node is completed then I can move up
@@ -537,7 +523,6 @@ class NodeFunctions():
 					print 'doIncompleteChannelNotDone: wtf-1209pm node',theNodeNumber
 					self.dumpNodeVals(theNodeNumber)
 					self.dumpFormattedAllNodeVals()
-				pause
 				return self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
 			else:	# node below is done and there's already a sister to the right
 				if debug_doIncompleteChannelNotDone:
@@ -545,12 +530,12 @@ class NodeFunctions():
 				if not self.prepForRightMove(theNodeNumber):
 					if debug_doIncompleteChannelNotDone:
 						print 'doIncompleteChannelNotDone: prepForRightMove returned False'
-						exit()
-					return self.doMovement(theNodeNumber,CURRENT_POINT_DONE)
+#						exit()
+					return self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
 				else:
 					if debug_doIncompleteChannelNotDone:
 						print 'doIncompleteChannelNotDone:  prepForRightMove returned True'
-						self.dumpAllNodeVals()
+						self.dumpFormattedAllNodeVals()
 					return self.doMovement(theNodeNumber,NEED_TO_MOVE_RIGHT)
 		elif nodeList[theNodeNumber][NUMOFKIDS] != 0: # the first child below current node needs to be created			
 			if debug_doIncompleteChannelNotDone:
@@ -583,12 +568,9 @@ class NodeFunctions():
 				nodeList[theNodeNumber][NODECOMPL] = True
 				nodeList[theNodeNumber][CURRCHDONE] = True
 				if debug_doIncompleteChannelNotDone:
-					self.dumpAllNodeVals()
+					self.dumpFormattedAllNodeVals()
 				return self.doMovement(theNodeNumber,CURRENT_POINT_DONE)
 			return self.doMovement(theNodeNumber,NEED_TO_MOVE_DOWN)	# move down into the child
-		else:
-			print 'wtf-725am'
-			exit()
 
 	def doNodeIncompleteChannelDone(self,theNodeNumber):
 		global debugAllModules
@@ -658,7 +640,7 @@ class NodeFunctions():
 				print 'doNodeCompleteNode: wtf-259pm'
 				exit()
 			# print 'doNodeCompleteNode: table before'
-			# self.dumpAllNodeVals()
+			# self.dumpFormattedAllNodeVals()
 		# node is complete but the parent may not be done yet
 		parentNodeNumber = nodeList[theNodeNumber][UPNODENUM]
 		if debug_doNodeCompleteNode:
@@ -671,7 +653,7 @@ class NodeFunctions():
 			if debug_doNodeCompleteNode:
 				print 'doNodeCompleteNode: Marked Parent Complete'
 				print 'doNodeCompleteNode: wtf-1219`'
-				self.dumpAllNodeVals()
+				self.dumpFormattedAllNodeVals()
 			#	os.system("pause")
 			nextNodeVal = self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
 			if debug_doNodeCompleteNode:
@@ -691,11 +673,11 @@ class NodeFunctions():
 				self.addChildrenToNodeList(inPair,offsetInFile,theNodeNumber)
 				nodeList[theNodeNumber][DNNODENUM] = nextChildNodeNumber	# down should only point to first in the list not the last in the list
 				if debug_doNodeCompleteNode:
-					self.dumpAllNodeVals()
+					self.dumpFormattedAllNodeVals()
 				nodeList[parentNodeNumber][CHANNELIP] = nodeList[parentNodeNumber][CHANNELIP] + 1
 				if debug_doNodeCompleteNode:
 					print 'doNodeCompleteNode: staying at the same node but causing re-run'
-					self.dumpAllNodeVals()
+					self.dumpFormattedAllNodeVals()
 				return theNodeNumber
 			nodeList[theNodeNumber][RTNODENUM] = DONE	# Don't really have to do this but do it anyway
 			if debug_doNodeCompleteNode:
@@ -708,7 +690,7 @@ class NodeFunctions():
 					return theNodeNumber
 			if debug_doNodeCompleteNode:
 				print 'doNodeCompleteNode: table after right move prep'
-				self.dumpAllNodeVals()
+				self.dumpFormattedAllNodeVals()
 			return self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
 		elif nodeList[parentNodeNumber][NUMOFKIDS] < 0:		## parent is missing siblings
 			if debug_doNodeCompleteNode:
@@ -777,10 +759,10 @@ class NodeFunctions():
 			print 'processTree: nodeList[theNodeNumber]',nodeList[theNodeNumber]
 		theNodeNumber = self.doAllActionsAtCurrentPoint(theNodeNumber)
 		if theNodeNumber < 0:
-			print 'wtf-538pm'
+			print 'processTree: wtf-538pm'
 			exit()
 		if theNodeNumber == 0:
-				return [TREE_DONE,inFileOffset,theNodeNumber]
+			return [TREE_DONE,inFileOffset,theNodeNumber]
 		return [TREE_IN_PROGRESS,inFileOffset,theNodeNumber]
 	
 	def doAllActionsAtCurrentPoint(self,theNodeNumber):
@@ -825,7 +807,7 @@ class NodeFunctions():
 		- Node 1 meta offset should be unknown - it's only known in this case since the child count is zero - made unknown
 		
 		# Flags to operate on - first three lines of the input file
-		dumpAllNodeVals: nodes in table - length is 4
+		dumpFormattedAllNodeVals: nodes in table - length is 4
 		node, [UP, DN, LT, RT,KDS,FILOF,METOF,METCT,NDCMPL,CURCHDN,CHIP]
 		0  [-1,  1, -1, -1,  2,    0,   13,    3,  True,   True,      2]
 		1   [0, -1, -1,  2,  0,    2,    4,    3,  True,   True,      1]
@@ -870,7 +852,7 @@ def abbyTerminate(string):
 	"""Terminate program due to abnormal condition
 	"""
 	print 'ERROR Terminating due to',string
-	NodeHandler.dumpAllNodeVals()
+	NodeHandler.dumpFormattedAllNodeVals()
 	exit()
 
 def newCoreCode():
@@ -894,7 +876,7 @@ def newCoreCode():
 		print 'newCoreCode: starting loop'
 	while True:
 		nodeToGet = NodeHandler.processTree(inFileOffset,theNodeNumber)
-		os.system("pause")
+		#os.system("pause")
 		if debug_newCoreCode:
 			print 'newCoreCode: nodeToGet returned ',nodeToGet,
 		if (nodeToGet[0] == TREE_DONE):
@@ -913,7 +895,7 @@ def newCoreCode():
 		elif nodeToGet[0] == TREE_IN_PROGRESS:
 			pass
 		if debug_newCoreCode:
-			NodeHandler.dumpAllNodeVals()
+			NodeHandler.dumpFormattedAllNodeVals()
 		theNodeNumber = nodeToGet[2]
 
 def sumTheMetaStuff():
@@ -921,7 +903,7 @@ def sumTheMetaStuff():
 	for node in nodeList:
 		startSpan = node[METAOFFST]
 		endSpan = node[METAOFFST] + node[METALENGTH]
-		print startSpan,endSpan-1
+#		print startSpan,endSpan-1
 		while(startSpan < endSpan):
 			accumMetaRecLens += inputList[startSpan]
 			startSpan += 1
@@ -932,7 +914,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input.txt'
+inFileName = 'input2.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
@@ -945,7 +927,7 @@ newCoreCode()
 
 print 'main: processing is done'
 print 'node at the end was',currentNodeNumber
-NodeHandler.dumpAllNodeVals()
+NodeHandler.dumpFormattedAllNodeVals()
 
 sumTheMetaStuff()
 
