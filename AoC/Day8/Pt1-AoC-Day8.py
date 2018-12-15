@@ -63,6 +63,8 @@ IndexError: list index out of range
 
 """
 
+debugAllModules = False
+
 #####################################################################################
 ## Functions which read and form the input file
 
@@ -95,11 +97,6 @@ class filer():
 		"""Get the input pair at inputListPtr
 		"""
 		global inputList
-		global debugAllModules
-		if debugAllModules:
-			debug_getInputPair = True
-		else:
-			debug_getInputPair = False
 		global debugAllModules
 		if debugAllModules:
 			debug_getInputPair = True
@@ -168,8 +165,6 @@ NEED_TO_MOVE_UP = 5
 NODE_COMPLETED = 6
 TREE_COMPLETED = 6
 EARLY_EXIT_FOR_DEBUG = 8
-
-debugAllModules = False
 
 class NodeFunctions():
 
@@ -408,24 +403,22 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_doMovement = True
 		else:
-			debug_doMovement = True
+			debug_doMovement = False
 		if actionFlag == NEED_TO_MOVE_DOWN:
 			if debug_doMovement:
 				print 'doMovement: Moving from node',theNodeNumber,'down to node',nodeList[theNodeNumber][DNNODENUM]
-			return nodeList[theNodeNumber][DNNODENUM]
+			retVal = nodeList[theNodeNumber][DNNODENUM]
 		elif actionFlag == NEED_TO_MOVE_UP:
 			if debug_doMovement:
 				print 'doMovement: Moving from node',theNodeNumber,'up to node',nodeList[theNodeNumber][UPNODENUM]
-			return nodeList[theNodeNumber][UPNODENUM]
+			retVal =  nodeList[theNodeNumber][UPNODENUM]
 		elif actionFlag == NEED_TO_MOVE_RIGHT:
 			if debug_doMovement:
 				print 'doMovement: Moving from node',theNodeNumber,'right to node',nodeList[theNodeNumber][RTNODENUM]
-			return nodeList[theNodeNumber][RTNODENUM]
+			retVal =  nodeList[theNodeNumber][RTNODENUM]
 		elif actionFlag == CURRENT_POINT_DONE:
-			return theNodeNumber
-		else:
-			print 'wtf-550pm'
-			exit()
+			retVal = theNodeNumber
+		return retVal
 		
 	def prepForRightMove(self,theNodeNumber):
 		"""prepForRightMove
@@ -498,7 +491,7 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_doIncompleteChannelNotDone = True
 		else:
-			debug_doIncompleteChannelNotDone = True
+			debug_doIncompleteChannelNotDone = False
 		if debug_doIncompleteChannelNotDone:
 			print '\n**************************\ndoIncompleteChannelNotDone: possibly still active children, at node',theNodeNumber
 			self.dumpAllNodeVals()
@@ -619,7 +612,7 @@ class NodeFunctions():
 			if debug_doNodeIncompleteChannelDone:
 				print 'doNodeIncompleteChannelDone: got to the top node'				
 			return self.doMovement(theNodeNumber,CURRENT_POINT_DONE)
-			
+	
 	def doNodeIncompleteNode(self,theNodeNumber):
 		"""
 		## Three possible direction to move
@@ -631,7 +624,7 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_doNodeIncompleteNode = True
 		else:
-			debug_doNodeIncompleteNode = True
+			debug_doNodeIncompleteNode = False
 		if debug_doNodeIncompleteNode:
 			print '\n**********************************\ndoNodeIncompleteNode: Node is not yet completed, at node',theNodeNumber
 		if not (nodeList[theNodeNumber][CURRCHDONE]):
@@ -649,13 +642,14 @@ class NodeFunctions():
 		
 	def doNodeCompleteNode(self,theNodeNumber):
 		"""doNodeCompleteNode
+		If you are done at a point then adjust the parent node
 		"""
 		global nodeList
 		global debugAllModules
 		if debugAllModules:
 			debug_doNodeCompleteNode = True
 		else:
-			debug_doNodeCompleteNode = True
+			debug_doNodeCompleteNode = False
 		if debug_doNodeCompleteNode:
 			print '\n*************************\ndoNodeCompleteNode: node is complete, node',theNodeNumber
 			if theNodeNumber < 0:
@@ -754,7 +748,7 @@ class NodeFunctions():
 			print 'doNodeCompleteNode: parentNodeNumber',parentNodeNumber
 			print 'doNodeCompleteNode: parent vector'
 			self.dumpNodeVals(parentNodeNumber)
-			print 'doNodeCompleteNode: wtf-120pm'
+			print 'doNodeCompleteNode: wtf-709pm'
 			exit()
 	
 	def processTree(self,inFileOffset,theNodeNumber):
@@ -934,7 +928,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input2.txt'
+inFileName = 'input.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
