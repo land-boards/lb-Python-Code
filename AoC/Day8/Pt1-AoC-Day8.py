@@ -557,11 +557,54 @@ class NodeFunctions():
 				currentNode = nodeList[currentNode][RTNODENUM]
 			else:
 				return [currentNode,i]
-				
+		
+	def checkParentDone(self,theNodeNumber):
+		"""After finishing a node
+		Increment the parent channel number
+		If the parent channel number was already at the terminal count then mark it as completed
+		
+		Need to make this smart
+		Increment node number in parent
+		Set the node done of the parent if the count is terminal
+		Set the channel in progress
+		"""
+		global nodeList
+		global debugAllModules
+		if debugAllModules:
+			debug_checkParentDone = True
+		else:
+			debug_checkParentDone = True
+		if debug_checkParentDone:
+			print 'checkParentDone: reached function, node',theNodeNumber,'tree before'
+			self.dumpAllNodeVals()
+		nodeList[theNodeNumber][NODECOMPL] = True
+		nodeList[theNodeNumber][CURRCHDONE] = True
+		nextNodeStart = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
+		InputListHandler.setCurrentFileInputOffset(nextNodeStart)
+		if debug_checkParentDone:
+			print 'checkParentDone: nextNodeStart',nextNodeStart		
+		parentNode = nodeList[theNodeNumber][UPNODENUM]
+		if nodeList[parentNode][CHANNELIP] < nodeList[parentNode][NUMOFKIDS]:
+			nodeList[parentNode][CHANNELIP] = nodeList[parentNode][CHANNELIP] + 1
+		else:
+			nodeList[parentNode][METAOFFST] = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
+			if debug_checkParentDone:
+				print 'checkParentDone: set parent node',parentNode,'meta offset',nodeList[parentNode][METAOFFST]		
+		if debug_checkParentDone:
+			print 'checkParentDone (2): setting nodeList[parentNode][METAOFFST] to',nodeList[parentNode][METAOFFST]
+		nodeList[parentNode][CURRCHDONE] = True
+		if debug_checkParentDone:
+			print 'checkParentDone: parent node number',parentNode
+			print 'checkParentDone: incremented current channel in process'
+		if debug_checkParentDone:
+			print 'checkParentDone: completed function, node',theNodeNumber,'tree after'
+			self.dumpAllNodeVals()
+			
 	
 	def doIncompleteChannelNotDone(self,theNodeNumber):
 		"""
-		doIncompleteChannelNotDone
+		doIncompleteChannelNotDone: Acts on the basis of the number of children of the current node.
+		
 		0 0 0 0  0  0  0 0 0 0 1  1 1 1 1 1
 		0 1 2 3  4  5  6 7 8 9 0  1 2 3 4 5
 		
@@ -586,32 +629,19 @@ class NodeFunctions():
 				print 'doIncompleteChannelNotDone: Zero children below node'
 				print 'doIncompleteChannelNotDone: no children below node so metadata follows'
 			nodeList[theNodeNumber][METAOFFST] = nodeList[theNodeNumber][FILEOFFST] + 2
+			nodeList[theNodeNumber][DNNODENUM] = DONE	# There's no child below this node so mark it DONE
 #			print 'doIncompleteChannelNotDone (1): setting METAOFFST to',nodeList[theNodeNumber][METAOFFST]
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: meta offset for node',theNodeNumber,'starts at',nodeList[theNodeNumber][METAOFFST]
-			nodeList[theNodeNumber][NODECOMPL] = True
-			nodeList[theNodeNumber][CURRCHDONE] = True
-			nodeList[theNodeNumber][DNNODENUM] = DONE
+			self.checkParentDone(theNodeNumber)
 			nextNodeStart = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
-			## this isn't setting it right for some reason
 			InputListHandler.setCurrentFileInputOffset(nextNodeStart)
-			if debug_doIncompleteChannelNotDone:
-				print 'doIncompleteChannelNotDone: ',
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: nextNodeStart',nextNodeStart		
 			# single children have no siblings so the only move is up
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: zero children so move back to parent is next'
 			parentNode = nodeList[theNodeNumber][UPNODENUM]
-			if nodeList[parentNode][CHANNELIP] < nodeList[parentNode][NUMOFKIDS]:
-				nodeList[parentNode][CHANNELIP] = nodeList[parentNode][CHANNELIP] + 1
-			else:
-				nodeList[parentNode][METAOFFST] = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
-#			print 'doIncompleteChannelNotDone (2): setting nodeList[parentNode][METAOFFST] to',nodeList[parentNode][METAOFFST]
-			nodeList[parentNode][CURRCHDONE] = True
-			if debug_doIncompleteChannelNotDone:
-				print 'doIncompleteChannelNotDone: parent node number',parentNode
-				print 'doIncompleteChannelNotDone: incremented current channel in process'
 			return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
 		elif nodeList[theNodeNumber][NUMOFKIDS] > 0: 	# There are kids below the current node
 			if nodeList[theNodeNumber][DNNODENUM] == UNINIT:	# kids are not yet created
@@ -670,11 +700,6 @@ class NodeFunctions():
 					if debug_doIncompleteChannelNotDone:
 						self.dumpAllNodeVals()
 					return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
-		elif nodeList[theNodeNumber][DNNODENUM] >= 0:	# Down is populated with a number
-			if debug_doIncompleteChannelNotDone:
-				print 'doIncompleteChannelNotDone: Move down to the child already below this node'
-				#self.dumpNodeVals(theNodeNumber)
-			return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
 		elif nodeList[theNodeNumber][NUMOFKIDS] == UNINIT:	# somebody moved here without filling in the record
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: Need to fill in record the left'
@@ -698,7 +723,6 @@ class NodeFunctions():
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: the node list'
 				self.dumpAllNodeVals()
-			#abbyTerminate('wft-912pm')
 			return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
 		else:											# Should not be the case
 			abbyTerminate('wft-810am')
@@ -1024,7 +1048,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input4.txt'
+inFileName = 'input2.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
