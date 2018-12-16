@@ -118,10 +118,6 @@ class filer():
 			print 'getInputPair: getting pair at file offset',fileOffset,'returned pair',pair
 		return pair
 	
-	def getLenInFile(self):
-		global inputList
-		return len(inputList)
-		
 	def stringOfNumbersToList(self,str):
 		"""stringOfNumbersToList - Take the input file which is a really long list and turn it into a python list
 		"""
