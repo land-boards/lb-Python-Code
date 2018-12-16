@@ -33,6 +33,9 @@ Because node B has a value of 33 and node C has a value of 0, the value of node 
 So, in this example, the value of the root node is 66.
 
 What is the value of the root node?
+
+input4 example solution from MJG code = 53
+
 """
 
 debugAllModules = False
@@ -1002,7 +1005,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input2.txt'
+inFileName = 'input.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
