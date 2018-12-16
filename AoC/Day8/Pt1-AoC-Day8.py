@@ -300,14 +300,14 @@ class NodeFunctions():
 		node[FILEOFFST] = InputListHandler.getCurrentFileInputOffset()					# where the inList pointer was at
 		if len(nodeList) == 0:								# special case for the first node
 			node[METAOFFST] = len(inputList) - node[METALENGTH]	# known a priori
-			print 'createSingleNodeBelowCurrentNode: (1) setting METAOFFST to',node[METAOFFST]
+#			print 'createSingleNodeBelowCurrentNode: (1) setting METAOFFST to',node[METAOFFST]
 			node[UPNODENUM] = DONE			# no up for first nodeList
 			node[NODECOMPL] = False			# node is definitely not completed
 			node[CURRCHDONE] = False		# Current channel is not yet done
 			node[DNNODENUM] = UNINIT		# will be 1 later
 		else:								# singleton nodes
 			node[METAOFFST] = InputListHandler.getCurrentFileInputOffset() + 2		# always the next locations
-			print 'createSingleNodeBelowCurrentNode: (2) setting METAOFFST to',node[METAOFFST]
+#			print 'createSingleNodeBelowCurrentNode: (2) setting METAOFFST to',node[METAOFFST]
 			node[UPNODENUM] = theNodeNumber				# the current node is always the parent
 			node[NODECOMPL] = True						# Since it's a single node, it is always done already
 			node[CURRCHDONE] = True						# Channel is done
@@ -565,7 +565,7 @@ class NodeFunctions():
 				self.dumpNodeVals(theNodeNumber)
 				print 'doIncompleteChannelNotDone: no children below node so metadata follows'
 			nodeList[theNodeNumber][METAOFFST] = nodeList[theNodeNumber][FILEOFFST] + 2
-			print 'doIncompleteChannelNotDone (1): setting METAOFFST to',nodeList[theNodeNumber][METAOFFST]
+#			print 'doIncompleteChannelNotDone (1): setting METAOFFST to',nodeList[theNodeNumber][METAOFFST]
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: meta offset for node starts at',nodeList[theNodeNumber][METAOFFST]
 			nodeList[theNodeNumber][NODECOMPL] = True
@@ -581,7 +581,7 @@ class NodeFunctions():
 				nodeList[parentNode][CHANNELIP] = nodeList[parentNode][CHANNELIP] + 1
 			else:
 				nodeList[parentNode][METAOFFST] = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
-			print 'doIncompleteChannelNotDone (2): setting nodeList[parentNode][METAOFFST] to',nodeList[parentNode][METAOFFST]
+#			print 'doIncompleteChannelNotDone (2): setting nodeList[parentNode][METAOFFST] to',nodeList[parentNode][METAOFFST]
 			nodeList[parentNode][CURRCHDONE] = True
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: parent node number',parentNode
@@ -613,7 +613,7 @@ class NodeFunctions():
 						print 'doIncompleteChannelNotDone: childOffsetInList',childOffsetInList
 					self.createSingleNodeBelowCurrentNode(theNodeNumber)
 					nodeList[theNodeNumber][METAOFFST] = nodeList[newNodeNum][METAOFFST] + nodeList[newNodeNum][METALENGTH]
-					print 'doIncompleteChannelNotDone (3): setting metaoffset to',nodeList[theNodeNumber][METAOFFST]
+#					print 'doIncompleteChannelNotDone (3): setting metaoffset to',nodeList[theNodeNumber][METAOFFST]
 					nodeList[theNodeNumber][NODECOMPL] = True
 					nodeList[theNodeNumber][CURRCHDONE] = True
 					if debug_doIncompleteChannelNotDone:
