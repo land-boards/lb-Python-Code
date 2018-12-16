@@ -373,8 +373,6 @@ class NodeFunctions():
 			print 'addChildrenToNodeList: Returning first new node number',firstNewNodeNumber
 		return firstNewNodeNumber				# node number of first added child
 	
-	## FILEOFFST - take value from the sibling if there is one, otherwise take it from the parent
-	
 	def doMovement(self,theNodeNumber,actionFlag):
 		"""doMovement
 		Look around the node and figure out where to move
@@ -546,6 +544,21 @@ class NodeFunctions():
 			print 'doaskForDirections: moving up'
 		return NEED_TO_MOVE_UP
 	
+	def findLastNodeHorizontally(self,startingNodeNumber):
+		"""
+
+		:returns: with [foundNodeNumber,count]		
+		"""
+		i = 1
+		currentNode = startingNodeNumber
+		while i < 99:
+			if nodeList[currentNode][RTNODENUM] > 0:
+				i += 1
+				currentNode = nodeList[currentNode][RTNODENUM]
+			else:
+				return [currentNode,i]
+				
+	
 	def doIncompleteChannelNotDone(self,theNodeNumber):
 		"""
 		doIncompleteChannelNotDone
@@ -571,8 +584,6 @@ class NodeFunctions():
 		if nodeList[theNodeNumber][NUMOFKIDS] == 0:		# No children below current node
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: Zero children below node'
-				#print 'doIncompleteChannelNotDone: node tree before action'
-				#self.dumpNodeVals(theNodeNumber)
 				print 'doIncompleteChannelNotDone: no children below node so metadata follows'
 			nodeList[theNodeNumber][METAOFFST] = nodeList[theNodeNumber][FILEOFFST] + 2
 #			print 'doIncompleteChannelNotDone (1): setting METAOFFST to',nodeList[theNodeNumber][METAOFFST]
@@ -614,20 +625,34 @@ class NodeFunctions():
 					self.dumpNodeVals(theNodeNumber)
 				return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))	# move down into the child
 			else:		# kids were already created
+				if nodeList[theNodeNumber][FILEOFFST] >= 0:
+					## scan right on my children to find the last one
+					## use that to get the offset and mark the node done
+					## assuming that the other nodes are all solved
+					## alternately could remember where the last one ended or use the ending of the last one to my advantage???
+					lastPair = self.findLastNodeHorizontally(nodeList[theNodeNumber][DNNODENUM])
+					print 'lastPair',lastPair
+					print 'kids',nodeList[theNodeNumber][NUMOFKIDS]
+					if lastPair[1] == nodeList[theNodeNumber][NUMOFKIDS]:
+						print 'kid count matched'
+						lastNodeAddr = nodeList[lastPair[0]][METALENGTH] + nodeList[lastPair[0]][METAOFFST]
+						nodeList[theNodeNumber][METAOFFST] = lastNodeAddr
+						nodeList[theNodeNumber][CURRCHDONE] = True
+						nodeList[theNodeNumber][NODECOMPL] = True
+						print 'lastNodeAddr',lastNodeAddr
+#					abbyTerminate('fileoff known')
 				if debug_doIncompleteChannelNotDone:
-					print 'doIncompleteChannelNotDone: There should already be a child below this node, need to move to the child'
-					print 'doIncompleteChannelNotDone: before moving need to do stuff'
+					print 'doIncompleteChannelNotDone: There should already be a child below this node'
 					self.dumpAllNodeVals()
-					#abbyTerminate('wtf-1003am')
 				if nodeList[theNodeNumber][LFNODENUM] > 0:
 					offsetNode = nodeList[theNodeNumber][LFNODENUM]
 					childOffsetInList = nodeList[offsetNode][METALENGTH] + nodeList[offsetNode][METAOFFST]
 					if debug_doIncompleteChannelNotDone:
-						print 'setting offsetNode from the left',offsetNode
+						print 'doIncompleteChannelNotDone: setting offsetNode from the left node',offsetNode,'to value',childOffsetInList
 				else:
 					childOffsetInList = nodeList[theNodeNumber][FILEOFFST] + 2
 					if debug_doIncompleteChannelNotDone:
-						print 'setting offsetNode from the parent',offsetNode
+						print 'doIncompleteChannelNotDone: setting offsetNode from the parent',offsetNode
 				InputListHandler.setCurrentFileInputOffset(childOffsetInList)
 				if debug_doIncompleteChannelNotDone:
 					print 'doIncompleteChannelNotDone: child offset into inList ',childOffsetInList
@@ -999,7 +1024,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input2.txt'
+inFileName = 'input4.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
