@@ -137,6 +137,12 @@ def dumpStateValuesList(theList):
 		print row
 	return
 
+def dumpPlantHistory(plantHistoryArray):
+	i = 1
+	for plants in plantHistoryArray:
+		print i,plants
+		i += 1
+
 def makeStringExtendedCopy(string,copies):
 	copyCount = copies
 	newString = ''
@@ -223,6 +229,19 @@ def makeNewStringFromCurrentString(oldString,stateTable):
 		print 'makeNewStringFromCurrentString: newString',newString
 	return newString
 
+def sumAcrossLine(plantSnapshot):
+	"""
+	"""
+	print plantSnapshot
+	i = -3
+	sum = 0
+	for char in plantSnapshot:
+		if char == '#':
+			print i
+			sum += i
+		i += 1
+	return sum
+
 def iterateThroughPlants(stateTable,initialStateVector,generations):
 	print 'iterateThroughPlants: stateTable',stateTable
 	print 'iterateThroughPlants: initialStateVector',initialStateVector
@@ -232,10 +251,17 @@ def iterateThroughPlants(stateTable,initialStateVector,generations):
 	plantList = []
 	while loopCount < generations:
 		resultingStateVector = makeNewStringFromCurrentString(resultingStateVector,stateTable)
-		print 'gen',loopCount+1,': ',resultingStateVector
+#		print 'gen',loopCount+1,': ',resultingStateVector
+		plantList.append(resultingStateVector)
 		loopCount += 1
-		os.system('pause')
-	return resultingStateVector
+#		os.system('pause')
+	return plantList
+
+def stripPlantHistory(plantHistory):
+	newList = []
+	for row in plantHistory:
+		newList.append(row[padValue-3:])
+	return newList
 
 ########################################################################
 ## This is the workhorse of this assignment
@@ -252,13 +278,15 @@ InputFileClass = InputFileHandler()
 textList = InputFileClass.readTextFileLinesToList('input2.txt')
 #print '\ntextList',textList
 
+padValue = 32
+
 initialState = textList[0]
 #print '\ninitialState',initialState
 firstList = initialState.split()
 #print 'firstList',firstList
 stateString = firstList[2]
 print '\nmain: stateString',stateString
-initialStateVector = padOutStateString(stateString,8)
+initialStateVector = padOutStateString(stateString,padValue)
 print 'Pmain: added out string - initialStateVector',initialStateVector
 
 stateValuesList = textList[2:]
@@ -282,4 +310,9 @@ else:
 	print 'main: makeNewStringFromCurrentString() - sample data test case passed'
 
 generations = 20
-resultingStateVector = iterateThroughPlants(stateTable,initialStateVector,generations)
+plantHistory = iterateThroughPlants(stateTable,initialStateVector,generations)
+#dumpPlantHistory(plantHistory)
+strippedPlantHistory = stripPlantHistory(plantHistory)
+dumpPlantHistory(strippedPlantHistory)
+
+print ' \n',sumAcrossLine(strippedPlantHistory[19])
