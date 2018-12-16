@@ -57,10 +57,9 @@ A--                           -----
 
 2044 nodes
 
-Traceback (most recent call last):
- line 98, in pushNodeAtPointToUnsolvedList
-    currentMetaCount = myList[listOffset + 1]
-IndexError: list index out of range
+What is the sum of all metadata entries?
+
+Your puzzle answer was 49180.
 
 """
 

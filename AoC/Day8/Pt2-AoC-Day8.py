@@ -13,8 +13,8 @@ The second check is slightly more complicated: you need to find the value of the
 
 The value of a node depends on whether it has child nodes.
 
-If a node has no child nodes, its value is the sum of its metadata entries. So, the value of node B is 10+11+12=33, 
-and the value of node D is 99.
+If a node has no child nodes, its value is the sum of its metadata entries. 
+So, the value of node B is 10+11+12=33, and the value of node D is 99.
 
 However, if a node does have child nodes, the metadata entries become indexes which refer to those child nodes. 
 A metadata entry of 1 refers to the first child node, 2 to the second, 3 to the third, and so on. 
@@ -895,7 +895,55 @@ class NodeFunctions():
 				return TREE_COMPLETED
 			else:
 				return self.doNodeCompleteNode(theNodeNumber)
+	
+	def sumMetaDataEntries(self,theNodeNumber):
+		"""Given a node number get the sum of the metadata entries for that node
 		
+		:returns: sum of the metadata entries
+		"""
+		if debugAllModules:
+			debug_sumMetaDataEntries = True
+		else:
+			debug_sumMetaDataEntries = False
+		if debug_sumMetaDataEntries:
+			print '\sumMetaDataEntries: reached function - node',theNodeNumber
+			print '\nsumMetaDataEntries: theNodeNumber',theNodeNumber
+		if nodeList[theNodeNumber][NUMOFKIDS] != 0:
+			if debug_sumMetaDataEntries:
+				print 'sumMetaDataEntries: node',theNodeNumber,' has children'
+			return -1
+		else:	# node has no kids
+			if debug_sumMetaDataEntries:
+				print 'sumMetaDataEntries: node has no children'
+			pointerToMetaData = nodeList[theNodeNumber][METAOFFST]
+			metaDataCount = nodeList[theNodeNumber][METALENGTH]
+			if debug_sumMetaDataEntries:
+				print 'start',pointerToMetaData
+				print 'count',metaDataCount
+			end = pointerToMetaData + metaDataCount
+			if debug_sumMetaDataEntries:
+				print 'end',end
+			sum = 0
+			while pointerToMetaData < end:
+				if debug_sumMetaDataEntries:
+					print pointerToMetaData,
+					print 'data value',inputList[pointerToMetaData]
+				sum += inputList[pointerToMetaData]
+				pointerToMetaData += 1
+			return sum
+	
+	def processPart2(self):
+		""" do Part 2
+		"""
+		global nodeList
+		for node in xrange(len(nodeList)):
+			print node,self.sumMetaDataEntries(node)
+			
+		
+		print 'reached end'
+		value = 99
+		return value
+	
 ########################################################################
 ## Code
 
@@ -954,7 +1002,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input.txt'
+inFileName = 'input2.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
@@ -969,7 +1017,15 @@ print 'main: processing is done'
 print 'node at the end was',currentNodeNumber
 NodeHandler.dumpAllNodeVals()
 
+print 'Part 1 solution',
+
 sumTheMetaStuff()
+
+print ''
+
+valPart2 = NodeHandler.processPart2()
+print '\nPart 2 value is',valPart2
+
 
 exit()
 
