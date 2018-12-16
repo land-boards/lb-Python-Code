@@ -93,6 +93,17 @@ class filer():
 				textFile += char
 		return textFile
 		
+	def moveToNextPair(self):
+		"""Move the input list pointer up by 2 (assumes children being created)
+		"""
+		global inputListPtr
+		global debugAllModules
+		if debugAllModules:
+			debug_getInputPair = True
+		else:
+			debug_getInputPair = False
+		inputListPtr += 2
+			
 	def getInputPair(self,fileOffset):
 		"""Get the input pair at inputListPtr
 		"""
@@ -129,7 +140,7 @@ class filer():
 		if debugAllModules:
 			debug_doIncompleteChannelNotDone = True
 		else:
-			debug_setCurrentFileInputOffset = True
+			debug_setCurrentFileInputOffset = False
 		global inputListPtr
 		inputListPtr = offset
 		if debug_setCurrentFileInputOffset:
@@ -336,7 +347,7 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_addChildrenToNodeList = True
 		else:
-			debug_addChildrenToNodeList = True
+			debug_addChildrenToNodeList = False
 		childAndMetaCounts = InputListHandler.getInputPair(InputListHandler.getCurrentFileInputOffset())		# pulls the child count and meta count pair from the input file
 		kidNum = 1
 		firstNewNodeNumber = len(nodeList)		# new node is always just past the end of the current list
@@ -521,7 +532,7 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_askForDirections = True
 		else:
-			debug_askForDirections = True
+			debug_askForDirections = False
 		if debug_askForDirections:
 			print '\n**************************\nCall askForDirections: figure out which way to go for node',theNodeNumber
 			self.dumpAllNodeVals()
@@ -582,16 +593,16 @@ class NodeFunctions():
 		nextNodeStart = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
 		InputListHandler.setCurrentFileInputOffset(nextNodeStart)
 		if debug_checkParentDone:
-			print 'checkParentDone: nextNodeStart',nextNodeStart		
+			print 'checkParentDone: nextNodeStart',nextNodeStart
+		# Do stuff to the parent
 		parentNode = nodeList[theNodeNumber][UPNODENUM]
 		if nodeList[parentNode][CHANNELIP] < nodeList[parentNode][NUMOFKIDS]:
 			nodeList[parentNode][CHANNELIP] = nodeList[parentNode][CHANNELIP] + 1
-		else:
+		else:		# at the last node
 			nodeList[parentNode][METAOFFST] = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
+#			nodeList[parentNode][NODECOMPL] = True
 			if debug_checkParentDone:
 				print 'checkParentDone: set parent node',parentNode,'meta offset',nodeList[parentNode][METAOFFST]		
-		if debug_checkParentDone:
-			print 'checkParentDone (2): setting nodeList[parentNode][METAOFFST] to',nodeList[parentNode][METAOFFST]
 		nodeList[parentNode][CURRCHDONE] = True
 		if debug_checkParentDone:
 			print 'checkParentDone: parent node number',parentNode
@@ -599,7 +610,6 @@ class NodeFunctions():
 		if debug_checkParentDone:
 			print 'checkParentDone: completed function, node',theNodeNumber,'tree after'
 			self.dumpAllNodeVals()
-			
 	
 	def doIncompleteChannelNotDone(self,theNodeNumber):
 		"""
@@ -646,13 +656,13 @@ class NodeFunctions():
 		elif nodeList[theNodeNumber][NUMOFKIDS] > 0: 	# There are kids below the current node
 			if nodeList[theNodeNumber][DNNODENUM] == UNINIT:	# kids are not yet created
 				if debug_doIncompleteChannelNotDone:
-					print 'doIncompleteChannelNotDone: the child count was more than zero'
+					print 'doIncompleteChannelNotDone: No down pointer, so create children below this parent'
 				## address of the child should be off the parent's address if it's a child directly below
 				nextChildNodeNumber = self.addChildrenToNodeList(theNodeNumber)
-				InputListHandler.setCurrentFileInputOffset(InputListHandler.getCurrentFileInputOffset() + 2)
+				InputListHandler.moveToNextPair()
 				if debug_doIncompleteChannelNotDone:
-					print 'doIncompleteChannelNotDone: Before moving to node',nextChildNodeNumber
-					self.dumpNodeVals(theNodeNumber)
+					print 'doIncompleteChannelNotDone: Next node below will be',nextChildNodeNumber
+					#self.dumpNodeVals(theNodeNumber)
 				return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))	# move down into the child
 			else:		# kids were already created
 				if nodeList[theNodeNumber][FILEOFFST] >= 0:
