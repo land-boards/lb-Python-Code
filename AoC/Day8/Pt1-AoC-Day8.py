@@ -600,9 +600,11 @@ class NodeFunctions():
 			nodeList[parentNode][CHANNELIP] = nodeList[parentNode][CHANNELIP] + 1
 		else:		# at the last node
 			nodeList[parentNode][METAOFFST] = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
-#			nodeList[parentNode][NODECOMPL] = True
+			nodeList[parentNode][NODECOMPL] = True
 			if debug_checkParentDone:
-				print 'checkParentDone: set parent node',parentNode,'meta offset',nodeList[parentNode][METAOFFST]		
+				print 'checkParentDone: Set parent node',parentNode,'meta offset',nodeList[parentNode][METAOFFST]	
+				print 'checkParentDone: Last Child is completed, set the parents node complete to True'
+				print 'checkParentDone: Dont need to increment the child counter since it is already at term ct'
 		nodeList[parentNode][CURRCHDONE] = True
 		if debug_checkParentDone:
 			print 'checkParentDone: parent node number',parentNode
@@ -799,99 +801,93 @@ class NodeFunctions():
 		else:
 			debug_doNodeCompleteNode = True
 		if debug_doNodeCompleteNode:
-			print '\n*************************\ndoNodeCompleteNode: node is complete, node',theNodeNumber
+			print '\n*******************************************\n'
+			print 'doNodeCompleteNode: node is complete, node',theNodeNumber
+			self.dumpAllNodeVals()
 		if theNodeNumber < 0:
 			abbyTerminate('doNodeCompleteNode: ERROR wtf-259pm')
-		# node is complete but the parent may not be done yet
-		parentNodeNumber = nodeList[theNodeNumber][UPNODENUM]
-		if debug_doNodeCompleteNode:
-			print 'doNodeCompleteNode: parentNodeNumber',parentNodeNumber
-		parentOffset = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
-		nodeList[parentNodeNumber][METAOFFST] = parentOffset
-		if nodeList[parentNodeNumber][CHANNELIP] == nodeList[parentNodeNumber][NUMOFKIDS]:
-			nodeList[parentNodeNumber][NODECOMPL] = True
-			nodeList[parentNodeNumber][CURRCHDONE] = True
-			if debug_doNodeCompleteNode:
-				print 'doNodeCompleteNode: Marked Parent Complete'
-				print 'doNodeCompleteNode: wtf-1219`'
-				self.dumpAllNodeVals()
-			nextNodeVal = self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
-			if debug_doNodeCompleteNode:
-				print 'doNodeCompleteNode: Next Node number is',nextNodeVal
-			return nextNodeVal
-		elif nodeList[parentNodeNumber][CHANNELIP] < nodeList[parentNodeNumber][NUMOFKIDS]:
-			if nodeList[theNodeNumber][RTNODENUM] < 0:	## uninitialized node to the right
-				## wtf-227 I think these will be eliminated since I'm going to be creating lists as I go down
-				if debug_doNodeCompleteNode:
-					print 'doNodeCompleteNode: need a node to the right of me'
-					print 'doNodeCompleteNode: nodeList[parentNodeNumber][CHANNELIP]',nodeList[parentNodeNumber][CHANNELIP]
-					print 'doNodeCompleteNode: nodeList[parentNodeNumber][NUMOFKIDS]',nodeList[parentNodeNumber][NUMOFKIDS]
-				offsetInFile = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
-				inPair = InputListHandler.getInputPair(offsetInFile)
-				nextChildNodeNumber = len(nodeList)
-				self.addChildrenToNodeList(offsetInFile,theNodeNumber)
-				if debug_doNodeCompleteNode:
-					self.dumpAllNodeVals()
-				nodeList[parentNodeNumber][CHANNELIP] = nodeList[parentNodeNumber][CHANNELIP] + 1
-				if debug_doNodeCompleteNode:
-					print 'doNodeCompleteNode: staying at the same node but causing re-run'
-					self.dumpAllNodeVals()
-				return theNodeNumber
-			nodeList[theNodeNumber][RTNODENUM] = DONE	# Don't really have to do this but do it anyway
-			if debug_doNodeCompleteNode:
-				print 'doNodeCompleteNode: still kids to the right of the parent'
-				print 'wtf-1039am'
-				if self.prepForRightMove(theNodeNumber) == False:
-					print 'wtf-724pm'
-					exit()
-				else:
-					return theNodeNumber
-			if debug_doNodeCompleteNode:
-				print 'doNodeCompleteNode: table after right move prep'
-				self.dumpAllNodeVals()
-			return self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
-		elif nodeList[parentNodeNumber][NUMOFKIDS] < 0:		## parent is missing siblings
-			if debug_doNodeCompleteNode:
-				print 'doNodeCompleteNode: parent is missing siblings move up and hope it works?'
-				print 'doNodeCompleteNode: current node before the uncle is created'
-				self.dumpNodeVals(theNodeNumber)
-				print 'doNodeCompleteNode: uncle node before the uncle is created'
-				self.dumpNodeVals(parentNodeNumber)
-			## problem with just moving up is that the parent doesn't know this node number without scanning the from the start
-			## either add a function to scan the list or hook up the parent with a new sibling node
-			## create a new sibling for the parent
-			##
-			## siblings need to be created relative to the existing parent offset
-			## otherwise they get put in "parallel" with the current node
-			if debug_doNodeCompleteNode:
-				print 'doNodeCompleteNode: creating an uncle node'
-			offsetInFile = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
-			inPair = InputListHandler.getInputPair(offsetInFile)
-			self.addChildrenToNodeList(offsetInFile,theNodeNumber)
-			if debug_doNodeCompleteNode:
-				print 'doNodeCompleteNode: wtf-1216'
-				self.dumpNodeVals(theNodeNumber)
-			if debug_doNodeCompleteNode:
-				print 'doNodeCompleteNode: '
-				print 'doNodeCompleteNode: current node after the uncle is created'
-				self.dumpNodeVals(theNodeNumber)
-				print 'doNodeCompleteNode: parent node after the uncle is created'
-				self.dumpNodeVals(parentNodeNumber)
-#			exit()
-			return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
-		else:
-			print 'doNodeCompleteNode: fell past all of the if and elif clauses node',theNodeNumber
-			print 'doNodeCompleteNode: , parent channel pointer',nodeList[parentNodeNumber][CHANNELIP]
-			print 'doNodeCompleteNode: , nodeList[parentNodeNumber][CHANNELIP]',nodeList[parentNodeNumber][CHANNELIP]
-			print 'doNodeCompleteNode: , nodeList[parentNodeNumber][NUMOFKIDS]',nodeList[parentNodeNumber][NUMOFKIDS]
-			self.dumpNodeVals(theNodeNumber)
-			print 'doNodeCompleteNode: nodeList[parentNodeNumber][CHANNELIP]',nodeList[parentNodeNumber][CHANNELIP]
-			self.dumpAllNodeVals()
-			print 'doNodeCompleteNode: parentNodeNumber',parentNodeNumber
-			print 'doNodeCompleteNode: parent vector'
-			self.dumpNodeVals(parentNodeNumber)
-			print 'doNodeCompleteNode: wtf-709pm'
-			exit()
+		self.checkParentDone(theNodeNumber)
+		return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
+		
+		# # node is complete but the parent may not be done yet
+		# parentNodeNumber = nodeList[theNodeNumber][UPNODENUM]
+		# if debug_doNodeCompleteNode:
+			# print 'doNodeCompleteNode: parentNodeNumber',parentNodeNumber
+		# parentOffset = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
+		# nodeList[parentNodeNumber][METAOFFST] = parentOffset
+		# if nodeList[parentNodeNumber][CHANNELIP] == nodeList[parentNodeNumber][NUMOFKIDS]:
+			# nodeList[parentNodeNumber][NODECOMPL] = True
+			# nodeList[parentNodeNumber][CURRCHDONE] = True
+			# if debug_doNodeCompleteNode:
+				# print 'doNodeCompleteNode: Marked Parent Complete'
+				# print 'doNodeCompleteNode: wtf-1219`'
+				# self.dumpAllNodeVals()
+			# nextNodeVal = self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
+			# if debug_doNodeCompleteNode:
+				# print 'doNodeCompleteNode: Next Node number is',nextNodeVal
+			# return nextNodeVal
+		# elif nodeList[parentNodeNumber][CHANNELIP] < nodeList[parentNodeNumber][NUMOFKIDS]:
+			# if nodeList[theNodeNumber][RTNODENUM] < 0:	## uninitialized node to the right
+				# ## wtf-227 I think these will be eliminated since I'm going to be creating lists as I go down
+				# if debug_doNodeCompleteNode:
+					# print 'doNodeCompleteNode: need a node to the right of me'
+					# print 'doNodeCompleteNode: nodeList[parentNodeNumber][CHANNELIP]',nodeList[parentNodeNumber][CHANNELIP]
+					# print 'doNodeCompleteNode: nodeList[parentNodeNumber][NUMOFKIDS]',nodeList[parentNodeNumber][NUMOFKIDS]
+				# offsetInFile = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
+				# inPair = InputListHandler.getInputPair(offsetInFile)
+				# nextChildNodeNumber = len(nodeList)
+				# self.addChildrenToNodeList(offsetInFile,theNodeNumber)
+				# if debug_doNodeCompleteNode:
+					# self.dumpAllNodeVals()
+				# nodeList[parentNodeNumber][CHANNELIP] = nodeList[parentNodeNumber][CHANNELIP] + 1
+				# if debug_doNodeCompleteNode:
+					# print 'doNodeCompleteNode: staying at the same node but causing re-run'
+					# self.dumpAllNodeVals()
+				# return theNodeNumber
+			# nodeList[theNodeNumber][RTNODENUM] = DONE	# Don't really have to do this but do it anyway
+			# if debug_doNodeCompleteNode:
+				# print 'doNodeCompleteNode: still kids to the right of the parent'
+				# print 'wtf-1039am'
+				# if self.prepForRightMove(theNodeNumber) == False:
+					# print 'wtf-724pm'
+					# exit()
+				# else:
+					# return theNodeNumber
+			# if debug_doNodeCompleteNode:
+				# print 'doNodeCompleteNode: table after right move prep'
+				# self.dumpAllNodeVals()
+			# return self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)
+		# elif nodeList[parentNodeNumber][NUMOFKIDS] < 0:		## parent is missing siblings
+			# if debug_doNodeCompleteNode:
+				# print 'doNodeCompleteNode: parent is missing siblings move up and hope it works?'
+				# print 'doNodeCompleteNode: current node before the uncle is created'
+				# self.dumpNodeVals(theNodeNumber)
+				# print 'doNodeCompleteNode: uncle node before the uncle is created'
+				# self.dumpNodeVals(parentNodeNumber)
+			# ## problem with just moving up is that the parent doesn't know this node number without scanning the from the start
+			# ## either add a function to scan the list or hook up the parent with a new sibling node
+			# ## create a new sibling for the parent
+			# ##
+			# ## siblings need to be created relative to the existing parent offset
+			# ## otherwise they get put in "parallel" with the current node
+			# if debug_doNodeCompleteNode:
+				# print 'doNodeCompleteNode: creating an uncle node'
+			# offsetInFile = nodeList[theNodeNumber][METAOFFST] + nodeList[theNodeNumber][METALENGTH]
+			# inPair = InputListHandler.getInputPair(offsetInFile)
+			# self.addChildrenToNodeList(offsetInFile,theNodeNumber)
+			# if debug_doNodeCompleteNode:
+				# print 'doNodeCompleteNode: wtf-1216'
+				# self.dumpNodeVals(theNodeNumber)
+			# if debug_doNodeCompleteNode:
+				# print 'doNodeCompleteNode: '
+				# print 'doNodeCompleteNode: current node after the uncle is created'
+				# self.dumpNodeVals(theNodeNumber)
+				# print 'doNodeCompleteNode: parent node after the uncle is created'
+				# self.dumpNodeVals(parentNodeNumber)
+# #			exit()
+			# return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
+		# else:
+			# abbyTerminate('wtf-745am')
 	
 	def processTree(self,theNodeNumber):
 		"""If anything can be done, do it
@@ -977,7 +973,7 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_doAllActionsAtCurrentPoint = True
 		else:
-			debug_doAllActionsAtCurrentPoint = False
+			debug_doAllActionsAtCurrentPoint = True
 		if debug_doAllActionsAtCurrentPoint:
 			print 'doAllActionsAtCurrentPoint: Reached function, node,',theNodeNumber
 			self.dumpAllNodeVals()
@@ -994,7 +990,7 @@ class NodeFunctions():
 			return self.doNodeIncompleteNode(theNodeNumber)
 		else:											# node is complete at the point
 			if debug_doAllActionsAtCurrentPoint:
-				print 'doAllActionsAtCurrentPoint: complete, calling doNodeCompleteNode'
+				print 'doAllActionsAtCurrentPoint: node',theNodeNumber,'is complete, calling doNodeCompleteNode'
 			if (theNodeNumber == 0) and (nodeList[0][NODECOMPL]):
 				return TREE_COMPLETED
 			else:
@@ -1058,7 +1054,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input2.txt'
+inFileName = 'input4.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
