@@ -349,17 +349,25 @@ class NodeFunctions():
 		else:
 			debug_addChildrenToNodeList = False
 		childAndMetaCounts = InputListHandler.getInputPair(InputListHandler.getCurrentFileInputOffset())		# pulls the child count and meta count pair from the input file
-		kidNum = 1
 		firstNewNodeNumber = len(nodeList)		# new node is always just past the end of the current list
-		while kidNum <= childAndMetaCounts[0]:	# Number of children
+		kidNum = firstNewNodeNumber 			# start at first and move up as the row gets processed
+		childCount = childAndMetaCounts[0]
+		terminalKidNumber = firstNewNodeNumber + childCount
+		if debug_addChildrenToNodeList:
+			print '\naddChildrenToNodeList: reached function, parentNodeNum',parentNodeNum
+			print 'addChildrenToNodeList: childCount',childCount
+			print 'addChildrenToNodeList: firstNewNodeNumber',firstNewNodeNumber
+			print 'addChildrenToNodeList: kidNum',kidNum
+			print 'addChildrenToNodeList: terminalKidNumber',terminalKidNumber
+		while kidNum <= terminalKidNumber-1:	# Number of children
 			node = [0,0,0,0,0,0,0,0,0,0,0]		# manual  copy of default node
 			node[UPNODENUM] = parentNodeNum
 			node[DNNODENUM] = UNINIT
-			if kidNum == childAndMetaCounts[0]:	# last child
+			if kidNum == terminalKidNumber-1:	# last child
 				node[RTNODENUM] = DONE			# no right pointer in the last child
 			else:
 				node[RTNODENUM] = kidNum + 1	# not the last child point to the next child
-			if kidNum == 1:
+			if kidNum == firstNewNodeNumber:
 				node[METALENGTH] = inputList[InputListHandler.getCurrentFileInputOffset() + 3]
 				node[FILEOFFST] = InputListHandler.getCurrentFileInputOffset() + 2
 				node[LFNODENUM] = DONE
@@ -423,7 +431,7 @@ class NodeFunctions():
 			debug_doMovement = True
 		else:
 			debug_doMovement = False
-		routingMessagesOnly = True
+		routingMessagesOnly = False
 		if actionFlag == NEED_TO_MOVE_DOWN:
 			if debug_doMovement or routingMessagesOnly:
 				print 'doMovement: Moving from node',theNodeNumber,'down to node',nodeList[theNodeNumber][DNNODENUM]
@@ -584,7 +592,7 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_checkParentDone = True
 		else:
-			debug_checkParentDone = True
+			debug_checkParentDone = False
 		if debug_checkParentDone:
 			print 'checkParentDone: reached function, node',theNodeNumber,'tree before'
 			self.dumpAllNodeVals()
@@ -631,7 +639,7 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_doIncompleteChannelNotDone = True
 		else:
-			debug_doIncompleteChannelNotDone = True
+			debug_doIncompleteChannelNotDone = False
 		if debug_doIncompleteChannelNotDone:
 			print '\n***********************************************************\n'
 			print 'doIncompleteChannelNotDone: possibly still active children, at node',theNodeNumber
@@ -799,7 +807,7 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_doNodeCompleteNode = True
 		else:
-			debug_doNodeCompleteNode = True
+			debug_doNodeCompleteNode = False
 		if debug_doNodeCompleteNode:
 			print '\n*******************************************\n'
 			print 'doNodeCompleteNode: node is complete, node',theNodeNumber
@@ -973,7 +981,7 @@ class NodeFunctions():
 		if debugAllModules:
 			debug_doAllActionsAtCurrentPoint = True
 		else:
-			debug_doAllActionsAtCurrentPoint = True
+			debug_doAllActionsAtCurrentPoint = False
 		if debug_doAllActionsAtCurrentPoint:
 			print 'doAllActionsAtCurrentPoint: Reached function, node,',theNodeNumber
 			self.dumpAllNodeVals()
@@ -1054,7 +1062,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input4.txt'
+inFileName = 'input.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
