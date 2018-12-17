@@ -1,4 +1,5 @@
 # Pt2-AoCDay8.py
+# Pt2-AoCDay8.py
 # 2018 Advent of Code
 # Day 8
 # Part 2
@@ -93,10 +94,6 @@ class filer():
 			print 'getInputPair: getting pair at file offset',fileOffset,'returned pair',pair
 		return pair
 	
-	def getLenInFile(self):
-		global inputList
-		return len(inputList)
-		
 	def stringOfNumbersToList(self,str):
 		"""stringOfNumbersToList - Take the input file which is a really long list and turn it into a python list
 		"""
@@ -251,9 +248,6 @@ class NodeFunctions():
 		else:
 			debug_pushNode = False
 		print '.',		# print a dot for every node that gets pushed - fairly low overhead cost
-		if len(nodeList) > stopLength:		# stop if the list runs away
-			self.dumpAllNodeVals()
-			exit()
 		nodeList.append(node)
 		if debug_pushNode:
 			print 'pushNode: list length after push =',len(nodeList)
@@ -291,16 +285,6 @@ class NodeFunctions():
 			node[NODECOMPL] = False			# node is definitely not completed
 			node[CURRCHDONE] = False		# Current channel is not yet done
 			node[DNNODENUM] = UNINIT		# will be 1 later
-		else:								# singleton nodes
-			node[METAOFFST] = InputListHandler.getCurrentFileInputOffset() + 2		# always the next locations
-#			print 'createSingleNodeBelowCurrentNode: (2) setting METAOFFST to',node[METAOFFST]
-			node[UPNODENUM] = theNodeNumber				# the current node is always the parent
-			node[NODECOMPL] = True						# Since it's a single node, it is always done already
-			node[CURRCHDONE] = True						# Channel is done
-			node[DNNODENUM] = DONE						# No down node since it's an endpoint
-			nodeList[theNodeNumber][DNNODENUM] = nextNodeNum	# parent should point to this node when done
-			if debug_createSingleNodeBelowCurrentNode:
-				print 'createSingleNodeBelowCurrentNode: the offset address is',newOffsetAddress
 		node[RTNODENUM] = DONE			# no right hand node
 		node[LFNODENUM] = DONE			# no left hand node
 		node[CHANNELIP] = 1				# There's only one channel anyway
@@ -416,8 +400,6 @@ class NodeFunctions():
 				print 'doMovement: Moving from node',theNodeNumber,'up to node',nodeList[theNodeNumber][UPNODENUM]
 			if theNodeNumber > 0:
 				retVal =  nodeList[theNodeNumber][UPNODENUM]
-			else:
-				retVal = 0
 		elif actionFlag == NEED_TO_MOVE_RIGHT:
 			if debug_doMovement or routingMessagesOnly:
 				print 'doMovement: Moving from node',theNodeNumber,'right to node',nodeList[theNodeNumber][RTNODENUM]
@@ -428,62 +410,6 @@ class NodeFunctions():
 			retVal = theNodeNumber
 		return retVal
 		
-	def prepForRightMove(self,theNodeNumber):
-		"""prepForRightMove
-		:returns: true or false
-		True = can make the move to the right
-		False = cant make the move to the right - should be designed out by fixes to calling routines
-		"""
-		global nodeList
-		global debugAllModules
-		if debugAllModules:
-			debug_prepForRightMove = True
-		else:
-			debug_prepForRightMove = False
-		parentNode = nodeList[theNodeNumber][UPNODENUM]
-		if debug_prepForRightMove:
-			print 'prepForRightMove: parent still has children to handle'
-		if nodeList[theNodeNumber][RTNODENUM] < 0:
-			if debug_prepForRightMove:
-				print 'prepForRightMove: when children list was created this node was only partly populated'
-				print 'prepForRightMove: need to create a new node to the right of this node before moving to the node'
-				print 'prepForRightMove: will need to pass the sibling the address and my node number'
-				print 'prepForRightMove: it would be better to move up a level and let the parent make siblings'
-				self.dumpAllNodeVals()
-			newNodeNum = self.doMovement(theNodeNumber,NEED_TO_MOVE_UP)		# have to go up to create uncle
-			if debug_prepForRightMove:
-				print 'prepForRightMove: the new node number will be',newNodeNum
-				print 'prepForRightMove: returning false'
-			return False
-		if debug_prepForRightMove:
-			print 'prepForRightMove: wtf-1235'
-		nodeList[parentNode][CHANNELIP] = nodeList[parentNode][CHANNELIP] + 1
-		nodeList[parentNode][NODECOMPL] = False
-		if debug_prepForRightMove:
-			print 'prepForRightMove: before moving right, set up sister'
-		rightNode = nodeList[theNodeNumber][RTNODENUM]
-		if debug_prepForRightMove:
-			print 'prepForRightMove: right node number is',rightNode
-			print 'prepForRightMove: need to find sister offset address'
-		sisterFileOffset = nodeList[theNodeNumber][FILEOFFST] + nodeList[theNodeNumber][METALENGTH] + 2
-		if debug_prepForRightMove:
-			print 'prepForRightMove: sisters file offset is',sisterFileOffset
-		nodeList[rightNode][FILEOFFST] = sisterFileOffset
-		if debug_prepForRightMove:
-			print 'prepForRightMove: the pair at sisters file offset in the list is the child count and metaoffset'
-		inPair = InputListHandler.getInputPair(sisterFileOffset)
-		if debug_prepForRightMove:
-			print 'prepForRightMove: sisters pair is',inPair
-			print 'prepForRightMove: sisters child count',inPair[0]
-			print 'prepForRightMove: metadata count',inPair[1]
-		nodeList[rightNode][NUMOFKIDS] = inPair[0]
-		nodeList[rightNode][METALENGTH] = inPair[1]
-		if debug_prepForRightMove:
-			print 'prepForRightMove: node tree after action'
-			#self.dumpNodeVals(theNodeNumber)
-			self.dumpAllNodeVals()
-		return True
-	
 	def askForDirections(self,theNodeNumber):
 		"""Function looks around a particular node to try and determine the best direction to move.
 		Preference for movement is 
@@ -526,8 +452,6 @@ class NodeFunctions():
 			return NEED_TO_MOVE_DOWN
 		if nodeList[theNodeNumber][METAOFFST] == UNINIT:
 			return CURRENT_POINT_DONE		
-		if (nodeList[theNodeNumber][NUMOFKIDS] > 0) and (not nodeList[theNodeNumber][NODECOMPL]):
-			return CURRENT_POINT_DONE
 		# can I move to node to the right?
 		if (nodeList[theNodeNumber][RTNODENUM] >= 0):
 			if debug_askForDirections:
@@ -537,20 +461,6 @@ class NodeFunctions():
 		if debug_askForDirections:
 			print 'doaskForDirections: moving up'
 		return NEED_TO_MOVE_UP
-	
-	def findLastNodeHorizontally(self,startingNodeNumber):
-		"""
-
-		:returns: with [foundNodeNumber,count]		
-		"""
-		i = 1
-		currentNode = startingNodeNumber
-		while i < 99:
-			if nodeList[currentNode][RTNODENUM] > 0:
-				i += 1
-				currentNode = nodeList[currentNode][RTNODENUM]
-			else:
-				return [currentNode,i]
 		
 	def checkParentDone(self,theNodeNumber):
 		"""After finishing a node
@@ -649,52 +559,6 @@ class NodeFunctions():
 					print 'doIncompleteChannelNotDone: Next node below will be',nextChildNodeNumber
 					#self.dumpNodeVals(theNodeNumber)
 				return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))	# move down into the child
-			else:		# kids were already created
-				if nodeList[theNodeNumber][FILEOFFST] >= 0:
-					## scan right on my children to find the last one
-					## use that to get the offset and mark the node done
-					## assuming that the other nodes are all solved
-					## alternately could remember where the last one ended or use the ending of the last one to my advantage???
-					lastPair = self.findLastNodeHorizontally(nodeList[theNodeNumber][DNNODENUM])
-					print 'lastPair',lastPair
-					print 'kids',nodeList[theNodeNumber][NUMOFKIDS]
-					if lastPair[1] == nodeList[theNodeNumber][NUMOFKIDS]:
-						print 'kid count matched'
-						lastNodeAddr = nodeList[lastPair[0]][METALENGTH] + nodeList[lastPair[0]][METAOFFST]
-						nodeList[theNodeNumber][METAOFFST] = lastNodeAddr
-						nodeList[theNodeNumber][CURRCHDONE] = True
-						nodeList[theNodeNumber][NODECOMPL] = True
-						print 'lastNodeAddr',lastNodeAddr
-#					abbyTerminate('fileoff known')
-				if debug_doIncompleteChannelNotDone:
-					print 'doIncompleteChannelNotDone: There should already be a child below this node'
-					self.dumpAllNodeVals()
-				if nodeList[theNodeNumber][LFNODENUM] > 0:
-					offsetNode = nodeList[theNodeNumber][LFNODENUM]
-					childOffsetInList = nodeList[offsetNode][METALENGTH] + nodeList[offsetNode][METAOFFST]
-					if debug_doIncompleteChannelNotDone:
-						print 'doIncompleteChannelNotDone: setting offsetNode from the left node',offsetNode,'to value',childOffsetInList
-				else:
-					childOffsetInList = nodeList[theNodeNumber][FILEOFFST] + 2
-					if debug_doIncompleteChannelNotDone:
-						print 'doIncompleteChannelNotDone: setting offsetNode from the parent',offsetNode
-				InputListHandler.setCurrentFileInputOffset(childOffsetInList)
-				if debug_doIncompleteChannelNotDone:
-					print 'doIncompleteChannelNotDone: child offset into inList ',childOffsetInList
-				if InputListHandler.getInputPair(childOffsetInList) == 0:	# no children below the next node
-					childOffsetInList = nodeList[theNodeNumber][FILEOFFST]
-					newNodeNum = len(nodeList)
-					if debug_doIncompleteChannelNotDone:
-						print 'doIncompleteChannelNotDone: got zero kids - need to fix up stufffff'
-						print 'doIncompleteChannelNotDone: childOffsetInList',childOffsetInList
-					self.createSingleNodeBelowCurrentNode(theNodeNumber)
-					nodeList[theNodeNumber][METAOFFST] = nodeList[newNodeNum][METAOFFST] + nodeList[newNodeNum][METALENGTH]
-#					print 'doIncompleteChannelNotDone (3): setting metaoffset to',nodeList[theNodeNumber][METAOFFST]
-					nodeList[theNodeNumber][NODECOMPL] = True
-					nodeList[theNodeNumber][CURRCHDONE] = True
-					if debug_doIncompleteChannelNotDone:
-						self.dumpAllNodeVals()
-					return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
 		elif nodeList[theNodeNumber][NUMOFKIDS] == UNINIT:	# somebody moved here without filling in the record
 			if debug_doIncompleteChannelNotDone:
 				print 'doIncompleteChannelNotDone: Need to fill in record the left'
@@ -722,30 +586,6 @@ class NodeFunctions():
 		else:											# Should not be the case
 			abbyTerminate('wft-810am')
 
-	def doNodeIncompleteChannelDone(self,theNodeNumber):
-		global nodeList
-		global debugAllModules
-		if debugAllModules:
-			debug_doNodeIncompleteChannelDone = True
-		else:
-			debug_doNodeIncompleteChannelDone = False
-		if debug_doNodeIncompleteChannelDone:
-			print 'doNodeIncompleteChannelDone: Current channel is done'
-			self.dumpNodeVals(theNodeNumber)
-		nodeList[theNodeNumber][NODECOMPL] = True
-		if debug_doNodeIncompleteChannelDone:
-			print 'doNodeIncompleteChannelDone: set node complete to true'
-			self.dumpNodeVals(theNodeNumber)
-		if theNodeNumber > 0:
-			if debug_doNodeIncompleteChannelDone:
-				print 'doNodeIncompleteChannelDone: wft-1215pm'
-				self.dumpNodeVals(theNodeNumber)
-			return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
-		else:
-			if debug_doNodeIncompleteChannelDone:
-				print 'doNodeIncompleteChannelDone: got to the top node'
-			return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
-	
 	def doNodeIncompleteNode(self,theNodeNumber):
 		"""
 		## Three possible direction to move
@@ -764,14 +604,6 @@ class NodeFunctions():
 			if debug_doNodeIncompleteNode:
 				print 'doNodeIncompleteNode: calling doIncompleteChannelNotDone function'
 			return self.doIncompleteChannelNotDone(theNodeNumber)
-		elif (nodeList[theNodeNumber][CURRCHDONE]):
-			if debug_doNodeIncompleteNode:
-				print 'doNodeIncompleteNode: calling doNodeIncompleteChannelDone function'
-			return self.doNodeIncompleteChannelDone(theNodeNumber)
-		else:
-			pass
-			print 'doNodeIncompleteNode: wtf-1'
-			self.dumpNodeVals(theNodeNumber)
 		
 	def doNodeCompleteNode(self,theNodeNumber):
 		"""doNodeCompleteNode
@@ -787,8 +619,6 @@ class NodeFunctions():
 			print '\n*******************************************\n'
 			print 'doNodeCompleteNode: node is complete, node',theNodeNumber
 			self.dumpAllNodeVals()
-		if theNodeNumber < 0:
-			abbyTerminate('doNodeCompleteNode: ERROR wtf-259pm')
 		self.checkParentDone(theNodeNumber)
 		return self.doMovement(theNodeNumber,self.askForDirections(theNodeNumber))
 			
@@ -813,8 +643,6 @@ class NodeFunctions():
 		theNodeNumber = self.doAllActionsAtCurrentPoint(theNodeNumber)
 		if (theNodeNumber == 0) and (nodeList[theNodeNumber][NODECOMPL]):
 			return [TREE_DONE,theNodeNumber]
-		if theNodeNumber < 0:
-			abbyTerminate('processTree: Moved to a negative node number')
 		return [TREE_IN_PROGRESS,theNodeNumber]
 	
 	def doAllActionsAtCurrentPoint(self,theNodeNumber):
@@ -880,13 +708,6 @@ class NodeFunctions():
 		if debug_doAllActionsAtCurrentPoint:
 			print 'doAllActionsAtCurrentPoint: Reached function, node,',theNodeNumber
 			self.dumpAllNodeVals()
-		if theNodeNumber < 0:				## debug error condition node number less than zero
-			abbyTerminate('doAllActionsAtCurrentPoint: wtf-300pm - boy that went really bad')
-		if theNodeNumber >= len(nodeList):	## debug error condition node number past the end of the list
-			abbyTerminate('doAllActionsAtCurrentPoint: wtf-533pm the node number is out of sync with the list')
-		if (theNodeNumber == 0) and (nodeList[theNodeNumber][NODECOMPL]):
-			abbyTerminate('doAllActionsAtCurrentPoint: wtf-702pm this should have been enough to make it stop')
-			return TREE_COMPLETED
 		if not nodeList[theNodeNumber][NODECOMPL]:		# Current node has not completed
 			if debug_doAllActionsAtCurrentPoint:
 				print 'doAllActionsAtCurrentPoint: not complete, calling doNodeIncompleteNode'
@@ -894,10 +715,7 @@ class NodeFunctions():
 		else:											# node is complete at the point
 			if debug_doAllActionsAtCurrentPoint:
 				print 'doAllActionsAtCurrentPoint: node',theNodeNumber,'is complete, calling doNodeCompleteNode'
-			if (theNodeNumber == 0) and (nodeList[0][NODECOMPL]):
-				return TREE_COMPLETED
-			else:
-				return self.doNodeCompleteNode(theNodeNumber)
+			return self.doNodeCompleteNode(theNodeNumber)
 	
 	def sumMetaDataEntries(self,theNodeNumber):
 		"""Given a node number get the sum of the metadata entries for that node
@@ -977,11 +795,6 @@ def newCoreCode():
 		if (nodeToGet[0] == TREE_DONE):
 			if debug_newCoreCode:
 				print 'tree done'
-			return
-		elif nodeToGet[0] == EARLY_EXIT_FOR_DEBUG:
-			if debug_newCoreCode:
-				print 'newCoreCode: nodeToGet returned ',nodeToGet,
-				print 'newCoreCode: early exit for debugging at node',nodeToGet[1]
 			return
 		elif nodeToGet[0] == TREE_IN_PROGRESS:
 			pass
