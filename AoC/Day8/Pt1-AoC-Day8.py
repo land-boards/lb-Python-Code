@@ -133,6 +133,7 @@ class filer():
 	def setCurrentFileInputOffset(self,offset):
 		"""
 		"""
+		debug_setCurrentFileInputOffset = False
 		if debugAllModules:
 			debug_doIncompleteChannelNotDone = True
 		else:
