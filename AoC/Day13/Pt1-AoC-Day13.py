@@ -54,6 +54,7 @@ def makeMapArray(textList):
 	return mapArray
 	
 def padMapArray(mapArray):
+	print 'padMapArray: mapArray',mapArray
 	columnCount = len(textList[0])
 	rowCount = len(textList)
 	newMapArray = []
@@ -65,10 +66,11 @@ def padMapArray(mapArray):
 		for column in range(columnCount):
 			newCol = []
 			newCol.append(' ')
-			newCol.append(column)
+			newCol.append(mapArray[row][column])
 			newCol.append(' ')
-		newMapArray.append(rowCount)
+		newMapArray.append(newCol)
 	newMapArray.append(endRows)
+	print 'padMapArray: newMapArray',newMapArray
 	return newMapArray
 	
 	
