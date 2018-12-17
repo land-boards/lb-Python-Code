@@ -9,8 +9,162 @@ import re
 import os
 
 """
+--- Day 13: Mine Cart Madness ---
+A crop of this size requires significant logistics to transport produce, soil, fertilizer, and so on. The Elves are very busy pushing things around in carts on some kind of rudimentary system of tracks they've come up with.
 
+Seeing as how cart-and-track systems don't appear in recorded history for another 1000 years, the Elves seem to be making this up as they go along. They haven't even figured out how to avoid collisions yet.
 
+You map out the tracks (your puzzle input) and see where you can help.
+
+Tracks consist of straight paths (| and -), curves (/ and \), and intersections (+). Curves connect exactly two perpendicular pieces of track; for example, this is a closed loop:
+
+/----\
+|    |
+|    |
+\----/
+Intersections occur when two perpendicular paths cross. At an intersection, a cart is capable of turning left, turning right, or continuing straight. Here are two loops connected by two intersections:
+
+/-----\
+|     |
+|  /--+--\
+|  |  |  |
+\--+--/  |
+   |     |
+   \-----/
+Several carts are also on the tracks. Carts always face either up (^), down (v), left (<), or right (>). (On your initial map, the track under each cart is a straight path matching the direction the cart is facing.)
+
+Each time a cart has the option to turn (by arriving at any intersection), it turns left the first time, goes straight the second time, turns right the third time, and then repeats those directions starting again with left the fourth time, straight the fifth time, and so on. This process is independent of the particular intersection at which the cart has arrived - that is, the cart has no per-intersection memory.
+
+Carts all move at the same speed; they take turns moving a single step at a time. They do this based on their current location: carts on the top row move first (acting from left to right), then carts on the second row move (again from left to right), then carts on the third row, and so on. Once each cart has moved one step, the process repeats; each of these loops is called a tick.
+
+For example, suppose there are two carts on a straight track:
+
+|  |  |  |  |
+v  |  |  |  |
+|  v  v  |  |
+|  |  |  v  X
+|  |  ^  ^  |
+^  ^  |  |  |
+|  |  |  |  |
+First, the top cart moves. It is facing down (v), so it moves down one square. Second, the bottom cart moves. It is facing up (^), so it moves up one square. Because all carts have moved, the first tick ends. Then, the process repeats, starting with the first cart. The first cart moves down, then the second cart moves up - right into the first cart, colliding with it! (The location of the crash is marked with an X.) This ends the second and last tick.
+
+Here is a longer example:
+
+/->-\        
+|   |  /----\
+| /-+--+-\  |
+| | |  | v  |
+\-+-/  \-+--/
+  \------/   
+
+/-->\        
+|   |  /----\
+| /-+--+-\  |
+| | |  | |  |
+\-+-/  \->--/
+  \------/   
+
+/---v        
+|   |  /----\
+| /-+--+-\  |
+| | |  | |  |
+\-+-/  \-+>-/
+  \------/   
+
+/---\        
+|   v  /----\
+| /-+--+-\  |
+| | |  | |  |
+\-+-/  \-+->/
+  \------/   
+
+/---\        
+|   |  /----\
+| /->--+-\  |
+| | |  | |  |
+\-+-/  \-+--^
+  \------/   
+
+/---\        
+|   |  /----\
+| /-+>-+-\  |
+| | |  | |  ^
+\-+-/  \-+--/
+  \------/   
+
+/---\        
+|   |  /----\
+| /-+->+-\  ^
+| | |  | |  |
+\-+-/  \-+--/
+  \------/   
+
+/---\        
+|   |  /----<
+| /-+-->-\  |
+| | |  | |  |
+\-+-/  \-+--/
+  \------/   
+
+/---\        
+|   |  /---<\
+| /-+--+>\  |
+| | |  | |  |
+\-+-/  \-+--/
+  \------/   
+
+/---\        
+|   |  /--<-\
+| /-+--+-v  |
+| | |  | |  |
+\-+-/  \-+--/
+  \------/   
+
+/---\        
+|   |  /-<--\
+| /-+--+-\  |
+| | |  | v  |
+\-+-/  \-+--/
+  \------/   
+
+/---\        
+|   |  /<---\
+| /-+--+-\  |
+| | |  | |  |
+\-+-/  \-<--/
+  \------/   
+
+/---\        
+|   |  v----\
+| /-+--+-\  |
+| | |  | |  |
+\-+-/  \<+--/
+  \------/   
+
+/---\        
+|   |  /----\
+| /-+--v-\  |
+| | |  | |  |
+\-+-/  ^-+--/
+  \------/   
+
+/---\        
+|   |  /----\
+| /-+--+-\  |
+| | |  X |  |
+\-+-/  \-+--/
+  \------/   
+After following their respective paths for a while, the carts eventually crash. To help prevent crashes, you'd like to know the location of the first crash. Locations are given in X,Y coordinates, where the furthest left column is X=0 and the furthest top row is Y=0:
+
+           111
+ 0123456789012
+0/---\        
+1|   |  /----\
+2| /-+--+-\  |
+3| | |  X |  |
+4\-+-/  \-+--/
+5  \------/   
+In this example, the location of the first crash is 7,3.
 
 """
 
@@ -33,7 +187,7 @@ class InputFileHandler():
 		return inList
 
 #####################################################################################
-## Functions which operate on the node list
+## Functions which operate on the map list
 
 def abbyTerminate(string):
 	"""Terminate program due to abnormal condition
@@ -41,11 +195,16 @@ def abbyTerminate(string):
 	print 'ERROR Terminating due to',string
 	exit()
 
-
 def makeMapArray(theTextList):
 	"""Go through the input list and make an array from the lines of textFile
+	
+	:param theTextList: The text file as a list of strings. 
+	Each string is a line of the file.
+	:returns: map turned into 2D list (more or less an array) 
 	"""
-	print 'makeMapArray: make an array from the text lines'
+	debug_makeMapArray = False
+	if debug_makeMapArray:
+		print 'makeMapArray: make an array from the text lines'
 	mapArray = []
 	for row in theTextList:
 		rowList = list(row)
@@ -82,11 +241,12 @@ def padMapArray(mapArray):
 	newMapArray.append(endRows)
 	return newMapArray
 	
-	
 def sortElfList(elfList):
 	"""Sort the elf lists.
 	"""
-	print 'sortElfList: Sorting list of elves in x,y order'
+	debug_sortElfList = False
+	if debug_sortElfList:
+		print 'sortElfList: Sorting list of elves in x,y order'
 	elfList = sorted(elfList, key = lambda errs: errs[1])		# sort by first column
 	elfList = sorted(elfList, key = lambda errs: errs[0])		# sort by first column
 	return elfList
@@ -101,7 +261,6 @@ def dumpMapList(mapList):
 		for column in range(columnCount):
 			print mapList[row][column],
 		print
-
 
 def determineReplacementCellValue(mineMap,x,y):
 	"""Determine what the cell gets replaced with.
@@ -126,34 +285,45 @@ def determineReplacementCellValue(mineMap,x,y):
 	# Implement as a bunch of deep if statements
 	lV = mineMap[x-1][y]
 	rV = mineMap[x+1][y]
-	uV = minedMap[x][y+1]
+	uV = mineMap[x][y+1]
 	dV = mineMap[x][y-1]
 	SP = ' '
 	ulC = '/'
 	lrC = '/'
 	urC = '\\'
 	llC = '\\'
-	
-	
-	return replacementCell
+	if lV == SP and rV == SP:
+		return('-')
+	elif uV == SP and dV == SP:
+		return('|')
+	else:
+		print 'lV,rV,uV,dV',lV,rV,uV,dV
+		exit()
 
-def makeCleanMap(mineMap):
+def makeCleanMap(mineMap,elfList):
 	"""Go through the mine map and replace the elves with tracks
 	Complicated by the tracks can be at the edge of the arrays
 	Could pad the entire tracks with spaces - probably the easiest choice
+	elfList has list of elements which are [x,y,currentDirection,nextDirection]
 	"""
-	return mineMap
+	debug_makeCleanMap = True
+	newMineMap = mineMap
+	for elf in elfList:
+		x = elf[0]
+		y = elf[1]
+		newMineMap[x][y] = determineReplacementCellValue(mineMap,x,y)
+	return newMineMap
 
 def findElves(mineMap):
 	"""Go through the map and find the elves.
 	
 	:param mineMap: the map file
-	:returns: list of [x,y,travel,nextDirection]
+	:returns: list of elves - [x,y,currentDirection,nextDirection]
 	"""
-	debug_findElves = True
-	print 'findElves'
-	print mineMap
-	exit()
+	debug_findElves = False
+	if debug_findElves:
+		print 'findElves'
+		print mineMap
 	elfList = []
 	columnCount = len(mineMap[0])
 	rowCount = len(mineMap)
@@ -197,10 +367,10 @@ unpaddedMineMap = makeMapArray(textList)
 mineMap = padMapArray(unpaddedMineMap)
 dumpMapList(mineMap)
 
-exit()
-
 elfList = findElves(mineMap)
-print 'elfList',elfList
-dumpMapList(elfList)
 elfList = sortElfList(elfList)
+print 'main: there are',len(elfList),'elves'
+print 'main: list of elves',elfList
 
+cleanMap = makeCleanMap(mineMap,elfList)
+dumpMapList(cleanMap)
