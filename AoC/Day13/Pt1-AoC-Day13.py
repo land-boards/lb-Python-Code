@@ -10,19 +10,23 @@ import os
 
 """
 --- Day 13: Mine Cart Madness ---
-A crop of this size requires significant logistics to transport produce, soil, fertilizer, and so on. The Elves are very busy pushing things around in carts on some kind of rudimentary system of tracks they've come up with.
+A crop of this size requires significant logistics to transport produce, soil, fertilizer, and so on. 
+The Elves are very busy pushing things around in carts on some kind of rudimentary system of tracks they've come up with.
 
-Seeing as how cart-and-track systems don't appear in recorded history for another 1000 years, the Elves seem to be making this up as they go along. They haven't even figured out how to avoid collisions yet.
+Seeing as how cart-and-track systems don't appear in recorded history for another 1000 years, 
+the Elves seem to be making this up as they go along. They haven't even figured out how to avoid collisions yet.
 
 You map out the tracks (your puzzle input) and see where you can help.
 
-Tracks consist of straight paths (| and -), curves (/ and \), and intersections (+). Curves connect exactly two perpendicular pieces of track; for example, this is a closed loop:
+Tracks consist of straight paths (| and -), curves (/ and \), and intersections (+). 
+Curves connect exactly two perpendicular pieces of track; for example, this is a closed loop:
 
 /----\
 |    |
 |    |
 \----/
-Intersections occur when two perpendicular paths cross. At an intersection, a cart is capable of turning left, turning right, or continuing straight. Here are two loops connected by two intersections:
+Intersections occur when two perpendicular paths cross. At an intersection, a cart is capable of turning left, 
+turning right, or continuing straight. Here are two loops connected by two intersections:
 
 /-----\
 |     |
@@ -31,11 +35,16 @@ Intersections occur when two perpendicular paths cross. At an intersection, a ca
 \--+--/  |
    |     |
    \-----/
-Several carts are also on the tracks. Carts always face either up (^), down (v), left (<), or right (>). (On your initial map, the track under each cart is a straight path matching the direction the cart is facing.)
+Several carts are also on the tracks. Carts always face either up (^), down (v), left (<), or right (>). 
+(On your initial map, the track under each cart is a straight path matching the direction the cart is facing.)
 
-Each time a cart has the option to turn (by arriving at any intersection), it turns left the first time, goes straight the second time, turns right the third time, and then repeats those directions starting again with left the fourth time, straight the fifth time, and so on. This process is independent of the particular intersection at which the cart has arrived - that is, the cart has no per-intersection memory.
+Each time a cart has the option to turn (by arriving at any intersection), it turns left the first time, 
+goes straight the second time, turns right the third time, and then repeats those directions starting again with left the fourth time, straight the fifth time, and so on. This process is independent of the particular intersection at which the cart has arrived - that is, the cart has no per-intersection memory.
 
-Carts all move at the same speed; they take turns moving a single step at a time. They do this based on their current location: carts on the top row move first (acting from left to right), then carts on the second row move (again from left to right), then carts on the third row, and so on. Once each cart has moved one step, the process repeats; each of these loops is called a tick.
+Carts all move at the same speed; they take turns moving a single step at a time. 
+They do this based on their current location: carts on the top row move first (acting from left to right), 
+then carts on the second row move (again from left to right), then carts on the third row, and so on. 
+Once each cart has moved one step, the process repeats; each of these loops is called a tick.
 
 For example, suppose there are two carts on a straight track:
 
@@ -46,7 +55,11 @@ v  |  |  |  |
 |  |  ^  ^  |
 ^  ^  |  |  |
 |  |  |  |  |
-First, the top cart moves. It is facing down (v), so it moves down one square. Second, the bottom cart moves. It is facing up (^), so it moves up one square. Because all carts have moved, the first tick ends. Then, the process repeats, starting with the first cart. The first cart moves down, then the second cart moves up - right into the first cart, colliding with it! (The location of the crash is marked with an X.) This ends the second and last tick.
+First, the top cart moves. It is facing down (v), so it moves down one square. 
+Second, the bottom cart moves. It is facing up (^), so it moves up one square. 
+Because all carts have moved, the first tick ends. Then, the process repeats, starting with the first cart. 
+The first cart moves down, then the second cart moves up - right into the first cart, colliding with it! 
+(The location of the crash is marked with an X.) This ends the second and last tick.
 
 Here is a longer example:
 
@@ -154,7 +167,9 @@ Here is a longer example:
 | | |  X |  |
 \-+-/  \-+--/
   \------/   
-After following their respective paths for a while, the carts eventually crash. To help prevent crashes, you'd like to know the location of the first crash. Locations are given in X,Y coordinates, where the furthest left column is X=0 and the furthest top row is Y=0:
+After following their respective paths for a while, the carts eventually crash. 
+To help prevent crashes, you'd like to know the location of the first crash. 
+Locations are given in X,Y coordinates, where the furthest left column is X=0 and the furthest top row is Y=0:
 
            111
  0123456789012
@@ -187,10 +202,15 @@ class InputFileHandler():
 		return inList
 	
 	def writeOutMapFile(self,mapList):
+		"""writeOutMapFile - Write out the map file so that it can be read by an editor.
+		The map file is too big to print in a 80 column DOS CMD window.
+		newline between each line
+		"""
 		mapAsList = self.mapToList(mapList)
-		
-		print mapAsList
-
+		with open('SnapMap.txt', 'w') as f:
+			for item in mapAsList:
+				f.write(item)
+				f.write('\n')
 		
 	def mapToList(self,mapList):
 		"""Write out the mapList to a file because it is too big to see on the screen
@@ -201,6 +221,8 @@ class InputFileHandler():
 		for line in mapList:
 			newLine = ''.join(line)
 			outList.append(newLine)
+		os.system('pause')
+		print 'writeOutMapFile: outList',
 		return outList
 
 #####################################################################################
@@ -378,7 +400,7 @@ def findElves(mineMap):
 	columnCount = len(mineMap[0])
 	rowCount = len(mineMap)
 	for row in xrange(rowCount):
-		for column in range(columnCount):
+		for column in xrange(columnCount):
 			if mineMap[row][column] == '>' or mineMap[row][column] == '<' or mineMap[row][column] == '^' or mineMap[row][column] == 'v':
 				elfXY = [column,row,mineMap[row][column],'left']
 				elfList.append(elfXY)
@@ -387,6 +409,52 @@ def findElves(mineMap):
 		for elf in elfList:
 			print elf
 	return elfList
+
+ulC_val = 0
+ruC_val = ulC_val + 1
+lrC_val = ruC_val + 1
+llC_val = lrC_val + 1
+
+def figureOutCorners(mineMap):
+	"""The mine map has corners which make sense visually but don't actually correspond to directions.
+	This will be a challenge when a corner is reached to determine which direction the track goes in.
+	It could be possible to calculate that when navigating the maze but it would be easier to replace
+	the corners with a different symbol depending on which direction the corner is going.
+	Replace the two symbols for the four corner types with enumerated numbers.
+	"""
+	newMap = []
+	for rowNum in range(len(mineMap)):
+		newRow = []
+		for colNum in range(len(mineMap[0])):
+			if mineMap[rowNum][colNum] == '/':
+				if (mineMap[rowNum+1][colNum] == '-' or mineMap[rowNum+1][colNum] == '+') and (mineMap[rowNum][colNum+1] == '|' or mineMap[rowNum][colNum+1] == '+'):
+					mineMap[rowNum][colNum] = ulC_val
+				elif (mineMap[rowNum-1][colNum] == '-' or mineMap[rowNum-1][colNum] == '+') and (mineMap[rowNum][colNum-1] == '-' or mineMap[rowNum][colNum-1] == '+'):
+					mineMap[rowNum][colNum] = lrC_val
+				else:
+					print 'stuck at',mineMap[rowNum][colNum]
+					print 'mineMap[rowNum-1][colNum]',mineMap[rowNum-1][colNum]
+					print 'mineMap[rowNum+1][colNum]',mineMap[rowNum+1][colNum]
+					print 'mineMap[rowNum][colNum-1]',mineMap[rowNum][colNum-1]
+					print 'mineMap[rowNum][colNum+1]',mineMap[rowNum][colNum+1]
+					abbyTerminate('figureOutCorners - Fell through / case') 
+			elif mineMap[rowNum][colNum] == '\\':
+				if (mineMap[rowNum-1][colNum] == '-' or mineMap[rowNum-1][colNum] == '+') and (mineMap[rowNum][colNum+1] == '-' or mineMap[rowNum][colNum+1] == '+'):
+					mineMap[rowNum][colNum] = urC_val
+				elif (mineMap[rowNum+1][colNum] == '-' or mineMap[rowNum+1][colNum] == '+') and (mineMap[rowNum][colNum-1] == '-' or mineMap[rowNum][colNum-1] == '+'):
+					mineMap[rowNum][colNum] = llC_val
+				else:
+					print 'stuck at',mineMap[rowNum][colNum]
+					print 'mineMap[rowNum-1][colNum]',mineMap[rowNum-1][colNum]
+					print 'mineMap[rowNum+1][colNum]',mineMap[rowNum+1][colNum]
+					print 'mineMap[rowNum][colNum-1]',mineMap[rowNum][colNum-1]
+					print 'mineMap[rowNum][colNum+1]',mineMap[rowNum][colNum+1]
+					abbyTerminate('figureOutCorners - Fell through \\ case') 
+			else:
+				newRow.append(mineMap[rowNum][colNum])
+		newMap.append(newRow)
+	return newMap
+			
 
 direction = ['left','straight','right']
 
@@ -425,4 +493,7 @@ print 'main: list of elves',elfList
 cleanMap = makeCleanMap(mineMap,elfList)
 #dumpMapList(cleanMap)
 
-InputFileClass.writeOutMapFile(cleanMap)
+newestMap = figureOutCorners(cleanMap)
+
+InputFileClass.writeOutMapFile(newestMap)
+
