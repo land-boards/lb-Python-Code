@@ -187,14 +187,22 @@ class InputFileHandler():
 		return inList
 	
 	def writeOutMapFile(self,mapList):
-		print 'newLine',mapList[0]
-		print 'mapList has line count',len(mapList)
+		mapAsList = self.mapToList(mapList)
+		
+		print mapAsList
+
+		
+	def mapToList(self,mapList):
+		"""Write out the mapList to a file because it is too big to see on the screen
+		"""
+		print 'writeOutMapFile: newLine',mapList[0]
+		print 'writeOutMapFile: mapList has line count',len(mapList)
+		outList = []
 		for line in mapList:
 			newLine = ''.join(line)
-			print 'newLine',newLine
-			print 'did stuff'
-			exit()
-			
+			outList.append(newLine)
+		return outList
+
 #####################################################################################
 ## Functions which operate on the map list
 
