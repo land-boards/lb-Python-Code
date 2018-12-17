@@ -42,35 +42,44 @@ def abbyTerminate(string):
 	exit()
 
 
-def makeMapArray(textList):
+def makeMapArray(theTextList):
 	"""Go through the input list and make an array from the lines of textFile
 	"""
 	print 'makeMapArray: make an array from the text lines'
 	mapArray = []
-	for row in textList:
+	for row in theTextList:
 		rowList = list(row)
 		mapArray.append(rowList)
-	print mapArray
 	return mapArray
 	
 def padMapArray(mapArray):
-	print 'padMapArray: mapArray',mapArray
-	columnCount = len(textList[0])
-	rowCount = len(textList)
+	"""Pad the area around the map with spaces
+	The reason for padding is that scanning the map for surrounding cells
+	would be complicated if the adjacent cells were outside of the array.
+	Having an array that has padding removes this complication.
+	
+	:param mapArray: the x,y file that is the map
+	:returns: newMapArray - map array padded
+	"""
+	debug_padMapArray = False
+	columnCount = len(mapArray[0])
+	rowCount = len(mapArray)
+	if debug_padMapArray:
+		print 'padMapArray: columnCount',columnCount
+		print 'padMapArray: rowCount',rowCount
 	newMapArray = []
 	endRows = []
-	for column in range(columnCount):
+	for column in range(columnCount+2):
 		endRows.append(' ')
 	newMapArray.append(endRows)
 	for row in xrange(rowCount):
-		for column in range(columnCount):
-			newCol = []
-			newCol.append(' ')
-			newCol.append(mapArray[row][column])
-			newCol.append(' ')
+		newCol = []
+		newCol.extend(' ')
+		for column in xrange(columnCount):
+			newCol.extend(mapArray[row][column])
+		newCol.extend(' ')
 		newMapArray.append(newCol)
 	newMapArray.append(endRows)
-	print 'padMapArray: newMapArray',newMapArray
 	return newMapArray
 	
 	
@@ -82,15 +91,15 @@ def sortElfList(elfList):
 	elfList = sorted(elfList, key = lambda errs: errs[0])		# sort by first column
 	return elfList
 
-def dumpMapList(elfList):
+def dumpMapList(mapList):
 	"""Dump the elf list
 	"""
 	print 'dumpMapList:'
-	columnCount = len(textList[0])
-	rowCount = len(textList)
+	columnCount = len(mapList[0])
+	rowCount = len(mapList)
 	for row in xrange(rowCount):
 		for column in range(columnCount):
-			print textList[row][column],
+			print mapList[row][column],
 		print
 
 
@@ -184,12 +193,11 @@ textList = InputFileClass.readTextFileLinesToList(inFileName)
 if debug_main:
 	print '\ntextList',textList
 
-mineMap = makeMapArray(textList)
-newMineMap = padMapArray(mineMap)
-print newMineMap
-exit()
+unpaddedMineMap = makeMapArray(textList)
+mineMap = padMapArray(unpaddedMineMap)
+dumpMapList(mineMap)
 
-dumpMapList(newMineMap)
+exit()
 
 elfList = findElves(mineMap)
 print 'elfList',elfList
