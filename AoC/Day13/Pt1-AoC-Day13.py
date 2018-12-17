@@ -53,6 +53,25 @@ def makeMapArray(textList):
 	print mapArray
 	return mapArray
 	
+def padMapArray(mapArray):
+	columnCount = len(textList[0])
+	rowCount = len(textList)
+	newMapArray = []
+	endRows = []
+	for column in range(columnCount):
+		endRows.append(' ')
+	newMapArray.append(endRows)
+	for row in xrange(rowCount):
+		for column in range(columnCount):
+			newCol = []
+			newCol.append(' ')
+			newCol.append(column)
+			newCol.append(' ')
+		newMapArray.append(rowCount)
+	newMapArray.append(endRows)
+	return newMapArray
+	
+	
 def sortElfList(elfList):
 	"""Sort the elf lists.
 	"""
@@ -121,6 +140,9 @@ def findElves(mineMap):
 	:returns: list of [x,y,travel,nextDirection]
 	"""
 	debug_findElves = True
+	print 'findElves'
+	print mineMap
+	exit()
 	elfList = []
 	columnCount = len(mineMap[0])
 	rowCount = len(mineMap)
@@ -161,6 +183,12 @@ if debug_main:
 	print '\ntextList',textList
 
 mineMap = makeMapArray(textList)
+newMineMap = padMapArray(mineMap)
+print newMineMap
+exit()
+
+dumpMapList(newMineMap)
+
 elfList = findElves(mineMap)
 print 'elfList',elfList
 dumpMapList(elfList)
