@@ -185,7 +185,16 @@ class InputFileHandler():
 		for row in textFile:
 			inList.append(row.strip('\n\r'))
 		return inList
-
+	
+	def writeOutMapFile(self,mapList):
+		print 'newLine',mapList[0]
+		print 'mapList has line count',len(mapList)
+		for line in mapList:
+			newLine = ''.join(line)
+			print 'newLine',newLine
+			print 'did stuff'
+			exit()
+			
 #####################################################################################
 ## Functions which operate on the map list
 
@@ -282,22 +291,55 @@ def determineReplacementCellValue(mineMap,x,y):
 	 
 	:returns: replacement cell value
 	"""
+	debug_determineReplacementCellValue = False
 	# Implement as a bunch of deep if statements
-	lV = mineMap[x-1][y]
-	rV = mineMap[x+1][y]
-	uV = mineMap[x][y+1]
-	dV = mineMap[x][y-1]
+	if debug_determineReplacementCellValue:
+		print '\ndetermineReplacementCellValue: x,y',x,y
+		print 'determineReplacementCellValue: columns in map',len(mineMap[0])
+		print 'determineReplacementCellValue: rows in map',len(mineMap)
+		print 'determineReplacementCellValue: element in cell already',mineMap[y][x]
+	lV = mineMap[y][x-1]
+	rV = mineMap[y][x+1]
+	uV = mineMap[y+1][x]
+	dV = mineMap[y-1][x]
 	SP = ' '
+	HL = '-'
+	PL = '+'
+	VL = '|'
 	ulC = '/'
 	lrC = '/'
 	urC = '\\'
 	llC = '\\'
 	if lV == SP and rV == SP:
-		return('-')
+		return(VL)
 	elif uV == SP and dV == SP:
-		return('|')
+		return(HL)
+	elif lV == HL and rV == HL and uV == VL and dV == VL:
+		return('+')
+	elif lV == SP and rV == VL and uV == VL and dV == VL:
+		return(VL)
+	elif lV == VL and rV == SP and uV == PL and dV == VL:
+		return(VL)
+	elif lV == VL and rV == VL and uV == PL and dV == VL:
+		return(VL)
+	elif lV == SP and rV == VL and uV == VL and dV == PL:
+		return(VL)
+	elif lV == VL and rV == VL and uV == VL and dV == VL:
+		return(VL)
+	elif lV == SP and rV == VL and uV == PL and dV == VL:
+		return(VL)
+	elif lV == VL and rV == SP and uV == ulC and dV == PL:
+		return(VL)
+	elif lV == HL and rV == HL and uV == HL and dV == HL:
+		return(HL)
+	elif lV == VL and rV == SP and uV == VL and dV == VL:
+		return(VL)
 	else:
-		print 'lV,rV,uV,dV',lV,rV,uV,dV
+		print '\ndetermineReplacementCellValue: '
+		print 'lV',lV
+		print 'rV',rV
+		print 'uV',uV
+		print 'dV',dV
 		exit()
 
 def makeCleanMap(mineMap,elfList):
@@ -311,7 +353,7 @@ def makeCleanMap(mineMap,elfList):
 	for elf in elfList:
 		x = elf[0]
 		y = elf[1]
-		newMineMap[x][y] = determineReplacementCellValue(mineMap,x,y)
+		newMineMap[y][x] = determineReplacementCellValue(mineMap,x,y)
 	return newMineMap
 
 def findElves(mineMap):
@@ -354,7 +396,7 @@ direction = ['left','straight','right']
 ## May have to make an array that tracks just the elves
 ## Coordinate the two arrays
 
-inFileName = 'input2.txt'
+inFileName = 'input.txt'
 
 debug_main = False
 print 'Reading in file',time.strftime('%X %x %Z')
@@ -365,7 +407,7 @@ if debug_main:
 
 unpaddedMineMap = makeMapArray(textList)
 mineMap = padMapArray(unpaddedMineMap)
-dumpMapList(mineMap)
+#dumpMapList(mineMap)
 
 elfList = findElves(mineMap)
 elfList = sortElfList(elfList)
@@ -373,4 +415,6 @@ print 'main: there are',len(elfList),'elves'
 print 'main: list of elves',elfList
 
 cleanMap = makeCleanMap(mineMap,elfList)
-dumpMapList(cleanMap)
+#dumpMapList(cleanMap)
+
+InputFileClass.writeOutMapFile(cleanMap)
