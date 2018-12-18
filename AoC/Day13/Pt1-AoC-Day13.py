@@ -271,6 +271,78 @@ def findElves(mineMap):
 			print elf
 	return elfList
 
+def moveElf(elf,tracksMap):
+	"""Move the particular elf through the tracks map.
+	
+	:parm elf: The elf vector - [x,y,currentDirection,nextDirection]
+	Example: [2, 0, '>', 'left']
+	nextDirection moves through left,straight,right
+	:parm tracksMap: The tracks map
+	:returns: newElf vector
+	"""
+	debug_moveElf = True
+	if debug_moveElf:
+		printElfCurrentStatus(elf)
+	currentElfX = elf[0]
+	currentElfY = elf[1]
+	currentElfArrowValue = elf[2]
+	nextDirectionChange = elf[3]
+	newElfList = []
+	newXY = getNextXY(currentElfX,currentElfY,currentElfArrowValue)
+	newX = newXY[0]
+	newY= newXY[1]
+	if debug_moveElf:
+		print 'moveElf: Elf is moving from x y',currentElfX,currentElfY,'to x y',newX,newY
+	symbolAtMovePosition = tracksMap[newY][newX]
+	newArrowChar = 'Z'
+	newDirection = nextDirectionChange
+	if symbolAtMovePosition == '+':	# at an intersection - circles through left, straight, right
+		if debug_moveElf:
+			print 'moveElf: Elf is at an intersection'
+		## Need to do stuff with direction
+		if nextDirectionChange == 'left':
+			if currentElfArrowValue == '<':
+				newArrowChar = 'v'
+			elif currentElfArrowValue == '>':
+				newArrowChar = '^'
+			elif currentElfArrowValue == 'v':
+				newArrowChar = '>'
+			elif currentElfArrowValue == '^':
+				newArrowChar = '<'
+			newDirection = 'straight'
+		elif nextDirectionChange == 'straight':
+			newArrowChar = currentElfArrowValue
+			newDirection = 'right'
+		elif nextDirectionChange == 'right':
+			if currentElfArrowValue == '<':
+				newArrowChar = '^'
+			elif currentElfArrowValue == '>':
+				newArrowChar = 'v'
+			elif currentElfArrowValue == 'v':
+				newArrowChar = '<'
+			elif currentElfArrowValue == '^':
+				newArrowChar = '>'
+			newDirection = 'left'
+	elif symbolAtMovePosition == ulC_val and currentElfArrowValue == '<':
+		newArrowChar = 'v'
+	elif symbolAtMovePosition == ulC_val and currentElfArrowValue == '^':
+		newArrowChar = '>'
+	elif symbolAtMovePosition == urC_val and currentElfArrowValue == '>':
+		newArrowChar = 'v'
+	elif symbolAtMovePosition == urC_val and currentElfArrowValue == '^':
+		newArrowChar = '<'
+	elif symbolAtMovePosition == lrC_val and currentElfArrowValue == 'v':
+		newArrowChar = '<'
+	elif symbolAtMovePosition == lrC_val and currentElfArrowValue == '>':
+		newArrowChar = 'v'
+	elif symbolAtMovePosition == llC_val and currentElfArrowValue == '<':
+		newArrowChar = '^'
+	elif symbolAtMovePosition == llC_val and currentElfArrowValue == 'v':
+		newArrowChar = '>'
+	retVal = [newX,newY,newArrowChar,newDirection]
+	print 'retVal',retVal
+	return retVal
+
 def moveElves(elfList,tracksMap):
 	"""moveElves
 	Two options:
@@ -287,8 +359,8 @@ def moveElves(elfList,tracksMap):
 	Disadvantages: Sorting the list
 	Advantages: there are a lot less elves than there are x,y positions so this should be a lot faster
 	
-	:param elfList:
-	:param tracksMap:
+	:param elfList: list of elves - [x,y,currentDirection,nextDirection]
+	:param tracksMap: 
 	
 	:returns: True if move results in a collision
 	"""
@@ -299,6 +371,12 @@ def moveElves(elfList,tracksMap):
 		newElfList = []
 		for elf in elfList:
 			elfList = moveElf(elf,tracksMap)
+			print 'moveElves: made it back from moveElf function'
+			print 'moveElves: newElfList',newElfList
+			newElfList.append(elfList)
+		elfList = newElfList
+		if newElfList == []:
+			abbyTerminate('moveElves: moveElf Returned empty list')
 	
 def printElfCurrentStatus(elf):
 	currentElfX = elf[0]
@@ -320,7 +398,11 @@ def printElfCurrentStatus(elf):
 	
 def getNextXY(x,y,currentElfArrowValue):
 	"""Given an x,y location and a movement direction, return the next x,y value.
+	Note that the assumption is that the elf is always pointing in the right direction.
+	If the previous move of the elf was to an intersection the direction was already updated.
 	"""
+	nextX = 0
+	nextY = 0
 	if currentElfArrowValue == '>':
 		nextX = x + 1
 		nextY = y + 0
@@ -335,33 +417,6 @@ def getNextXY(x,y,currentElfArrowValue):
 		nextY = y - 1	
 	return [nextX,nextY]
 	
-def moveElf(elf,tracksMap):
-	"""Move the particular elf through the tracks map.
-	
-	:parm elf: The elf vector - Example: [2, 0, '>', 'left']
-	:parm tracksMap: The tracks map
-	:returns: newElf vector
-	"""
-	debug_moveElf = True
-	if debug_moveElf:
-		printElfCurrentStatus(elf)
-	currentElfX = elf[0]
-	currentElfY = elf[1]
-	currentElfArrowValue = elf[2]
-	nextDirectionChange = elf[3]
-	newXY = getNextXY(currentElfX,currentElfY,currentElfArrowValue)
-	newX = newXY[0]
-	newY= newXY[1]
-	if debug_moveElf:
-		print 'moveElf: Elf is moving from x y',currentElfX,currentElfY,'to x y',newX,newY
-	if tracksMap[newX][newY] == '+':
-		if debug_moveElf:
-			print 'moveElf: Elf is at an intersection'
-		## Need to do stuff with direction
-	else:
-		newDirection = 
-	exit()
-
 #####################################################################################
 ## Functions which operate on the map list
 
