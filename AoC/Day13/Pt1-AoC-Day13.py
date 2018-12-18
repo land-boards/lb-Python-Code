@@ -296,29 +296,71 @@ def moveElves(elfList,tracksMap):
 	collided = False
 	while not collided:
 		elfList = sortElfList(elfList)
+		newElfList = []
 		for elf in elfList:
 			elfList = moveElf(elf,tracksMap)
 	
-def moveElf(elf,tracksMap):
-	"""Move the particular elf through the tracks map.
-	"""
-	print 'moveElf: current elf vector is',elf
+def printElfCurrentStatus(elf):
 	currentElfX = elf[0]
 	currentElfY = elf[1]
 	print 'moveElf: elf at x y',currentElfX,currentElfY,'is moving',
-	if elf[2] == '>':
+	currentElfArrowValue = elf[2]
+	if currentElfArrowValue == '>':
 		print 'right',
-	elif elf[2] == 'v':
+	elif currentElfArrowValue == 'v':
 		print 'down',
-	elif elf[2] == '<':
+	elif currentElfArrowValue == '<':
 		print 'left',
-	elif elf[2] == '^':
+	elif currentElfArrowValue == '^':
 		print 'up',
-	print 'next move is',elf[3]
-	print 'moveElf: map at x y is',tracksMap[currentElfX][currentElfY]
+	nextDirectionChange = elf[3]
+	print 'move at next intersection will be',nextDirectionChange
+	print 'moveElf: map at x y',currentElfX,currentElfY,'is',tracksMap[currentElfY][currentElfX]
+	return
 	
+def getNextXY(x,y,currentElfArrowValue):
+	"""Given an x,y location and a movement direction, return the next x,y value.
+	"""
+	if currentElfArrowValue == '>':
+		nextX = x + 1
+		nextY = y + 0
+	elif currentElfArrowValue == 'v':
+		nextX = x + 0
+		nextY = y + 1
+	elif currentElfArrowValue == '<':
+		nextX = x - 1
+		nextY = y + 0
+	elif currentElfArrowValue == '^':
+		nextX = x + 0
+		nextY = y - 1	
+	return [nextX,nextY]
+	
+def moveElf(elf,tracksMap):
+	"""Move the particular elf through the tracks map.
+	
+	:parm elf: The elf vector - Example: [2, 0, '>', 'left']
+	:parm tracksMap: The tracks map
+	:returns: newElf vector
+	"""
+	debug_moveElf = True
+	if debug_moveElf:
+		printElfCurrentStatus(elf)
+	currentElfX = elf[0]
+	currentElfY = elf[1]
+	currentElfArrowValue = elf[2]
+	nextDirectionChange = elf[3]
+	newXY = getNextXY(currentElfX,currentElfY,currentElfArrowValue)
+	newX = newXY[0]
+	newY= newXY[1]
+	if debug_moveElf:
+		print 'moveElf: Elf is moving from x y',currentElfX,currentElfY,'to x y',newX,newY
+	if tracksMap[newX][newY] == '+':
+		if debug_moveElf:
+			print 'moveElf: Elf is at an intersection'
+		## Need to do stuff with direction
+	else:
+		newDirection = 
 	exit()
-	
 
 #####################################################################################
 ## Functions which operate on the map list
@@ -404,7 +446,7 @@ def determineReplacementCellValue(mineMap,x,y):
 	Should verify this assumption.
 	:returns: replacement cell value
 	"""
-	debug_determineReplacementCellValue = True
+	debug_determineReplacementCellValue = False
 	directionSymbol = mineMap[y][x]
 	newSymbol = ''
 	if debug_determineReplacementCellValue:
@@ -433,7 +475,7 @@ def replaceElvesWithTrack(mineMap,elfList):
 	Could pad the entire tracks with spaces - probably the easiest choice
 	elfList has list of elements which are [x,y,currentDirection,nextDirection]
 	"""
-	debug_replaceElvesWithTrack = True
+	debug_replaceElvesWithTrack = False
 	if debug_replaceElvesWithTrack:
 		print 'replaceElvesWithTrack: reached function'
 	newMineMap = mineMap
@@ -531,7 +573,7 @@ unpaddedMineMap = makeMapArray(textList)				# Get the map from the file
 elfList = findElves(unpaddedMineMap)					# Find the elves on the map
 elfList = sortElfList(elfList)							# Sort the elves in 'reading' order
 print 'main: there are',len(elfList),'elves'
-print 'main: list of elves',elfList
+#print 'main: list of elves',elfList
 mapWithoutElves = replaceElvesWithTrack(unpaddedMineMap,elfList)	# Remove the elves from the map
 paddedMap = padMapArray(mapWithoutElves)				# Pad the map with spaces all around
 cornersFixedMap = figureOutCorners(paddedMap)			# Replace corners with corner numbers
