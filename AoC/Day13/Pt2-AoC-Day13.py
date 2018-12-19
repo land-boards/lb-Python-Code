@@ -209,11 +209,13 @@ class InputFileHandler():
 		The map file is too big to print in a 80 xValueNum DOS CMD window.
 		newline between each line
 		"""
-		mapAsList = self.mapToList(mapList)
-		with open('SnapMap.txt', 'w') as f:
-			for item in mapAsList:
-				f.write(item)
-				f.write('\n')
+		debug_writeOutMapFile = False
+		if debug_writeOutMapFile:
+			mapAsList = self.mapToList(mapList)
+			with open('SnapMap.txt', 'w') as f:
+				for item in mapAsList:
+					f.write(item)
+					f.write('\n')
 		
 	def mapToList(self,mapList):
 		"""Write out the mapList to a file because it is too big to see on the screen
@@ -382,8 +384,11 @@ def moveElf(elf,tracksMap,elvesInField):
 
 def moveElves(elfList,tracksMap):
 	"""moveElves
-	Two options:
-	Option 1 - Create an map the same size as the track map that only has elves on it.
+	Needed a hybrid approach where I 
+	1 - Find collisions that will occur when one elf moves into the spot
+	where another elf currently is and 
+	2 - Detect when two elves have moved into the same location
+ 	Created an map the same size as the track map that only has elves on it.
 	Move the elves in that map and look for collisions as I am going along.
 	Disadvantages: Will need to keep rescanning the entire array every time to find the elves positions.
 	Advantages: Don't have to keep track of the elves by position.
@@ -438,7 +443,7 @@ def drawElvesInMap(elfList,traks):
 	:param elfList: list of elves - [x,y,currentDire ction,nextDirection]
 	:param traks: 
 	"""
-	debug_drawElvesInMap = True
+	debug_drawElvesInMap = False
 	newMap = map(list, traks)	# 2D list copy that really does a copy
 	for elf in elfList:
 		x = elf[0]
@@ -684,7 +689,7 @@ direction = ['left','straight','right']
 ## May have to make an array that tracks just the elves
 ## Coordinate the two arrays
 
-inFileName = 'input3.txt'
+inFileName = 'input.txt'
 
 debug_main = False
 print 'Reading in file',time.strftime('%X %x %Z')
