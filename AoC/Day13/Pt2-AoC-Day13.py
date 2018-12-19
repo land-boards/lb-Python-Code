@@ -401,7 +401,7 @@ def moveElves(elfList,tracksMap):
 	
 	:returns: True if move results in a collision
 	"""
-	debug_moveElves = False
+	debug_moveElves = True
 	if debug_moveElves:
 		print 'moveElves: Move the elves and look for collisions'
 	collided = False
@@ -412,25 +412,33 @@ def moveElves(elfList,tracksMap):
 		newElfList = []
 		for elf in elfList:
 			elfList = moveElf(elf,tracksMap,elvesInField)
-			if debug_moveElves:
-				print 'moveElves: made it back from moveElf function'
 			newElfList.append(elfList)
 			if newElfList == []:
 				abbyTerminate('moveElves: moveElf Returned empty list')
 		if debug_moveElves:
 			print 'moveElves: newElfList',newElfList
+		checkCollisions(newElfList)
 		elfList = newElfList
 		drawElvesInMap(elfList,tracksMap)
-		# os.system('pause')
-		# os.system('cls')
+		if debug_moveElves:
+			os.system('pause')
+			os.system('cls')
 	
+def checkCollisions(elfList):
+	numberOfElves = len(elfList)-1
+#	print 'checkCollisions: checking elves',numberOfElves
+	for i in xrange(numberOfElves):
+		if (elfList[i][0] == elfList[i+1][0]) and (elfList[i][1] == elfList[i+1][1]):
+			print 'checkCollisions: elves collided at x y',elfList[i][0],elfList[i][1]
+			exit()
+			
 def drawElvesInMap(elfList,traks):
 	"""drawElvesInMap
 	
 	:param elfList: list of elves - [x,y,currentDire ction,nextDirection]
 	:param traks: 
 	"""
-	debug_drawElvesInMap = False
+	debug_drawElvesInMap = True
 	newMap = map(list, traks)	# 2D list copy that really does a copy
 	for elf in elfList:
 		x = elf[0]
@@ -676,7 +684,7 @@ direction = ['left','straight','right']
 ## May have to make an array that tracks just the elves
 ## Coordinate the two arrays
 
-inFileName = 'input.txt'
+inFileName = 'input3.txt'
 
 debug_main = False
 print 'Reading in file',time.strftime('%X %x %Z')
