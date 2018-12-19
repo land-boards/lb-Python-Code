@@ -181,9 +181,9 @@ Locations are given in X,Y coordinates, where the furthest left xValueNum is X=0
 5  \------/   
 In this example, the location of the first crash is 7,3.
 
-That's not the right answer. 
-If you're stuck, there are some general tips on the about page, or you can ask for hints on the subreddit. 
-Please wait one minute before trying again. (You guessed 68,62.)
+Your puzzle answer was 26,92.
+
+The first half of this puzzle is complete! It provides one gold star: *
 """
 
 #####################################################################################
@@ -218,13 +218,16 @@ class InputFileHandler():
 	def mapToList(self,mapList):
 		"""Write out the mapList to a file because it is too big to see on the screen
 		"""
-		#print 'writeOutMapFile: newLine',mapList[0]
-		#print 'writeOutMapFile: mapList has line count',len(mapList)
+		debug_mapToList = False
+		if debug_mapToList:
+			print 'writeOutMapFile: newLine',mapList[0]
+			print 'writeOutMapFile: mapList has line count',len(mapList)
 		outList = []
 		for line in mapList:
 			newLine = ''.join(line)
 			outList.append(newLine)
-		#print 'mapToList: outList',
+		if debug_mapToList:
+			print 'mapToList: outList',
 		return outList
 
 #####################################################################################
@@ -256,7 +259,7 @@ def findElves(mineMap):
 	:param mineMap: the map file
 	:returns: list of elves - [x,y,currentDirection,nextDirection]
 	"""
-	debug_findElves = True
+	debug_findElves = False
 	if debug_findElves:
 		print 'findElves'
 		print mineMap
@@ -265,7 +268,8 @@ def findElves(mineMap):
 	yValueNumCount = len(mineMap)
 	for yValueNum in xrange(yValueNumCount):
 		for xValueNum in xrange(xValueNumCount):
-			print 'xValueNum,yValueNum',xValueNum,yValueNum
+			if debug_findElves:
+				print 'xValueNum,yValueNum',xValueNum,yValueNum
 			if (mineMap[yValueNum][xValueNum] == '>') or (mineMap[yValueNum][xValueNum] == '<') or (mineMap[yValueNum][xValueNum] == '^') or (mineMap[yValueNum][xValueNum] == 'v'):
 				elfXY = [xValueNum,yValueNum,mineMap[yValueNum][xValueNum],'left']
 				elfList.append(elfXY)
@@ -275,7 +279,31 @@ def findElves(mineMap):
 			print elf
 	return elfList
 
-def moveElf(elf,tracksMap):
+def makeEmptyElfField(tracksMap):
+	"""Make a copy of the tracksMap without tracks.
+	"""
+	yValueNumCount = len(tracksMap)
+	xValueNumCount = len(tracksMap[0])
+	elfsMap = []
+	for yValueNum in xrange(yValueNumCount):
+		xList = []
+		for xValueNum in xrange(xValueNumCount):
+			xList.append(' ')
+		elfsMap.append(xList)
+	return elfsMap
+
+def putElvesIntoElfField(elfList,elfsMap):
+	"""
+	:param elfList: list of elves - [x,y,currentDirection,nextDirection]
+	"""
+	for elf in elfList:
+		elfX = elf[0]
+		elfY = elf[1]
+		elfArrowValue = elf[2]
+		elfsMap[elfY][elfX] = elfArrowValue
+	return elfsMap
+
+def moveElf(elf,tracksMap,elvesInField):
 	"""Move the particular elf through the tracks map.
 	
 	:parm elf: The elf vector - [x,y,currentDirection,nextDirection]
@@ -296,6 +324,9 @@ def moveElf(elf,tracksMap):
 	newXY = getNextXY(currentElfX,currentElfY,currentElfArrowValue)
 	newX = newXY[0]
 	newY= newXY[1]
+	if elvesInField[newY][newX] != ' ':
+		print 'moveElf: Collision will be at x y',newX,newY
+		exit()
 	if debug_moveElf:
 		print 'moveElf: Elf moving from x y',currentElfX,currentElfY,'to x y',newX,newY
 	symbolAtMovePosition = tracksMap[newY][newX]
@@ -345,7 +376,8 @@ def moveElf(elf,tracksMap):
 	elif symbolAtMovePosition == llC_val and currentElfArrowValue == 'v':
 		newArrowChar = '>'
 	retVal = [newX,newY,newArrowChar,newDirection]
-	#print 'retVal',retVal
+	if debug_moveElf:
+		print 'retVal',retVal
 	return retVal
 
 def moveElves(elfList,tracksMap):
@@ -369,44 +401,43 @@ def moveElves(elfList,tracksMap):
 	
 	:returns: True if move results in a collision
 	"""
-	#print 'moveElves: Move the elves and look for collisions'
+	debug_moveElves = False
+	if debug_moveElves:
+		print 'moveElves: Move the elves and look for collisions'
 	collided = False
 	while not collided:
 		elfList = sortElfList(elfList)
-		checkCollisions(elfList)
+		emptyElfField = makeEmptyElfField(tracksMap)
+		elvesInField = putElvesIntoElfField(elfList,emptyElfField)
 		newElfList = []
 		for elf in elfList:
-			elfList = moveElf(elf,tracksMap)
-			#print 'moveElves: made it back from moveElf function'
+			elfList = moveElf(elf,tracksMap,elvesInField)
+			if debug_moveElves:
+				print 'moveElves: made it back from moveElf function'
 			newElfList.append(elfList)
 			if newElfList == []:
 				abbyTerminate('moveElves: moveElf Returned empty list')
-		#print 'moveElves: newElfList',newElfList
+		if debug_moveElves:
+			print 'moveElves: newElfList',newElfList
 		elfList = newElfList
 		drawElvesInMap(elfList,tracksMap)
-		os.system('pause')
-		os.system('cls')
+		# os.system('pause')
+		# os.system('cls')
 	
-def checkCollisions(elfList):
-	numberOfElves = len(elfList)-1
-#	print 'checkCollisions: checking elves',numberOfElves
-	for i in xrange(numberOfElves):
-		if (elfList[i][0] == elfList[i+1][0]) and (elfList[i][1] == elfList[i+1][1]):
-			print 'checkCollisions: elves collided at x y',elfList[i][0],elfList[i][1]
-			exit()
-
 def drawElvesInMap(elfList,traks):
 	"""drawElvesInMap
 	
 	:param elfList: list of elves - [x,y,currentDire ction,nextDirection]
 	:param traks: 
 	"""
+	debug_drawElvesInMap = False
 	newMap = map(list, traks)	# 2D list copy that really does a copy
 	for elf in elfList:
 		x = elf[0]
 		y = elf[1]
 		newMap[elf[1]][elf[0]] = elf[2]
-	dumpMapList(newMap)
+	if debug_drawElvesInMap:
+		dumpMapList(newMap)
 	return
 
 def printElfCurrentStatus(elf):
@@ -645,7 +676,7 @@ direction = ['left','straight','right']
 ## May have to make an array that tracks just the elves
 ## Coordinate the two arrays
 
-inFileName = 'input3.txt'
+inFileName = 'input.txt'
 
 debug_main = False
 print 'Reading in file',time.strftime('%X %x %Z')
@@ -653,20 +684,18 @@ InputFileClass = InputFileHandler()
 textList = InputFileClass.readTextFileLinesToList(inFileName)
 if debug_main:
 	print '\ntextList',textList
-
-# Do stuff with the map
 unpaddedMineMap = makeMapArray(textList)				# Get the map from the file
 elfList = findElves(unpaddedMineMap)					# Find the elves on the map
 elfList = sortElfList(elfList)							# Sort the elves in 'reading' order
-print 'main: there are',len(elfList),'elves'
-print 'main: list of elves',elfList
+if debug_main:
+	print 'main: there are',len(elfList),'elves'
+	print 'main: list of elves',elfList
 mapWithoutElves = replaceElvesWithTrack(unpaddedMineMap,elfList)	# Remove the elves from the map
 paddedMap = padMapArray(mapWithoutElves)				# Pad the map with spaces all around
 cornersFixedMap = figureOutCorners(paddedMap)			# Replace corners with corner numbers
 tracksMap = unPadMapArray(cornersFixedMap)				# Unpad the map
 InputFileClass.writeOutMapFile(tracksMap)				# Write out the new map
-#dumpMapList(mapWithoutElves)
-
-# Do stuff with the elves
-# Move the elves within the map
+if debug_main:
+	dumpMapList(mapWithoutElves)
 moveElves(elfList,tracksMap)
+print 'Finished processing',time.strftime('%X %x %Z')
