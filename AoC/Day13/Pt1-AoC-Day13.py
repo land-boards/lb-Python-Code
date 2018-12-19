@@ -42,8 +42,8 @@ Each time a cart has the option to turn (by arriving at any intersection), it tu
 goes straight the second time, turns right the third time, and then repeats those directions starting again with left the fourth time, straight the fifth time, and so on. This process is independent of the particular intersection at which the cart has arrived - that is, the cart has no per-intersection memory.
 
 Carts all move at the same speed; they take turns moving a single step at a time. 
-They do this based on their current location: carts on the top yValue move first (acting from left to right), 
-then carts on the second yValue move (again from left to right), then carts on the third yValue, and so on. 
+They do this based on their current location: carts on the top yValueNum move first (acting from left to right), 
+then carts on the second yValueNum move (again from left to right), then carts on the third yValueNum, and so on. 
 Once each cart has moved one step, the process repeats; each of these loops is called a tick.
 
 For example, suppose there are two carts on a straight track:
@@ -169,7 +169,7 @@ Here is a longer example:
   \------/   
 After following their respective paths for a while, the carts eventually crash. 
 To help prevent crashes, you'd like to know the location of the first crash. 
-Locations are given in X,Y coordinates, where the furthest left xValueNum is X=0 and the furthest top yValue is Y=0:
+Locations are given in X,Y coordinates, where the furthest left xValueNum is X=0 and the furthest top yValueNum is Y=0:
 
            111
  0123456789012
@@ -181,6 +181,9 @@ Locations are given in X,Y coordinates, where the furthest left xValueNum is X=0
 5  \------/   
 In this example, the location of the first crash is 7,3.
 
+That's not the right answer. 
+If you're stuck, there are some general tips on the about page, or you can ask for hints on the subreddit. 
+Please wait one minute before trying again. (You guessed 68,62.)
 """
 
 #####################################################################################
@@ -197,8 +200,8 @@ class InputFileHandler():
 		with open(fileName, 'r') as filehandle:  
 			textFile = filehandle.readlines()
 		inList = []
-		for yValue in textFile:
-			inList.append(yValue.strip('\n\r'))
+		for yValueNum in textFile:
+			inList.append(yValueNum.strip('\n\r'))
 		return inList
 	
 	def writeOutMapFile(self,mapList):
@@ -253,17 +256,18 @@ def findElves(mineMap):
 	:param mineMap: the map file
 	:returns: list of elves - [x,y,currentDirection,nextDirection]
 	"""
-	debug_findElves = False
+	debug_findElves = True
 	if debug_findElves:
 		print 'findElves'
 		print mineMap
 	elfList = []
 	xValueNumCount = len(mineMap[0])
-	yValueCount = len(mineMap)
-	for yValue in xrange(yValueCount):
+	yValueNumCount = len(mineMap)
+	for yValueNum in xrange(yValueNumCount):
 		for xValueNum in xrange(xValueNumCount):
-			if mineMap[yValue][xValueNum] == '>' or mineMap[yValue][xValueNum] == '<' or mineMap[yValue][xValueNum] == '^' or mineMap[yValue][xValueNum] == 'v':
-				elfXY = [xValueNum,yValue,mineMap[yValue][xValueNum],'left']
+			print 'xValueNum,yValueNum',xValueNum,yValueNum
+			if (mineMap[yValueNum][xValueNum] == '>') or (mineMap[yValueNum][xValueNum] == '<') or (mineMap[yValueNum][xValueNum] == '^') or (mineMap[yValueNum][xValueNum] == 'v'):
+				elfXY = [xValueNum,yValueNum,mineMap[yValueNum][xValueNum],'left']
 				elfList.append(elfXY)
 	if debug_findElves:
 		print 'findElves: Number of elves',len(elfList)
@@ -281,7 +285,7 @@ def moveElf(elf,tracksMap):
 	:parm tracksMap: The tracks map
 	:returns: newElf vector
 	"""
-	debug_moveElf = True
+	debug_moveElf = False
 	if debug_moveElf:
 		printElfCurrentStatus(elf)
 	currentElfX = elf[0]
@@ -335,13 +339,13 @@ def moveElf(elf,tracksMap):
 	elif symbolAtMovePosition == lrC_val and currentElfArrowValue == 'v':
 		newArrowChar = '<'
 	elif symbolAtMovePosition == lrC_val and currentElfArrowValue == '>':
-		newArrowChar = 'v'
+		newArrowChar = '^'
 	elif symbolAtMovePosition == llC_val and currentElfArrowValue == '<':
 		newArrowChar = '^'
 	elif symbolAtMovePosition == llC_val and currentElfArrowValue == 'v':
 		newArrowChar = '>'
 	retVal = [newX,newY,newArrowChar,newDirection]
-	print 'retVal',retVal
+	#print 'retVal',retVal
 	return retVal
 
 def moveElves(elfList,tracksMap):
@@ -369,6 +373,7 @@ def moveElves(elfList,tracksMap):
 	collided = False
 	while not collided:
 		elfList = sortElfList(elfList)
+		checkCollisions(elfList)
 		newElfList = []
 		for elf in elfList:
 			elfList = moveElf(elf,tracksMap)
@@ -376,31 +381,30 @@ def moveElves(elfList,tracksMap):
 			newElfList.append(elfList)
 			if newElfList == []:
 				abbyTerminate('moveElves: moveElf Returned empty list')
-		print 'moveElves: newElfList',newElfList
+		#print 'moveElves: newElfList',newElfList
 		elfList = newElfList
 		drawElvesInMap(elfList,tracksMap)
 		os.system('pause')
 		os.system('cls')
 	
+def checkCollisions(elfList):
+	numberOfElves = len(elfList)-1
+#	print 'checkCollisions: checking elves',numberOfElves
+	for i in xrange(numberOfElves):
+		if (elfList[i][0] == elfList[i+1][0]) and (elfList[i][1] == elfList[i+1][1]):
+			print 'checkCollisions: elves collided at x y',elfList[i][0],elfList[i][1]
+			exit()
+
 def drawElvesInMap(elfList,traks):
 	"""drawElvesInMap
 	
 	:param elfList: list of elves - [x,y,currentDire ction,nextDirection]
 	:param traks: 
 	"""
-	newMap = list(traks)
-	print 'drawElvesInMap: id(traks)',id(traks)
-	print 'drawElvesInMap: id(newMap)',id(newMap)
-#	print 'drawElvesInMap: elfList',elfList
-	print 'drawElvesInMap: traks',traks
-	print 'drawElvesInMap: newMap',newMap
+	newMap = map(list, traks)	# 2D list copy that really does a copy
 	for elf in elfList:
-#		print 'drawElvesInMap: elf',elf
 		x = elf[0]
 		y = elf[1]
-		print 'x',x,
-		print 'y',y,
-		print 'currentDirection',elf[2]
 		newMap[elf[1]][elf[0]] = elf[2]
 	dumpMapList(newMap)
 	return
@@ -458,9 +462,9 @@ def makeMapArray(theTextList):
 	if debug_makeMapArray:
 		print 'makeMapArray: make an array from the text lines'
 	mapArray = []
-	for yValue in theTextList:
-		yValueList = list(yValue)
-		mapArray.append(yValueList)
+	for yValueNum in theTextList:
+		yValueNumList = list(yValueNum)
+		mapArray.append(yValueNumList)
 	return mapArray
 	
 def unPadMapArray(mapArray):
@@ -469,10 +473,10 @@ def unPadMapArray(mapArray):
 	"""
 	debug_unPadMapArray = False
 	xValueNumCount = len(mapArray[0])
-	yValueCount = len(mapArray)
+	yValueNumCount = len(mapArray)
 	if debug_unPadMapArray:
 		print 'unPadMapArray: xValueNumCount',xValueNumCount
-		print 'unPadMapArray: yValueCount',yValueCount
+		print 'unPadMapArray: yValueNumCount',yValueNumCount
 	newMapArray = []
 	for row in mapArray[1:-1]:
 		newXValue = row[1:-1]
@@ -490,20 +494,20 @@ def padMapArray(mapArray):
 	"""
 	debug_padMapArray = False
 	xValueNumCount = len(mapArray[0])
-	yValueCount = len(mapArray)
+	yValueNumCount = len(mapArray)
 	if debug_padMapArray:
 		print 'padMapArray: xValueNumCount',xValueNumCount
-		print 'padMapArray: yValueCount',yValueCount
+		print 'padMapArray: yValueNumCount',yValueNumCount
 	newMapArray = []
 	endRows = []
 	for xValueNum in range(xValueNumCount+2):
 		endRows.append(' ')
 	newMapArray.append(endRows)
-	for yValue in xrange(yValueCount):
+	for yValueNum in xrange(yValueNumCount):
 		newXValue = []
 		newXValue.extend(' ')
 		for xValueNum in xrange(xValueNumCount):
-			newXValue.extend(mapArray[yValue][xValueNum])
+			newXValue.extend(mapArray[yValueNum][xValueNum])
 		newXValue.extend(' ')
 		newMapArray.append(newXValue)
 	newMapArray.append(endRows)
@@ -514,10 +518,10 @@ def dumpMapList(map):
 	"""
 	print 'dumpMapList:'
 	xValueNumCount = len(map[0])
-	yValueCount = len(map)
-	for yValueNum in xrange(yValueCount):
+	yValueNumCount = len(map)
+	for yValueNumNum in xrange(yValueNumCount):
 		for xValueNum in range(xValueNumCount):
-			print map[yValueNum][xValueNum],
+			print map[yValueNumNum][xValueNum],
 		print
 
 def determineReplacementCellValue(mineMap,x,y):
@@ -534,7 +538,7 @@ def determineReplacementCellValue(mineMap,x,y):
 	if debug_determineReplacementCellValue:
 		print '\ndetermineReplacementCellValue: x,y',x,y
 		print 'determineReplacementCellValue: xValueNums in map',len(mineMap[0])
-		print 'determineReplacementCellValue: yValues in map',len(mineMap)
+		print 'determineReplacementCellValue: yValueNums in map',len(mineMap)
 		print 'determineReplacementCellValue: element in cell before replacement',mineMap[y][x]
 	if directionSymbol == '>':
 		newSymbol = '-'
@@ -588,40 +592,40 @@ def figureOutCorners(mineMap):
 	"""
 	debug_figureOutCorners = False
 	newMap = []
-	for yValueNum in range(len(mineMap)):
+	for yValueNumNum in range(len(mineMap)):
 		newRow = []
 		for xValueNum in range(len(mineMap[0])):
 			if debug_figureOutCorners:
-				oldVal = mineMap[yValueNum][xValueNum]
-			if mineMap[yValueNum][xValueNum] == '/':
-				if (mineMap[yValueNum+1][xValueNum] == '|' or mineMap[yValueNum+1][xValueNum] == '+') and (mineMap[yValueNum][xValueNum+1] == '-' or mineMap[yValueNum][xValueNum+1] == '+'):
-					mineMap[yValueNum][xValueNum] = ulC_val
-				elif (mineMap[yValueNum-1][xValueNum] == '|' or mineMap[yValueNum-1][xValueNum] == '+') and (mineMap[yValueNum][xValueNum-1] == '-' or mineMap[yValueNum][xValueNum-1] == '+'):
-					mineMap[yValueNum][xValueNum] = lrC_val
+				oldVal = mineMap[yValueNumNum][xValueNum]
+			if mineMap[yValueNumNum][xValueNum] == '/':
+				if (mineMap[yValueNumNum+1][xValueNum] == '|' or mineMap[yValueNumNum+1][xValueNum] == '+') and (mineMap[yValueNumNum][xValueNum+1] == '-' or mineMap[yValueNumNum][xValueNum+1] == '+'):
+					mineMap[yValueNumNum][xValueNum] = ulC_val
+				elif (mineMap[yValueNumNum-1][xValueNum] == '|' or mineMap[yValueNumNum-1][xValueNum] == '+') and (mineMap[yValueNumNum][xValueNum-1] == '-' or mineMap[yValueNumNum][xValueNum-1] == '+'):
+					mineMap[yValueNumNum][xValueNum] = lrC_val
 				else:
-					print 'figureOutCorners: stuck at',mineMap[yValueNum][xValueNum]
-					print 'mineMap[yValueNum-1][xValueNum]',mineMap[yValueNum-1][xValueNum]
-					print 'mineMap[yValueNum+1][xValueNum]',mineMap[yValueNum+1][xValueNum]
-					print 'mineMap[yValueNum][xValueNum-1]',mineMap[yValueNum][xValueNum-1]
-					print 'mineMap[yValueNum][xValueNum+1]',mineMap[yValueNum][xValueNum+1]
+					print 'figureOutCorners: stuck at',mineMap[yValueNumNum][xValueNum]
+					print 'mineMap[yValueNumNum-1][xValueNum]',mineMap[yValueNumNum-1][xValueNum]
+					print 'mineMap[yValueNumNum+1][xValueNum]',mineMap[yValueNumNum+1][xValueNum]
+					print 'mineMap[yValueNumNum][xValueNum-1]',mineMap[yValueNumNum][xValueNum-1]
+					print 'mineMap[yValueNumNum][xValueNum+1]',mineMap[yValueNumNum][xValueNum+1]
 					abbyTerminate('figureOutCorners - Fell through / case') 
 				if debug_figureOutCorners:
-					print 'figureOutCorners: replaced',oldVal,'at x,y',xValueNum,yValueNum,'with',mineMap[yValueNum][xValueNum]
-			elif mineMap[yValueNum][xValueNum] == '\\':
-				if (mineMap[yValueNum-1][xValueNum] == '|' or mineMap[yValueNum-1][xValueNum] == '+') and (mineMap[yValueNum][xValueNum+1] == '-' or mineMap[yValueNum][xValueNum+1] == '+'):
-					mineMap[yValueNum][xValueNum] = llC_val
-				elif (mineMap[yValueNum+1][xValueNum] == '|' or mineMap[yValueNum+1][xValueNum] == '+') and (mineMap[yValueNum][xValueNum-1] == '-' or mineMap[yValueNum][xValueNum-1] == '+'):
-					mineMap[yValueNum][xValueNum] = urC_val
+					print 'figureOutCorners: replaced',oldVal,'at x,y',xValueNum,yValueNumNum,'with',mineMap[yValueNumNum][xValueNum]
+			elif mineMap[yValueNumNum][xValueNum] == '\\':
+				if (mineMap[yValueNumNum-1][xValueNum] == '|' or mineMap[yValueNumNum-1][xValueNum] == '+') and (mineMap[yValueNumNum][xValueNum+1] == '-' or mineMap[yValueNumNum][xValueNum+1] == '+'):
+					mineMap[yValueNumNum][xValueNum] = llC_val
+				elif (mineMap[yValueNumNum+1][xValueNum] == '|' or mineMap[yValueNumNum+1][xValueNum] == '+') and (mineMap[yValueNumNum][xValueNum-1] == '-' or mineMap[yValueNumNum][xValueNum-1] == '+'):
+					mineMap[yValueNumNum][xValueNum] = urC_val
 				else:
-					print 'figureOutCorners: stuck at',mineMap[yValueNum][xValueNum]
-					print 'mineMap[yValueNum-1][xValueNum]',mineMap[yValueNum-1][xValueNum]
-					print 'mineMap[yValueNum+1][xValueNum]',mineMap[yValueNum+1][xValueNum]
-					print 'mineMap[yValueNum][xValueNum-1]',mineMap[yValueNum][xValueNum-1]
-					print 'mineMap[yValueNum][xValueNum+1]',mineMap[yValueNum][xValueNum+1]
+					print 'figureOutCorners: stuck at',mineMap[yValueNumNum][xValueNum]
+					print 'mineMap[yValueNumNum-1][xValueNum]',mineMap[yValueNumNum-1][xValueNum]
+					print 'mineMap[yValueNumNum+1][xValueNum]',mineMap[yValueNumNum+1][xValueNum]
+					print 'mineMap[yValueNumNum][xValueNum-1]',mineMap[yValueNumNum][xValueNum-1]
+					print 'mineMap[yValueNumNum][xValueNum+1]',mineMap[yValueNumNum][xValueNum+1]
 					abbyTerminate('figureOutCorners - Fell through \\ case') 
 				if debug_figureOutCorners:
-					print 'figureOutCorners: replaced',oldVal,'at x,y',xValueNum,yValueNum,'with',mineMap[yValueNum][xValueNum]
-			newRow.append(mineMap[yValueNum][xValueNum])
+					print 'figureOutCorners: replaced',oldVal,'at x,y',xValueNum,yValueNumNum,'with',mineMap[yValueNumNum][xValueNum]
+			newRow.append(mineMap[yValueNumNum][xValueNum])
 		newMap.append(newRow)
 	return newMap
 			
@@ -641,7 +645,7 @@ direction = ['left','straight','right']
 ## May have to make an array that tracks just the elves
 ## Coordinate the two arrays
 
-inFileName = 'input1.txt'
+inFileName = 'input3.txt'
 
 debug_main = False
 print 'Reading in file',time.strftime('%X %x %Z')
@@ -655,7 +659,7 @@ unpaddedMineMap = makeMapArray(textList)				# Get the map from the file
 elfList = findElves(unpaddedMineMap)					# Find the elves on the map
 elfList = sortElfList(elfList)							# Sort the elves in 'reading' order
 print 'main: there are',len(elfList),'elves'
-#print 'main: list of elves',elfList
+print 'main: list of elves',elfList
 mapWithoutElves = replaceElvesWithTrack(unpaddedMineMap,elfList)	# Remove the elves from the map
 paddedMap = padMapArray(mapWithoutElves)				# Pad the map with spaces all around
 cornersFixedMap = figureOutCorners(paddedMap)			# Replace corners with corner numbers
