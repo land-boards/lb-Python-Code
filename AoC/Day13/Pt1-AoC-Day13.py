@@ -277,6 +277,7 @@ def moveElf(elf,tracksMap):
 	:parm elf: The elf vector - [x,y,currentDirection,nextDirection]
 	Example: [2, 0, '>', 'left']
 	nextDirection moves through left,straight,right
+	
 	:parm tracksMap: The tracks map
 	:returns: newElf vector
 	"""
@@ -292,9 +293,9 @@ def moveElf(elf,tracksMap):
 	newX = newXY[0]
 	newY= newXY[1]
 	if debug_moveElf:
-		print 'moveElf: Elf is moving from x y',currentElfX,currentElfY,'to x y',newX,newY
+		print 'moveElf: Elf moving from x y',currentElfX,currentElfY,'to x y',newX,newY
 	symbolAtMovePosition = tracksMap[newY][newX]
-	newArrowChar = 'Z'
+	newArrowChar = currentElfArrowValue
 	newDirection = nextDirectionChange
 	if symbolAtMovePosition == '+':	# at an intersection - circles through left, straight, right
 		if debug_moveElf:
@@ -310,9 +311,6 @@ def moveElf(elf,tracksMap):
 			elif currentElfArrowValue == '^':
 				newArrowChar = '<'
 			newDirection = 'straight'
-		elif nextDirectionChange == 'straight':
-			newArrowChar = currentElfArrowValue
-			newDirection = 'right'
 		elif nextDirectionChange == 'right':
 			if currentElfArrowValue == '<':
 				newArrowChar = '^'
@@ -323,6 +321,9 @@ def moveElf(elf,tracksMap):
 			elif currentElfArrowValue == '^':
 				newArrowChar = '>'
 			newDirection = 'left'
+		elif nextDirectionChange == 'straight':
+			newArrowChar = currentElfArrowValue
+			newDirection = 'right'
 	elif symbolAtMovePosition == ulC_val and currentElfArrowValue == '<':
 		newArrowChar = 'v'
 	elif symbolAtMovePosition == ulC_val and currentElfArrowValue == '^':
@@ -364,20 +365,46 @@ def moveElves(elfList,tracksMap):
 	
 	:returns: True if move results in a collision
 	"""
-	print 'moveElves: Move the elves and look for collisions'
+	#print 'moveElves: Move the elves and look for collisions'
 	collided = False
 	while not collided:
 		elfList = sortElfList(elfList)
 		newElfList = []
 		for elf in elfList:
 			elfList = moveElf(elf,tracksMap)
-			print 'moveElves: made it back from moveElf function'
-			print 'moveElves: newElfList',newElfList
+			#print 'moveElves: made it back from moveElf function'
 			newElfList.append(elfList)
+			if newElfList == []:
+				abbyTerminate('moveElves: moveElf Returned empty list')
+		print 'moveElves: newElfList',newElfList
 		elfList = newElfList
-		if newElfList == []:
-			abbyTerminate('moveElves: moveElf Returned empty list')
+		drawElvesInMap(elfList,tracksMap)
+		os.system('pause')
+		os.system('cls')
 	
+def drawElvesInMap(elfList,traks):
+	"""drawElvesInMap
+	
+	:param elfList: list of elves - [x,y,currentDire ction,nextDirection]
+	:param traks: 
+	"""
+	newMap = list(traks)
+	print 'drawElvesInMap: id(traks)',id(traks)
+	print 'drawElvesInMap: id(newMap)',id(newMap)
+#	print 'drawElvesInMap: elfList',elfList
+	print 'drawElvesInMap: traks',traks
+	print 'drawElvesInMap: newMap',newMap
+	for elf in elfList:
+#		print 'drawElvesInMap: elf',elf
+		x = elf[0]
+		y = elf[1]
+		print 'x',x,
+		print 'y',y,
+		print 'currentDirection',elf[2]
+		newMap[elf[1]][elf[0]] = elf[2]
+	dumpMapList(newMap)
+	return
+
 def printElfCurrentStatus(elf):
 	currentElfX = elf[0]
 	currentElfY = elf[1]
@@ -482,15 +509,15 @@ def padMapArray(mapArray):
 	newMapArray.append(endRows)
 	return newMapArray
 	
-def dumpMapList(mapList):
+def dumpMapList(map):
 	"""Dump the elf list
 	"""
 	print 'dumpMapList:'
-	xValueNumCount = len(mapList[0])
-	yValueCount = len(mapList)
-	for yValue in xrange(yValueCount):
+	xValueNumCount = len(map[0])
+	yValueCount = len(map)
+	for yValueNum in xrange(yValueCount):
 		for xValueNum in range(xValueNumCount):
-			print mapList[yValue][xValueNum],
+			print map[yValueNum][xValueNum],
 		print
 
 def determineReplacementCellValue(mineMap,x,y):
@@ -614,7 +641,7 @@ direction = ['left','straight','right']
 ## May have to make an array that tracks just the elves
 ## Coordinate the two arrays
 
-inFileName = 'input2.txt'
+inFileName = 'input1.txt'
 
 debug_main = False
 print 'Reading in file',time.strftime('%X %x %Z')
