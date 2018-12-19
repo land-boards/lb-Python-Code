@@ -1,6 +1,6 @@
-# Pt1-AoCDay12.py
+# Pt1-AoCDay13.py
 # 2018 Advent of Code
-# Day 12
+# Day 13
 # Part 1
 # https://adventofcode.com/2018/day/13
 
