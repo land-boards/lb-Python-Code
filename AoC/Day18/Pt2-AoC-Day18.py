@@ -11,26 +11,34 @@ import os
 """
 
 --- Part Two ---
-This important natural resource will need to last for at least thousands of years. Are the Elves collecting this lumber sustainably?
+This important natural resource will need to last for at least thousands of years. 
+Are the Elves collecting this lumber sustainably?
 
 What will the total resource value of the lumber collection area be after 1000000000 minutes?
 That's not the right answer; your answer is too low. 
 If you're stuck, there are some general tips on the about page, or you can ask for hints on the subreddit. 
 Please wait one minute before trying again. (You guessed 196959.)
 
-length of singletons 416
-offset to start of repeated pattern 416
-length of repeated 40
-point to start looking at 999999585
-modulusValue 25
-positionInOriginalList 441
-value at that point 197054
+202301
 
-Wrong values are all singletons so I should not have tried them.
+That's the right answer! You are one gold star closer to fixing the time stream.
 
-195305
-196959
-197054
+General Notes about the solution.
+This is the first problem I have ever done with looking through data for patterns.
+The good part is that the data is really well ordered.
+The data that repeats happens a couple of times before the pattern but the pattern repeated a lot of times.
+I ran with 600 data points.
+The front end until the repeat was the first 0-441 values.
+The pattern was 28 elements long.
+Stimulus of 600 elements was enough to get 5-6 repeats. 
+Fortunately, there was not too much of the repeated pattern elements earlier.
+What I did:
+Read forest value data (from part A) into list
+Create frequency bins for the data.
+Take the two highest runners for frequency.
+Taking 1 isn't enough since the data stops mid bin.
+This data was convenient since it wasn't very random and the two top bins were good.
+Put the data found into a dictionary.
 
 """
 
@@ -211,6 +219,23 @@ def valueForest(forestMap):
 				numberOfLumbermills += 1
 	return numberOfTrees*numberOfLumbermills
 
+def makeFrequencyBins(listOfDuplicates,originalList):
+	"""Create a dictionary with the number of times a number has been hit
+	The most frequent numbers are the repeated ones if the pattern is long enough.
+	List scan could be ob1 due to where the scan ends (test case doesn't take that into account)
+	
+	:returns: dictionary of the frequency counts of each item
+	"""
+	freqBins = {}
+	for dupListItem in listOfDuplicates:
+		for origListItem in originalList:
+			if dupListItem == origListItem:
+				if dupListItem in freqBins:		# The item is in the list so increase the count
+					freqBins[dupListItem] = freqBins[dupListItem] + 1
+				else:							# The item is not in the list so add it to the list
+					freqBins[dupListItem] = 1
+	return freqBins
+
 def workThroughUnsortedForestValues(forestValues,pointInTimeToValue):
 	"""Solve the value at a point in time past the list for a repeated list. 
 	Example: Find the value at time of 10 in the list (should be 11)
@@ -240,60 +265,102 @@ def workThroughUnsortedForestValues(forestValues,pointInTimeToValue):
 	"""
 	valueRepeats = []
 	valueSingletons = []
-	print 'passed time to check',pointInTimeToValue
+	workThroughUnsortedForestValues = False
+	if workThroughUnsortedForestValues:
+		print 'passed time to check',pointInTimeToValue
 	checkAtTime = pointInTimeToValue - 1
-	print 't=0 compensation',checkAtTime
+	if workThroughUnsortedForestValues:
+		print 't=0 compensation',checkAtTime
 	for value in forestValues:
 		if (value not in valueRepeats) and (value not in valueSingletons):	# first time seeing a valueForest
 			valueSingletons.append(value)
 		elif value in valueSingletons:										# seen value before
 			valueSingletons.remove(value)
 			valueRepeats.append(value)
-	print 'singletons list',valueSingletons
-	print 'repeated',valueRepeats
+	if workThroughUnsortedForestValues:
+		print 'singletons list',valueSingletons
+		print 'repeated',valueRepeats
 	lastSingletonValue = valueSingletons[-1]
-	print 'the last singleton value',lastSingletonValue
+	if workThroughUnsortedForestValues:
+		print 'the last singleton value',lastSingletonValue
 	listOff = 0
 	for singleton in forestValues:
 		if singleton == lastSingletonValue:
 			offsetToLastSingletonInForestValues = listOff
 		listOff += 1
-	print 'offset to last singleton in the original list',offsetToLastSingletonInForestValues
+	if workThroughUnsortedForestValues:
+		print 'offset to last singleton in the original list',offsetToLastSingletonInForestValues
 	offsetToStartOfRepeatedPattern = offsetToLastSingletonInForestValues + 1
-	print 'last singleton value from singleton list',valueSingletons[-1]
+	if workThroughUnsortedForestValues:
+		print 'last singleton value from singleton list',valueSingletons[-1]
+		print 'make Frequency bins'
+	freqBins = makeFrequencyBins(valueRepeats,forestValues)
+	freqList = []
+	for x, y in freqBins.items():
+		if workThroughUnsortedForestValues:
+			print(x, y)
+		freqList.append(y)
+	freqList.sort()
+	if workThroughUnsortedForestValues:
+		print 'frequency list',freqList
+	maxFreqVal = freqList[-1]
+	if workThroughUnsortedForestValues:
+		print 'maxFreqVal',maxFreqVal
+	# if the count is at maxFreqVal or maxFreqVal -1 the leave it in the dictionary
+	maxFreqMinusOne = maxFreqVal - 1
+	if workThroughUnsortedForestValues:
+		print 'maxFreqMinusOne',maxFreqMinusOne
+	for x, y in freqBins.items():
+		if y != maxFreqVal and y != maxFreqMinusOne:
+			freqBins.pop(x)
+	if workThroughUnsortedForestValues:
+		print 'the selected list of repeat values'
+	if workThroughUnsortedForestValues:
+		for x, y in freqBins.items():
+			print(x, y)
 	
-	print 'value of singleton in original list found by offset',forestValues[offsetToStartOfRepeatedPattern-1]
-	print 'offset to start of repeated pattern',offsetToStartOfRepeatedPattern
-	#pattern length is found by starting at the start of the pattern and counting...
-	patternLength = len(valueRepeats)
-	print 'length of repeated',patternLength
-	lookInPatternOffset = checkAtTime - offsetToStartOfRepeatedPattern
-	print 'point to start looking at',lookInPatternOffset
+	if workThroughUnsortedForestValues:
+		print 'Find the first value in the original list that is in the dictionary'
+	offsetInList = 0
+	matchCount = 0
+	for item in forestValues:
+		if workThroughUnsortedForestValues:
+			print 'checking item in bin at offset',offsetInList,'value',forestValues[offsetInList]
+		if item in freqBins:
+			matchCount += 1
+			if workThroughUnsortedForestValues:
+				print 'Item in forestValues was in the frequently found bins'
+			if matchCount == len(freqBins):
+				if workThroughUnsortedForestValues:
+					print 'Found a match to the entire list'
+				break
+		else:
+			matchCount = 0
+		offsetInList += 1
+	if workThroughUnsortedForestValues:
+		print 'Offset in forestValues list to the end of the first repeated pattern element is',offsetInList
+	patternLength = len(freqBins)
+	if workThroughUnsortedForestValues:
+		print 'The length of the repeat pattern is',len(freqBins)
+		print 'Last item in repeated item list is',forestValues[offsetInList]
+	firstItemInRepeatList = offsetInList - len(freqBins) + 1
+	if workThroughUnsortedForestValues:
+		print 'offset to first repeated item',firstItemInRepeatList 
+		print 'element at the first repeated item',forestValues[firstItemInRepeatList]
+	
+	lookInPatternOffset = checkAtTime - firstItemInRepeatList
+	if workThroughUnsortedForestValues:
+		print 'point to start looking at',lookInPatternOffset
 	modulusValue = lookInPatternOffset % patternLength
-	print 'modulusValue',modulusValue
-	positionInOriginalList = offsetToStartOfRepeatedPattern + modulusValue
-	print 'positionInOriginalList',positionInOriginalList
-	print 'value at that point',forestValues[positionInOriginalList]
+	if workThroughUnsortedForestValues:
+		print 'modulusValue',modulusValue
+	positionInOriginalList = firstItemInRepeatList + modulusValue
+	if workThroughUnsortedForestValues:
+		print 'positionInOriginalList',positionInOriginalList,
+	print '\n*** Value at solution point',forestValues[positionInOriginalList],'***\n'
 
 ########################################################################
 ## Code
-
-## Game of life problem
-## At what point does the pattern repeat?
-## modulus math to figure out the solution past that point
-## Running loop for 1000 iterations shows repeated forest values
-## As an example in 1000 loops, the number 199732 repeats 20 times:
-##	199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732, 
-##	199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732
-## Or picking number
-## 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420, 
-## 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420,
-## This also repeats 20 times.
-## So for 1000 items dividing by the 20 implies that the repeat pattern is somewhere
-##	around 50 inputs (after the initial run into the pattern)
-## It seems like this is a two pronged problem
-## 	Find first repeat point then find repeat offset
-## 	Can I just operate on the iteration list?
 
 # testList = [0,1,2,3,4,10,11,12,10,11,12,10,11,12,10,11,12]
 # workThroughUnsortedForestValues(testList,12)
@@ -308,24 +375,18 @@ textList = InputFileClass.readTextFileLinesToList(inFileName)
 if debug_main:
 	print '\ntextList',textList
 forestMap = makeMapArray(textList)				# Get the map from the file
-dumpMapList(forestMap)
+#dumpMapList(forestMap)
 loopCount = 1
 forestValues = []
-while loopCount <= 600:
-	print 'After',loopCount,'mins'
+while loopCount <= 600:			# this number could be autodetected if there was sufficient time to pull signal/noise ratio
+	#print 'After',loopCount,'mins'
 	newForestMap = determineNextSymbols(forestMap)
-	#dumpMapList(newForestMap)
 	forestMap = newForestMap
 	forestValue = valueForest(forestMap)
 	forestValues.append(forestValue)
 	loopCount += 1
-	
-#dumpMapList(newForestMap)
-print 'unsofted forestValues',forestValues
-workThroughUnsortedForestValues(forestValues,1000000000)
-# forestValues.sort()
-# print 'sorted forestValues',forestValues
 
-# print 'forest value is',forestValue
+## The following is the workhorse for this part of the problem	
+workThroughUnsortedForestValues(forestValues,1000000000)
 
 print 'Finished processing',time.strftime('%X %x %Z')
