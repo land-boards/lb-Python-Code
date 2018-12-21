@@ -232,6 +232,9 @@ def workThroughUnsortedForestValues(forestValues,pointInTimeToValue):
 	The repeat count is the length of the repeats list
 	To find the value at a particular time deal with offset and number of repeats
 	
+	ISSUE: Not accounting for some early repeats.
+	Need to find the offset to the last singleton and go from there.
+	
 	:param forestValues:
 	:param pointInTimeToValue:
 	"""
@@ -241,17 +244,27 @@ def workThroughUnsortedForestValues(forestValues,pointInTimeToValue):
 	checkAtTime = pointInTimeToValue - 1
 	print 't=0 compensation',checkAtTime
 	for value in forestValues:
-		if value not in valueRepeats and value not in valueSingletons:
+		if (value not in valueRepeats) and (value not in valueSingletons):	# first time seeing a valueForest
 			valueSingletons.append(value)
-		elif value in valueSingletons:
+		elif value in valueSingletons:										# seen value before
 			valueSingletons.remove(value)
 			valueRepeats.append(value)
-	print 'singletons',valueSingletons
+	print 'singletons list',valueSingletons
 	print 'repeated',valueRepeats
-	offsetToStartOfRepeatedPattern = len(valueSingletons)
-	print 'length of singletons',offsetToStartOfRepeatedPattern
+	lastSingletonValue = valueSingletons[-1]
+	print 'the last singleton value',lastSingletonValue
+	listOff = 0
+	for singleton in forestValues:
+		if singleton == lastSingletonValue:
+			offsetToLastSingletonInForestValues = listOff
+		listOff += 1
+	print 'offset to last singleton in the original list',offsetToLastSingletonInForestValues
+	offsetToStartOfRepeatedPattern = offsetToLastSingletonInForestValues + 1
+	print 'last singleton value from singleton list',valueSingletons[-1]
+	
+	print 'value of singleton in original list found by offset',forestValues[offsetToStartOfRepeatedPattern-1]
 	print 'offset to start of repeated pattern',offsetToStartOfRepeatedPattern
-	#print 'the last singleton value',valueSingletons[-1]
+	#pattern length is found by starting at the start of the pattern and counting...
 	patternLength = len(valueRepeats)
 	print 'length of repeated',patternLength
 	lookInPatternOffset = checkAtTime - offsetToStartOfRepeatedPattern
@@ -298,7 +311,7 @@ forestMap = makeMapArray(textList)				# Get the map from the file
 dumpMapList(forestMap)
 loopCount = 1
 forestValues = []
-while loopCount <= 500:
+while loopCount <= 600:
 	print 'After',loopCount,'mins'
 	newForestMap = determineNextSymbols(forestMap)
 	#dumpMapList(newForestMap)
