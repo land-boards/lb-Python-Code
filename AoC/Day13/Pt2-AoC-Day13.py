@@ -123,7 +123,7 @@ def runElves(elvesList,tracksMap):
 	:param elvesList: the original elves list
 	:param tracksMap: field of tracks without elves
 	"""
-	debug_runElves = True
+	debug_runElves = False
 	# print 'runElves: elvesList'
 	# for elf in elvesList:
 		# print elf
@@ -212,19 +212,23 @@ def compareNewVsOldElvesList(oldElvesList,newElvesList):
 
 def moveElves(elvesList,tracksMap):
 	"""moveElves - Go through the elves in the elf list and move each of them one at a time.
-	Returns a list of elves at their new locations.
+	Returns a list of elves which had collisions in the move.
 	
-	:param elvesList: list of elves - [elfNumber,x,y,currentDirection,nextDirection,collisionFlag]
+	:param elvesList: list of elves - [elfNumber,x,y,currentDirection,nextDirection]
 	:param tracksMap: 
-	:returns: New elves location list
+	:returns: List of elf numbers for collided elves
 	"""
 	debug_moveElves = False
+	elfCollisionList = []
 	if debug_moveElves:
-		print 'moveElves: Move the elves into a new list'
-	newElfList = []
-	for elf in elvesList:
-		newElfValue = moveElf(elf,tracksMap)
-		newElfList.append(newElfValue)
+		print 'moveElves: reached function'
+	for elf in elvesList:		# go through each of the elves
+		if elf[0] not in elfCollisionList;
+			newElfValue = moveElf(elf,tracksMap)
+			collisionsOnPass = checkElfValueInElfList(newElfValue,elvesList,elfCollisionList)
+			if collisionsOnPass != []:
+				print 'elves collided',checkVal
+				elfCollisionList.append(collisionsOnPass[0],collisionsOnPass[1])
 	if not newElfList:
 		abbyTerminate('moveElves: moveElf Returned empty list')
 	if debug_moveElves:
@@ -234,15 +238,26 @@ def moveElves(elvesList,tracksMap):
 		print 'moveElves: the new elves list after the move',newElfList
 	return newElfList
 	
+def checkElfValueInElfList(elfIn,elfList,elfCollisionList):
+	elfNumber = elfIn[0]
+	for elf in elfList:
+		if elfNumber != elf[0]:
+			if elf not in elfCollisionList:
+				if elfNumber[1] == elfIn[1] and elfNumber[2] == elfIn[2]:
+					# collision at this point
+					print 'elves collided',elfNumber[0],elf[0]
+					return [elfNumber[0], elf[0]]
+
+
 def moveElf(elf,tracksMap):
 	"""Move the particular elf through the tracks map.
 	
-	:parm elf: The elf vector - [elfNumber,x,y,currentDirection,nextDirection,collisionFlag]
+	:parm elf: The elf vector - [elfNumber,x,y,currentDirection,nextDirection]
 	Example: [2, 0, '>', 'left']
 	nextDirection moves through left,straight,right
 	
 	:parm tracksMap: The tracks map
-	:returns: newElf vector - [x,y,currentDirection,nextDirection,collisionFlag]
+	:returns: newElf vector - [x,y,currentDirection,nextDirection]
 	x,y is the new position of the elf
 	currentDirection is the arrow character after the resulting movement.
 	"""
@@ -457,7 +472,7 @@ def drawElvesInMap(elvesList,traks):
 	return
 
 def printElfCurrentStatus(elf,tracksMap):
-	"""Elf vector is [elfNumber,x,y,currentDirection,nextDirection,collisionFlag]
+	"""Elf vector is [elfNumber,x,y,currentDirection,nextDirection]
 	"""
 	currentElfX = elf[1]
 	currentElfY = elf[2]
