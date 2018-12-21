@@ -1,5 +1,4 @@
 import random
-import statistics
 
 class MakeRepeatedListClass:
 	def makeSingleRandomNumberList(self,headerLength):
@@ -110,6 +109,12 @@ class PatternDetectorClass:
 		"""go through the dictionary with the bins of data pick the right value.
 		Assume that the discriminator which removed the singletons did a pretty good job
 		of filtering down the front end noise so that most of the values are around the median.
+		Statistics class to the rescue.
+		Get the median by sorting the frequency list and picking the element nearest the middle.
+		Could do a statistical analysis to make sure the distribution is strongly matched.
+		Noticed that sometimes the repeated pattern has repeated values in it.
+		This shows up as some of the data being at twice, three times (more or less) the original data.
+		If you run enough data the median should pop up high.
 		
 		:param freqBinData: Get the maximum frequency count
 		:returns: the maximum value in the list of frequencies
@@ -120,31 +125,56 @@ class PatternDetectorClass:
 			if freqBinData:
 				print(x, y)
 			freqList.append(y)
-		medianFreq = statistics.median(freqList)
-		return freqList[-1]
-	
-GeneratorClass = MakeRepeatedListClass()
-randomishList = GeneratorClass.generateRandomishList(100,20,10)	# repeatCount, headerLength, repeatLength
-print randomishList
+		listLength = len(freqList)
+		freqList.sort()
+		return freqList[int(listLength/2)]
 
+	def pullDataAboveThreshold(self,freqBinData,threshold):
+		"""Go through the data and if the data is equal to or greater than the median value, return that data
+		It is possible that there is repeating data in the list itself so there could be less elements than
+		the size of the repeating pattern.
+		"""
+		selectedData = []
+		for x, y in freqBinData.items():
+			if y < threshold:
+				freqBinData.pop(x)
+			else:
+				selectedData.append(x)
+		selectedData.sort()
+		return selectedData
+		
+	
+debug_main = False
+## The Generator Class exists just for the purpose of creating randomized test case data
+GeneratorClass = MakeRepeatedListClass()
+randomishList = GeneratorClass.generateRandomishList(10,20,10)	# repeatCount, headerLength, repeatLength
+if debug_main: print randomishList
+
+## The Pattern detection class works on the data and determine where the starting pattern is and where it repeats
 PatternDetectClass = PatternDetectorClass()
 singletonValues = PatternDetectClass.getSingletonsInList(randomishList)
-print 'singletonValues',singletonValues
+if debug_main: print 'singletonValues',singletonValues
 lastSingletonValue = singletonValues[-1]
-print 'lastSingletonValue',lastSingletonValue
+if debug_main: print 'lastSingletonValue',lastSingletonValue
 offsetInListToLastSingleton = PatternDetectClass.findOffsetInListToValue(lastSingletonValue,randomishList)
-print 'offset in the list to the last singleton',offsetInListToLastSingleton
+if debug_main: print 'offset in the list to the last singleton',offsetInListToLastSingleton
 provisionalOffsetToPattern = offsetInListToLastSingleton + 1
-print 'the provisional offset to the repeated pattern is',provisionalOffsetToPattern
+if debug_main: print 'the provisional offset to the repeated pattern is',provisionalOffsetToPattern
 
 duplicatedValues = PatternDetectClass.getMultiplesInList(randomishList)
-print 'duplicatedValues',duplicatedValues
+if debug_main: print 'duplicatedValues',duplicatedValues
 provisionalRepeatedValuesCount = len(duplicatedValues)
-print 'the provisional repeatedValuesCount',provisionalRepeatedValuesCount
+if debug_main: print 'the provisional repeatedValuesCount',provisionalRepeatedValuesCount
 
 # Use frequency bins for the 
 freqBinResults = PatternDetectClass.makeFrequencyBins(duplicatedValues,randomishList)
 print 'freqBinResults',freqBinResults
 
-maxHits = PatternDetectClass.getMaxFreqCount(freqBinResults)
-print 'maximum bin size',maxHits
+dataMedian = PatternDetectClass.getMedianFreqCount(freqBinResults)
+print 'Median value',dataMedian
+
+listOfRepeatedValues = PatternDetectClass.pullDataAboveThreshold(freqBinResults,dataMedian)
+print 'repeatedValues list',listOfRepeatedValues
+
+## Goal is to look through the list of elements and find the place where the entire list is present.
+## Problem is that there can be repeated data elements in the selected list so the length is not truely known.
