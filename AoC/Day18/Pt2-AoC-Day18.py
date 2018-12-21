@@ -17,6 +17,21 @@ What will the total resource value of the lumber collection area be after 100000
 That's not the right answer; your answer is too low. 
 If you're stuck, there are some general tips on the about page, or you can ask for hints on the subreddit. 
 Please wait one minute before trying again. (You guessed 196959.)
+
+length of singletons 416
+offset to start of repeated pattern 416
+length of repeated 40
+point to start looking at 999999585
+modulusValue 25
+positionInOriginalList 441
+value at that point 197054
+
+Wrong values are all singletons so I should not have tried them.
+
+195305
+196959
+197054
+
 """
 
 #####################################################################################
@@ -183,13 +198,30 @@ def dumpMapList(map):
 			print map[yValueNum][xValueNum],
 		print
 
+def valueForest(forestMap):
+	numberOfTrees = 0
+	numberOfLumbermills = 0
+	xValueNumCount = len(forestMap[0])
+	yValueNumCount = len(forestMap)
+	for yValueNum in xrange(yValueNumCount):
+		for xValueNum in xrange(xValueNumCount):
+			if forestMap[yValueNum][xValueNum] == '|':
+				numberOfTrees += 1
+			elif forestMap[yValueNum][xValueNum] == '#':
+				numberOfLumbermills += 1
+	return numberOfTrees*numberOfLumbermills
+
 def workThroughUnsortedForestValues(forestValues,pointInTimeToValue):
 	"""Solve the value at a point in time past the list for a repeated list. 
-	Example: Find the value at offset of 9 in the list
-	0 1 2 3 4 10 11 12 10 11 12 10 11 12
-	0 1 2 3 4 are the singletons
-	10 11 12 is the repeated pattern
-	10 11 12 pattern starts at offset just past the end of the singletons = len(singletons)
+	Example: Find the value at time of 10 in the list (should be 11)
+	1 2 3 4 5 6  7  8  9  10 11 12 13 14 	- time
+	0 1 2 3 4 5  6  7  8   9 10 11 12 13 	- Offset in list
+	0 1 2 3 4 10 11 12 10 11 12 10 11 12 	- Values
+	+ + + + + 								- Singleton values
+	          R  R  R						- Repeated values
+	0 1 2 3 4 are the singletons - length = 5
+	10 11 12 is the repeated pattern - length of repeat pattern is the same as the number of elements in the list
+	10 11 12 pattern starts at offset 5 just past the end of the singletons
 	repeated pattern length - len(repeatedPattern)
 	
 	Go through values list. 
@@ -206,7 +238,7 @@ def workThroughUnsortedForestValues(forestValues,pointInTimeToValue):
 	valueRepeats = []
 	valueSingletons = []
 	print 'passed time to check',pointInTimeToValue
-	checkAtTime = pointInTimeToValue -1
+	checkAtTime = pointInTimeToValue - 1
 	print 't=0 compensation',checkAtTime
 	for value in forestValues:
 		if value not in valueRepeats and value not in valueSingletons:
@@ -230,23 +262,6 @@ def workThroughUnsortedForestValues(forestValues,pointInTimeToValue):
 	print 'positionInOriginalList',positionInOriginalList
 	print 'value at that point',forestValues[positionInOriginalList]
 
-def valueForest(forestMap):
-	numberOfTrees = 0
-	numberOfLumbermills = 0
-	xValueNumCount = len(forestMap[0])
-	yValueNumCount = len(forestMap)
-	for yValueNum in xrange(yValueNumCount):
-		for xValueNum in xrange(xValueNumCount):
-			if forestMap[yValueNum][xValueNum] == '|':
-				numberOfTrees += 1
-			elif forestMap[yValueNum][xValueNum] == '#':
-				numberOfLumbermills += 1
-	return numberOfTrees*numberOfLumbermills
-
-########################################################################
-## This is the workhorse of this assignment
-
-
 ########################################################################
 ## Code
 
@@ -268,7 +283,7 @@ def valueForest(forestMap):
 ## 	Can I just operate on the iteration list?
 
 # testList = [0,1,2,3,4,10,11,12,10,11,12,10,11,12,10,11,12]
-# workThroughUnsortedForestValues(testList,7)
+# workThroughUnsortedForestValues(testList,12)
 # abbyTerminate('testing done')
 
 inFileName = 'input.txt'
@@ -283,7 +298,7 @@ forestMap = makeMapArray(textList)				# Get the map from the file
 dumpMapList(forestMap)
 loopCount = 1
 forestValues = []
-while loopCount <= 1000:
+while loopCount <= 500:
 	print 'After',loopCount,'mins'
 	newForestMap = determineNextSymbols(forestMap)
 	#dumpMapList(newForestMap)
