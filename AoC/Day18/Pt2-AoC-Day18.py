@@ -9,170 +9,14 @@ import re
 import os
 
 """
---- Day 18: Settlers of The North Pole ---
-On the outskirts of the North Pole base construction project, many Elves are collecting lumber.
 
-The lumber collection area is 50 acres by 50 acres; each acre can be either open ground (.), trees (|), or a lumberyard (#). 
-You take a scan of the area (your puzzle input).
+--- Part Two ---
+This important natural resource will need to last for at least thousands of years. Are the Elves collecting this lumber sustainably?
 
-Strange magic is at work here: each minute, the landscape looks entirely different. 
-In exactly one minute, an open acre can fill with trees, a wooded acre can be converted to a lumberyard, 
-or a lumberyard can be cleared to open ground (the lumber having been sent to other projects).
-
-The change to each acre is based entirely on the contents of that acre as well as the number of open, 
-wooded, or lumberyard acres adjacent to it at the start of each minute. Here, "adjacent" means any of the eight acres surrounding that acre. 
-(Acres on the edges of the lumber collection area might have fewer than eight adjacent acres; the missing acres aren't counted.)
-
-In particular:
-
-An open acre will become filled with trees if three or more adjacent acres contained trees. Otherwise, nothing happens.
-An acre filled with trees will become a lumberyard if three or more adjacent acres were lumberyards. Otherwise, nothing happens.
-An acre containing a lumberyard will remain a lumberyard if it was adjacent to at least one other lumberyard 
-and at least one acre containing trees. Otherwise, it becomes open.
-These changes happen across all acres simultaneously, each of them using the state of all acres at the beginning of the minute 
-and changing to their new form by the end of that same minute. Changes that happen during the minute don't affect each other.
-
-For example, suppose the lumber collection area is instead only 10 by 10 acres with this initial configuration:
-
-Initial state:
-.#.#...|#.
-.....#|##|
-.|..|...#.
-..|#.....#
-#.#|||#|#|
-...#.||...
-.|....|...
-||...#|.#|
-|.||||..|.
-...#.|..|.
-
-After 1 minute:
-.......##.
-......|###
-.|..|...#.
-..|#||...#
-..##||.|#|
-...#||||..
-||...|||..
-|||||.||.|
-||||||||||
-....||..|.
-
-After 2 minutes:
-.......#..
-......|#..
-.|.|||....
-..##|||..#
-..###|||#|
-...#|||||.
-|||||||||.
-||||||||||
-||||||||||
-.|||||||||
-
-After 3 minutes:
-.......#..
-....|||#..
-.|.||||...
-..###|||.#
-...##|||#|
-.||##|||||
-||||||||||
-||||||||||
-||||||||||
-||||||||||
-
-After 4 minutes:
-.....|.#..
-...||||#..
-.|.#||||..
-..###||||#
-...###||#|
-|||##|||||
-||||||||||
-||||||||||
-||||||||||
-||||||||||
-
-After 5 minutes:
-....|||#..
-...||||#..
-.|.##||||.
-..####|||#
-.|.###||#|
-|||###||||
-||||||||||
-||||||||||
-||||||||||
-||||||||||
-
-After 6 minutes:
-...||||#..
-...||||#..
-.|.###|||.
-..#.##|||#
-|||#.##|#|
-|||###||||
-||||#|||||
-||||||||||
-||||||||||
-||||||||||
-
-After 7 minutes:
-...||||#..
-..||#|##..
-.|.####||.
-||#..##||#
-||##.##|#|
-|||####|||
-|||###||||
-||||||||||
-||||||||||
-||||||||||
-
-After 8 minutes:
-..||||##..
-..|#####..
-|||#####|.
-||#...##|#
-||##..###|
-||##.###||
-|||####|||
-||||#|||||
-||||||||||
-||||||||||
-
-After 9 minutes:
-..||###...
-.||#####..
-||##...##.
-||#....###
-|##....##|
-||##..###|
-||######||
-|||###||||
-||||||||||
-||||||||||
-
-After 10 minutes:
-.||##.....
-||###.....
-||##......
-|##.....##
-|##.....##
-|##....##|
-||##.####|
-||#####|||
-||||#|||||
-||||||||||
-After 10 minutes, there are 37 wooded acres and 31 lumberyards. 
-Multiplying the number of wooded acres by the number of lumberyards gives the total resource value after ten minutes: 37 * 31 = 1147.
-
-What will the total resource value of the lumber collection area be after 10 minutes?
-
-Your puzzle answer was 560091.
-
-The first half of this puzzle is complete! It provides one gold star: *
+What will the total resource value of the lumber collection area be after 1000000000 minutes?
+That's not the right answer; your answer is too low. 
+If you're stuck, there are some general tips on the about page, or you can ask for hints on the subreddit. 
+Please wait one minute before trying again. (You guessed 196959.)
 """
 
 #####################################################################################
@@ -339,6 +183,53 @@ def dumpMapList(map):
 			print map[yValueNum][xValueNum],
 		print
 
+def workThroughUnsortedForestValues(forestValues,pointInTimeToValue):
+	"""Solve the value at a point in time past the list for a repeated list. 
+	Example: Find the value at offset of 9 in the list
+	0 1 2 3 4 10 11 12 10 11 12 10 11 12
+	0 1 2 3 4 are the singletons
+	10 11 12 is the repeated pattern
+	10 11 12 pattern starts at offset just past the end of the singletons = len(singletons)
+	repeated pattern length - len(repeatedPattern)
+	
+	Go through values list. 
+	If the value is in neither list, put it into the singletons list
+	If the value is in the singletons list, remove it from the singletons list and put it into the valueRepeats
+	Want to have two lists in the end. One list has the singletons and the other list has the repeated values.
+	The offset to the first repeated pattern is the length of the singletons list
+	The repeat count is the length of the repeats list
+	To find the value at a particular time deal with offset and number of repeats
+	
+	:param forestValues:
+	:param pointInTimeToValue:
+	"""
+	valueRepeats = []
+	valueSingletons = []
+	print 'passed time to check',pointInTimeToValue
+	checkAtTime = pointInTimeToValue -1
+	print 't=0 compensation',checkAtTime
+	for value in forestValues:
+		if value not in valueRepeats and value not in valueSingletons:
+			valueSingletons.append(value)
+		elif value in valueSingletons:
+			valueSingletons.remove(value)
+			valueRepeats.append(value)
+	print 'singletons',valueSingletons
+	print 'repeated',valueRepeats
+	offsetToStartOfRepeatedPattern = len(valueSingletons)
+	print 'length of singletons',offsetToStartOfRepeatedPattern
+	print 'offset to start of repeated pattern',offsetToStartOfRepeatedPattern
+	#print 'the last singleton value',valueSingletons[-1]
+	patternLength = len(valueRepeats)
+	print 'length of repeated',patternLength
+	lookInPatternOffset = checkAtTime - offsetToStartOfRepeatedPattern
+	print 'point to start looking at',lookInPatternOffset
+	modulusValue = lookInPatternOffset % patternLength
+	print 'modulusValue',modulusValue
+	positionInOriginalList = offsetToStartOfRepeatedPattern + modulusValue
+	print 'positionInOriginalList',positionInOriginalList
+	print 'value at that point',forestValues[positionInOriginalList]
+
 def valueForest(forestMap):
 	numberOfTrees = 0
 	numberOfLumbermills = 0
@@ -359,6 +250,27 @@ def valueForest(forestMap):
 ########################################################################
 ## Code
 
+## Game of life problem
+## At what point does the pattern repeat?
+## modulus math to figure out the solution past that point
+## Running loop for 1000 iterations shows repeated forest values
+## As an example in 1000 loops, the number 199732 repeats 20 times:
+##	199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732, 
+##	199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732, 199732
+## Or picking number
+## 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420, 
+## 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420, 208420,
+## This also repeats 20 times.
+## So for 1000 items dividing by the 20 implies that the repeat pattern is somewhere
+##	around 50 inputs (after the initial run into the pattern)
+## It seems like this is a two pronged problem
+## 	Find first repeat point then find repeat offset
+## 	Can I just operate on the iteration list?
+
+# testList = [0,1,2,3,4,10,11,12,10,11,12,10,11,12,10,11,12]
+# workThroughUnsortedForestValues(testList,7)
+# abbyTerminate('testing done')
+
 inFileName = 'input.txt'
 
 debug_main = False
@@ -370,16 +282,22 @@ if debug_main:
 forestMap = makeMapArray(textList)				# Get the map from the file
 dumpMapList(forestMap)
 loopCount = 1
-while loopCount <= 10:
+forestValues = []
+while loopCount <= 1000:
 	print 'After',loopCount,'mins'
 	newForestMap = determineNextSymbols(forestMap)
-	dumpMapList(newForestMap)
+	#dumpMapList(newForestMap)
 	forestMap = newForestMap
+	forestValue = valueForest(forestMap)
+	forestValues.append(forestValue)
 	loopCount += 1
 	
-forestValue = valueForest(forestMap)
+#dumpMapList(newForestMap)
+print 'unsofted forestValues',forestValues
+workThroughUnsortedForestValues(forestValues,1000000000)
+# forestValues.sort()
+# print 'sorted forestValues',forestValues
 
-print 'forest value is',forestValue
-
+# print 'forest value is',forestValue
 
 print 'Finished processing',time.strftime('%X %x %Z')
