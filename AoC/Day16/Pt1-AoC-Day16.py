@@ -1,7 +1,7 @@
-# Pt1-AoCDay16.py
+# Pt2-AoCDay16.py
 # 2018 Advent of Code
 # Day 16
-# Part 1
+# Part 2
 # https://adventofcode.com/2018/day/16
 
 import time
