@@ -94,6 +94,7 @@ class InputFileHandler():
 			for item in newList:
 				newItem = int(item)
 				newItemList.append(newItem)
+			newItemList.append(0)			# distance vector
 			outList.append(newItemList)
 		return outList
 
