@@ -1,10 +1,10 @@
 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 
 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 
 
-4 6 0 5 1 2 3 4 5 1 1 0 2 1 2 9 0 4 1 2 3 4 1 4 1 5 0 7 1 2 3 4 5 6 7 1 2 3 4 5 1 2 3 4 1 2 3 4 5 6
+4 6 0 5 1 2 3 4 5 1 1 0 2 1 2 9 0 4 1 2 3 4 1 4 1 5 0 7 1 2 3 4 5 6 7 1 2 3 4 5 1 2 3 4 1 2 3 1 5 6
 
 0--------------------------------------------------------------------------------------------------
-    1------------ 2------------ 3---------- 4 ------------------------------------------
+    1------------ 2------------ 3---------- 4 -----------------------------------------
 	                  5 -----                   6 -----------------------------
 					                                7 ---------------
 
@@ -22,4 +22,18 @@
  At next step node 6 was resolved. Value = 28. Node 4 can now be solved.
  At next step node 4 was resolved. One pointer to node 6 so value was 28.
  This leaves node 0 alone.
- 
+ At next step node 0 was resolved. 
+ Node 0 has 6 children.
+ Node 0 metadata had 1,2,3,4,5,6 as pointers to their data
+ Node 1 was 15
+ Node 2 was 0.
+ Node 3 was 10.
+ Node 4 was 28.
+ There ares no nodes 5, 6.
+Total should be 53.
+Total reported by the program was 53.
+Passed!
+So why is my example failing???
+
+Changed inout file at 47 to point to child 7 - non-existent value and ir worked.
+

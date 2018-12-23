@@ -8,7 +8,9 @@
 # Implemented a Depth First Search without recursion
 # https://en.wikipedia.org/wiki/Depth-first_search
 #
-# 7003 is not the right answer.
+# That's not the right answer; your answer is too high. 
+# If you're stuck, there are some general tips on the about page, or you can ask for hints on the subreddit. 
+# Please wait one minute before trying again. (You guessed 7003.)
 
 import time
 import re
@@ -842,7 +844,7 @@ class NodeFunctions():
 		
 		:returns: list of nodes it could not solve
 		"""
-		debug_iterativeResolveNodes = True
+		debug_iterativeResolveNodes = False
 		nodeNumber = 0
 		for node in nodeList:
 			if node[NODEVALUE] == UNINIT:	# Only work on nodes which are unsolved
@@ -862,9 +864,10 @@ class NodeFunctions():
 					print 'iterativeResolveNodes: nodeMetaLength',nodeMetaLength
 					print 'iterativeResolveNodes: nodeChildCount',nodeChildCount
 				for metaOffset in xrange(nodeMetaLength):
-					metaValue = inputList[nodeMetaStart+metaOffset]
+					metaLocation = nodeMetaStart+metaOffset
+					metaValue = inputList[metaLocation]
 					if debug_iterativeResolveNodes:
-						print 'iterativeResolveNodes: nodeMetaStart+metaOffset',nodeMetaStart+metaOffset
+						print 'iterativeResolveNodes: metaLocation',metaLocation
 						print 'iterativeResolveNodes: metaValue',metaValue
 					if metaValue > 0 and metaValue <= nodeChildCount:
 						childNodeNumber = self.getChildNodeNumber(nodeNumber,metaValue)
@@ -888,7 +891,6 @@ class NodeFunctions():
 						pass
 						if debug_iterativeResolveNodes:
 							print 'iterativeResolveNodes: metaValue is not in range of children',metaValue
-						
 				if unresolvedNodeFlag == False:
 					node[NODEVALUE] = nodeSum
 					if debug_iterativeResolveNodes:
@@ -917,13 +919,10 @@ class NodeFunctions():
 		if debug_processPart2:
 			print 'processPart2: First node values are'
 			print nodeList[0]
-		#for node in nodeList:
-		#	print node
+		self.dumpTopOfNodeList()
 		
 		#os.system('pause')
-		print 'reached end'
-		value = 99
-		return value
+		return nodeList[0][NODEVALUE]
 	
 ########################################################################
 ## Code
@@ -977,7 +976,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input2.txt'
+inFileName = 'input.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
@@ -987,13 +986,6 @@ print 'Processing Nodes',time.strftime('%X %x %Z')
 NodeHandler = NodeFunctions()
 
 newCoreCode()
-
-#print 'main: processing is done'
-#print 'node at the end was',currentNodeNumber
-#NodeHandler.dumpAllNodeVals()
-
-#print 'Part 1 solution',
-#sumTheMetaStuff()
 
 print ''
 
