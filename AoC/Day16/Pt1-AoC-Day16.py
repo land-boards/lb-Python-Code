@@ -349,24 +349,22 @@ class CPU:
 		self.storeCVal(vector[3],cVal)
 	
 	#opcodes that failed
-	muli = 15	# 15
+	eqri = 0	# 15
 	bori = 1	# could be 2,4,7,10,11,13,15
-	addi = 9	# could be 2,4,5,9,10,11,14,15
+	mulr = 2	# could be 2, not 14
+	seti = 3	# could be 3,9
 	banr = 4	# could be 2,4,5,7,9,10,11,13,15
 	bani = 5	# could be 2,4,5,7,10,11,13,15
 	borr = 6	# could be 0,1,2,4,4,5,6,7,8,9,10,12,14
-	setr = 10	# could be 8,10,
-	seti = 3	# could be 3,9
+	gtrr = 7	# could be 7,15
 	gtir = 8	# could be 10
+	addi = 9	# could be 2,4,5,9,10,11,14,15
+	setr = 10	# could be 8,10,
 	eqrr = 11	# could be 11
 	addr = 12	# could be 12
 	eqir = 13	# could be 13
-	mulr = 2	# could be 2, not 14
-	# passing alone
-	# solved points
-	eqri = 0	# 15
-	gtrr = 7	# could be 7,15
 	gtri = 14	# could be 1,2,3,4,6,8,9,11,13,14
+	muli = 15	# 15
 	
 #########################################################################
 ## This is the workhorse of this assignment
@@ -392,7 +390,7 @@ class CPU:
 	eqrr = 15
 """
 
-opcodesList = ['addr','addi','mulr','muli','banr','bani','borr','bori','setr','seti','gtir','gtri','gtrr','eqir','eqri','eqrr']
+opcodesList = ['eqri','bori','mulr','seti','banr','bani','borr','gtrr','gtir','addi','setr','eqrr','addr','eqir','gtri','muli',]
 	
 def processList(theList,myCPU):
 	"""
@@ -432,8 +430,8 @@ def processList(theList,myCPU):
 					else:
 						failBins[testVec[0]] = failBins[testVec[0]] + 1
 						failedCases += 1
-		print 'opCodeVal,',opCodeVal,',',
-		print 'passingCases,',
+		print opCodeVal,',',
+		print opcodesList[opCodeVal],',',
 		for x,y in passBins.items():
 			if y > 0:
 				print x,',',
