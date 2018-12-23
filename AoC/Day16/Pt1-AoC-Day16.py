@@ -440,9 +440,9 @@ def processList(theList,myCPU):
 		listVals.append(listLine)
 		
 	print listVals
-#		print 'passBins',passBins
-		#print 'failedCases',failedCases
-		#print 'failBins',failBins
+	print 'passBins',passBins
+	print 'failedCases',failedCases
+	print 'failBins',failBins
 	
 def testRegisters(myCPU):
 	"""tests the register write path via the store of the ALU output - storeCVal
