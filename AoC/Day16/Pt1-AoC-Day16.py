@@ -11,6 +11,19 @@ import os
 """
 Your puzzle answer was 547.
 The first half of this puzzle is complete! It provides one gold star: *
+
+The challenge in part 2 is to map the test file opcodes to my opcodes.
+The test file  does not have enough test cases to eliminate multiple possibilities.
+Approach #1 - Run dataset for individual values to determine which are possible solutions.
+Approach #2 - Brute force attack it by moving through the possible codes and running them
+until there are no mismatches.
+Bits across are:
+	4 bits OPCODE x 16
+		Seems like the order of magnitude is 64 bits. 
+		2^64 is too big to solve brute force.
+Approach #3 - Hybrid approach. Find the lists of possibilites for each opcode.
+Use the list of possibles to increment through all the possibilities.
+
 """
 
 def printList(listToPrint):
@@ -168,23 +181,6 @@ class CPU:
 			self.CPU_Reg3 = cVal
 		else:
 			abbyTerminate('storeCVal: passed unexpected value')
-	
-	addr = 0
-	addi = 1
-	mulr = 2
-	muli = 3
-	banr = 4
-	bani = 5
-	borr = 6
-	bori = 7
-	setr = 8
-	seti = 9
-	gtir = 10
-	gtri = 11
-	gtrr = 12
-	eqir = 13
-	eqri = 14
-	eqrr = 15
 	
 	def doALU(self,opcodeVector):
 		debug_doALU = False
@@ -352,6 +348,26 @@ class CPU:
 			cVal = 0
 		self.storeCVal(vector[3],cVal)
 	
+	#opcodes that failed
+	muli = 15	# 15
+	bori = 1	# could be 2,4,7,10,11,13,15
+	addi = 9	# could be 2,4,5,9,10,11,14,15
+	banr = 4	# could be 2,4,5,7,9,10,11,13,15
+	bani = 5	# could be 2,4,5,7,10,11,13,15
+	borr = 6	# could be 0,1,2,4,4,5,6,7,8,9,10,12,14
+	setr = 10	# could be 8,10,
+	seti = 3	# could be 3,9
+	gtir = 8	# could be 10
+	eqrr = 11	# could be 11
+	addr = 12	# could be 12
+	eqir = 13	# could be 13
+	mulr = 2	# could be 2, not 14
+	# passing alone
+	# solved points
+	eqri = 0	# 15
+	gtrr = 7	# could be 7,15
+	gtri = 14	# could be 1,2,3,4,6,8,9,11,13,14
+	
 #########################################################################
 ## This is the workhorse of this assignment
 ## Test opcodes one at a time against all of the instructions
@@ -377,6 +393,58 @@ class CPU:
 """
 
 opcodesList = ['addr','addi','mulr','muli','banr','bani','borr','bori','setr','seti','gtir','gtri','gtrr','eqir','eqri','eqrr']
+	
+def processList(theList,myCPU):
+	"""
+	[[0, 0], 
+	[1, 0, 4, 7, 8, 11, 13, 14], 
+	[2, 1, 2, 3, 4, 6, 9, 10, 11, 13, 14], 
+	[3, 0, 2, 3, 4, 5, 8, 11, 14], 
+	[4, 0, 3, 4, 5, 7, 8, 11, 13, 14], 
+	[5, 0, 4, 5, 7, 8, 11, 13, 14], 
+	[6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15], 
+	[7, 0, 7], 
+	[8, 8, 10], 
+	[9, 3, 9], 
+	[10, 0, 7, 8, 11, 13, 14], 
+	[11, 2, 3, 4, 5, 6, 10, 11, 13], 
+	[12, 3, 9, 12], [13, 0, 11, 13, 14], 
+	[14, 7, 14], 
+	[15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]]
+	"""
+	listByOpcode = sorted(theList, key = lambda errs: errs[0])
+	listVals = []
+	for opCodeVal in xrange(16):
+		listLine = []
+		listLine.append(opCodeVal)
+		passingCases = 0
+		failedCases = 0
+		passBins = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0}
+		failBins = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0}
+		for testVec in listByOpcode:
+			if testVec[0] == opCodeVal:
+				for myOpCodes in range(16):
+					myCPU.initializeCPU()
+					testVec[0] = myOpCodes
+					if testOpcode(myCPU,testVec[4:8],testVec[0:4],testVec[8:12]):
+						passBins[testVec[0]] = passBins[testVec[0]] + 1
+						passingCases += 1
+					else:
+						failBins[testVec[0]] = failBins[testVec[0]] + 1
+						failedCases += 1
+		print 'opCodeVal,',opCodeVal,',',
+		print 'passingCases,',
+		for x,y in passBins.items():
+			if y > 0:
+				print x,',',
+				listLine.append(x)
+		print
+		listVals.append(listLine)
+		
+	print listVals
+#		print 'passBins',passBins
+		#print 'failedCases',failedCases
+		#print 'failBins',failBins
 	
 def testRegisters(myCPU):
 	"""tests the register write path via the store of the ALU output - storeCVal
@@ -474,27 +542,27 @@ def testALU(myCPU):
 	if not testOpcode(myCPU,[3,2,1,1],[9,2,1,2],[3,2,2,1]):		# seti
 		abbyTerminate('opcode 9 failed')
 	if testOpcode(myCPU,[3,2,1,1],[4,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 4 should not have passed')
 	if testOpcode(myCPU,[3,2,1,1],[5,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 5 should not have passed')
 	if testOpcode(myCPU,[3,2,1,1],[6,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 6 should not have passed')
 	if testOpcode(myCPU,[3,2,1,1],[7,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 7 should not have passed')
 	if testOpcode(myCPU,[3,2,1,1],[8,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 8 should not have passed')
 	if testOpcode(myCPU,[3,2,1,1],[10,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 10 should not have passed')
 	if testOpcode(myCPU,[3,2,1,1],[11,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 11 should not have passed')
 	if testOpcode(myCPU,[3,2,1,1],[12,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 12 should not have passed')
 	if testOpcode(myCPU,[3,2,1,1],[13,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 13 should not have passed')
 	if testOpcode(myCPU,[3,2,1,1],[14,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 14  should not have passed')
 	if testOpcode(myCPU,[3,2,1,1],[15,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode should not have passed')
+		abbyTerminate('opcode 15 should not have passed')
 	return True
 	
 def testCPU(myCPU):
@@ -512,7 +580,7 @@ def testCPU(myCPU):
 			print 'testCPU: ALU tests passed'	
 	return True
 	
-def processList(theList,myCPU):
+def processListPart1(theList,myCPU):
 	listByOpcode = sorted(theList, key = lambda errs: errs[0])
 	totalThatHaveThreeOrMore = 0
 	for testVec in listByOpcode:
@@ -526,27 +594,6 @@ def processList(theList,myCPU):
 			totalThatHaveThreeOrMore += 1
 	print 'totalThatHaveThreeOrMore',totalThatHaveThreeOrMore
 
-# def processList(theList,myCPU):
-	# listByOpcode = sorted(theList, key = lambda errs: errs[0])
-	# #printList(listByOpcode)
-	# passingCases = 0
-	# failedCases = 0
-	# passBins = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0}
-	# failBins = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0}
-	# for testVec in listByOpcode:
-		# myCPU.initializeCPU()
-		# # print testVec
-		# # exit()
-		# if testOpcode(myCPU,testVec[4:8],testVec[0:4],testVec[8:12]):
-			# passBins[testVec[0]] = passBins[testVec[0]] + 1
-			# passingCases += 1
-		# else:
-			# failBins[testVec[0]] = failBins[testVec[0]] + 1
-			# failedCases += 1
-	# print 'passingCases',passingCases
-	# print 'failedCases',failedCases
-	# print 'passBins',passBins
-	# print 'failBins',failBins
 
 ########################################################################
 ## Code
@@ -560,10 +607,10 @@ myList = parseTextFileIntoListOfNumbers(textList)
 print 'testCPU: reached function'
 myCPU = CPU()
 
-if testCPU(myCPU):
-	print 'main: testCPU code passed'
-else:
-	print 'main: testCPU code failed'
-	abbyTerminate('WTF')
+# if testCPU(myCPU):
+	# print 'main: testCPU code passed'
+# else:
+	# print 'main: testCPU code failed'
+	# abbyTerminate('WTF')
 
 processList(myList,myCPU)
