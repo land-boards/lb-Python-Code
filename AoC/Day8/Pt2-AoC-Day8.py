@@ -845,9 +845,9 @@ class NodeFunctions():
 		debug_iterativeResolveNodes = True
 		nodeNumber = 0
 		for node in nodeList:
-			if debug_iterativeResolveNodes:
-				print '\niterativeResolveNodes: checking node number',nodeNumber
 			if node[NODEVALUE] == UNINIT:	# Only work on nodes which are unsolved
+				if debug_iterativeResolveNodes:
+					print '\niterativeResolveNodes: checking node number',nodeNumber
 				if debug_iterativeResolveNodes:
 					print 'iterativeResolveNodes: node itself has uninitialized value'
 				unresolvedNodeFlag = False	# if any of the children cannot be determined (later pass will get it)
@@ -977,7 +977,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input.txt'
+inFileName = 'input2.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
