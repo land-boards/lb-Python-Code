@@ -18,6 +18,24 @@ not to mention your future.
 After fifty billion (50000000000) generations, 
 what is the sum of the numbers of all pots which contain a plant?
 
+My solution to Part 2
+
+## Found that the data pattern stabilized after 124 generations and was always the same after that.
+## Did that by doing the value calculation for the first 200 records. 
+## Solved using LibreOffice Calc.
+## Grabbed that data into Calc.
+## Did math between adjacent lines to come up with offset. 
+## Offset varied to a point then the line stabilized.
+## The line to line offset was always 88.
+## Wrote a formula in LibreOffice Calc which correctly guessed for data past the point.
+## Tried the formula and AoC reported an error.
+## That's not the right answer; your answer is too high. 
+## If you're stuck, there are some general tips on the about page, or you can ask for hints on the subreddit. 
+## Please wait one minute before trying again. (You guessed 4400000000392.) 
+## Took the hint that the number was too high and assumed I must be OB1.
+## Subtracted 88 from my number and got 4400000000304
+## That's the right answer! You are one gold star closer to fixing the time stream.
+
 """
 
 
@@ -38,6 +56,13 @@ class InputFileHandler():
 		for row in textFile:
 			inList.append(row.strip())
 		return inList
+		
+	def writeListToTextFile(self,listToWrite):
+		"""
+		"""
+		with open('listfile.txt', 'w') as filehandle:  
+			for listitem in listToWrite:
+				filehandle.write('%s\n' % listitem)
 
 #####################################################################################
 ## Functions which operate on the node list
@@ -48,24 +73,12 @@ def abbyTerminate(string):
 	print 'ERROR Terminating due to',string
 	exit()
 
-def dumpStateValuesList(theList):
-	for row in theList:
-		print row
-	return
-
-def dumpPlantHistory(plantHistoryArray):
-	i = 1
-	for plants in plantHistoryArray:
-		print i,plants
-		i += 1
-
 def makeStringExtendedCopy(string,copies):
 	copyCount = copies
 	newString = ''
 	while (copyCount > 0):
 		newString += string
 		copyCount -= 1
-	#print newString
 	return newString
 
 def convertStateValueStringsIntoLists(stateValuesList):
@@ -148,12 +161,12 @@ def makeNewStringFromCurrentString(oldString,stateTable):
 def sumAcrossLine(plantSnapshot):
 	"""sumAcrossLine - 
 	"""
-	print plantSnapshot
+#	print plantSnapshot
 	i = -3
 	sum = 0
 	for char in plantSnapshot:
 		if char == '#':
-			print i
+			#print i
 			sum += i
 		i += 1
 	return sum
@@ -166,15 +179,15 @@ def productAcrossLine(plantSnapshot):
 	product = 0
 	for char in plantSnapshot:
 		if char == '#':
-			print 2*i
+			#print 2*i
 			product += 2*i
 		i = i*i
 	return product
 
 def iterateThroughPlants(stateTable,initialStateVector,generations):
-	print 'iterateThroughPlants: stateTable',stateTable
-	print 'iterateThroughPlants: initialStateVector',initialStateVector
-	print 'iterateThroughPlants: generations',generations
+#	print 'iterateThroughPlants: stateTable',stateTable
+#	print 'iterateThroughPlants: initialStateVector',initialStateVector
+#	print 'iterateThroughPlants: generations',generations
 	loopCount = 0
 	resultingStateVector = initialStateVector
 	plantList = []
@@ -207,7 +220,7 @@ InputFileClass = InputFileHandler()
 textList = InputFileClass.readTextFileLinesToList('input.txt')
 #print '\ntextList',textList
 
-padValue = 32
+padValue = 200
 
 initialState = textList[0]
 #print '\ninitialState',initialState
@@ -238,12 +251,10 @@ if makeNewStringFromCurrentString(testString,stateTable) != expect:
 else:
 	print 'main: makeNewStringFromCurrentString() - sample data test case passed'
 
-generations = 20
+generations = 200
 plantHistory = iterateThroughPlants(stateTable,initialStateVector,generations)
-#dumpPlantHistory(plantHistory)
 strippedPlantHistory = stripPlantHistory(plantHistory)
-dumpPlantHistory(strippedPlantHistory)
+InputFileClass.writeListToTextFile(strippedPlantHistory)
+for plant in xrange(len(strippedPlantHistory)-1):
+	print plant,sumAcrossLine(strippedPlantHistory[plant])
 
-print ' \nsum',sumAcrossLine(strippedPlantHistory[19])
-
-print ' \nproduct',productAcrossLine(strippedPlantHistory[19])
