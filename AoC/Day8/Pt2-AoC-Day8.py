@@ -5,6 +5,11 @@
 # Part 2
 # https://adventofcode.com/2018/day/8
 
+# Implemented a Depth First Search without recursion
+# https://en.wikipedia.org/wiki/Depth-first_search
+#
+# 7003 is not the right answer.
+
 import time
 import re
 import os
@@ -147,9 +152,10 @@ METALENGTH = 7	# Number of elements in the metadata
 NODECOMPL = 8	# Node complete flag (True = all daughters below are completely resolved, False = work to do)
 CURRCHDONE = 9	# Current Channel is Done (False = current channel is being worked on, True = Done)
 CHANNELIP = 10	# Count of the Current Channel that is being processed
+NODEVALUE = 11	# Value of the metadata at this point
 
-defaultNode = [0,0,0,0,0,0,0,0,0,0,0]
-defaultNodeDescr = ' Node  UP  DOWN  LEFT RIGHT  KIDS FILOF METOF METCT NDCMP  CHDN  CHIP'
+defaultNode = [0,0,0,0,0,0,0,0,0,0,0,0]
+defaultNodeDescr = ' Node  UP  DOWN  LEFT RIGHT  KIDS FILOF METOF METCT NDCMP  CHDN  CHIP  NVAL'
 
 # Tree and other status values - negative enums essentially
 DONE 					= -1
@@ -207,6 +213,32 @@ class NodeFunctions():
 		self.dumpBitVal('NodDn .',nodeNumber,NODECOMPL)
 		self.dumpBitVal('ChDn ..',nodeNumber,CURRCHDONE)
 		self.dumpBitVal('ChNum .',nodeNumber,CHANNELIP)
+
+	def dumpTopOfNodeList(self):
+		global nodeList
+		print '*** Node table length =',len(nodeList),'***'
+		print defaultNodeDescr
+		i = 0
+		for item in nodeList:
+			print '%3d' % (i),
+			for element in item:
+				if element == UNINIT:
+					print '%5s' % ('UN'),
+				elif element == DONE:
+					print '%5s' % ('DN'),
+				elif element >= 0:
+					print '%5d' % (element),
+				elif element == False:
+					print '%5s' % ('F'),
+				elif element == True:
+					print '%5s' % ('T'),
+				elif element >= 0:
+					print '%5d' % (element),
+			print
+			i += 1
+			if i >= 100:
+				return
+		return
 		
 	def dumpPartOfNodeList(self,nodeListStart):
 		global nodeList
@@ -235,19 +267,17 @@ class NodeFunctions():
 	def pushNode(self,node):
 		"""pushNode - Pushes nodes into the node list
 		Does not mess with any counters, etc.
-		Constant - stopLength is to keep the list from running away
 		
 		:param: node - the node vector
 		:returns: no return value
 		"""
 		global nodeList
 		global debugAllModules
-		stopLength = 10000
 		if debugAllModules:
 			debug_pushNode = True
 		else:
 			debug_pushNode = False
-		print '.',		# print a dot for every node that gets pushed - fairly low overhead cost
+		#print '.',		# print a dot for every node that gets pushed - fairly low overhead cost
 		nodeList.append(node)
 		if debug_pushNode:
 			print 'pushNode: list length after push =',len(nodeList)
@@ -272,7 +302,7 @@ class NodeFunctions():
 			debug_createSingleNodeBelowCurrentNode = True
 		else:
 			debug_createSingleNodeBelowCurrentNode = False
-		node = [0,0,0,0,0,0,0,0,0,0,0]
+		node = [0,0,0,0,0,0,0,0,0,0,0,0]
 		# these next items come from the input file stream
 		nextNodeNum = len(nodeList)
 		node[NUMOFKIDS] = inputList[InputListHandler.getCurrentFileInputOffset()]		# number of kids = first number in inList
@@ -288,6 +318,7 @@ class NodeFunctions():
 		node[RTNODENUM] = DONE			# no right hand node
 		node[LFNODENUM] = DONE			# no left hand node
 		node[CHANNELIP] = 1				# There's only one channel anyway
+		node[NODEVALUE] = UNINIT		# Will fill in value at a later time
 		self.pushNode(node)
 		if debug_createSingleNodeBelowCurrentNode:
 			print 'createSingleNodeBelowCurrentNode: theNodeNumber',theNodeNumber
@@ -319,7 +350,7 @@ class NodeFunctions():
 			print 'addChildrenToNodeList: kidNum',kidNum
 			print 'addChildrenToNodeList: terminalKidNumber',terminalKidNumber
 		while kidNum <= terminalKidNumber-1:	# Number of children
-			node = [0,0,0,0,0,0,0,0,0,0,0]		# manual  copy of default node
+			node = [0,0,0,0,0,0,0,0,0,0,0,0]		# manual  copy of default node
 			node[UPNODENUM] = parentNodeNum
 			node[DNNODENUM] = UNINIT
 			if kidNum == terminalKidNumber-1:	# last child
@@ -341,6 +372,7 @@ class NodeFunctions():
 			node[NODECOMPL] = False
 			node[CURRCHDONE] = False
 			node[CHANNELIP] = 1
+			node[NODEVALUE] = UNINIT
 			self.pushNode(node)
 			kidNum += 1
 		if debug_addChildrenToNodeList:
@@ -717,50 +749,178 @@ class NodeFunctions():
 				print 'doAllActionsAtCurrentPoint: node',theNodeNumber,'is complete, calling doNodeCompleteNode'
 			return self.doNodeCompleteNode(theNodeNumber)
 	
-	def sumMetaDataEntries(self,theNodeNumber):
-		"""Given a node number get the sum of the metadata entries for that node
+	def resolveNodes_NodesWithZeroChildren(self):
+		"""If a node has no children set the meta sum for that node
+		Otherwise, leave the node alone
 		
-		:returns: sum of the metadata entries
+		:returns: No return
 		"""
+		global nodeList
 		if debugAllModules:
 			debug_sumMetaDataEntries = True
 		else:
 			debug_sumMetaDataEntries = False
-		if debug_sumMetaDataEntries:
-			print '\sumMetaDataEntries: reached function - node',theNodeNumber
-			print '\nsumMetaDataEntries: theNodeNumber',theNodeNumber
-		if nodeList[theNodeNumber][NUMOFKIDS] != 0:
-			if debug_sumMetaDataEntries:
-				print 'sumMetaDataEntries: node',theNodeNumber,' has children'
-			return -1
-		else:	# node has no kids
-			if debug_sumMetaDataEntries:
-				print 'sumMetaDataEntries: node has no children'
-			pointerToMetaData = nodeList[theNodeNumber][METAOFFST]
-			metaDataCount = nodeList[theNodeNumber][METALENGTH]
-			if debug_sumMetaDataEntries:
-				print 'start',pointerToMetaData
-				print 'count',metaDataCount
-			end = pointerToMetaData + metaDataCount
-			if debug_sumMetaDataEntries:
-				print 'end',end
-			sum = 0
-			while pointerToMetaData < end:
+		unSolvedNodes = []
+		for node in nodeList:
+			if node[NUMOFKIDS] == 0:
+				pointerToMetaData = node[METAOFFST]
+				metaDataCount = node[METALENGTH]
+				end = pointerToMetaData + metaDataCount
 				if debug_sumMetaDataEntries:
-					print pointerToMetaData,
-					print 'data value',inputList[pointerToMetaData]
-				sum += inputList[pointerToMetaData]
-				pointerToMetaData += 1
-			return sum
-	
-	def processPart2(self):
-		""" do Part 2
+					print 'resolveNodes_NodesWithZeroChildren: node has no children'
+					print 'start',pointerToMetaData
+					print 'count',metaDataCount
+					print 'end',end
+				sum = 0
+				while pointerToMetaData < end:
+					if debug_sumMetaDataEntries:
+						print pointerToMetaData,
+						print 'data value',inputList[pointerToMetaData]
+					sum += inputList[pointerToMetaData]
+					pointerToMetaData += 1
+				node[NODEVALUE] = sum
+
+	def resolveNodes_AllOutOfRangeKids(self):
+		"""Another quick pass as resolving nodes
+		If the node has no children in range then move it to a new unresolved nodes list.
+		Since python is by reference even making a new list will still do the changes to the nodeList
 		"""
 		global nodeList
-		for node in xrange(len(nodeList)):
-			print node,self.sumMetaDataEntries(node)
-			
+		for node in nodeList:
+			if node[NODEVALUE] == UNINIT:	# See which nodes can be eliminated
+				nodeMetaStart = node[METAOFFST]
+				nodeMetaLength = node[METALENGTH]
+				nodeChildCount = node[NUMOFKIDS]
+				noNodesInRange = True
+				for metaOffset in xrange(nodeMetaLength):
+					metaValue = inputList[nodeMetaStart]
+					if metaValue > 0 and metaValue <= nodeChildCount:
+						noNodesInRange = False
+				if noNodesInRange:
+					node[NODEVALUE] = 0
 		
+	def getUninitNodeCount(self):
+		"""Count the number of nodes which do have an uninitialized metadata value
+		"""
+		nodeCount = 0
+		for node in nodeList:
+			if node[NODEVALUE] == UNINIT:
+				nodeCount += 1
+		return nodeCount
+	
+	def getChildNodeNumber(self,parentNodeNumber,childOffset):
+		"""Get the node number of the child that is pointed to the passed items
+		
+		:param parentNodeNumber:
+		:param childOffset:
+		:returns: node number of the child at the childOffset (numbered 1...)
+		"""
+		debug_getChildNodeNumber = False
+		currentChildOffsetCount = 0
+		childNodeNumber = nodeList[parentNodeNumber][DNNODENUM]
+		if debug_getChildNodeNumber:
+			print 'getChildNodeNumber: parentNodeNumber',parentNodeNumber
+			print 'getChildNodeNumber: number of kids of parent',nodeList[parentNodeNumber][NUMOFKIDS]
+			print 'getChildNodeNumber: childOffset',childOffset
+			print 'getChildNodeNumber: first childNodeNumber',childNodeNumber
+			if childOffset > nodeList[parentNodeNumber][NUMOFKIDS]:
+				abbyTerminate('getChildNodeNumber: asked for a child past the child count')
+		while currentChildOffsetCount < childOffset - 1:
+			childNodeNumber = nodeList[childNodeNumber][RTNODENUM]
+			currentChildOffsetCount+= 1
+		if debug_getChildNodeNumber:
+			print 'getChildNodeNumber: returning childNodeNumber',childNodeNumber
+		return childNodeNumber
+
+	
+	def iterativeResolveNodes(self):
+		"""Go through the list resolving as many nodes as possible
+		These nodes are all nodes which have not yet been solved
+		The intention is to repeately call this function until all nodes have been solved
+		Next node to check could be done more intelligently but there are 500ish nodes to solve
+		Tree is also not all that deep so this could go quickly - we'll see
+		
+		:returns: list of nodes it could not solve
+		"""
+		debug_iterativeResolveNodes = True
+		nodeNumber = 0
+		for node in nodeList:
+			if debug_iterativeResolveNodes:
+				print '\niterativeResolveNodes: checking node number',nodeNumber
+			if node[NODEVALUE] == UNINIT:	# Only work on nodes which are unsolved
+				if debug_iterativeResolveNodes:
+					print 'iterativeResolveNodes: node itself has uninitialized value'
+				unresolvedNodeFlag = False	# if any of the children cannot be determined (later pass will get it)
+				nodeSum = 0					# sum of the values of the children pointed to by the metadata
+				nodeMetaStart = node[METAOFFST]
+				nodeMetaLength = node[METALENGTH]
+				nodeChildCount = node[NUMOFKIDS]
+				if debug_iterativeResolveNodes:
+					#print 'iterativeResolveNodes: unresolvedNodeFlag',unresolvedNodeFlag
+					#print 'iterativeResolveNodes: nodeSum (zero at start)',nodeSum
+					print 'iterativeResolveNodes: nodeMetaStart',nodeMetaStart
+					print 'iterativeResolveNodes: nodeMetaLength',nodeMetaLength
+					print 'iterativeResolveNodes: nodeChildCount',nodeChildCount
+				for metaOffset in xrange(nodeMetaLength):
+					metaValue = inputList[nodeMetaStart+metaOffset]
+					if debug_iterativeResolveNodes:
+						print 'iterativeResolveNodes: nodeMetaStart+metaOffset',nodeMetaStart+metaOffset
+						print 'iterativeResolveNodes: metaValue',metaValue
+					if metaValue > 0 and metaValue <= nodeChildCount:
+						childNodeNumber = self.getChildNodeNumber(nodeNumber,metaValue)
+						if debug_iterativeResolveNodes:
+							print 'iterativeResolveNodes: value is in range of children'
+							print 'iterativeResolveNodes: childNodeNumber',childNodeNumber
+						if nodeList[childNodeNumber][NODEVALUE] == UNINIT:
+							unresolvedNodeFlag = True
+							if debug_iterativeResolveNodes:
+								print 'iterativeResolveNodes: node is not yet valued'
+								print 'iterativeResolveNodes: unresolvedNodeFlag',unresolvedNodeFlag
+								print 'iterativeResolveNodes: breaking out of the loop'
+							break
+						else:
+							nodeSum += nodeList[childNodeNumber][NODEVALUE]
+							if debug_iterativeResolveNodes:
+								print 'iterativeResolveNodes: node',childNodeNumber,
+								print ' is valued at',nodeList[childNodeNumber][NODEVALUE],
+								print 'new sum',nodeSum
+					else:
+						pass
+						if debug_iterativeResolveNodes:
+							print 'iterativeResolveNodes: metaValue is not in range of children',metaValue
+						
+				if unresolvedNodeFlag == False:
+					node[NODEVALUE] = nodeSum
+					if debug_iterativeResolveNodes:
+						print 'iterativeResolveNodes: all subnodes were resolved, sum was',nodeSum
+					#os.system('pause')
+			nodeNumber += 1
+	
+	def processPart2(self):
+		""" Do Part 2
+		"""
+		global nodeList
+		debug_processPart2 = True
+		# Populate the node value (sum of meta data) for nodes with zero children
+		if debug_processPart2:
+			print 'processPart2: Nodes before processing =',self.getUninitNodeCount()
+		self.resolveNodes_NodesWithZeroChildren()
+		if debug_processPart2:
+			print 'processPart2: Un-solved nodes after resolveNodes_NodesWithZeroChildren',self.getUninitNodeCount()
+		self.resolveNodes_AllOutOfRangeKids()
+		if debug_processPart2:
+			print 'processPart2: Un-solved nodes after resolveNodes_AllOutOfRangeKids',self.getUninitNodeCount()
+		self.dumpTopOfNodeList()
+		while self.getUninitNodeCount() > 0:
+			self.iterativeResolveNodes()
+			print 'processPart2: Un-solved nodes after pass through iterativeResolveNodes =',self.getUninitNodeCount()
+		if debug_processPart2:
+			print 'processPart2: First node values are'
+			print nodeList[0]
+		#for node in nodeList:
+		#	print node
+		
+		#os.system('pause')
 		print 'reached end'
 		value = 99
 		return value
@@ -807,7 +967,6 @@ def sumTheMetaStuff():
 	for node in nodeList:
 		startSpan = node[METAOFFST]
 		endSpan = node[METAOFFST] + node[METALENGTH]
-#		print startSpan,endSpan-1
 		while(startSpan < endSpan):
 			accumMetaRecLens += inputList[startSpan]
 			startSpan += 1
@@ -829,13 +988,12 @@ NodeHandler = NodeFunctions()
 
 newCoreCode()
 
-print 'main: processing is done'
-print 'node at the end was',currentNodeNumber
-NodeHandler.dumpAllNodeVals()
+#print 'main: processing is done'
+#print 'node at the end was',currentNodeNumber
+#NodeHandler.dumpAllNodeVals()
 
-print 'Part 1 solution',
-
-sumTheMetaStuff()
+#print 'Part 1 solution',
+#sumTheMetaStuff()
 
 print ''
 
