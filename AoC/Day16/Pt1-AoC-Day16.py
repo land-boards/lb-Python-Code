@@ -580,7 +580,7 @@ def testCPU(myCPU):
 	
 def processListPart1(theList,myCPU):
 	listByOpcode = sorted(theList, key = lambda errs: errs[0])
-	totalThatHaveThreeOrMore = 0
+	totalThatHaveThreeOrMoreOpcodes = 0
 	for testVec in listByOpcode:
 		testCaseMatches = 0
 		for x in range(16):
@@ -589,8 +589,8 @@ def processListPart1(theList,myCPU):
 			if testOpcode(myCPU,testVec[4:8],testVecReplacement,testVec[8:12]):
 				testCaseMatches += 1
 		if testCaseMatches >= 3:
-			totalThatHaveThreeOrMore += 1
-	print 'totalThatHaveThreeOrMore',totalThatHaveThreeOrMore
+			totalThatHaveThreeOrMoreOpcodes += 1
+	print 'totalThatHaveThreeOrMoreOpcodes',totalThatHaveThreeOrMoreOpcodes
 
 
 ########################################################################
@@ -602,13 +602,8 @@ textList = readTextFileToList('input.txt')
 
 myList = parseTextFileIntoListOfNumbers(textList)
 
-print 'testCPU: reached function'
 myCPU = CPU()
 
-# if testCPU(myCPU):
-	# print 'main: testCPU code passed'
-# else:
-	# print 'main: testCPU code failed'
-	# abbyTerminate('WTF')
+processListPart1(myList,myCPU)
 
-processList(myList,myCPU)
+print 'Completed processing',time.strftime('%X %x %Z')
