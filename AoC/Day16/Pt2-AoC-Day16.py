@@ -42,6 +42,11 @@ def readTextFileToList(fileName):
 def parseTextFileIntoListOfNumbers(textFile):
 	"""Convert the text file into a list
 	
+	list is [opcode][before][after]
+	Where [opcode] is [opcode,A,B,C]
+	[before] = [R0,R1,R2,R3]
+	[after] = [R0,R1,R2,R3]
+	
 	"""
 	theList = []
 	listOfBefore = []
@@ -105,7 +110,7 @@ class CPU:
 	CPU_Reg3 = 0
 
 	def emulator(self,vector):
-		debug_emulator = True
+		debug_emulator = False
 		if debug_emulator:
 			print 'emulator:',vector
 		self.doALU(vector[0:4])
@@ -180,7 +185,7 @@ class CPU:
 			abbyTerminate('storeCVal: passed unexpected value')
 	
 	def doALU(self,opcodeVector):
-		debug_doALU = True
+		debug_doALU = False
 		if debug_doALU:
 			print 'doALU: vector',opcodeVector
 			print 'doALU: opcode =',opcodesList[opcodeVector[0]]
@@ -230,19 +235,14 @@ class CPU:
 	def INSTR_addi(self,vector):
 		"""# (add immediate) stores into register C the result of adding register A and value B.
 		"""
-		#print 'INSTR_addi: vector',vector
 		aVal = self.getInputA(vector[1],'Register')
-		#print 'INSTR_addi: aVal',aVal
 		bVal = self.getInputB(vector[2],'Immediate')
-		#print 'INSTR_addi: bVal',bVal
 		cVal = aVal + bVal
-		#print 'INSTR_addi: cVal',cVal
 		self.storeCVal(vector[3],cVal)
 
 	def INSTR_mulr(self,vector):
 		"""(multiply register) stores into register C the result of multiplying register A and register B.
 		"""
-		#print 'INSTR_mulr: vector',vector
 		aVal = self.getInputA(vector[1],'Register')
 		bVal = self.getInputB(vector[2],'Register')
 		cVal = aVal * bVal
@@ -286,7 +286,6 @@ class CPU:
 	def INSTR_seti(self,vector):
 		"""(set immediate) stores value A into register C. (Input B is ignored.)
 		"""
-		#print 'seti instruction decode'
 		aVal = self.getInputA(vector[1],'Immediate')
 		cVal = aVal
 		self.storeCVal(vector[3],cVal)
@@ -346,22 +345,22 @@ class CPU:
 		self.storeCVal(vector[3],cVal)
 	
 	#opcodes that failed
-	eqri = 0	# 15
-	bori = 1	# could be 2,4,7,10,11,13,15
-	mulr = 2	# could be 2, not 14
-	seti = 3	# could be 3,9
-	banr = 4	# could be 2,4,5,7,9,10,11,13,15
-	bani = 5	# could be 2,4,5,7,10,11,13,15
-	borr = 6	# could be 0,1,2,4,4,5,6,7,8,9,10,12,14
-	gtrr = 7	# could be 7,15
-	gtir = 8	# could be 10
-	addi = 9	# could be 2,4,5,9,10,11,14,15
-	setr = 10	# could be 8,10,
-	eqrr = 11	# could be 11
-	addr = 12	# could be 12
-	eqir = 13	# could be 13
-	gtri = 14	# could be 1,2,3,4,6,8,9,11,13,14
-	muli = 15	# 15
+	eqri = 0
+	banr = 1
+	bori = 2
+	mulr = 3
+	seti = 4
+	bani = 5
+	muli = 6
+	gtrr = 7
+	setr = 8
+	addi = 9
+	gtir = 10
+	borr = 11
+	addr = 12
+	eqrr = 13
+	gtri = 14
+	eqir = 15
 	
 #########################################################################
 ## This is the workhorse of this assignment
@@ -388,189 +387,270 @@ def processList(theList,myCPU):
 	[14, 7, 14], 
 	[15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]]
 	"""
-	listByOpcode = sorted(theList, key = lambda errs: errs[0])
+	sortedListByOpcode = sorted(theList, key = lambda errs: errs[0])
 	listVals = []
-	for opCodeVal in xrange(16):
+	for opcVal in xrange(16):	# cycling through the opcode values one at a time
 		listLine = []
-		listLine.append(opCodeVal)
+		listLine.append(opcVal)
 		passingCases = 0
 		failedCases = 0
 		passBins = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0}
 		failBins = {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0}
-		for testVec in listByOpcode:
-			if testVec[0] == opCodeVal:
-				for myOpCodes in range(16):
+		for testVec in sortedListByOpcode:		# Only do one opcode value from the input file at a time
+			myTestVec = list(testVec)	# had to force a copy of it
+			if myTestVec[0] == opcVal:
+				for testingOpCodeValue in xrange(16):
 					myCPU.initializeCPU()
-					testVec[0] = myOpCodes
-					if testOpcode(myCPU,testVec[4:8],testVec[0:4],testVec[8:12]):
-						passBins[testVec[0]] = passBins[testVec[0]] + 1
+					myTestVec[0] = testingOpCodeValue
+					if testOpcode(myCPU,myTestVec[4:8],myTestVec[0:4],myTestVec[8:12]):
+						passBins[myTestVec[0]] = passBins[myTestVec[0]] + 1
 						passingCases += 1
 					else:
-						failBins[testVec[0]] = failBins[testVec[0]] + 1
+						failBins[myTestVec[0]] = failBins[myTestVec[0]] + 1
 						failedCases += 1
-		print opCodeVal,',',
-		print opcodesList[opCodeVal],',',
-		for x,y in passBins.items():
-			if y > 0:
-				print x,',',
+		for x in xrange(16):
+			if failBins[x] == 0 and passBins[x] > 0:
 				listLine.append(x)
-		print
 		listVals.append(listLine)
 		
-	# print listVals
-	# print 'passBins',passBins
-	# print 'failedCases',failedCases
-	# print 'failBins',failBins
+	for val in listVals:
+		print val[0],
+		print '===>',val[1:]
 	return listVals
 	
-def testRegisters(myCPU):
-	"""tests the register write path via the store of the ALU output - storeCVal
-	tests the readback of the register values via getRegisterAfterValues
+def testRegisterCPath(myCPU):
+	"""Tests the register write path via the store of the ALU output - storeCVal
+	Also tests the readback of the register values via getRegisterAfterValues
+	The storeCVal path is the 1:4 demultiplexer on the ALU output into the four registers.
 	"""
-	debug_testRegisters = False
+	debug_testRegisterCPath = False
 	afterRegs = myCPU.getRegisterAfterValues()
 	if afterRegs == [0,0,0,0]:
-		if debug_testRegisters:
-			print 'testRegisters: CPU registers were intialized to zeros'
+		if debug_testRegisterCPath:
+			print 'testRegisterCPath: CPU registers were intialized to zeros'
 	else:
-		abbyTerminate('testRegisters: CPU registers did not initialize')
-	if debug_testRegisters:
-		print 'testRegisters: storing 12 to register 0'
+		abbyTerminate('testRegisterCPath: CPU registers did not initialize')
+	if debug_testRegisterCPath:
+		print 'testRegisterCPath: storing 12 to register 0'
 	myCPU.storeCVal(0,12)
 	afterRegs = myCPU.getRegisterAfterValues()
-	if debug_testRegisters:
-		print 'testRegisters: afterRegs',afterRegs
+	if debug_testRegisterCPath:
+		print 'testRegisterCPath: afterRegs',afterRegs
 	if afterRegs == [12,0,0,0]:	
-		if debug_testRegisters:
-			print 'testRegisters: Register 0 was set to 12'
+		if debug_testRegisterCPath:
+			print 'testRegisterCPath: Register 0 was set to 12'
 	else:
-		abbyTerminate('testRegisters: CPU registers did not initialize')
+		abbyTerminate('testRegisterCPath: CPU registers did not initialize')
 	myCPU.storeCVal(1,15)
 	afterRegs = myCPU.getRegisterAfterValues()
-	if debug_testRegisters:
-		print 'testRegisters: afterRegs',afterRegs
+	if debug_testRegisterCPath:
+		print 'testRegisterCPath: afterRegs',afterRegs
 	if afterRegs == [12,15,0,0]:	
-		if debug_testRegisters:
-			print 'testRegisters: Register 1 was set to 15'
+		if debug_testRegisterCPath:
+			print 'testRegisterCPath: Register 1 was set to 15'
 	else:
-		abbyTerminate('testRegisters: CPU registers did not initialize')
+		abbyTerminate('testRegisterCPath: CPU registers did not initialize')
 	myCPU.storeCVal(2,18)
 	afterRegs = myCPU.getRegisterAfterValues()
-	if debug_testRegisters:
-		print 'testRegisters: afterRegs',afterRegs
+	if debug_testRegisterCPath:
+		print 'testRegisterCPath: afterRegs',afterRegs
 	if afterRegs == [12,15,18,0]:	
-		if debug_testRegisters:
-			print 'testRegisters: Register 2 was set to 18'
+		if debug_testRegisterCPath:
+			print 'testRegisterCPath: Register 2 was set to 18'
 	else:
-		abbyTerminate('testRegisters: CPU registers did not initialize')
+		abbyTerminate('testRegisterCPath: CPU registers did not initialize')
 	myCPU.storeCVal(3,21)
 	afterRegs = myCPU.getRegisterAfterValues()
-	if debug_testRegisters:
-		print 'testRegisters: afterRegs',afterRegs
+	if debug_testRegisterCPath:
+		print 'testRegisterCPath: afterRegs',afterRegs
 	if afterRegs == [12,15,18,21]:
-		if debug_testRegisters:
-			print 'testRegisters: Register 3 was set to 21'
+		if debug_testRegisterCPath:
+			print 'testRegisterCPath: Register 3 was set to 21'
 	else:
-		abbyTerminate('testRegisters: CPU registers did not initialize')
-	if debug_testRegisters:
-		print 'testRegisters: register tests passed'
+		abbyTerminate('testRegisterCPath: CPU registers did not initialize')
+	if debug_testRegisterCPath:
+		print 'testRegisterCPath: register tests passed'
 	myCPU.initializeCPU()	# reset registers
 	afterRegs = myCPU.getRegisterAfterValues()
 	if afterRegs == [0,0,0,0]:
-		if debug_testRegisters:
-			print 'testRegisters: initializeCPU function passed'
+		if debug_testRegisterCPath:
+			print 'testRegisterCPath: initializeCPU function passed'
 	else:
-		abbyTerminate('testRegisters: initializeCPU function failed to clear CPU registers')
+		abbyTerminate('testRegisterCPath: initializeCPU function failed to clear CPU registers')
 	return True
 	
 def testOpcode(myCPU,regsBefore,instructionVector,expectedVector):
-	debug_testOpcode = True
+	debug_testOpcode = False
 	if debug_testOpcode:
 		print 'testOpcode: Setting the before operation register values'
 	myCPU.setBeforeOperationRegisterValues(regsBefore)	# Using problem example
 	if debug_testOpcode:
-		print 'testOpcode: Setting the instruction vector'
-		print 'testOpcode: calling the emulator code'
+		print 'testOpcode: Setting the instruction vector, calling the emulator code'
 	myCPU.emulator(instructionVector)
 	afterRegs = myCPU.getRegisterAfterValues()
 	if debug_testOpcode:
 		print 'testOpcode:afterRegs',afterRegs
 	if afterRegs == expectedVector:
 		if debug_testOpcode:
-			print 'testOpcode: opcode',instructionVector[0],' passed'
+			print 'testOpcode: opcode',opcodesList[instructionVector[0]],'passed'
 		return True
 	if debug_testOpcode:
-		print 'testOpcode: opcode',instructionVector[0],' failed'
+		print 'testOpcode: opcode',opcodesList[instructionVector[0]],'failed'
 	return False
 
-
 eqri = 0
-bori = 1
-mulr = 2
-seti = 3
-banr = 4
+banr = 1
+bori = 2
+mulr = 3
+seti = 4
 bani = 5
-borr = 6
+muli = 6
 gtrr = 7
-gtir = 8
+setr = 8
 addi = 9
-setr = 10
-eqrr = 11
+gtir = 10
+borr = 11
 addr = 12
-eqir = 13
+eqrr = 13
 gtri = 14
-muli = 15
+eqir = 15
 
-opcodesList = ['eqri','bori','mulr','seti','banr','bani','borr','gtrr','gtir','addi','setr','eqrr','addr','eqir','gtri','muli',]
+opcodesList = ['eqri','banr','bori','mulr','seti','bani','muli','gtrr','setr','addi','gtir','borr','addr','eqrr','gtri','eqir']
 	
 def testALU(myCPU):
-	debug_testALU = True
+	debug_testALU = False
 	if debug_testALU:
 		print 'testALU: Initializing the CPU registers'
 	myCPU.initializeCPU()	# reset registers at the end of the testALU
 	if not testOpcode(myCPU,[3,2,1,1],[addr,2,1,2],[3,2,3,1]):		# addr
-		abbyTerminate('opcode 0 failed')
+		abbyTerminate('addr opcode failed to return value')
+	if testOpcode(myCPU,[3,2,1,1],[addr,2,1,2],[3,2,1,1]):			# addr
+		abbyTerminate('addr opcode should have failed')
 	if not testOpcode(myCPU,[3,2,1,1],[addi,2,1,2],[3,2,2,1]):		# addi
-		abbyTerminate('opcode 1 failed')
+		abbyTerminate('addi failed to return value')
+	if testOpcode(myCPU,[3,2,1,1],[addi,2,1,2],[3,2,1,1]):			# addi
+		abbyTerminate('addi should have failed')
 	if not testOpcode(myCPU,[3,2,1,1],[mulr,2,1,2],[3,2,2,1]):		# mulr
-		abbyTerminate('opcode 2 failed')
-	if not testOpcode(myCPU,[3,4,5,6],[muli,2,1,3],[3,4,5,5]):		# muli
-		abbyTerminate('opcode 3 failed')
+		abbyTerminate('mulr failed to return value')
+	if testOpcode(myCPU,[3,2,1,1],[mulr,2,1,2],[3,2,1,1]):			# mulr
+		abbyTerminate('mulr should have failed')
+	if not testOpcode(myCPU,[3,4,5,6],[muli,2,2,3],[3,4,5,10]):		# muli
+		abbyTerminate('muli should have failed')
+	if testOpcode(myCPU,[3,4,5,6],[muli,2,2,3],[3,4,5,6]):			# muli
+		abbyTerminate('muli failed to return value')
 	if not testOpcode(myCPU,[3,2,1,1],[seti,2,1,2],[3,2,2,1]):		# seti
-		abbyTerminate('opcode 9 failed')
-	if testOpcode(myCPU,[3,2,1,1],[4,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 4 should not have passed')
-	if testOpcode(myCPU,[3,2,1,1],[5,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 5 should not have passed')
-	if testOpcode(myCPU,[3,2,1,1],[6,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 6 should not have passed')
-	if testOpcode(myCPU,[3,2,1,1],[7,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 7 should not have passed')
-	if testOpcode(myCPU,[3,2,1,1],[8,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 8 should not have passed')
-	if testOpcode(myCPU,[3,2,1,1],[10,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 10 should not have passed')
-	if testOpcode(myCPU,[3,2,1,1],[11,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 11 should not have passed')
-	if testOpcode(myCPU,[3,2,1,1],[12,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 12 should not have passed')
-	if testOpcode(myCPU,[3,2,1,1],[13,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 13 should not have passed')
-	if testOpcode(myCPU,[3,2,1,1],[14,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 14  should not have passed')
-	if testOpcode(myCPU,[3,2,1,1],[15,2,1,2],[3,2,2,1]):			# 
-		abbyTerminate('opcode 15 should not have passed')
+		abbyTerminate('seti opcode failed to return value')
+	if testOpcode(myCPU,[3,2,1,1],[seti,2,1,2],[3,2,1,1]):			# seti
+		abbyTerminate('seti should have failed')
+	if not testOpcode(myCPU,[15,9,1,1],[banr,0,1,2],[15,9,9,1]):	# banr
+		abbyTerminate('banr opcode failed to return value')
+	if testOpcode(myCPU,[15,9,1,1],[banr,0,1,2],[15,9,8,1]):		# banr
+		abbyTerminate('banr should have failed')		
+	if not testOpcode(myCPU,[15,1,1,1],[bani,0,9,2],[15,1,9,1]):	# bani 
+		abbyTerminate('bani opcode failed to return value')
+	if testOpcode(myCPU,[15,1,1,1],[bani,0,9,2],[15,1,1,1]):		# bani
+		abbyTerminate('bani should have failed')
+	if not testOpcode(myCPU,[1,2,4,8],[borr,0,1,2],[1,2,3,8]):		# borr
+		abbyTerminate('borr failed to return value')
+	if testOpcode(myCPU,[1,2,4,8],[borr,0,1,2],[1,2,4,8]):			# borr
+		abbyTerminate('borr should have failed')
+	if not testOpcode(myCPU,[1,2,4,8],[setr,0,1,2],[1,2,1,8]):		# setr
+		abbyTerminate('setr failed to return value')
+	if testOpcode(myCPU,[1,2,4,8],[setr,0,1,2],[1,2,4,8]):			# setr
+		abbyTerminate('setr should have failed')
+	if not testOpcode(myCPU,[1,2,4,8],[bori,0,2,2],[1,2,3,8]):		# bori
+		abbyTerminate('bori failed to return value')
+	if testOpcode(myCPU,[1,2,4,8],[bori,0,1,2],[1,2,4,8]):			# bori
+		abbyTerminate('bori should have failed')
+	if not testOpcode(myCPU,[1,2,4,8],[gtir,0,1,2],[1,2,0,8]):			# 
+		abbyTerminate('gtir failed to return value 0')
+	if not testOpcode(myCPU,[1,2,4,8],[gtir,2,0,2],[1,2,1,8]):			# 
+		abbyTerminate('gtir failed to return value 1')
+	if testOpcode(myCPU,[1,2,4,8],[gtir,0,1,2],[1,2,1,8]):			# 
+		abbyTerminate('gtir should have failed')
+	if not testOpcode(myCPU,[1,2,4,8],[gtri,0,1,2],[1,2,0,8]):			# 
+		abbyTerminate('gtri should not have passed 0')
+	if not testOpcode(myCPU,[1,2,4,8],[gtri,0,0,2],[1,2,1,8]):			# 
+		abbyTerminate('gtri should not have passed 1')
+	if testOpcode(myCPU,[1,2,4,8],[gtri,0,1,2],[2,1,4,8]):			# 
+		abbyTerminate('gtri should not have passed 4')
+	if not testOpcode(myCPU,[1,2,4,8],[gtrr,0,1,2],[1,2,0,8]):			# 
+		abbyTerminate('gtrr should not have passed 0')
+	if not testOpcode(myCPU,[2,1,4,8],[gtrr,0,1,2],[2,1,1,8]):			# 
+		abbyTerminate('gtrr should not have passed 1')
+	if testOpcode(myCPU,[2,1,4,8],[gtrr,0,1,2],[2,1,4,8]):			# 
+		abbyTerminate('gtrr should have failed')
+	if not testOpcode(myCPU,[1,2,4,8],[gtrr,0,1,2],[1,2,0,8]):			# 
+		abbyTerminate('gtrr should not have passed')
+	if not testOpcode(myCPU,[2,1,4,8],[gtrr,0,1,2],[2,1,1,8]):			# 
+		abbyTerminate('gtrr should not have passed')
+	if testOpcode(myCPU,[2,1,4,8],[gtrr,0,1,2],[2,1,0,8]):			# 
+		abbyTerminate('gtrr should have failed')
+	if not testOpcode(myCPU,[1,2,4,8],[eqir,2,1,2],[1,2,1,8]):			# 
+		abbyTerminate('eqir should not have passed 1')
+	if not testOpcode(myCPU,[1,2,4,8],[eqir,0,1,2],[1,2,0,8]):			# 
+		abbyTerminate('eqir should not have passed 0')
+	if testOpcode(myCPU,[1,2,4,8],[eqir,0,1,2],[1,2,1,8]):			# 
+		abbyTerminate('eqir should not have passed 0')
+	if not testOpcode(myCPU,[1,2,4,8],[eqri,0,1,2],[1,2,1,8]):			# 
+		abbyTerminate('eqri should not have passed')
+	if not testOpcode(myCPU,[1,2,4,8],[eqri,0,99,2],[1,2,0,8]):			# 
+		abbyTerminate('eqri should not have passed')
+	if testOpcode(myCPU,[1,2,4,8],[eqri,0,99,2],[1,2,1,8]):			# 
+		abbyTerminate('eqri should not have passed')		
+	if not testOpcode(myCPU,[1,1,4,8],[eqrr,0,1,2],[1,1,1,8]):			# 
+		abbyTerminate('eqrr should not have passed 1')
+	if not testOpcode(myCPU,[1,2,4,8],[eqrr,0,1,2],[1,2,0,8]):			# 
+		abbyTerminate('eqrr should not have passed 0')
+	if testOpcode(myCPU,[1,2,4,8],[eqrr,0,1,2],[1,2,1,8]):			# 
+		abbyTerminate('eqrr should not have passed 0')	
+	return True
+	
+def testRegisterBankAnd4To1Muxes(myCPU):
+	"""Purpose is to test the four registers in the register bank.
+	Use setr instuction to test path A - set each of them one at a time.
+	This path also tests the multiplexer selection for the ALU
+	Use borr to test path B
+	"""
+	debug_testRegisterBankAnd4To1Muxes = False
+	if debug_testRegisterBankAnd4To1Muxes:
+		print 'testRegisterBankAnd4To1Muxes: Checking that all of the registers can be read and set via setr command'
+	if not testOpcode(myCPU,[1,2,3,4],[setr,0,1,1],[1,1,3,4]):	# Quick test setr instruction 
+		abbyTerminate('testRegisterBankAnd4To1Muxes: setr register bank test failed')
+	if not testOpcode(myCPU,[1,2,3,4],[setr,1,1,1],[1,2,3,4]):	# Quick test setr instruction 
+		abbyTerminate('testRegisterBankAnd4To1Muxes: setr register bank test failed')
+	if not testOpcode(myCPU,[1,2,3,4],[setr,2,1,1],[1,3,3,4]):	# Quick test setr instruction 
+		abbyTerminate('testRegisterBankAnd4To1Muxes: setr register bank test failed')
+	if not testOpcode(myCPU,[1,2,3,4],[setr,3,1,1],[1,4,3,4]):	# Quick test setr instruction 
+		abbyTerminate('testRegisterBankAnd4To1Muxes: setr register bank test failed')
+	if debug_testRegisterBankAnd4To1Muxes:
+		print 'testRegisterBankAnd4To1Muxes: register bank path A passed, testing path B'
+	if not testOpcode(myCPU,[1,2,4,8],[borr,0,1,2],[1,2,3,8]):	# 
+		abbyTerminate('testRegisterBankAnd4To1Muxes: borr test failed')
+	if not testOpcode(myCPU,[1,2,4,8],[borr,1,2,2],[1,2,6,8]):	# 
+		abbyTerminate('testRegisterBankAnd4To1Muxes: borr test failed')
+	if not testOpcode(myCPU,[1,2,4,8],[borr,2,3,2],[1,2,12,8]):	# 
+		abbyTerminate('testRegisterBankAnd4To1Muxes: borr test failed')
+	if not testOpcode(myCPU,[1,2,4,8],[borr,3,0,2],[1,2,9,8]):	# 
+		abbyTerminate('testRegisterBankAnd4To1Muxes: borr test failed')
+	if debug_testRegisterBankAnd4To1Muxes:
+		print 'testRegisterBankAnd4To1Muxes: register bank path B passed'
 	return True
 	
 def testCPU(myCPU):
-	debug_testCPU = True
+	debug_testCPU = False
 	if debug_testCPU:
 		print 'testCPU: Initialized CPU Class'
 	myCPU.initializeCPU()
 	
-	if testRegisters(myCPU):
+	if testRegisterCPath(myCPU):
 		if debug_testCPU:
-			print 'testCPU: testRegisters passed'
+			print 'testCPU: testRegisterCPath passed'
+			
+	if testOpcode(myCPU,[3,2,1,1],[setr,2,1,2],[3,2,2,1]):	# Quick test setr instruction 
+		abbyTerminate('setr quick test failed')
+	if not testRegisterBankAnd4To1Muxes(myCPU):
+		abbyTerminate('register bank test failed')
 	
 	if testALU(myCPU):
 		if debug_testCPU:
@@ -845,11 +925,10 @@ def figureOutMap(possibleOpCodesList):
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readTextFileToList('input2.txt')
+textList = readTextFileToList('input.txt')
 
 myList = parseTextFileIntoListOfNumbers(textList)
 
-print 'testCPU: reached function'
 myCPU = CPU()
 
 if testCPU(myCPU):
