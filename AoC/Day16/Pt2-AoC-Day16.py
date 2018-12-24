@@ -50,7 +50,7 @@ def loadProgram(fileName='input2.txt'):
 		newList = map(integerize,programLine)
 		programVectors.append(newList)
 
-	print 'programVectors',programVectors
+#	print 'programVectors',programVectors
 	return programVectors
 		
 def parseTextFileIntoListOfNumbers(textFile):
@@ -695,4 +695,5 @@ myCPU.initializeCPU()
 
 for instruction in theProgram:
 	retVal = myCPU.emulator(instruction)
-print myCPU.getRegisterAfterValues()
+print 'reg0-reg3 values after running',myCPU.getRegisterAfterValues()
+print 'Register 0 contents :',myCPU.getRegisterAfterValues()[0]
