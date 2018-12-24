@@ -1,6 +1,21 @@
 """Some common Python Patterns
 """
 
+#################################################################################
+## map
+
+def integerize(str):
+	return int(str)
+
+def loadProgram(fileName='input2.txt'):
+	textList = readTextFileToList(fileName)
+	programVectors = []
+	for line in textList:
+		programLine = line.split(" ")
+		newList = map(integerize,programLine)	# execute function integerize on programLine
+		programVectors.append(newList)
+
+
 def abbyTerminate(string):
 	"""Terminate program due to abnormal condition
 	"""
