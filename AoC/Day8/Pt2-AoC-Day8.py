@@ -59,17 +59,16 @@ class filer():
 	def loadListFromFile(self,filename):
 		global inputList
 		debug_loadListFromFile = False
-		inFileString = self.readTextFileToList(filename)
+		inFileString = self.readTextFileToString(filename)
 		self.stringOfNumbersToList(inFileString)
 		if debug_loadListFromFile:
 			print 'loadListFromFile: Input File Length =',len(inputList)
 
-	def readTextFileToList(self,fileName):
-		"""readTextFileAndSrtToList - open file and read the content to a list
+	def readTextFileToString(self,fileName):
+		"""readTextFileAndSrtToList - open file and read the content to a string
 		File is sorted to produce a date/time ordered file
 		:returns: the list sorted list
 		"""
-		global inputList
 		textFile = ''
 		with open(fileName, 'r') as filehandle:  
 			for char in filehandle:

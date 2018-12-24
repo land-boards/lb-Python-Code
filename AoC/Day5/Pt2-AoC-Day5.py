@@ -34,8 +34,6 @@ def readTextFileToString(fileName):
 	Every character is an element in the string.
 	"""
 	textFile = []
-	# open file and read the content into an accumulated sum
-	#print 'Reading in file',time.strftime('%X %x %Z')
 	with open(fileName, 'r') as filehandle: 
 		string = filehandle.read()
 	return string.strip()

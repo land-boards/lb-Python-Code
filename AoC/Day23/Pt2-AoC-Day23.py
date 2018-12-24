@@ -10,17 +10,30 @@ import os
 
 """
 --- Day 23: Experimental Emergency Teleportation ---
-Using your torch to search the darkness of the rocky cavern, you finally locate the man's friend: a small reindeer.
+Using your torch to search the darkness of the rocky cavern, 
+you finally locate the man's friend: a small reindeer.
 
-You're not sure how it got so far in this cave. It looks sick - too sick to walk - and too heavy for you to carry all the way back. Sleighs won't be invented for another 1500 years, of course.
+You're not sure how it got so far in this cave. It looks sick - 
+too sick to walk - and too heavy for you to carry all the way back. 
+Sleighs won't be invented for another 1500 years, of course.
 
 The only option is experimental emergency teleportation.
 
-You hit the "experimental emergency teleportation" button on the device and push I accept the risk on no fewer than 18 different warning messages. Immediately, the device deploys hundreds of tiny nanobots which fly around the cavern, apparently assembling themselves into a very specific formation. The device lists the X,Y,Z position (pos) for each nanobot as well as its signal radius (r) on its tiny screen (your puzzle input).
+You hit the "experimental emergency teleportation" button on the device 
+and push I accept the risk on no fewer than 18 different warning messages. 
+Immediately, the device deploys hundreds of tiny nanobots which fly around the cavern, 
+apparently assembling themselves into a very specific formation. 
+The device lists the X,Y,Z position (pos) for each nanobot as well as its signal radius (r)
+ on its tiny screen (your puzzle input).
 
-Each nanobot can transmit signals to any integer coordinate which is a distance away from it less than or equal to its signal radius (as measured by Manhattan distance). Coordinates a distance away of less than or equal to a nanobot's signal radius are said to be in range of that nanobot.
+Each nanobot can transmit signals to any integer coordinate which is a distance 
+away from it less than or equal to its signal radius (as measured by Manhattan distance). 
+Coordinates a distance away of less than or equal to a nanobot's signal radius are said 
+to be in range of that nanobot.
 
-Before you start the teleportation process, you should determine which nanobot is the strongest (that is, which has the largest signal radius) and then, for that nanobot, the total number of nanobots that are in range of it, including itself.
+Before you start the teleportation process, you should determine which nanobot 
+is the strongest (that is, which has the largest signal radius) and then, 
+for that nanobot, the total number of nanobots that are in range of it, including itself.
 
 For example, given the following nanobots:
 
@@ -33,7 +46,9 @@ pos=<0,0,3>, r=1
 pos=<1,1,1>, r=1
 pos=<1,1,2>, r=1
 pos=<1,3,1>, r=1
-The strongest nanobot is the first one (position 0,0,0) because its signal radius, 4 is the largest. Using that nanobot's location and signal radius, the following nanobots are in or out of range:
+The strongest nanobot is the first one (position 0,0,0) because its signal radius, 
+4 is the largest. Using that nanobot's location and signal radius, 
+the following nanobots are in or out of range:
 
 The nanobot at 0,0,0 is distance 0 away, and so it is in range.
 The nanobot at 1,0,0 is distance 1 away, and so it is in range.
@@ -44,9 +59,11 @@ The nanobot at 0,0,3 is distance 3 away, and so it is in range.
 The nanobot at 1,1,1 is distance 3 away, and so it is in range.
 The nanobot at 1,1,2 is distance 4 away, and so it is in range.
 The nanobot at 1,3,1 is distance 5 away, and so it is not in range.
-In this example, in total, 7 nanobots are in range of the nanobot with the largest signal radius.
+In this example, in total, 7 nanobots are in range of the nanobot 
+with the largest signal radius.
 
-Find the nanobot with the largest signal radius. How many nanobots are in range of its signals?
+Find the nanobot with the largest signal radius. 
+How many nanobots are in range of its signals?
 
 Your puzzle answer was 588.
 
@@ -61,17 +78,16 @@ class InputFileHandler():
 
 	def readTextFileLinesToList(self,fileName):
 		"""readTextFileAndSrtToList - open file and read the content to a list
-		File is sorted to produce a date/time ordered file
-		:returns: the list sorted list
+		:returns: the list
 		"""
 		textFile = ''
 		with open(fileName, 'r') as filehandle:  
 			textFile = filehandle.readlines()
 		inList = []
-		for yValueNum in textFile:
-			inList.append(yValueNum.strip('\n\r'))
+		for row in textFile:
+			inList.append(row.strip('\n\r'))
 		return inList
-	
+		
 	def textListToVectorList(self,mapList):
 		"""Write out the mapList to a file because it is too big to see on the screen
 		
@@ -110,8 +126,8 @@ def abbyTerminate(string):
 ########################################################################
 ## 
 
-def getDistance(vector1,vector2):
-	"""Calculate the manhattan distance between two points
+def manhattan3DDistance(vector1,vector2):
+	"""manhattan3DDistance: Calculate the manhattan distance between two points
 	
 	:param vector1: [x,y,z,...] - the position of the 1st nanobot
 	:param vector1: [x,y,z,...] - the position of the 2nd nanobot
@@ -127,7 +143,7 @@ def findNumberInRange(nanoBotsList):
 	for nanobotMeasuring in nanoBotsList:
 		distanceSum = 0
 		for otherNanoBot in nanoBotsList:
-			distanceSum += getDistance(nanobotMeasuring,otherNanoBot)
+			distanceSum += manhattan3DDistance(nanobotMeasuring,otherNanoBot)
 		nanobotMeasuring[4] = distanceSum
 	return nanoBotsList
 

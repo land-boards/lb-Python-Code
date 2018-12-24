@@ -40,8 +40,6 @@ def readTextFileToString(fileName):
 	Every line is an element in the list.
 	"""
 	textFile = []
-	# open file and read the content into an accumulated sum
-	#print 'Reading in file',time.strftime('%X %x %Z')
 	with open(fileName, 'r') as filehandle: 
 		string = filehandle.read().strip()
 	return string

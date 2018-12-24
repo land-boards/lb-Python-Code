@@ -187,7 +187,7 @@ def make2dList(cols,rows):
 def readTextFileTo2DList(fileName):
 	"""readTextFileAndSrtToList - open file and read the content to a list
 	list is converted into a 2D array
-	:returns: the list sorted list
+	:returns: the list
 	"""
 	with open(fileName, 'r') as filehandle: 
 		lineData = []

@@ -45,7 +45,7 @@ With 5 workerCount and the 60+ second step durations described above, how long w
 
 def readTextFileAndSortToList(fileName):
 	"""readTextFileAndSrtToList - open file and read the content to a list
-	File is sorted to produce a date/time ordered file
+	File is sorted to produce an ordered file
 	:returns: the list sorted list
 	"""
 	textFile = []

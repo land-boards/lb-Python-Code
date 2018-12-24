@@ -1,6 +1,156 @@
 """Some common Python Patterns
 """
 
+def abbyTerminate(string):
+	"""Terminate program due to abnormal condition
+	"""
+	print 'ERROR Terminating due to',string
+	exit()
+
+#################################################################################
+## make2dList(cols,rows)
+
+def make2dList(cols,rows):
+	"""make2dList - Make a 2D list
+	"""
+	a=[]
+	for row in xrange(rows): a += [[0]*(cols)]
+	return a
+
+def clearArray(arrayToClear,fillValue=0):
+	"""clearArray - Fill 2D square array with -1 values
+	"""
+	for y in range(len(arrayToClear)):
+		for x in range(len(arrayToClear[0])):
+			arrayToClear[y][x] = fillValue
+	return arrayToClear
+			
+def get(x,y):
+	return(myListArray[x][y])
+	
+	
+#################################################################################
+## Time/date Stamping
+
+import time
+print 'Reading in file',time.strftime('%X %x %Z')
+print 'Completed processing',time.strftime('%X %x %Z')
+
+#################################################################################
+## regular expressions - example https://docs.python.org/2/library/re.html
+## \D - matches any non-digit character
+## \W - matches any non-alphanumeric character
+""" Example #1 --- Get rid of non-numbers and make list of strings
+import re
+str = '#1 @ 7,589: 24x11'
+print str
+#1 @ 7,589: 24x11
+re.split('[\D]+',str)
+['', '1', '7', '589', '24', '11']
+
+Example #2 --- Separate into letter/number strings
+record = re.split('[\W]+',record[1:])		# regex makes this easy
+str2 = '[1518-11-01 23:58] Guard #99 begins shift'
+re.split('[\W]+',str2)
+['', '1518', '11', '01', '23', '58', 'Guard', '99', 'begins', 'shift']
+"""
+
+import re
+inputLineList = re.split('[\D]+',myStr)	# any non-digit
+
+#################################################################################
+## Distance calculations
+
+def manhattan2DDistance(x1,y1,x2,y2):
+	distance = abs(x1-x2) + abs(y1-y2)
+	return distance
+
+def manhattan3DDistance(vector1,vector2):
+	"""Calculate the manhattan distance between two points
+	
+	:param vector1: [x,y,z,...] - the position of the 1st nanobot
+	:param vector1: [x,y,z,...] - the position of the 2nd nanobot
+	:returns: manhattan distance between any two points
+	"""
+	distance = abs(vector1[0]-vector2[0]) + abs(vector1[1]-vector2[1]) + abs(vector1[2]-vector2[2])
+	return distance
+
+#################################################################################
+## Read files as various formats (lists, strings, etc)
+
+class InputFileHandler():
+
+	def readTextFileLinesToList(self,fileName):
+		"""readTextFileAndSrtToList - open file and read the content to a list
+		:returns: the list
+		"""
+		textFile = ''
+		with open(fileName, 'r') as filehandle:  
+			textFile = filehandle.readlines()
+		inList = []
+		for row in textFile:
+			inList.append(row.strip('\n\r'))
+		return inList
+		
+	def writeListToTextFile(self,listToWrite):
+		"""
+		"""
+		with open('listfile.txt', 'w') as filehandle:  
+			for listitem in listToWrite:
+				filehandle.write('%s\n' % listitem)
+
+def readTextFileToListOfInts(fileName):
+	"""readTextFileToList - read in file into list as integers
+	Input file has separate lines
+	"""
+	listOfInts = []
+	with open(fileName, 'r') as filehandle:  
+		for line in filehandle:
+			listOfInts.append(int(line.strip('\n\r')))
+	return listOfInts
+
+def readTextFileAndSortToList(fileName):
+	"""readTextFileAndSrtToList - open file and read the content to a list
+	File is sorted to produce an ordered file
+	:returns: the list sorted list
+	"""
+	textFile = []
+	with open(fileName, 'r') as filehandle:  
+		for line in filehandle:
+			textFile.append(line.strip())
+		textFile.sort()
+	return textFile
+
+def readTextFileToString(fileName):
+	"""readTextFileToList - Turn a text file into a string.
+	Every character is an element in the string.
+	"""
+	with open(fileName, 'r') as filehandle: 
+		string = filehandle.read().strip()
+	return string.strip()
+
+def readTextFileTo2DList(fileName):
+	"""readTextFileAndSrtToList - open file and read the content to a list
+	list is converted into a 2D array
+	:returns: the list
+	"""
+	with open(fileName, 'r') as filehandle: 
+		lineData = []
+		for line in filehandle:
+			lineData.append(line)
+	return lineData
+
+def turnTextListInto2DList(list):
+	array2D = []
+	for line in list:
+		lineDat = []
+		line = line.strip()
+		lineDatA = line.split(',')
+		lineDat.append(int(lineDatA[0]))
+		lineDat.append(int(lineDatA[1]))
+		array2D.append(lineDat)
+	return array2D
+	
 import string
 
 defaultsFileNamePath = 'c:\\temp\\ProgDefaults.csv'		# Edit to match file names

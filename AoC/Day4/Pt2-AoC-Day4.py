@@ -19,13 +19,12 @@ Your puzzle answer was 7887.
 
 """
 
-def readTextFileToList(fileName):
-	"""readTextFileToList - Turn a text file into a list.
-	Every line is an element in the list.
+def readTextFileAndSortToList(fileName):
+	"""readTextFileAndSortToList -  open file and read the content to a list
+	File is sorted to produce an ordered file
+	:returns: the list sorted list
 	"""
 	textFile = []
-	# open file and read the content into an accumulated sum
-	#print 'Reading in file',time.strftime('%X %x %Z')
 	with open(fileName, 'r') as filehandle:  
 		for line in filehandle:
 			textFile.append(line.strip())
@@ -148,7 +147,7 @@ def getMaxMinute(guardMaxsByMins):
 	
 	return [foundGuardID,foundMaxMins,foundMinSlot]
 	
-guardLog = readTextFileToList('input.txt')
+guardLog = readTextFileAndSortToList('input.txt')
 guardSleepWindows = parseGuardLog(guardLog)
 #print 'guardSleepWindows',guardSleepWindows
 guardMaxsByMins = getMaxHours(guardSleepWindows)

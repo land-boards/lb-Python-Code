@@ -46,7 +46,6 @@ class InputFileHandler():
 
 	def readTextFileLinesToList(self,fileName):
 		"""readTextFileAndSrtToList - open file and read the content to a list
-		File is sorted to produce a date/time ordered file
 		:returns: the list sorted list
 		"""
 		textFile = ''
