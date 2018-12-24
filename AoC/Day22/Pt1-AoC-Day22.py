@@ -97,6 +97,8 @@ and a Y coordinate from 0 to 10, this total is 114.
 
 What is the total risk level for the smallest rectangle that includes 0,0 and the target's coordinates?
 
+11972 That's the right answer! You are one gold star closer to fixing the time stream.
+
 """
 
 #####################################################################################
@@ -154,11 +156,11 @@ def abbyTerminate(string):
 #####################################################################################
 ## 2D list code
 
-def make2dList(cols,rows):
+def make2dList(yVals,xVals):
 	"""make2dList - Make a 2D list
 	"""
 	a=[]
-	for row in xrange(rows): a += [[0]*(cols)]
+	for row in xrange(yVals): a += [[0]*(xVals)]
 	return a
 
 def clearArray(arrayToClear,fillValue=0):
@@ -201,27 +203,26 @@ def determineRiskLevel(erosionIndex):
 				risk += 1
 			elif erosionIndex[yVal][xVal] %3 == 2:
 				risk += 2
-	print 'risk',risk
+	print 'Risk is',risk
 
 #####################################################################################
 ## Code
 
-# depth = 5355
-# targetXY = [14,796]
+depth = 5355
+targetXY = [14,796]
 
-depth = 510
-targetXY = [10,10]
+# depth = 510
+# targetXY = [10,10]
 
 # cave is pretty narrow but pretty long
-
 
 debug_main = False
 print 'Started processing',time.strftime('%X %x %Z')
 
-geoIndex = make2dList(targetXY[1]+2,targetXY[0]+2)
+geoIndex = make2dList(targetXY[1]+1,targetXY[0]+1)
 geoIndex = clearArray(geoIndex)
 
-erosionIndex = make2dList(targetXY[1]+2,targetXY[0]+2)
+erosionIndex = make2dList(targetXY[1]+1,targetXY[0]+1)
 erosionIndex = clearArray(erosionIndex)
 
 for yVal in xrange(len(geoIndex)):
@@ -237,6 +238,9 @@ for yVal in xrange(len(geoIndex)):
 			geologicalIndexAtPoint = (erosionIndex[yVal-1][xVal]) * (erosionIndex[yVal][xVal-1])
 		geoIndex[yVal][xVal] = geologicalIndexAtPoint
 		erosionIndex[yVal][xVal] = (geologicalIndexAtPoint + depth) % 20183
+		
+print 'len(erosionIndex)',len(erosionIndex)
+print 'len(erosionIndex[0])',len(erosionIndex[0])
 
 erosionIndex[0][0] = 'M'
 erosionIndex[targetXY[1]][targetXY[0]] = 'T'
