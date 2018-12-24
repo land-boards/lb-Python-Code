@@ -1,0 +1,19 @@
+Reading in file 14:12:44 12/24/18 Eastern Standard Time
+0 > 4 6 0 5 1 2 3 4 5 1 1 0 2 1 2 9 
+16 > 0 4 1 2 3 4 1 4 1 5 0 7 1 2 3 4 
+32 > 5 6 7 1 2 3 4 5 1 2 3 4 1 2 3 1 
+48 > 5 Processing Nodes 14:12:44 12/24/18 Eastern Standard Time
+
+processPart2: Nodes before processing = 8
+processPart2: Un-solved nodes after resolveNodes_NodesWithZeroChildren 4
+processPart2: Un-solved nodes after resolveNodes_AllOutOfRangeKids 3
+*** Node table length = 8 ***
+ Node  UP  DOWN  LEFT RIGHT  KIDS FILOF METOF METCT NDCMP  CHDN  CHIP  NVAL
+  0    DN     1    DN    DN     4     0    44     6     1     1     4    UN
+  1     0    DN    DN     2     0     2     4     5     1     1     1    15
+  2     0     5     1     3     1     9    15     1     1     1     1     0
+  3     0    DN     2     4     0    16    18     4     1     1     1    10
+  4     0     6     3    DN     1    22    40     4     1     1     1    UN
+  5     2    DN    DN    DN     0    11    13     2     1     1     1     3
+  6     4     7    DN    DN     1    24    35     5     1     1     1    UN
+  7     6    DN    DN    DN     0    26    28     7     1     1     1    28

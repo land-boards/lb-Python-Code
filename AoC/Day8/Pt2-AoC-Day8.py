@@ -1,5 +1,4 @@
 # Pt2-AoCDay8.py
-# Pt2-AoCDay8.py
 # 2018 Advent of Code
 # Day 8
 # Part 2
@@ -137,6 +136,20 @@ class filer():
 			print 'getCurrentFileInputOffset: Returning input list pointer =',inputListPtr
 		return inputListPtr
 		
+	def dumpFormattedInputFile(self):
+		elementNumber = 0
+		fileOffset = 0
+		for element in inputList:
+			if elementNumber == 0:
+				print fileOffset,'>',
+			print element,
+			elementNumber += 1
+			if elementNumber == 16:
+				elementNumber = 0
+				print ''
+			fileOffset += 1
+		print ''
+	
 #####################################################################################
 ## Functions which operate on the node list
 
@@ -833,7 +846,6 @@ class NodeFunctions():
 			print 'getChildNodeNumber: returning childNodeNumber',childNodeNumber
 		return childNodeNumber
 
-	
 	def iterativeResolveNodes(self):
 		"""Go through the list resolving as many nodes as possible
 		These nodes are all nodes which have not yet been solved
@@ -918,7 +930,7 @@ class NodeFunctions():
 		if debug_processPart2:
 			print 'processPart2: First node values are'
 			print nodeList[0]
-		self.dumpTopOfNodeList()
+		self.dumpAllNodeVals()
 		
 		#os.system('pause')
 		return nodeList[0][NODEVALUE]
@@ -975,10 +987,11 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input.txt'
+inFileName = 'input2.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
+InputListHandler.dumpFormattedInputFile()
 
 print 'Processing Nodes',time.strftime('%X %x %Z')
 
