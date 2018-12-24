@@ -8,13 +8,13 @@ def abbyTerminate(string):
 	exit()
 
 #################################################################################
-## make2dList(cols,rows)
+## make2dList(yVals,xVals) - Pay attention to the rows and columns (y,x)
 
-def make2dList(cols,rows):
+def make2dList(yVals,xVals):
 	"""make2dList - Make a 2D list
 	"""
 	a=[]
-	for row in xrange(rows): a += [[0]*(cols)]
+	for row in xrange(yVals): a += [[0]*(xVals)]
 	return a
 
 def clearArray(arrayToClear,fillValue=0):
