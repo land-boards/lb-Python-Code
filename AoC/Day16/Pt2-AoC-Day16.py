@@ -9,9 +9,6 @@ import re
 import os
 
 """
-Your puzzle answer was 547.
-The first half of this puzzle is complete! It provides one gold star: *
-
 The challenge in part 2 is to map the test file opcodes to my opcodes.
 The test file  does not have enough test cases to eliminate multiple possibilities.
 Approach #1 - Run dataset for individual values to determine which are possible solutions.
@@ -108,7 +105,7 @@ class CPU:
 	CPU_Reg3 = 0
 
 	def emulator(self,vector):
-		debug_emulator = False
+		debug_emulator = True
 		if debug_emulator:
 			print 'emulator:',vector
 		self.doALU(vector[0:4])
@@ -183,7 +180,7 @@ class CPU:
 			abbyTerminate('storeCVal: passed unexpected value')
 	
 	def doALU(self,opcodeVector):
-		debug_doALU = False
+		debug_doALU = True
 		if debug_doALU:
 			print 'doALU: vector',opcodeVector
 			print 'doALU: opcode =',opcodesList[opcodeVector[0]]
@@ -372,26 +369,7 @@ class CPU:
 ## Can the instructions be sorted/grouped or are they dependent on previous values in the registers?
 ## Registers start at value 0
 ## Should registers be global variable or accessed via functions?
-"""	addr = 0
-	addi = 1
-	mulr = 2
-	muli = 3
-	banr = 4
-	bani = 5
-	borr = 6
-	bori = 7
-	setr = 8
-	seti = 9
-	gtir = 10
-	gtri = 11
-	gtrr = 12
-	eqir = 13
-	eqri = 14
-	eqrr = 15
-"""
 
-opcodesList = ['eqri','bori','mulr','seti','banr','bani','borr','gtrr','gtir','addi','setr','eqrr','addr','eqir','gtri','muli',]
-	
 def processList(theList,myCPU):
 	"""
 	[[0, 0], 
@@ -439,10 +417,11 @@ def processList(theList,myCPU):
 		print
 		listVals.append(listLine)
 		
-	print listVals
-	print 'passBins',passBins
-	print 'failedCases',failedCases
-	print 'failBins',failBins
+	# print listVals
+	# print 'passBins',passBins
+	# print 'failedCases',failedCases
+	# print 'failBins',failBins
+	return listVals
 	
 def testRegisters(myCPU):
 	"""tests the register write path via the store of the ALU output - storeCVal
@@ -505,7 +484,7 @@ def testRegisters(myCPU):
 	return True
 	
 def testOpcode(myCPU,regsBefore,instructionVector,expectedVector):
-	debug_testOpcode = False
+	debug_testOpcode = True
 	if debug_testOpcode:
 		print 'testOpcode: Setting the before operation register values'
 	myCPU.setBeforeOperationRegisterValues(regsBefore)	# Using problem example
@@ -524,20 +503,40 @@ def testOpcode(myCPU,regsBefore,instructionVector,expectedVector):
 		print 'testOpcode: opcode',instructionVector[0],' failed'
 	return False
 
+
+eqri = 0
+bori = 1
+mulr = 2
+seti = 3
+banr = 4
+bani = 5
+borr = 6
+gtrr = 7
+gtir = 8
+addi = 9
+setr = 10
+eqrr = 11
+addr = 12
+eqir = 13
+gtri = 14
+muli = 15
+
+opcodesList = ['eqri','bori','mulr','seti','banr','bani','borr','gtrr','gtir','addi','setr','eqrr','addr','eqir','gtri','muli',]
+	
 def testALU(myCPU):
-	debug_testALU = False
+	debug_testALU = True
 	if debug_testALU:
 		print 'testALU: Initializing the CPU registers'
 	myCPU.initializeCPU()	# reset registers at the end of the testALU
-	if not testOpcode(myCPU,[3,2,1,1],[0,2,1,2],[3,2,3,1]):		# addr
+	if not testOpcode(myCPU,[3,2,1,1],[addr,2,1,2],[3,2,3,1]):		# addr
 		abbyTerminate('opcode 0 failed')
-	if not testOpcode(myCPU,[3,2,1,1],[1,2,1,2],[3,2,2,1]):		# addi
+	if not testOpcode(myCPU,[3,2,1,1],[addi,2,1,2],[3,2,2,1]):		# addi
 		abbyTerminate('opcode 1 failed')
-	if not testOpcode(myCPU,[3,2,1,1],[2,2,1,2],[3,2,2,1]):		# mulr
+	if not testOpcode(myCPU,[3,2,1,1],[mulr,2,1,2],[3,2,2,1]):		# mulr
 		abbyTerminate('opcode 2 failed')
-	if not testOpcode(myCPU,[3,4,5,6],[3,2,1,3],[3,4,5,5]):		# muli
+	if not testOpcode(myCPU,[3,4,5,6],[muli,2,1,3],[3,4,5,5]):		# muli
 		abbyTerminate('opcode 3 failed')
-	if not testOpcode(myCPU,[3,2,1,1],[9,2,1,2],[3,2,2,1]):		# seti
+	if not testOpcode(myCPU,[3,2,1,1],[seti,2,1,2],[3,2,2,1]):		# seti
 		abbyTerminate('opcode 9 failed')
 	if testOpcode(myCPU,[3,2,1,1],[4,2,1,2],[3,2,2,1]):			# 
 		abbyTerminate('opcode 4 should not have passed')
@@ -564,7 +563,7 @@ def testALU(myCPU):
 	return True
 	
 def testCPU(myCPU):
-	debug_testCPU = False
+	debug_testCPU = True
 	if debug_testCPU:
 		print 'testCPU: Initialized CPU Class'
 	myCPU.initializeCPU()
@@ -578,37 +577,287 @@ def testCPU(myCPU):
 			print 'testCPU: ALU tests passed'	
 	return True
 	
-def processListPart1(theList,myCPU):
-	listByOpcode = sorted(theList, key = lambda errs: errs[0])
-	totalThatHaveThreeOrMore = 0
-	for testVec in listByOpcode:
-		testCaseMatches = 0
-		for x in range(16):
-			testVecReplacement = testVec[0:4]
-			testVecReplacement[0] = x
-			if testOpcode(myCPU,testVec[4:8],testVecReplacement,testVec[8:12]):
-				testCaseMatches += 1
-		if testCaseMatches >= 3:
-			totalThatHaveThreeOrMore += 1
-	print 'totalThatHaveThreeOrMore',totalThatHaveThreeOrMore
-
+def figureOutMap(possibleOpCodesList):
+	for eachOpcodePossible in possibleOpCodesList:
+		print eachOpcodePossible[0],'could be',eachOpcodePossible[1:]
+	for opcode15 in eachOpcodePossible[15][1:]:
+		solved = True
+		if opcode15 == opcode14:
+			solved == False
+		elif opcode15 == opcode13:
+			solved == False
+		elif opcode15 == opcode12:
+			solved == False
+		elif opcode15 == opcode11:
+			solved == False
+		elif opcode15 == opcode10:
+			solved == False
+		elif opcode15 == opcode9:
+			solved == False
+		elif opcode15 == opcode8:
+			solved == False
+		elif opcode15 == opcode7:
+			solved == False
+		elif opcode15 == opcode6:
+			solved == False
+		elif opcode15 == opcode5:
+			solved == False
+		elif opcode15 == opcode4:
+			solved == False
+		elif opcode15 == opcode3:
+			solved == False
+		elif opcode15 == opcode2:
+			solved == False
+		elif opcode15 == opcode1:
+			solved == False
+		elif opcode15 == opcode0:
+			solved == False
+		for opcode14 in eachOpcodePossible[14][1:]:
+			if opcode14 == opcode13:
+				solved = False
+			elif opcode14 == opcode12:
+				solved = False
+			elif opcode14 == opcode11:
+				solved = False
+			elif opcode14 == opcode10:
+				solved = False
+			elif opcode14 == opcode9:
+				solved = False
+			elif opcode14 == opcode8:
+				solved = False
+			elif opcode14 == opcode7:
+				solved = False
+			elif opcode14 == opcode6:
+				solved = False
+			elif opcode14 == opcode5:
+				solved = False
+			elif opcode14 == opcode4:
+				solved = False
+			elif opcode14 == opcode3:
+				solved = False
+			elif opcode14 == opcode2:
+				solved = False
+			elif opcode14 == opcode1:
+				solved = False
+			elif opcode14 == opcode0:
+				solved = False
+			for opcode13 in eachOpcodePossible[13][1:]:
+				if opcode13 == opcode12:
+					solved = False
+				elif opcode13 == opcode11:
+					solved = False
+				elif opcode13 == opcode10:
+					solved = False
+				elif opcode13 == opcode9:
+					solved = False
+				elif opcode13 == opcode8:
+					solved = False
+				elif opcode13 == opcode7:
+					solved = False
+				elif opcode13 == opcode6:
+					solved = False
+				elif opcode13 == opcode5:
+					solved = False
+				elif opcode13 == opcode4:
+					solved = False
+				elif opcode13 == opcode3:
+					solved = False
+				elif opcode13 == opcode2:
+					solved = False
+				elif opcode13 == opcode1:
+					solved = False
+				elif opcode13 == opcode0:
+					solved = False
+				for opcode12 in eachOpcodePossible[12][1:]:
+					if opcode12 == opcode11:
+						solved = False
+					elif opcode12 == opcode10:
+						solved = False
+					elif opcode12 == opcode9:
+						solved = False
+					elif opcode12 == opcode8:
+						solved = False
+					elif opcode12 == opcode7:
+						solved = False
+					elif opcode12 == opcode6:
+						solved = False
+					elif opcode12 == opcode5:
+						solved = False
+					elif opcode12 == opcode4:
+						solved = False
+					elif opcode12 == opcode3:
+						solved = False
+					elif opcode12 == opcode2:
+						solved = False
+					elif opcode12 == opcode1:
+						solved = False
+					elif opcode12 == opcode0:
+						solved = False
+					for opcode11 in eachOpcodePossible[11][1:]:
+						if opcode11 == opcode10:
+							solved = False
+						elif opcode11 == opcode9:
+							solved = False
+						elif opcode11 == opcode8:
+							solved = False
+						elif opcode11 == opcode7:
+							solved = False
+						elif opcode11 == opcode6:
+							solved = False
+						elif opcode11 == opcode5:
+							solved = False
+						elif opcode11 == opcode4:
+							solved = False
+						elif opcode11 == opcode3:
+							solved = False
+						elif opcode11 == opcode2:
+							solved = False
+						elif opcode11 == opcode1:
+							solved = False
+						elif opcode11 == opcode0:
+							solved = False
+						for opcode10 in eachOpcodePossible[10][1:]:
+							if opcode10 == opcode9:
+								solved = False
+							elif opcode10 == opcode8:
+								solved = False
+							elif opcode10 == opcode7:
+								solved = False
+							elif opcode10 == opcode6:
+								solved = False
+							elif opcode10 == opcode5:
+								solved = False
+							elif opcode10 == opcode4:
+								solved = False
+							elif opcode10 == opcode3:
+								solved = False
+							elif opcode10 == opcode2:
+								solved = False
+							elif opcode10 == opcode1:
+								solved = False
+							elif opcode10 == opcode0:
+								solved = False
+							for opcode9 in eachOpcodePossible[9][1:]:
+								if opcode9 == opcode8:
+									solved = False
+								elif opcode9 == opcode7:
+									solved = False
+								elif opcode9 == opcode6:
+									solved = False
+								elif opcode9 == opcode5:
+									solved = False
+								elif opcode9 == opcode4:
+									solved = False
+								elif opcode9 == opcode3:
+									solved = False
+								elif opcode9 == opcode2:
+									solved = False
+								elif opcode9 == opcode1:
+									solved = False
+								elif opcode9 == opcode0:
+									solved = False
+								for opcode8 in eachOpcodePossible[8][1:]:
+									if opcode8 == opcode7:
+										solved = False
+									elif opcode8 == opcode6:
+										solved = False
+									elif opcode8 == opcode5:
+										solved = False
+									elif opcode8 == opcode4:
+										solved = False
+									elif opcode8 == opcode3:
+										solved = False
+									elif opcode8 == opcode2:
+										solved = False
+									elif opcode8 == opcode1:
+										solved = False
+									elif opcode8 == opcode0:
+										solved = False
+									for opcode7 in eachOpcodePossible[7][1:]:
+										if opcode7 == opcode6:
+											solved = False
+										elif opcode7 == opcode5:
+											solved = False
+										elif opcode7 == opcode4:
+											solved = False
+										elif opcode7 == opcode3:
+											solved = False
+										elif opcode7 == opcode2:
+											solved = False
+										elif opcode7 == opcode1:
+											solved = False
+										elif opcode7 == opcode0:
+											solved = False
+										for opcode6 in eachOpcodePossible[6][1:]:
+											if opcode6 == opcode5:
+												solved = False
+											elif opcode6 == opcode4:
+												solved = False
+											elif opcode6 == opcode3:
+												solved = False
+											elif opcode6 == opcode2:
+												solved = False
+											elif opcode6 == opcode1:
+												solved = False
+											elif opcode6 == opcode0:
+												solved = False
+											for opcode5 in eachOpcodePossible[5][1:]:
+												if opcode5 == opcode4:
+													solved = False
+												elif opcode5 == opcode3:
+													solved = False
+												elif opcode5 == opcode2:
+													solved = False
+												elif opcode5 == opcode1:
+													solved = False
+												elif opcode5 == opcode0:
+													solved = False
+												for opcode4 in eachOpcodePossible[4][1:]:
+													if opcode4 == opcode3:
+														solved = False
+													elif opcode4 == opcode2:
+														solved = False
+													elif opcode4 == opcode1:
+														solved = False
+													elif opcode4 == opcode0:
+														solved = False
+													for opcode3 in eachOpcodePossible[3][1:]:
+														if opcode3 == opcode2:
+															solved = False
+														elif opcode3 == opcode:
+															solved = False1
+														elif opcode3 == opcode0:
+															solved = False
+														for opcode2 in eachOpcodePossible[2][1:]:
+															if opcode2 == opcode1:
+																solved = False
+															elif opcode2 == opcode0:
+																solved = False
+															for opcode1 in eachOpcodePossible[1][1:]:
+																if opcode1 == opcode0:
+																	solved = False
+																for opcode0 in eachOpcodePossible[0][1:]:
+																	val0 = opcode0
+																	print 
 
 ########################################################################
 ## Code
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readTextFileToList('input.txt')
+textList = readTextFileToList('input2.txt')
 
 myList = parseTextFileIntoListOfNumbers(textList)
 
 print 'testCPU: reached function'
 myCPU = CPU()
 
-# if testCPU(myCPU):
-	# print 'main: testCPU code passed'
-# else:
-	# print 'main: testCPU code failed'
-	# abbyTerminate('WTF')
+if testCPU(myCPU):
+	print 'main: testCPU code passed'
+else:
+	print 'main: testCPU code failed'
+	abbyTerminate('WTF')
 
-processList(myList,myCPU)
+possibleOpCodesList = processList(myList,myCPU)
+
+#figureOutMap(possibleOpCodesList)
