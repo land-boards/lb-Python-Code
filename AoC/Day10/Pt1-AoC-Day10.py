@@ -8,14 +8,22 @@ import time
 import re
 import os
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 """
 
 --- Day 10: The Stars Align ---
-It's no use; your navigation system simply isn't capable of providing walking directions in the arctic circle, and certainly not in 1018.
+It's no use; your navigation system simply isn't capable of providing walking directions in the arctic circle, 
+and certainly not in 1018.
 
-The Elves suggest an alternative. In times like these, North Pole rescue operations will arrange points of light in the sky to guide missing Elves back to base. Unfortunately, the message is easy to miss: the points move slowly enough that it takes hours to align them, but have so much momentum that they only stay aligned for a second. If you blink at the wrong time, it might be hours before another message appears.
+The Elves suggest an alternative. In times like these, North Pole rescue operations will arrange points of light 
+in the sky to guide missing Elves back to base. Unfortunately, the message is easy to miss: the points move slowly enough that it takes hours to align them, but have so much momentum that they only stay aligned for a second. If you blink at the wrong time, it might be hours before another message appears.
 
-You can see these points of light floating in the distance, and record their position in the sky and their velocity, the relative change in position per second (your puzzle input). The coordinates are all given from your perspective; given enough time, those positions and velocities will move the points into a cohesive message!
+You can see these points of light floating in the distance, and record their position in the sky and their velocity, 
+the relative change in position per second (your puzzle input). 
+The coordinates are all given from your perspective; given enough time, those positions and velocities 
+will move the points into a cohesive message!
 
 Rather than wait, you decide to fast-forward the process and calculate what the points will eventually spell.
 
@@ -52,9 +60,13 @@ position=<-6,  0> velocity=< 2,  0>
 position=< 5,  9> velocity=< 1, -2>
 position=<14,  7> velocity=<-2,  0>
 position=<-3,  6> velocity=< 2, -1>
-Each line represents one point. Positions are given as <X, Y> pairs: X represents how far left (negative) or right (positive) the point appears, while Y represents how far up (negative) or down (positive) the point appears.
+Each line represents one point. 
+Positions are given as <X, Y> pairs: X represents how far left (negative) or right (positive) the point appears, 
+while Y represents how far up (negative) or down (positive) the point appears.
 
-At 0 seconds, each point has the position given. Each second, each point's velocity is added to its position. So, a point with velocity <1, -2> is moving to the right, but is moving upward twice as quickly. If this point's initial position were <3, 9>, after 3 seconds, its position would become <6, 3>.
+At 0 seconds, each point has the position given. Each second, each point's velocity is added to its position. 
+So, a point with velocity <1, -2> is moving to the right, but is moving upward twice as quickly. 
+If this point's initial position were <3, 9>, after 3 seconds, its position would become <6, 3>.
 
 Over time, the points listed above would move like this:
 
@@ -188,8 +200,6 @@ def textFileToList(textFile):
 		newRow.append(int(myRow[2]))
 		newRow.append(int(myRow[3]))
 		theList.append(newRow)
-	for row in theList:
-		print row
 	return theList
 
 #####################################################################################
@@ -212,9 +222,28 @@ def moveStars(starElement):
 	newY = yPos + yVel
 	return [newX,newY,xVel,yVel]
 
-def plotStarPositions(starElements):
-	return
+def make2dList(yVals,xVals):
+	"""make2dList - Make a 2D list
+	"""
+	a=[]
+	for row in xrange(yVals): a += [[0]*(xVals)]
+	return a
 	
+
+#################################################################################
+##  plot the map
+
+def plotScatterPoints(xyList):
+	print 'plotScatterPoints: reached function'
+	x = []
+	y = []
+	for point in xyList:
+		x.append(point[0])
+		y.append(point[1])
+	plt.scatter(x,y)
+	plt.show()
+
+
 ########################################################################
 ## Code
 
@@ -224,11 +253,16 @@ textList = readTextFileToList('input2.txt')
 
 myList = textFileToList(textList)
 
-while True:
-	newList = myList
-	for row in myList:
-		newList.append(moveStars(row))
-	myList = newList
-	print myList
-	os.system('pause')
+the2DList = make2dList(32,32)
 
+newList = myList
+xyList = []
+while True:
+	for row in newList:
+		xyList.append([row[0],-row[1]])
+	plotScatterPoints(xyList)
+	newerList = []
+	for row in newList:
+		newerList.append(moveStars(row))
+	newList = map(list, newerList)
+#	os.system('pause')
