@@ -232,6 +232,10 @@ def make2dList(yVals,xVals):
 
 #################################################################################
 ##  plot the map
+## Some helpful tutorials out there for this
+## https://matplotlib.org/index.html
+## https://matplotlib.org/tutorials/introductory/pyplot.html#sphx-glr-tutorials-introductory-pyplot-py
+## https://matplotlib.org/gallery/shapes_and_collections/scatter.html
 
 def plotScatterPoints(xyList):
 	print 'plotScatterPoints: reached function'
@@ -243,26 +247,53 @@ def plotScatterPoints(xyList):
 	plt.scatter(x,y)
 	plt.show()
 
+def getBoundingBox(xyList):
+	xMin = xyList[0][0]
+	yMin = xyList[0][1]
+	xMax = xyList[0][0]
+	yMax = xyList[0][1]
+	for point in xyList:
+		if point[0] < xMin:
+			xMin = point[0]
+		if point[1] < yMin:
+			yMin = point[1]
+		if point[0] > xMax:
+			xMax = point[0]
+		if point[1] > yMax:
+			yMax = point[1]
+#	print 'Bounding box size is',xMax-xMin,'by',yMax-yMin
+	return [xMax-xMin,yMax-yMin]
+
 
 ########################################################################
 ## Code
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readTextFileToList('input2.txt')
+textList = readTextFileToList('input.txt')
 
 myList = textFileToList(textList)
 
-the2DList = make2dList(32,32)
-
-newList = myList
+timeInSecs = 0
 xyList = []
+for row in myList:
+	xyList.append([row[0],-row[1],row[2],row[3]])
+plotScatterPoints(xyList)
+saveBoundBoxXY = getBoundingBox(xyList)
+print timeInSecs
+
+plotOn = False
 while True:
-	for row in newList:
-		xyList.append([row[0],-row[1]])
-	plotScatterPoints(xyList)
-	newerList = []
-	for row in newList:
-		newerList.append(moveStars(row))
-	newList = map(list, newerList)
-#	os.system('pause')
+	#print 'length of xyList',len(xyList)
+	for pointIndex in xrange(len(xyList)):
+		#print pointIndex
+		xyList[pointIndex][0] = xyList[pointIndex][0] + xyList[pointIndex][2]
+		xyList[pointIndex][1] = xyList[pointIndex][1] - xyList[pointIndex][3]
+	boundBoxXY = getBoundingBox(xyList)
+	if boundBoxXY == [115,69]:
+		plotOn = True
+	if plotOn:
+		print timeInSecs
+		plotScatterPoints(xyList)
+	timeInSecs += 1
+	#os.system('pause')
