@@ -70,6 +70,11 @@ What are the scores of the ten recipes immediately after the number of recipes i
 
 Your puzzle input is 110201.
 
+Your puzzle answer was 6107101544.
+
+That's the right answer! You are one gold star closer to fixing the time stream. [Continue to Part Two]
+
+
 """
 
 #####################################################################################
@@ -96,21 +101,26 @@ print 'Starting Processing',time.strftime('%X %x %Z')
 elf1Offset = 0
 elf2Offset = 1
 
+needRecipeCount = 110201+10
+#needRecipeCount = 2018+10
+
 recipeList = [3,7]
-loopCount = 0
-while loopCount < 10:
-	print loopCount
+keepLooping = True
+while keepLooping:
 	newRecipe = recipeList[elf1Offset] + recipeList[elf2Offset]
 	if newRecipe >= 10:
 		recipe10sDigit = newRecipe/10
-		recipe1sDigit = newRecipe - (10*newRecipe)
+		recipe1sDigit = newRecipe - (10*recipe10sDigit)
 		recipeList.append(recipe10sDigit)
 		recipeList.append(recipe1sDigit)
 	else:
 		recipeList.append(newRecipe)
 	listLength = len(recipeList)
-	print 'length of recipe list',listLength
-	print 'recipeList =',recipeList
-	loopCount += 1
+	elf1Offset = (elf1Offset + 1 + recipeList[elf1Offset]) % listLength
+	elf2Offset = (elf2Offset + 1 + recipeList[elf2Offset]) % listLength
+	if listLength >= needRecipeCount:
+		print 'length of recipe list',listLength
+		print 'end of recipeList =',recipeList[-10:]
+		keepLooping = False
 
 print 'Finished processing',time.strftime('%X %x %Z')
