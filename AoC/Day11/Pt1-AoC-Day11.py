@@ -93,6 +93,71 @@ def abbyTerminate(string):
 #####################################################################################
 ##
 
+def make2dList(ySize,xSize):
+	"""make2dList - Make a 2D list
+	"""
+	a=[]
+	for row in xrange(ySize): a += [[0]*(xSize)]
+	return a
+	
+def clearArray(arrayToClear,fillValue=0):
+	"""clearArray - Fill 2D square array with -1 values
+	"""
+	for y in range(len(arrayToClear)):
+		for x in range(len(arrayToClear[0])):
+			arrayToClear[y][x] = fillValue
+	return arrayToClear
+	
+def setFuelLevels(fuelCellArrayAs2DList):
+	for yOffset in xrange(1,len(fuelCellArrayAs2DList)):
+		for xOffset in xrange(1,len(fuelCellArrayAs2DList[0])):
+			rackID = xOffset + 10
+			powerLevel = (rackID * yOffset) + gridSerialNumber
+			powerLevel = powerLevel * rackID
+			#print 'xy',xOffset,yOffset,'powerLevel',powerLevel
+			if powerLevel < 100:
+				powerLevel = 0
+			else:
+				powerString = str(powerLevel)
+				#print 'powerString',powerString
+				power100sDigitString = str(powerString)
+				#print 'power100sDigitString',power100sDigitString
+				powerLevel = int(power100sDigitString[-3])
+			powerLevel -= 5
+			#print 'powerLevel',powerLevel
+			fuelCellArrayAs2DList[yOffset][xOffset] = powerLevel
+	return fuelCellArrayAs2DList
+
+def dumpFuelCellArray(fuelCellArrayAs2DList):
+	for yOffset in xrange(1,len(fuelCellArrayAs2DList)):
+		for xOffset in xrange(1,len(fuelCellArrayAs2DList[0])):
+			print fuelCellArrayAs2DList[yOffset][xOffset],
+		print
+
+def get3x3Power(xOffset,yOffset,fuelCellArrayAs2DList):
+	totalPower = fuelCellArrayAs2DList[yOffset][xOffset]
+	totalPower += fuelCellArrayAs2DList[yOffset][xOffset+1]
+	totalPower += fuelCellArrayAs2DList[yOffset][xOffset+2]
+	totalPower += fuelCellArrayAs2DList[yOffset+1][xOffset]
+	totalPower += fuelCellArrayAs2DList[yOffset+1][xOffset+1]
+	totalPower += fuelCellArrayAs2DList[yOffset+1][xOffset+2]
+	totalPower += fuelCellArrayAs2DList[yOffset+2][xOffset]
+	totalPower += fuelCellArrayAs2DList[yOffset+2][xOffset+1]
+	totalPower += fuelCellArrayAs2DList[yOffset+2][xOffset+2]
+	return totalPower
+
+def findLargestPowerGrid(fuelCellArrayAs2DList):
+	maxPower = get3x3Power(1,1,fuelCellArrayAs2DList)
+	maxXY = [1,1]
+	for yOffset in xrange(1,len(fuelCellArrayAs2DList)-2):
+		for xOffset in xrange(1,len(fuelCellArrayAs2DList[0])-2):
+			cells3x3Power = get3x3Power(xOffset,yOffset,fuelCellArrayAs2DList)
+			#print 'xy,power',xOffset,yOffset,cells3x3Power
+			if cells3x3Power > maxPower:
+				maxPower = cells3x3Power
+				maxXY = [xOffset,yOffset]
+	return maxXY
+
 ########################################################################
 ## This is the workhorse of this assignment
 
@@ -100,7 +165,18 @@ def abbyTerminate(string):
 ########################################################################
 ## Code
 
+#gridSerialNumber = 18
+gridSerialNumber = 2866	# The program input
+
 print 'Starting Processing',time.strftime('%X %x %Z')
 
+fuelCellArrayAs2DList = make2dList(301,301)
+clearArray(fuelCellArrayAs2DList,0)
+setFuelLevels(fuelCellArrayAs2DList)
+#dumpFuelCellArray(fuelCellArrayAs2DList)
+#print 'power at 101,153 is',fuelCellArrayAs2DList[153][101]
+#exit()
+maxXY = findLargestPowerGrid(fuelCellArrayAs2DList)
+print 'maxXY is at',maxXY
 
 print 'Finished processing',time.strftime('%X %x %Z')
