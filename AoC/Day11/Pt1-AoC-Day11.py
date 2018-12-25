@@ -79,6 +79,11 @@ with the largest total power?
 
 Your puzzle input is 2866.
 
+Your puzzle answer was 20,50.
+
+That's the right answer! 
+You are one gold star closer to fixing the time stream.
+
 """
 
 #####################################################################################
