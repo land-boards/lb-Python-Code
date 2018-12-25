@@ -45,11 +45,11 @@ def abbyTerminate(string):
 #################################################################################
 ## make2dList(yVals,xVals) - Pay attention to the rows and columns (y,x)
 
-def make2dList(yVals,xVals):
+def make2dList(ySize,xSize):
 	"""make2dList - Make a 2D list
 	"""
 	a=[]
-	for row in xrange(yVals): a += [[0]*(xVals)]
+	for row in xrange(ySize): a += [[0]*(xSize)]
 	return a
 
 def clearArray(arrayToClear,fillValue=0):
