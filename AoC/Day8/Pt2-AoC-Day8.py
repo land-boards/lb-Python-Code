@@ -793,25 +793,6 @@ class NodeFunctions():
 					pointerToMetaData += 1
 				node[NODEVALUE] = sum
 
-	def resolveNodes_AllOutOfRangeKids(self):
-		"""Another quick pass as resolving nodes
-		If the node has no children in range then move it to a new unresolved nodes list.
-		Since python is by reference even making a new list will still do the changes to the nodeList
-		"""
-		global nodeList
-		for node in nodeList:
-			if node[NODEVALUE] == UNINIT:	# See which nodes can be eliminated
-				nodeMetaStart = node[METAOFFST]
-				nodeMetaLength = node[METALENGTH]
-				nodeChildCount = node[NUMOFKIDS]
-				noNodesInRange = True
-				for metaOffset in xrange(nodeMetaLength):
-					metaValue = inputList[nodeMetaStart+metaOffset]		# Was I missing this value?
-					if metaValue > 0 and metaValue <= nodeChildCount:
-						noNodesInRange = False
-				if noNodesInRange:
-					node[NODEVALUE] = 0
-		
 	def getUninitNodeCount(self):
 		"""Count the number of nodes which do have an uninitialized metadata value
 		"""
@@ -919,17 +900,13 @@ class NodeFunctions():
 		self.resolveNodes_NodesWithZeroChildren()
 		if debug_processPart2:
 			print 'processPart2: Un-solved nodes after resolveNodes_NodesWithZeroChildren',self.getUninitNodeCount()
-		self.resolveNodes_AllOutOfRangeKids()
-		if debug_processPart2:
-			print 'processPart2: Un-solved nodes after resolveNodes_AllOutOfRangeKids',self.getUninitNodeCount()
-		self.dumpTopOfNodeList()
 		while self.getUninitNodeCount() > 0:
 			self.iterativeResolveNodes()
 			print 'processPart2: Un-solved nodes after pass through iterativeResolveNodes =',self.getUninitNodeCount()
 		if debug_processPart2:
 			print 'processPart2: First node values are'
 			print nodeList[0]
-		self.dumpAllNodeVals()
+		#self.dumpAllNodeVals()
 		
 		#os.system('pause')
 		return nodeList[0][NODEVALUE]
@@ -980,7 +957,7 @@ inFileName = 'input.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
-InputListHandler.dumpFormattedInputFile()
+#InputListHandler.dumpFormattedInputFile()
 
 print 'Processing Nodes',time.strftime('%X %x %Z')
 
