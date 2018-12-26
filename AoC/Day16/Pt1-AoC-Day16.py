@@ -598,7 +598,7 @@ def processListPart1(theList,myCPU):
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readTextFileToList('input.txt')
+textList = readTextFileToList('input-mjg.txt')
 
 myList = parseTextFileIntoListOfNumbers(textList)
 

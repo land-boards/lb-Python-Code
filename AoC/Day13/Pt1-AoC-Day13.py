@@ -116,7 +116,7 @@ def sortElfList(elfList):
 	debug_sortElfList = False
 	if debug_sortElfList:
 		print 'sortElfList: Sorting list of elves in x,y order'
-	elfList = sorted(elfList, key = lambda errs: errs[0])		# sort by first xValueNum
+	elfList = sorted(elfList, key = lambda errs: errs[0])		# sort by first yValueNum
 	elfList = sorted(elfList, key = lambda errs: errs[1])		# sort by first xValueNum
 	return elfList
 

@@ -987,7 +987,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input2.txt'
+inFileName = 'input8-mjg.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)

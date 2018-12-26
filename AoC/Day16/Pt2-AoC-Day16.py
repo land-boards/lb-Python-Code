@@ -426,9 +426,9 @@ def processList(theList,myCPU):
 				listLine.append(x)
 		listVals.append(listLine)
 		
-	# for val in listVals:
-		# print val[0],
-		# print '===>',val[1:]
+	for val in listVals:
+		print val[0],
+		print '===>',val[1:]
 	return listVals
 	
 def testRegisterCPath(myCPU):
@@ -675,7 +675,7 @@ def testCPU(myCPU):
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readTextFileToList('input.txt')
+textList = readTextFileToList('input-mjg.txt')
 
 myList = parseTextFileIntoListOfNumbers(textList)
 
