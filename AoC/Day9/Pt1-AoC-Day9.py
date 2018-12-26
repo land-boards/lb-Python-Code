@@ -63,28 +63,82 @@ What is the winning Elf's score?
 
 """
 
-# players = 464
-# lastMarbleValue = 71730
-
-players = 10
-lastMarbleValue = 1618
-
 #####################################################################################
-## Functions which operate on the node list
+## Functions which operate on the marbles list
+## listOfMarbles is a linked list with links in both directions
+## 	marble = [marbleNumber,marbleToLeft,marbleToRight]
 
+class MarblesClass()
+	players = 10
+	endMarbleValue = 1618
+	currentPlayerNumber = 0
+	currentMarbleNumber = 1
+	listOfMarbles = []
 
+	def getNextMarbleNumber(self):
+		"""Increment the marbleNumber
+		
+		:returns: nextMarbleNumber after the increment
+		"""
+		self.currentMarbleNumber += 1
+		return self.currentMarbleNumber
+
+	def addMarbleToList(self):
+		"""Add another marble to the listOfMarbles
+		
+		"""
+		debug_addMarbleToList = True
+		if debug_addMarbleToList:
+			print 'addMarbleToList: reached function'
+		if self.listOfMarbles == []:	# empty list case
+			if debug_addMarbleToList:
+				print 'addMarbleToList: empty list case'
+			self.currentMarbleValue = [currentMarbleNumber,currentMarbleNumber,currentMarbleNumber]
+		else:
+			if debug_addMarbleToList:
+				print 'addMarbleToList: list has marbles already'
+			self.nextMarbleSpot = getNextPositionToInsertMarble()
+			self.insertMarbleIntoList(nextMarbleSpot)
+			pass
+		self.getNextMarbleNumber()
+			
+	def insertMarbleIntoList(self,nextMarbleSpot):
+		self.marbleToTheLeft = nextMarbleSpot[0]
+		self.marbleToRight = nextMarbleSpot[0]
+		
+
+	def getNextPositionToInsertMarble(self):
+		"""
+		
+		:returns: pair of the offsets in the list to the next pair to insert marble between
+		"""
+		marbleToTheLeft = 0
+		marbleToTheRight = 0
+		return [marbleToTheLeft,marbleToTheRight]
+		
+	def getNextPlayerNumber(self):
+		self.currentPlayerNumber += 1
+		return self.currentPlayerNumber
+
+	def dumpMarblesList(self):
+	
+	def takeMarbleFromList(self):
+		return
 
 ########################################################################
 ## Code
 
-currentMarble = 0
-nextMarble = 0
-previousMarble = 0
+players = 464
+lastMarbleValue = 71730
 
-marbleList = []
-addList = 
+debug_main = True
 
-def addMarbleToList(direction):
-	
+if debug_main:
+	print 'main: there are',players,'players'
+	print 'main: the last marble value will be',lastMarbleValue
 
+Marbles = MarblesClass()
+Marbles.addMarbleToList()
 
+if debug_main:
+	print 'main: marbles list',Marbles.dumpMarblesList()
