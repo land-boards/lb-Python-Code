@@ -7,9 +7,8 @@
 # Implemented a Depth First Search without recursion
 # https://en.wikipedia.org/wiki/Depth-first_search
 #
-# That's not the right answer; your answer is too high. 
-# If you're stuck, there are some general tips on the about page, or you can ask for hints on the subreddit. 
-# Please wait one minute before trying again. (You guessed 7003.)
+# Your puzzle answer was 20611.
+# Both parts of this puzzle are complete! They provide two gold stars: **
 
 import time
 import re
@@ -971,16 +970,6 @@ def newCoreCode():
 		if debug_newCoreCode:
 			NodeHandler.dumpAllNodeVals()
 		theNodeNumber = nodeToGet[1]
-
-def sumTheMetaStuff():
-	accumMetaRecLens = 0
-	for node in nodeList:
-		startSpan = node[METAOFFST]
-		endSpan = node[METAOFFST] + node[METALENGTH]
-		while(startSpan < endSpan):
-			accumMetaRecLens += inputList[startSpan]
-			startSpan += 1
-	print '\nSum =',accumMetaRecLens
 
 ##############################################################################
 ## Code follows
