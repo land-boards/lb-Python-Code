@@ -807,7 +807,7 @@ class NodeFunctions():
 				nodeChildCount = node[NUMOFKIDS]
 				noNodesInRange = True
 				for metaOffset in xrange(nodeMetaLength):
-					metaValue = inputList[nodeMetaStart]
+					metaValue = inputList[nodeMetaStart+metaOffset]		# Was I missing this value?
 					if metaValue > 0 and metaValue <= nodeChildCount:
 						noNodesInRange = False
 				if noNodesInRange:
@@ -987,7 +987,7 @@ def sumTheMetaStuff():
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-inFileName = 'input8-mjg.txt'
+inFileName = 'input.txt'
 
 InputListHandler = filer()
 InputListHandler.loadListFromFile(inFileName)
