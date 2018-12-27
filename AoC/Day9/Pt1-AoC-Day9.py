@@ -5,7 +5,7 @@
 # https://adventofcode.com/2018/day/9
 
 import time
-import re
+import os
 
 """
 
@@ -66,79 +66,145 @@ What is the winning Elf's score?
 #####################################################################################
 ## Functions which operate on the marbles list
 ## listOfMarbles is a linked list with links in both directions
-## 	marble = [marbleNumber,marbleToLeft,marbleToRight]
+## 	marble = [marbleNumber,marbleToLeft,marbleToRight,playerNumber]
 
-class MarblesClass()
-	players = 10
+class MarblesClass():
+	"""The class that handles the marble lists
+	
+	"""
+	## Class values
 	endMarbleValue = 1618
 	currentPlayerNumber = 0
-	currentMarbleNumber = 1
+	currentMarbleValue = 0
+	currentMarbleNumber = 0
 	listOfMarbles = []
+	playersAndScores = []
+	
+	def initializePlayersAndScores(self,numberOfPlayers):
+		"""Creates a list of player scores
+		Player numbers go from 1 to the number of players.
+		Player 0 is non-existent.
+		"""
+		debug_initializePlayersAndScores = True
+		if debug_initializePlayersAndScores:
+			print 'initializePlayersAndScores: Initializing the player scores'
+		for player in xrange(numberOfPlayers+1):
+			playerScore = [0]
+			self.playersAndScores.append(playerScore)
+		return player
 
+	def incMarbleNumber(self):
+		self.currentMarbleNumber += 1
+		
 	def getNextMarbleNumber(self):
-		"""Increment the marbleNumber
+		"""Return the marbleNumber
 		
 		:returns: nextMarbleNumber after the increment
 		"""
-		self.currentMarbleNumber += 1
 		return self.currentMarbleNumber
 
 	def addMarbleToList(self):
 		"""Add another marble to the listOfMarbles
-		
+		listOfMarbles has elements [marbleNumber,marbleToLeft,marbleToRight,playerNumber]
 		"""
 		debug_addMarbleToList = True
 		if debug_addMarbleToList:
 			print 'addMarbleToList: reached function'
+		currentPlayerNumber = self.getNextPlayerNumber()
 		if self.listOfMarbles == []:	# empty list case
 			if debug_addMarbleToList:
 				print 'addMarbleToList: empty list case'
-			self.currentMarbleValue = [currentMarbleNumber,currentMarbleNumber,currentMarbleNumber]
+			self.listOfMarbles.append([self.currentMarbleNumber,self.currentMarbleNumber,self.currentMarbleNumber,currentPlayerNumber])
 		else:
 			if debug_addMarbleToList:
 				print 'addMarbleToList: list has marbles already'
-			self.nextMarbleSpot = getNextPositionToInsertMarble()
 			self.insertMarbleIntoList(nextMarbleSpot)
-			pass
-		self.getNextMarbleNumber()
+			self.currentMarbleValue = [self.currentMarbleNumber,self.currentMarbleNumber,self.currentMarbleNumber,currentPlayerNumber]
+		self.incNextPlayerNumber()
+		return self.getNextMarbleNumber()
 			
 	def insertMarbleIntoList(self,nextMarbleSpot):
-		self.marbleToTheLeft = nextMarbleSpot[0]
-		self.marbleToRight = nextMarbleSpot[0]
+		"""
 		
+		:param nextMarbleSpot: Vector [marbleNumber,marbleToTheLeft,marbleToTheRight,playerNumber]
+		"""
+		debug_insertMarbleIntoList = True
+		if debug_insertMarbleIntoList:
+			print 'insertMarbleIntoList: nextMarbleSpot',nextMarbleSpot
+		marbleOneAwayListEntry = self.listOfMarbles[self.currentMarbleNumber][2]	#Get the marble nodes for the two marbles to the right
+		marbleTwoAwayListEntry = self.listOfMarbles[marbleOneAwayListEntry][2]
+		if debug_insertMarbleIntoList:
+			print 'insertMarbleIntoList: marble vector',nextMarbleSpot
+		self.listOfMarbles.append(nextMarbleSpot)
+		newMarbleNumber = self.incMarbleNumber()
+		self.listOfMarbles[marbleTwoAwayListEntry][2] = newMarbleNumber
+		self.listOfMarbles[marbleOneAwayListEntry][1] = newMarbleNumber
+		self.listOfMarbles[newMarbleNumber][2] = marbleTwoAwayListEntry
+		self.listOfMarbles[newMarbleNumber][1] = marbleOneAwayListEntry
+		return
 
 	def getNextPositionToInsertMarble(self):
 		"""
-		
-		:returns: pair of the offsets in the list to the next pair to insert marble between
+		listOfMarbles has elements [marbleNumber,marbleToLeft,marbleToRight,playerNumber]
+		Each Elf takes a turn placing the lowest-numbered remaining marble 
+		into the circle between the marbles that are 1 and 2 marbles clockwise of the current 
+		marble.
+		However, if the marble that is about to be placed has a number 
+		which is a multiple of 23, something entirely different happens. 
+		First, the current player keeps the marble they would have placed, 
+		adding it to their score. 
+		:returns: pair of the offsets in the list to the next pair to insert 
+		marble between
 		"""
+		debug_getNextPositionToInsertMarble = True
+		if debug_getNextPositionToInsertMarble:
+			print 'getNextPositionToInsertMarble: reached function'
+		if self.getNextMarbleNumber() % 23 == 0:
+			pass
+		else:
+			pass
 		marbleToTheLeft = 0
 		marbleToTheRight = 0
 		return [marbleToTheLeft,marbleToTheRight]
 		
 	def getNextPlayerNumber(self):
-		self.currentPlayerNumber += 1
+		return self.currentPlayerNumber
+
+	def incNextPlayerNumber(self):
+		if self.currentPlayerNumber < numberOfPlayers - 1:
+			self.currentPlayerNumber += 1
+		else:
+			self.currentPlayerNumber = 0
 		return self.currentPlayerNumber
 
 	def dumpMarblesList(self):
-	
+		return self.listOfMarbles
+		
 	def takeMarbleFromList(self):
 		return
 
 ########################################################################
 ## Code
 
-players = 464
+numberOfPlayers = 464
 lastMarbleValue = 71730
 
 debug_main = True
 
 if debug_main:
-	print 'main: there are',players,'players'
+	os.system('cls')
+	print 'main: there are',numberOfPlayers,'players'
 	print 'main: the last marble value will be',lastMarbleValue
 
-Marbles = MarblesClass()
-Marbles.addMarbleToList()
+Marbles = MarblesClass()	# Create the marbles class
+Marbles.initializePlayersAndScores(numberOfPlayers)
+Marbles.addMarbleToList()	# Add the first marble to the list
 
-if debug_main:
-	print 'main: marbles list',Marbles.dumpMarblesList()
+while True:
+	if debug_main:
+		print '\nmain: marbles list',Marbles.dumpMarblesList()
+		print 'main: next marble number',Marbles.getNextMarbleNumber()
+		print 'main: next player number',Marbles.getNextPlayerNumber()
+		os.system('pause')
+	Marbles.addMarbleToList()
+	
