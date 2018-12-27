@@ -1,6 +1,14 @@
 """Some common Python Patterns
 """
+#################################################################################
+##  print with formatted string
 
+		for item in nodeList:
+			print '%3d' % (i),
+			for element in item:
+				if element == UNINIT:
+					print '%5s' % ('UN'),
+					
 #################################################################################
 ##  plot the map
 
