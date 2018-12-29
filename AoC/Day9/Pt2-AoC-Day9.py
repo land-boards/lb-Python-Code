@@ -59,12 +59,13 @@ Here are a few more examples:
 30 players; last marble is worth 5807 points: high score is 37305
 What is the winning Elf's score?
 
-464 players; last marble is worth 71730 points
+Amused by the speed of your answer, the Elves are curious:
 
-max player score 380705
+What would the new winning Elf's score be if the number of the last marble were 100 times larger?
 
-That's the right answer! You are one gold star closer to fixing the time stream.
+Your puzzle answer was 3171801582.
 
+Both parts of this puzzle are complete! They provide two gold stars: **
 """
 
 #####################################################################################
@@ -229,6 +230,7 @@ class MarblesClass():
 		if self.currentMarbleValue > lastMarbleValue:
 #			self.dumpPlayersScores()
 			print 'max player score',self.getMaxPlayerScore()
+			print 'Completed processing',time.strftime('%X %x %Z')
 			exit()
 		self.nextMarblePointer += 1
 		self.currentMarbleValue += 1
@@ -361,7 +363,7 @@ class MarblesClass():
 
 # values from the problem
 numberOfPlayers = 464
-lastMarbleValue = 71730
+lastMarbleValue = 7173000
 
 # values from the 2nd example
 # numberOfPlayers = 10
@@ -374,9 +376,12 @@ if debug_main:
 	print 'main: there are',numberOfPlayers,'players'
 	print 'main: the last marble value will be',lastMarbleValue
 
+print 'Reading in file',time.strftime('%X %x %Z')
+
 Marbles = MarblesClass()	# Create the marbles class
 Marbles.initializePlayersAndScores(numberOfPlayers)
 Marbles.addMarbleToCircle()	# Add the first marble to the list
+
 
 while True:
 	if debug_main:
@@ -386,4 +391,4 @@ while True:
 		#print 'main: current player number',Marbles.getCurrentPlayerNumber()
 		#os.system('pause')
 	Marbles.addMarbleToCircle()
-	
+
