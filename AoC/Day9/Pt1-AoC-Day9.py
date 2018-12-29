@@ -73,13 +73,13 @@ class MarblesClass():
 	
 	"""
 	## Class values
-	endMarbleValue = 1618
-	currentPlayerNumber = 0
+	nextPlayerNumber = 0
 	currentMarbleValue = 0
-	currentMarbleNumber = 0
+	nextMarblePointer = 0
 	listOfMarbles = []
 	playersAndScores = []
 	currentMarblePointer = 0
+	pointerToEndOfMarbleList = 0
 	
 	def initializePlayersAndScores(self,numberOfPlayers):
 		"""Creates a list of player scores
@@ -94,170 +94,20 @@ class MarblesClass():
 			print 'initializePlayersAndScores: Initialized the player scores for',player,'players'
 		return player
 
-	def dumpPlayersScores(self):
-		print 'players scores are:'
-		for player in xrange(len(self.playersAndScores)):
-			print 'player',player,'score',self.playersAndScores[player]
-	
-	def incMarbleNumber(self):
-		self.currentMarbleNumber += 1
-		self.currentMarbleValue += 1
-		return self.currentMarbleNumber
+	def dumpEverything(self):
+		print 'vvvvvvvvvvv BEGIN ALL VALUES vvvvvvvvvvv'
+		print 'lastMarbleValue',lastMarbleValue
+		print 'nextPlayerNumber',self.getCurrentPlayerNumber()
+		print 'currentMarbleValue',self.currentMarbleValue
+		print 'nextMarblePointer',self.nextMarblePointer
+		print 'currentMarblePointer',self.currentMarblePointer
+		print 'pointerToEndOfMarbleList',self.pointerToEndOfMarbleList
+		print 'listOfMarbles in link order'
+		print self.dumpMarblesOrder()
+		print 'playersAndScores'
+		self.dumpPlayersScores()
+		print '^^^^^^^^^^^ END ALL VALUES ^^^^^^^^^^^'
 		
-	def getNextMarbleNumber(self):
-		"""Return the marbleNumber
-		
-		:returns: nextMarbleNumber after the increment
-		"""
-		return self.currentMarbleNumber
-
-	def addMarbleToCircle(self):
-		"""Add another marble to the listOfMarbles
-		The first marble is not placed by any player so using player 0 to represent that player.
-		
-		listOfMarbles has elements [marbleNumber,marbleToLeft,marbleToRight,playerNumber]
-		"""
-		debug_addMarbleToCircle = True
-		if debug_addMarbleToCircle:
-			print 'addMarbleToCircle: reached function'
-		
-		if self.listOfMarbles == []:	# empty circle case
-			if debug_addMarbleToCircle:
-				print 'addMarbleToCircle: empty circle case'
-			self.listOfMarbles.append([self.currentMarbleNumber,self.currentMarbleNumber,self.currentMarbleNumber,self.currentPlayerNumber])
-			if debug_addMarbleToCircle:
-				print 'addMarbleToCircle: marble circle after inserting first marble is',self.listOfMarbles			
-		else:
-			if self.currentMarbleNumber % 23 ==0:
-				if debug_addMarbleToCircle:
-					print 'addMarbleToCircle: circle has marbles already, currentMarbleNumber',self.currentMarbleNumber
-				if debug_addMarbleToCircle:
-					print 'addMarbleToCircle: reached marble 23, currentPlayerNumber',self.currentPlayerNumber
-					self.dumpMarblesList()
-					print 'addMarbleToCircle: players score is',self.playersAndScores[self.currentPlayerNumber]
-				self.playersAndScores[self.currentPlayerNumber] = self.playersAndScores[self.currentPlayerNumber] + self.currentMarbleNumber
-				nextPlayer = self.listOfMarbles[self.currentMarblePointer][1]
-				# if debug_addMarbleToCircle:
-					# print 'addMarbleToCircle: player to the left is',nextPlayer
-				nextPlayer = self.listOfMarbles[nextPlayer][1]
-				# if debug_addMarbleToCircle:
-					# print 'addMarbleToCircle: player to the left is',nextPlayer
-				nextPlayer = self.listOfMarbles[nextPlayer][1]
-				# if debug_addMarbleToCircle:
-					# print 'addMarbleToCircle: player to the left is',nextPlayer
-				nextPlayer = self.listOfMarbles[nextPlayer][1]
-				# if debug_addMarbleToCircle:
-					# print 'addMarbleToCircle: player to the left is',nextPlayer
-				nextPlayer = self.listOfMarbles[nextPlayer][1]
-				# if debug_addMarbleToCircle:
-					# print 'addMarbleToCircle: player to the left is',nextPlayer
-				nextPlayer = self.listOfMarbles[nextPlayer][1]
-				rightHandNode = nextPlayer
-				if debug_addMarbleToCircle:
-					print 'addMarbleToCircle: player to the right of the marble to remove is',nextPlayer
-				nextPlayer = self.listOfMarbles[nextPlayer][1]
-				nodeToRemove = nextPlayer
-				if debug_addMarbleToCircle:
-					print 'addMarbleToCircle: player to remove is',nextPlayer
-				nextPlayer = self.listOfMarbles[nextPlayer][1]
-				leftHandNode = nextPlayer
-				if self.currentMarbleNumber % 23 ==0:
-					print 'addMarbleToCircle: player to the left of the marble to remove is',nextPlayer
-				if self.currentMarbleNumber % 23 ==0:
-					print 'addMarbleToCircle: right hand node',rightHandNode,'node',self.listOfMarbles[rightHandNode]
-					print 'addMarbleToCircle: remove marble at node',nodeToRemove,'node',self.listOfMarbles[nodeToRemove]
-					print 'addMarbleToCircle: left hand node',leftHandNode,'node',self.listOfMarbles[leftHandNode]
-				self.listOfMarbles[rightHandNode][1] = leftHandNode
-				self.listOfMarbles[leftHandNode][2] = rightHandNode
-				self.playersAndScores[self.currentPlayerNumber] = self.playersAndScores[self.currentPlayerNumber] + nodeToRemove
-				self.dumpPlayersScores()
-				if lastMarbleValue == nodeToRemove:
-					print '\nhigh score is',self.playersAndScores[self.currentPlayerNumber]
-					print 'last marble is worth',lastMarbleValue
-					self.dumpMarblesList()
-					self.dumpMarblesOrder()
-				self.incNextPlayerNumber()
-				self.incMarbleNumber()
-			else:
-				self.insertMarbleIntoCircle()
-				self.currentMarblePointer = self.currentMarbleNumber
-				self.incNextPlayerNumber()
-				self.incMarbleNumber()
-		print 'addMarbleToCircle: after operation currentMarblePointer',self.currentMarblePointer
-		print 'addMarbleToCircle: '
-		print 'addMarbleToCircle: '
-		print 'addMarbleToCircle: '
-		return self.getNextMarbleNumber()
-			
-	def insertMarbleIntoCircle(self):
-		"""
-		Vector [marbleNumber,marbleToTheLeft,marbleToTheRight,playerNumber]
-		"""
-		debug_insertMarbleIntoCircle = True
-		if debug_insertMarbleIntoCircle:
-			print 'insertMarbleIntoCircle: reached function'
-		marbleOneAwayListEntry = self.listOfMarbles[self.currentMarblePointer][2]
-		if debug_insertMarbleIntoCircle:
-			print 'insertMarbleIntoCircle: marble one entry away is marble',marbleOneAwayListEntry
-		marbleTwoAwayListEntry = self.listOfMarbles[marbleOneAwayListEntry][2]
-		if debug_insertMarbleIntoCircle:
-			print 'insertMarbleIntoCircle: marble two entries away is marble',marbleTwoAwayListEntry
-		self.listOfMarbles[marbleTwoAwayListEntry][1] = self.currentMarbleNumber
-		self.listOfMarbles[marbleOneAwayListEntry][2] = self.currentMarbleNumber
-		newMarbleVector = [self.currentMarbleValue, marbleOneAwayListEntry,marbleTwoAwayListEntry,self.currentPlayerNumber]
-		if debug_insertMarbleIntoCircle:
-			print 'insertMarbleIntoCircle: marble vector',newMarbleVector
-		self.listOfMarbles.append(newMarbleVector)
-		newMarbleNumber = self.currentMarbleNumber
-		if debug_insertMarbleIntoCircle:
-			print 'insertMarbleIntoCircle: new marble number is',newMarbleNumber
-		self.listOfMarbles[newMarbleNumber][2] = marbleTwoAwayListEntry
-		self.listOfMarbles[newMarbleNumber][1] = marbleOneAwayListEntry
-		return
-
-	def getNextPositionToInsertMarble(self):
-		"""
-		listOfMarbles has elements [marbleNumber,marbleToLeft,marbleToRight,playerNumber]
-		Each Elf takes a turn placing the lowest-numbered remaining marble 
-		into the circle between the marbles that are 1 and 2 marbles clockwise of the current 
-		marble.
-		However, if the marble that is about to be placed has a number 
-		which is a multiple of 23, something entirely different happens. 
-		First, the current player keeps the marble they would have placed, 
-		adding it to their score. 
-		:returns: pair of the offsets in the list to the next pair to insert 
-		marble between
-		"""
-		debug_getNextPositionToInsertMarble = True
-		if debug_getNextPositionToInsertMarble:
-			print 'getNextPositionToInsertMarble: reached function'
-		if self.getNextMarbleNumber() % 23 == 0:
-			pass
-		else:
-			pass
-		marbleToTheLeft = 0
-		marbleToTheRight = 0
-		return [marbleToTheLeft,marbleToTheRight]
-		
-	def getNextPlayerNumber(self):
-		return self.currentPlayerNumber
-
-	def incNextPlayerNumber(self):
-		debug_incNextPlayerNumber = True
-		if debug_incNextPlayerNumber:
-			print 'incNextPlayerNumber: incrementing player number before incrementing',self.currentPlayerNumber
-		if self.currentPlayerNumber < numberOfPlayers:
-			self.currentPlayerNumber += 1
-			if debug_incNextPlayerNumber:
-				print 'incNextPlayerNumber: able to go to next player'
-		else:
-			self.currentPlayerNumber = 1
-			if debug_incNextPlayerNumber:
-				print 'incNextPlayerNumber: looped back to the first player'
-		if debug_incNextPlayerNumber:
-			print 'incNextPlayerNumber: after incrementing is',self.currentPlayerNumber
-		return self.currentPlayerNumber
-
 	def dumpMarblesList(self):
 		print 'MarbleNumber, marbleToLeft,marbleToRight,playerNumber'
 		for marble in self.listOfMarbles:
@@ -270,16 +120,191 @@ class MarblesClass():
 		
 	def dumpMarblesOrder(self):
 		startingMarbleNumber = 0
-		print 'marble order',
-		print startingMarbleNumber,'>',
+		print 'Marbles: [',
+		print self.nextPlayerNumber-1,
+		print ']',startingMarbleNumber,
 		nextMarble = self.listOfMarbles[0][2] 
 		while nextMarble != startingMarbleNumber:
-			print nextMarble,'>',
+			print nextMarble,
 			nextMarble = self.listOfMarbles[nextMarble][2]
 		print
 		
-	def takeMarbleFromList(self):
+	def dumpPlayersScores(self):
+		print 'players scores are:'
+		for player in xrange(len(self.playersAndScores)):
+			print 'player',player,'score',self.playersAndScores[player]
+	
+	def incMarbleNumberAndValue(self):
+		self.nextMarblePointer += 1
+		self.currentMarbleValue += 1
+		return self.nextMarblePointer
+		
+	def addFirstMarbleToCircle(self):
+		"""
+		The first marble is not placed by any player so using player 0 to represent that player.
+		
+		:returns: the nextMarblePointer
+		"""
+		debug_addFirstMarbleToCircle = True
+		if debug_addFirstMarbleToCircle:
+			print 'addFirstMarbleToCircle: empty circle case'
+		self.listOfMarbles.append([self.nextMarblePointer,self.nextMarblePointer,self.nextMarblePointer,self.nextPlayerNumber])
+		if debug_addFirstMarbleToCircle:
+			print 'addFirstMarbleToCircle: marble circle after inserting first marble is',self.listOfMarbles			
+		if debug_addFirstMarbleToCircle:
+			self.dumpMarblesList()
+		self.incMarbleNumberAndValue()
+		self.incNextPlayerNumber()
+		self.pointerToEndOfMarbleList = 0
+		return self.nextMarblePointer
+	
+	def addNormalMarbleToCircle(self):
+		debug_addNormalMarbleToCircle = True
+		self.insertMarbleIntoCircle()
+
+		if debug_addNormalMarbleToCircle:
+			print 'addNormalMarbleToCircle: after operation currentMarblePointer',self.currentMarblePointer
+			print 'addNormalMarbleToCircle: after operation nextMarblePointer',self.nextMarblePointer
+			print 'addNormalMarbleToCircle: nextMarblePointer ',self.nextMarblePointer
+			self.dumpMarblesList()
+		return self.nextMarblePointer
+		
+	def add23rdMarbleToCircle(self):
+		"""The 23rd marble is a special case.
+		If the marble that is about to be placed has a number  which is a multiple of 23, 
+		something entirely different happens.  
+		1 - The current player keeps the marble they would have placed, adding it to their score.
+		2 - The marble 7 marbles counter-clockwise from the current marble is removed from the circle 
+		and also added to the current player's score. 
+		3 - The marble located immediately clockwise of the marble that was removed becomes the new current marble.
+		"""
+		debug_add23rdMarbleToCircle = True
+		if debug_add23rdMarbleToCircle:
+			self.dumpEverything()
+		self.playersAndScores[self.nextPlayerNumber] = self.playersAndScores[self.nextPlayerNumber] + self.nextMarblePointer
+		# step to the left to get to the marble to collect and spot to insert next marble at
+		nextPlayer = self.listOfMarbles[self.currentMarblePointer][1]
+		nextPlayer = self.listOfMarbles[nextPlayer][1]
+		nextPlayer = self.listOfMarbles[nextPlayer][1]
+		nextPlayer = self.listOfMarbles[nextPlayer][1]
+		nextPlayer = self.listOfMarbles[nextPlayer][1]
+		nextPlayer = self.listOfMarbles[nextPlayer][1]
+		rightHandNode = nextPlayer
+		nextPlayer = self.listOfMarbles[nextPlayer][1]
+		nodeToRemove = nextPlayer
+		nextPlayer = self.listOfMarbles[nextPlayer][1]
+		leftHandNode = nextPlayer
+		if debug_add23rdMarbleToCircle:
+			print 'add23rdMarbleToCircle: right hand node',rightHandNode,'node',self.listOfMarbles[rightHandNode]
+			print 'add23rdMarbleToCircle: remove marble at node',nodeToRemove,'node',self.listOfMarbles[nodeToRemove]
+			print 'add23rdMarbleToCircle: left hand node',leftHandNode,'node',self.listOfMarbles[leftHandNode]
+		self.listOfMarbles[rightHandNode][1] = leftHandNode
+		self.listOfMarbles[leftHandNode][2] = rightHandNode
+		self.nextMarblePointer = leftHandNode
+		self.playersAndScores[self.nextPlayerNumber] = self.playersAndScores[self.nextPlayerNumber] + nodeToRemove
+		self.currentMarblePointer = rightHandNode
+		self.dumpPlayersScores()
+		if lastMarbleValue == nodeToRemove:
+			print 'add23rdMarbleToCircle: high score is',self.playersAndScores[self.nextPlayerNumber]
+			print 'add23rdMarbleToCircle: last marble is worth',lastMarbleValue
+			self.dumpMarblesList()
+			self.dumpMarblesOrder()
+		self.dumpMarblesList()
+		self.incMarbleNumberAndValue()
+		self.incNextPlayerNumber()
+		print 'add23rdMarbleToCircle: just before leaving'
+		if debug_add23rdMarbleToCircle:
+			self.dumpEverything()
+		exit()
+		return self.nextMarblePointer
+		
+	def addMarbleToCircle(self):
+		"""Add another marble to the listOfMarbles
+		There are three different situations with inserting marbles.
+		The first marble to insert.
+		The increments of 23 marble to insert.
+		Any other number of marble.
+		listOfMarbles has elements [marbleNumber,marbleToLeft,marbleToRight,playerNumber]
+		"""
+		debug_addMarbleToCircle = True
+		if debug_addMarbleToCircle:
+			print 'addMarbleToCircle: nextMarblePointer',self.nextMarblePointer
+			print 'addMarbleToCircle: currentMarblePointer',self.currentMarblePointer
+		if self.listOfMarbles == []:	# empty circle case
+			if debug_addMarbleToCircle:
+				print 'addMarbleToCircle: first marble case'
+			self.addFirstMarbleToCircle()
+		elif self.nextMarblePointer % 23 == 0:
+			if debug_addMarbleToCircle:
+				print 'addMarbleToCircle: 23rd marble case'
+			self.add23rdMarbleToCircle()
+		else:
+			if debug_addMarbleToCircle:
+				print 'addMarbleToCircle: normal marble case'
+			self.addNormalMarbleToCircle()
+
+	def insertMarbleIntoCircle(self):
+		"""
+		Vector [marbleNumber,marbleToTheLeft,marbleToTheRight,playerNumber]
+		"""
+		debug_insertMarbleIntoCircle = True
+		if debug_insertMarbleIntoCircle:
+			print 'insertMarbleIntoCircle: pointerToEndOfMarbleList',self.pointerToEndOfMarbleList
+			print 'insertMarbleIntoCircle: currentMarblePointer',self.currentMarblePointer
+		marbleOneAwayListEntry = self.listOfMarbles[self.currentMarblePointer][2]
+		if debug_insertMarbleIntoCircle:
+			print 'insertMarbleIntoCircle: marble one entry away is marble',marbleOneAwayListEntry
+		marbleTwoAwayListEntry = self.listOfMarbles[marbleOneAwayListEntry][2]
+		if debug_insertMarbleIntoCircle:
+			print 'insertMarbleIntoCircle: marble two entries away is marble',marbleTwoAwayListEntry
+		self.listOfMarbles[marbleTwoAwayListEntry][1] = self.nextMarblePointer
+		self.listOfMarbles[marbleOneAwayListEntry][2] = self.nextMarblePointer
+		newMarbleVector = [self.currentMarbleValue, marbleOneAwayListEntry,marbleTwoAwayListEntry,self.nextPlayerNumber]
+		if debug_insertMarbleIntoCircle:
+			print 'insertMarbleIntoCircle: marble vector',newMarbleVector
+		self.listOfMarbles.append(newMarbleVector)
+		newMarbleNumber = self.nextMarblePointer
+		if debug_insertMarbleIntoCircle:
+			print 'insertMarbleIntoCircle: new marble number is',newMarbleNumber
+		self.listOfMarbles[newMarbleNumber][2] = marbleTwoAwayListEntry
+		self.listOfMarbles[newMarbleNumber][1] = marbleOneAwayListEntry
+		self.incNextPlayerNumber()
+		self.incMarbleNumberAndValue()
+		self.currentMarblePointer += 1
+		self.pointerToEndOfMarbleList += 1
 		return
+
+	def incNextPlayerNumber(self):
+		debug_incNextPlayerNumber = False
+		if debug_incNextPlayerNumber:
+			print 'incNextPlayerNumber: incrementing player number before incrementing',self.nextPlayerNumber
+		if self.nextPlayerNumber < numberOfPlayers:
+			self.nextPlayerNumber += 1
+			if debug_incNextPlayerNumber:
+				print 'incNextPlayerNumber: able to go to next player'
+		else:
+			self.nextPlayerNumber = 1
+			if debug_incNextPlayerNumber:
+				print 'incNextPlayerNumber: looped back to the first player'
+		if debug_incNextPlayerNumber:
+			print 'incNextPlayerNumber: after incrementing is',self.nextPlayerNumber
+		return self.nextPlayerNumber
+
+	## 	# Access methods for functions outside the class to get these values
+	
+	def getCurrentMarbleNumber(self):
+		"""Return the marbleNumber
+		
+		:returns: nextMarblePointer after the increment
+		"""
+		return self.nextMarblePointer
+
+	def getCurrentPlayerNumber(self):	# Access method for functions outside the class to get this value
+		"""Return the Current Player Number
+		
+		:returns: nextMarblePointer after the increment
+		"""
+		return self.nextPlayerNumber
 
 ########################################################################
 ## Code
@@ -309,10 +334,10 @@ Marbles.addMarbleToCircle()	# Add the first marble to the list
 
 while True:
 	if debug_main:
-		print '\nmain: marbles order'
+		print '\nmain: ',
 		Marbles.dumpMarblesOrder()
-		print 'main: next marble number',Marbles.getNextMarbleNumber()
-		print 'main: next player number',Marbles.getNextPlayerNumber()
+		print 'main: current marble number',Marbles.getCurrentMarbleNumber()
+		print 'main: current player number',Marbles.getCurrentPlayerNumber()
 		#os.system('pause')
 	Marbles.addMarbleToCircle()
 	
