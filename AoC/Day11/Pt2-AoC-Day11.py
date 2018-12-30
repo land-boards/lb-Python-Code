@@ -60,22 +60,27 @@ def clearArray(arrayToClear,fillValue=0):
 	return arrayToClear
 	
 def setFuelLevels(fuelCellArrayAs2DList):
+	debug_setFuelLevels = False
 	for yOffset in xrange(1,len(fuelCellArrayAs2DList)):
 		for xOffset in xrange(1,len(fuelCellArrayAs2DList[0])):
 			rackID = xOffset + 10
 			powerLevel = (rackID * yOffset) + gridSerialNumber
 			powerLevel = powerLevel * rackID
-			#print 'xy',xOffset,yOffset,'powerLevel',powerLevel
+			if debug_setFuelLevels:
+				print 'xy',xOffset,yOffset,'powerLevel',powerLevel
 			if powerLevel < 100:
 				powerLevel = 0
 			else:
 				powerString = str(powerLevel)
-				#print 'powerString',powerString
+				if debug_setFuelLevels:
+					print 'powerString',powerString
 				power100sDigitString = str(powerString)
-				#print 'power100sDigitString',power100sDigitString
+				if debug_setFuelLevels:
+					print 'power100sDigitString',power100sDigitString
 				powerLevel = int(power100sDigitString[-3])
 			powerLevel -= 5
-			#print 'powerLevel',powerLevel
+			if debug_setFuelLevels:
+				print 'powerLevel',powerLevel
 			fuelCellArrayAs2DList[yOffset][xOffset] = powerLevel
 	return fuelCellArrayAs2DList
 
@@ -85,59 +90,55 @@ def dumpFuelCellArray(fuelCellArrayAs2DList):
 			print fuelCellArrayAs2DList[yOffset][xOffset],
 		print
 
-def get3x3Power(xOffset,yOffset,fuelCellArrayAs2DList):
-	totalPower = fuelCellArrayAs2DList[yOffset][xOffset]
-	totalPower += fuelCellArrayAs2DList[yOffset][xOffset+1]
-	totalPower += fuelCellArrayAs2DList[yOffset][xOffset+2]
-	totalPower += fuelCellArrayAs2DList[yOffset+1][xOffset]
-	totalPower += fuelCellArrayAs2DList[yOffset+1][xOffset+1]
-	totalPower += fuelCellArrayAs2DList[yOffset+1][xOffset+2]
-	totalPower += fuelCellArrayAs2DList[yOffset+2][xOffset]
-	totalPower += fuelCellArrayAs2DList[yOffset+2][xOffset+1]
-	totalPower += fuelCellArrayAs2DList[yOffset+2][xOffset+2]
-	return totalPower
-
 def getNxNPower(xOffset,yOffset,size,fuelCellArrayAs2DList):
+	debug_getNxNPower = False
+	if debug_getNxNPower:
+		print 'reached getNxNPower:'
 	xDim = size
 	yDim = size
 	totalPower = 0
 	for yVal in xrange(yOffset,yOffset+size):
 		for xVal in xrange(xOffset,xOffset+size):
-			totalPower =+ fuelCellArrayAs2DList[yVal][xVal]
+			if debug_getNxNPower:
+				print 'getNxNPower: at xy',xVal,yVal,'power',fuelCellArrayAs2DList[yVal][xVal]
+			totalPower = totalPower + fuelCellArrayAs2DList[yVal][xVal]
+	if debug_getNxNPower:
+		print 'getNxNPower: totalPower',totalPower
 	return totalPower
 
-def findLargest3x3PowerGrid(fuelCellArrayAs2DList):
-	maxPower = getNxNPower(1,1,3,fuelCellArrayAs2DList)
-	maxXY = [1,1]
-	for yOffset in xrange(1,len(fuelCellArrayAs2DList)-2):
-		for xOffset in xrange(1,len(fuelCellArrayAs2DList[0])-2):
-			cells3x3Power = getNxNPower(xOffset,yOffset,3,fuelCellArrayAs2DList)
-			#print 'xy,power',xOffset,yOffset,cells3x3Power
-			if cells3x3Power > maxPower:
-				maxPower = cells3x3Power
-				maxXY = [xOffset,yOffset]
-	return maxXY
-
-def findLargestNxNPowerGrid(fuelCellArrayAs2DList):
-	maxPower = getNxNPower(1,1,3,fuelCellArrayAs2DList)
-	maxXY = [1,1]
-	for yOffset in xrange(1,len(fuelCellArrayAs2DList)-2):
-		for xOffset in xrange(1,len(fuelCellArrayAs2DList[0])-2):
-			cells3x3Power = getNxNPower(xOffset,yOffset,3,fuelCellArrayAs2DList)
-			#print 'xy,power',xOffset,yOffset,cells3x3Power
-			if cells3x3Power > maxPower:
-				maxPower = cells3x3Power
-				maxXY = [xOffset,yOffset]
-	return maxXY
+def findLargestNxNPowerGrid(size,fuelCellArrayAs2DList):
+	maxPower = getNxNPower(1,1,size,fuelCellArrayAs2DList)
+	maxXY_Power = [1,1,maxPower]
+	for yOffset in xrange(1,len(fuelCellArrayAs2DList)-(size-1)):
+		for xOffset in xrange(1,len(fuelCellArrayAs2DList[0])-(size-1)):
+			cellsNxNPower = getNxNPower(xOffset,yOffset,size,fuelCellArrayAs2DList)
+			#print 'xy,power',xOffset,yOffset,cellsNxNPower
+			if cellsNxNPower > maxPower:
+				maxPower = cellsNxNPower
+				maxXY_Power = [xOffset,yOffset,size,maxPower]
+	print 'maxXY_Power',maxXY_Power
+	return maxXY_Power
 	
-########################################################################
-## This is the workhorse of this assignment
+def interateOverFuelArraySizes(fuelCellArrayAs2DList):
+	maxXY_Power = findLargestNxNPowerGrid(3,fuelCellArrayAs2DList)
+	print 'interateOverFuelArraySizes: (with fixed size = 3)',maxXY_Power
+	powerMax = 0
+	powerLocation = [0,0]
+	for size in xrange(1,len(fuelCellArrayAs2DList)-1):
+		maxXY_Power = findLargestNxNPowerGrid(size,fuelCellArrayAs2DList)
+		if maxXY_Power[3] > powerMax:
+			print 'new highest power'
+			powerMax = maxXY_Power[3]
+			powerLocation = maxXY_Power
+			sizeKeeper = size
+		print '.',
+	return maxXY_Power
 
-
 ########################################################################
-## Code
+## Main
 
 #gridSerialNumber = 18
+#gridSerialNumber = 42
 gridSerialNumber = 2866	# The program input
 
 print 'Starting Processing',time.strftime('%X %x %Z')
@@ -146,9 +147,10 @@ fuelCellArrayAs2DList = make2dList(301,301)
 clearArray(fuelCellArrayAs2DList,0)
 setFuelLevels(fuelCellArrayAs2DList)
 #dumpFuelCellArray(fuelCellArrayAs2DList)
-#print 'power at 101,153 is',fuelCellArrayAs2DList[153][101]
-#exit()
-maxXY = findLargest3x3PowerGrid(fuelCellArrayAs2DList)
-print '3x3 maxXY is at',maxXY
+#print 'Using nxn function power at 33,45 is',getNxNPower(33,45,3,fuelCellArrayAs2DList)
+# maxXY = findLargestNxNPowerGrid(3,fuelCellArrayAs2DList)
+# print 'Using nxn function 3x3 maxXY is at',maxXY
+powerLocation = interateOverFuelArraySizes(fuelCellArrayAs2DList)
+print 'max is', powerLocation
 
 print 'Finished processing',time.strftime('%X %x %Z')
