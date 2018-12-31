@@ -53,6 +53,7 @@ For example:
 After four very expensive crashes, a tick ends with only one cart remaining; its final location is 6,4.
 
 What is the location of the last cart at the end of the first tick where it is the only cart left?
+
 That's not the right answer. 
 If you're stuck, there are some general tips on the about page, or you can ask for hints on the subreddit. 
 Please wait one minute before trying again. (You guessed 125,37.)
@@ -63,39 +64,53 @@ Please wait one minute before trying again. (You guessed 125,37.)
 ## Functions which operate on the input file and node lists
 
 class InputFileHandler():
-
+	"""Class which contains the methods to handle reading and writing files.
+	"""
+	
 	def readTextFileLinesToList(self,fileName):
-		"""readTextFileAndSrtToList - open file and read the content to a list
+		"""readTextFileLinesToList - open file and read the content to a list
+		First read in the file into a text file.
+		Then turn the lines of the text file into a list of lines of the text file
 		:returns: the list
 		"""
+		debug_readTextFileLinesToList = False
 		textFile = ''
 		with open(fileName, 'r') as filehandle:  
 			textFile = filehandle.readlines()
 		inList = []
+		if debug_readTextFileLinesToList:
+			print 'readTextFileLinesToList: the input text file contents by rows'
 		for row in textFile:
 			inList.append(row.strip('\n\r'))
+			if debug_readTextFileLinesToList:
+				print row.strip('\n\r')
 		return inList
 	
 	def writeOutMapFile(self,mapList):
 		"""writeOutMapFile - Write out the map file so that it can be read by an editor.
 		The map file is too big to print in a 80 xValueNum DOS CMD window.
-		newline between each line
+		newline between each line.
+		Stores result into the directory that the program was in.
+		Stores result as name 'SnapMap.txt'.
+		
+		:returns: no return value
 		"""
 		debug_writeOutMapFile = False
-		if debug_writeOutMapFile:
-			mapAsList = self.mapToList(mapList)
-			with open('SnapMap.txt', 'w') as f:
-				for item in mapAsList:
-					f.write(item)
-					f.write('\n')
+		mapAsList = self.mapToList(mapList)
+		with open('SnapMap.txt', 'w') as f:
+			for item in mapAsList:
+				if debug_writeOutMapFile:
+					print 'item'
+				f.write(item)
+				f.write('\n')
 		
 	def mapToList(self,mapList):
 		"""Write out the mapList to a file because it is too big to see on the screen
 		"""
 		debug_mapToList = False
 		if debug_mapToList:
-			print 'writeOutMapFile: newLine',mapList[0]
-			print 'writeOutMapFile: mapList has line count',len(mapList)
+			print 'mapToList: newLine',mapList[0]
+			print 'mapToList: mapList has line count',len(mapList)
 		outList = []
 		for line in mapList:
 			newLine = ''.join(line)
@@ -122,7 +137,7 @@ def runElves(elvesList,tracksMap):
 	:param elvesList: the original elves list
 	:param tracksMap: field of tracks without elves
 	"""
-	debug_runElves = False
+	debug_runElves = True
 	# print 'runElves: elvesList'
 	# for elf in elvesList:
 		# print elf
@@ -217,36 +232,48 @@ def moveElves(elvesList,tracksMap):
 	:param tracksMap: 
 	:returns: List of elf numbers for collided elves
 	"""
-	debug_moveElves = False
+	debug_moveElves = True
 	elfCollisionList = []
+	newElfList = []
 	if debug_moveElves:
 		print 'moveElves: reached function'
 	for elf in elvesList:		# go through each of the elves
-		if elf[0] not in elfCollisionList;
+		if elf[0] not in elfCollisionList:
 			newElfValue = moveElf(elf,tracksMap)
-			collisionsOnPass = checkElfValueInElfList(newElfValue,elvesList,elfCollisionList)
+			collisionsOnPass = checkCurrentElfValueForCollision(newElfValue,elvesList,elfCollisionList)
 			if collisionsOnPass != []:
-				print 'elves collided',checkVal
+				print 'moveElves: elves collided',checkVal
 				elfCollisionList.append(collisionsOnPass[0],collisionsOnPass[1])
-	if not newElfList:
+			else:
+				newElfList.append(elf)
+	if newElfValue == []:
 		abbyTerminate('moveElves: moveElf Returned empty list')
 	if debug_moveElves:
 		print ''
-		os.system('pause')
+		#os.system('pause')
 		#os.system('cls')
 		print 'moveElves: the new elves list after the move',newElfList
 	return newElfList
 	
-def checkElfValueInElfList(elfIn,elfList,elfCollisionList):
+def checkCurrentElfValueForCollision(elfIn,elfList,elfCollisionList):
+	"""Check a particular elf to see if it collides with another elf.
+	
+	:param 
+	:returns: Empty list if there is no collision and list of elves if there is a collision.
+	"""
+	print 'checkCurrentElfValueForCollision: there are',len(elfList),'elves in elfList'
 	elfNumber = elfIn[0]
+	print 'checkCurrentElfValueForCollision: elfIn',elfIn
+	print 'checkCurrentElfValueForCollision: elfNumber',elfNumber
 	for elf in elfList:
+		print 'checkCurrentElfValueForCollision: elf in elfList',elf
 		if elfNumber != elf[0]:
 			if elf not in elfCollisionList:
-				if elfNumber[1] == elfIn[1] and elfNumber[2] == elfIn[2]:
+				if (elf[1] == elfIn[1]) and (elf[2] == elfIn[2]):
 					# collision at this point
-					print 'elves collided',elfNumber[0],elf[0]
-					return [elfNumber[0], elf[0]]
-
+					print 'checkCurrentElfValueForCollision: elves collided',elfNumber,elf[0]
+					return [elfNumber, elf[0]]
+	return []
 
 def moveElf(elf,tracksMap):
 	"""Move the particular elf through the tracks map.
@@ -383,76 +410,76 @@ def findElves(mineMap):
 			print elf
 	return elvesList
 
-def makeEmptyElfField(tracksMap):
-	"""Make a copy of the tracksMap without tracks.
-	"""
-	yValueNumCount = len(tracksMap)
-	xValueNumCount = len(tracksMap[0])
-	elfsMap = []
-	print 'makeEmptyElfField: Making an empty Elf Field'
-	for yValueNum in xrange(yValueNumCount):
-		xList = []
-		for xValueNum in xrange(xValueNumCount):
-			xList.append(' ')
-		elfsMap.append(xList)
-	return elfsMap
+# def makeEmptyElfField(tracksMap):
+	# """Make a copy of the tracksMap without tracks.
+	# """
+	# yValueNumCount = len(tracksMap)
+	# xValueNumCount = len(tracksMap[0])
+	# elfsMap = []
+	# print 'makeEmptyElfField: Making an empty Elf Field'
+	# for yValueNum in xrange(yValueNumCount):
+		# xList = []
+		# for xValueNum in xrange(xValueNumCount):
+			# xList.append(' ')
+		# elfsMap.append(xList)
+	# return elfsMap
 
-def putElvesIntoElfField(elvesList,elfsMap):
-	"""
-	:param elvesList: list of elves - [x,y,currentDirection,nextDirection]
-	"""
-	for elf in elvesList:
-		elfX = elf[1]
-		elfY = elf[2]
-		elfArrowValue = elf[3]
-		elfsMap[elfY][elfX] = elfArrowValue
-	return elfsMap
+# def putElvesIntoElfField(elvesList,elfsMap):
+	# """
+	# :param elvesList: list of elves - [x,y,currentDirection,nextDirection]
+	# """
+	# for elf in elvesList:
+		# elfX = elf[1]
+		# elfY = elf[2]
+		# elfArrowValue = elf[3]
+		# elfsMap[elfY][elfX] = elfArrowValue
+	# return elfsMap
 
-def getOtherElfAtLocation(elfVal,elvesList):
-	"""Remove two elves at a particular point.
-	The elf that was passed is the elf that caused the collision
-	Look for the elf that it collided with and return that elf value
-	The other elf should be at the same location as the current elf
-	"""
-	debug_getOtherElfAtLocation = True
-	if debug_getOtherElfAtLocation:
-		print 'elfVal',elfVal
-	myElfNumber = elfVal[0]
-	myElfX = elfVal[1]
-	myElfY = elfVal[2]
-	for elf in elvesList:
-		if myElfNumber != elf[0]:	# always need to ignore yourself
-			if myElfX == elf[1] and myElfY == elf[2]:
-				return elf
-	abbyTerminate('not sure why but the colliding elf was not located')
+# def getOtherElfAtLocation(elfVal,elvesList):
+	# """Remove two elves at a particular point.
+	# The elf that was passed is the elf that caused the collision
+	# Look for the elf that it collided with and return that elf value
+	# The other elf should be at the same location as the current elf
+	# """
+	# debug_getOtherElfAtLocation = True
+	# if debug_getOtherElfAtLocation:
+		# print 'elfVal',elfVal
+	# myElfNumber = elfVal[0]
+	# myElfX = elfVal[1]
+	# myElfY = elfVal[2]
+	# for elf in elvesList:
+		# if myElfNumber != elf[0]:	# always need to ignore yourself
+			# if myElfX == elf[1] and myElfY == elf[2]:
+				# return elf
+	# abbyTerminate('not sure why but the colliding elf was not located')
 
-def checkCollisions(elvesList):
-	"""checkCollisions - Check the elves list to see if any two elves are at the same position
-	If the elves are at the same position then remove them from the list of elves.
+# def checkCollisions(elvesList):
+	# """checkCollisions - Check the elves list to see if any two elves are at the same position
+	# If the elves are at the same position then remove them from the list of elves.
 	
-	"""
-	collidedElves = []
-	numberOfElves = len(elvesList)-1
-	debug_checkCollisions = False
-	if debug_checkCollisions:
-		print 'checkCollisions: checking elves',numberOfElves
-	for i in xrange(numberOfElves):
-		if (elvesList[i][0] == elvesList[i+1][0]) and (elvesList[i][1] == elvesList[i+1][1]):
-			#if debug_checkCollisions:
-			print 'checkCollisions: elves collided at x y',elvesList[i][0],elvesList[i][1]
-			if elvesList[i] not in collidedElves:
-				collidedElves.append(elvesList[i])
-			if elvesList[i+1] not in collidedElves:
-				collidedElves.append(elvesList[i+1])
-			if debug_checkCollisions:
-				print 'checkCollisions: removing a collided case from the list of elves'
-	if collidedElves != []:
-		for collidedElf in collidedElves:
-			elvesList.remove(collidedElf)
-	if len(elvesList) == 1:
-		print elvesList
-		print 'final elf at'
-	return elvesList
+	# """
+	# collidedElves = []
+	# numberOfElves = len(elvesList)-1
+	# debug_checkCollisions = False
+	# if debug_checkCollisions:
+		# print 'checkCollisions: checking elves',numberOfElves
+	# for i in xrange(numberOfElves):
+		# if (elvesList[i][0] == elvesList[i+1][0]) and (elvesList[i][1] == elvesList[i+1][1]):
+			# #if debug_checkCollisions:
+			# print 'checkCollisions: elves collided at x y',elvesList[i][0],elvesList[i][1]
+			# if elvesList[i] not in collidedElves:
+				# collidedElves.append(elvesList[i])
+			# if elvesList[i+1] not in collidedElves:
+				# collidedElves.append(elvesList[i+1])
+			# if debug_checkCollisions:
+				# print 'checkCollisions: removing a collided case from the list of elves'
+	# if collidedElves != []:
+		# for collidedElf in collidedElves:
+			# elvesList.remove(collidedElf)
+	# if len(elvesList) == 1:
+		# print elvesList
+		# print 'final elf at'
+	# return elvesList
 			
 def drawElvesInMap(elvesList,traks):
 	"""drawElvesInMap
@@ -707,17 +734,18 @@ direction = ['left','straight','right']
 #inFileName = 'input_2Elves_1Track.txt'
 inFileName = 'input_3Elves_4Tracks.txt'
 
-debug_main = False
+debug_main = True
 print 'Reading in file',time.strftime('%X %x %Z')
 InputFileClass = InputFileHandler()
 textList = InputFileClass.readTextFileLinesToList(inFileName)
 if debug_main:
-	print '\ntextList',textList
+	print 'main: input file as a textList'
+	print textList
 unpaddedMineMap = makeMapArray(textList)				# Get the map from the file
 elvesList = findElves(unpaddedMineMap)					# Find the elves on the map
 if debug_main:
 	print 'elvesList',elvesList
-elvesList = sortElfList(elvesList)							# Sort the elves in 'reading' order
+elvesList = sortElfList(elvesList)						# Sort the elves in 'reading' order
 if debug_main:
 	print 'sorted elvesList',elvesList
 if debug_main:
