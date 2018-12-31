@@ -71,13 +71,8 @@ def setFuelLevels(fuelCellArrayAs2DList):
 			if powerLevel < 100:
 				powerLevel = 0
 			else:
-				powerString = str(powerLevel)
-				if debug_setFuelLevels:
-					print 'powerString',powerString
-				power100sDigitString = str(powerString)
-				if debug_setFuelLevels:
-					print 'power100sDigitString',power100sDigitString
-				powerLevel = int(power100sDigitString[-3])
+				powerLevel = powerLevel / 100
+				powerLevel %= 10
 			powerLevel -= 5
 			if debug_setFuelLevels:
 				print 'powerLevel',powerLevel
@@ -101,7 +96,7 @@ def getNxNPower(xOffset,yOffset,size,fuelCellArrayAs2DList):
 		for xVal in xrange(xOffset,xOffset+size):
 			if debug_getNxNPower:
 				print 'getNxNPower: at xy',xVal,yVal,'power',fuelCellArrayAs2DList[yVal][xVal]
-			totalPower = totalPower + fuelCellArrayAs2DList[yVal][xVal]
+			totalPower += fuelCellArrayAs2DList[yVal][xVal]
 	if debug_getNxNPower:
 		print 'getNxNPower: totalPower',totalPower
 	return totalPower
@@ -137,9 +132,9 @@ def interateOverFuelArraySizes(fuelCellArrayAs2DList):
 ########################################################################
 ## Main
 
-#gridSerialNumber = 18
+gridSerialNumber = 18
 #gridSerialNumber = 42
-gridSerialNumber = 2866	# The program input
+#gridSerialNumber = 2866	# The program input
 
 print 'Starting Processing',time.strftime('%X %x %Z')
 
@@ -147,10 +142,10 @@ fuelCellArrayAs2DList = make2dList(301,301)
 clearArray(fuelCellArrayAs2DList,0)
 setFuelLevels(fuelCellArrayAs2DList)
 #dumpFuelCellArray(fuelCellArrayAs2DList)
-#print 'Using nxn function power at 33,45 is',getNxNPower(33,45,3,fuelCellArrayAs2DList)
-# maxXY = findLargestNxNPowerGrid(3,fuelCellArrayAs2DList)
-# print 'Using nxn function 3x3 maxXY is at',maxXY
+print 'Using nxn function power at 33,45 is',getNxNPower(33,45,3,fuelCellArrayAs2DList)
+maxXY = findLargestNxNPowerGrid(3,fuelCellArrayAs2DList)
+print 'Using nxn function 3x3 maxXY is at',maxXY
 powerLocation = interateOverFuelArraySizes(fuelCellArrayAs2DList)
 print 'max is', powerLocation
 
-print 'Finished processing',time.strftime('%X %x %Z')
+# print 'Finished processing',time.strftime('%X %x %Z')
