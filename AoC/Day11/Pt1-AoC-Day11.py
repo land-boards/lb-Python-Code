@@ -123,11 +123,8 @@ def setFuelLevels(fuelCellArrayAs2DList):
 			if powerLevel < 100:
 				powerLevel = 0
 			else:
-				powerString = str(powerLevel)
-				#print 'powerString',powerString
-				power100sDigitString = str(powerString)
-				#print 'power100sDigitString',power100sDigitString
-				powerLevel = int(power100sDigitString[-3])
+				powerLevel = powerLevel / 100
+				powerLevel %= 10
 			powerLevel -= 5
 			#print 'powerLevel',powerLevel
 			fuelCellArrayAs2DList[yOffset][xOffset] = powerLevel
