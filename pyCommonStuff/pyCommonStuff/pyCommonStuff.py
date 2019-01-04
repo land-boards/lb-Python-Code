@@ -1,5 +1,11 @@
 """Some common Python Patterns
 """
+
+#################################################################################
+# Time for a python file to execute
+
+time python prog.py
+
 #################################################################################
 ##  print with formatted string
 
