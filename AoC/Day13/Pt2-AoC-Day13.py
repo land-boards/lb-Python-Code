@@ -668,28 +668,26 @@ direction = ['left','straight','right']
 ## Coordinate the two arrays
 
 #inFileName = 'input.txt'
-inFileName = 'input_Part2_Example.txt'
+#inFileName = 'input_Part2_Example.txt'
 #inFileName = 'input_1Elf_3Tracks.txt'
 #inFileName = 'input_2Elves_1Track.txt'
-#inFileName = 'input_3Elves_4Tracks.txt'
+inFileName = 'input_3Elves_4Tracks.txt'
 
-debug_main = False
+debug_main = True
 print 'Reading in file',time.strftime('%X %x %Z')
 InputFileClass = InputFileHandler()
 textList = InputFileClass.readTextFileLinesToList(inFileName)
-if debug_main:
-	print 'main: input file as a textList'
-	print textList
+# if debug_main:
+	# print 'main: input file as a textList'
+	# print textList
 unpaddedMineMap = makeMapArray(textList)				# Get the map from the file
 elvesList = findElves(unpaddedMineMap)					# Find the elves on the map
 if debug_main:
-	print 'elvesList',elvesList
+	print 'main: elvesList before sort',elvesList
 elvesList = sortElfList(elvesList)						# Sort the elves in 'reading' order
 if debug_main:
-	print 'sorted elvesList',elvesList
-if debug_main:
+	print 'main: sorted elvesList',elvesList
 	print 'main: there are',len(elvesList),'elves'
-	print 'main: list of elves',elvesList
 mapWithoutElves = replaceElvesWithTrack(unpaddedMineMap,elvesList)	# Remove the elves from the map
 paddedMap = padMapArray(mapWithoutElves)				# Pad the map with spaces all around
 cornersFixedMap = figureOutCorners(paddedMap)			# Replace corners with corner numbers
