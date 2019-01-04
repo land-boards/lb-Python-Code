@@ -5,8 +5,16 @@
 # https://adventofcode.com/2018/day/13
 
 ## TODO
-## Try case with three elves all 1 away from each other.
+## Tried case with three elves all 1 away from each other.
 ## Only 2 should be cleared not all three.
+## Problem happens in moveElves since it does the move and then checks to see which elves collided after the move
+## If three elves collide it removes all three not just the first two that collided.
+## Can't check the move that way. Need to check as I go along.
+## Trouble is removing nodes from the list breaks the loop.
+## Alternate is to use a loop counter and increment by two if there are two removed but the two may not be near.
+## Need to move the elves within an array and do the checking in the array.
+## Will need functions to operate on the array instead of the elvesList,
+
 
 import time
 import re
@@ -135,136 +143,58 @@ def abbyTerminate(string):
 #####################################################################################
 ## Functions which deal with elves
 
-def runElves(elvesList,tracksMap):
-	"""runElves - takes the elves through their paces.
+def runElves(elvesList,tracksMap,elfArrayAsList):
+	"""runElves - Takes the elves through their paces.
 	
 	:param elvesList: the original elves list
 	:param tracksMap: field of tracks without elves
 	"""
 	debug_runElves = False
-	# print 'runElves: elvesList'
-	# for elf in elvesList:
-		# print elf
-	if debug_runElves:
-		drawElvesInMap(elvesList,tracksMap)
 	while len(elvesList) > 1:
-		if debug_runElves:
-			print 'runElves: running the',len(elvesList),'Elves through their paces before'
-			for elf in elvesList:
-				print elf
+		elfArrayAsList = clearElvesMap(elfArrayAsList)						# Set the elves positions to uninitialized
+		for elf in elvesList:
+			newElfPosition = getNextElfPosition(elf,tracksMap)
+			elfNumber = elf[0]
+			newElfX = newElfPosition[1]
+			newElfY = newElfPosition[2]
+			if elfArrayAsList[newElfY][newElfX] == -1:		# There is no elf there yet
+				elfArrayAsList[newElfY][newElfX] = elfNumber
+				if debug_runElves:
+					print 'runElves: There was no elf there so placing elf into array'
+			else:											
+				elfArrayAsList[newElfY][newElfX] = -1		# Remove the conflicting elf
+				if debug_runElves:
+					print 'runElves: Elf conflict - removing both elves'
+		elvesList = getElvesFromMap(elvesList,elfArrayAsList)
 		elvesList = sortElfList(elvesList)					# need a sorted list to get the reading order to work (maybe reading order doesn't matter in Part 2)
-		newElvesList = moveElves(elvesList,tracksMap)
 		if debug_runElves:
-			print 'runElves: newElvesList',newElvesList
-		removeElvesList = compareNewVsOldElvesList(elvesList,newElvesList)
-		elvesList = removeTheElves(removeElvesList,newElvesList)
-		if len(elvesList) == 1:
-			print '\n*****\nrunElves: Reached the last elf number',elvesList[0][0],'at x y',elvesList[0][1],elvesList[0][2],'\n*****\n'
-			if debug_runElves:
-				drawElvesInMap(elvesList,tracksMap)
-				exit()
-		if len(elvesList) == 0:
-			print '\n*****\nrunElves: Last two elves collided - there are no surviving elves'
-			if debug_runElves:
-				drawElvesInMap(elvesList,tracksMap)
-				exit()
-		if debug_runElves:
-			drawElvesInMap(elvesList,tracksMap)
 			os.system('pause')
 			os.system('cls')
-		
-def removeTheElves(removeElvesList,newElvesList):
-	"""removeTheElves(removeElvesList,newElvesList)
+	return elvesList
 	
-	:parm removeElvesList: list of elves IDs which need to be removed
-	:parm newElvesList: The list of elves
+def getElvesFromMap(elvesList,elfArrayAsList):
+	"""getElvesFromMap - Go through the elfArrayAsList and get the elf in each cell
+	Put the elves found into a new elvesList
+	
+	:param elvesList: List of all of the elves
+	:param elfArrayAsList: The array that the elves were placed into
+	:returns: newElvesList which has 
 	"""
-	debug_removeTheElves = False
-	repairedElvesList = []
-	if removeElvesList == []:	# Shortcut return if there are no removals
-		return newElvesList		
-	else:
-		pass
-		if debug_removeTheElves:
-			print 'removeTheElves: removing these elf numbers',removeElvesList
-	for elf in newElvesList:
-		if elf[0] not in removeElvesList:
-			repairedElvesList.append(elf)
-	if debug_removeTheElves:
-		print 'removeTheElves: remaining elves are'
-		for elf in repairedElvesList:
-			print elf
-	return repairedElvesList
+	debug_getElvesFromMap = True
+	newElvesList = []
+	for yVal in elfArrayAsList:
+		for xVal in yVal:
+			if elfArrayAsList[yVal][xVal] != -1:	# Found an elf
+				if debug_getElvesFromMap:
+					print 'getElvesFromMap: found elf at',xVal,yVal
+				elfNumberInMap = elfArrayAsList[yVal][xVal]
+				elfVector = findElfNumberInElvesList(elfNumberInMap,elvesList)
+				newElvesList.append(elfVector)
+	if debug_getElvesFromMap:
+		print 'getElvesFromMap: newElvesList',newElvesList
+	return newElvesList
 
-def compareNewVsOldElvesList(oldElvesList,newElvesList):
-	"""compareNewVsOldElvesList(oldElvesList,newElvesList)
-	"""
-	debug_compareNewVsOldElvesList = False
-	removeElfList = []
-	for oldElf in oldElvesList:
-		for newElf in newElvesList:
-			if oldElf[0] != newElf[0]:
-				if oldElf[1] == newElf[1] and oldElf[2] == newElf[2]:
-					if oldElf[0] not in removeElfList:
-						removeElfList.append(oldElf[0])
-					if newElf[0] not in removeElfList:
-						removeElfList.append(newElf[0])
-					if debug_compareNewVsOldElvesList:
-						print 'compareNewVsOldElvesList: removing old elf',oldElf[0],'and new elf',newElf[0]
-	newElfCount = len(newElvesList)
-	elfCount = 0
-	while elfCount < newElfCount:
-		nextElfCount = elfCount + 1
-		while nextElfCount < newElfCount:
-			if newElvesList[elfCount][1] == newElvesList[nextElfCount][1] and newElvesList[elfCount][2] == newElvesList[nextElfCount][2]:
-				if newElvesList[elfCount][0] not in removeElfList:
-					removeElfList.append(newElvesList[elfCount][0])
-				if newElvesList[nextElfCount][0] not in removeElfList:
-					removeElfList.append(newElvesList[nextElfCount][0])
-				if debug_compareNewVsOldElvesList:
-					print 'compareNewVsOldElvesList: removing elves',newElvesList[elfCount][0],'and',newElvesList[nextElfCount][0],'from new elves list'
-			nextElfCount += 1
-		elfCount += 1
-	if debug_compareNewVsOldElvesList:
-		if removeElfList != []:
-			print 'compareNewVsOldElvesList: removeElfList',removeElfList
-	return removeElfList
-
-def moveElves(elvesList,tracksMap):
-	"""moveElves - Go through the elves in the elf list and move each of them one at a time.
-	Returns a list of elves which had collisions in the move.
-	
-	:param elvesList: list of elves - [elfNumber,x,y,currentDirection,nextDirection]
-	:param tracksMap: 
-	:returns: List of elf numbers for collided elves
-	"""
-	debug_moveElves = False
-	elfCollisionList = []
-	newElfList = []
-	if debug_moveElves:
-		print 'moveElves: reached function'
-	for elf in elvesList:		# go through each of the elves
-		if elf[0] not in elfCollisionList:
-			newElfValue = moveElf(elf,tracksMap)
-			if debug_moveElves:
-				print 'newElfValue',newElfValue
-			collisionsOnPass = checkCurrentElfValueForCollision(newElfValue,elvesList,elfCollisionList)
-			if collisionsOnPass != []:
-				if debug_moveElves:
-					print 'moveElves: elves collided',checkVal
-				elfCollisionList.append(collisionsOnPass[0])
-				elfCollisionList.append(collisionsOnPass[1])
-			else:
-				newElfList.append(newElfValue)
-	if newElfValue == []:
-		abbyTerminate('moveElves: moveElf Returned empty list')
-	if debug_moveElves:
-		print 'moveElves: the new elves list after the move'
-		for elf in newElfList:
-			print elf
-	return newElfList
-	
-def moveElf(elf,tracksMap):
+def getNextElfPosition(elf,tracksMap):
 	"""Move the particular elf through the tracks map.
 	
 	:parm elf: The elf vector - [elfNumber,x,y,currentDirection,nextDirection]
@@ -276,9 +206,9 @@ def moveElf(elf,tracksMap):
 	x,y is the new position of the elf
 	currentDirection is the arrow character after the resulting movement.
 	"""
-	debug_moveElf = False
-	if debug_moveElf:
-		print 'moveElf: elf',elf
+	debug_getNextElfPosition = False
+	if debug_getNextElfPosition:
+		print 'getNextElfPosition: elf',elf
 		printElfCurrentStatus(elf,tracksMap)
 	currentElfNumber = elf[0]
 	currentElfX = elf[1]
@@ -289,14 +219,14 @@ def moveElf(elf,tracksMap):
 	newXY = getNextXY(currentElfX,currentElfY,currentElfArrowValue)
 	newX = newXY[0]
 	newY= newXY[1]
-	if debug_moveElf:
-		print 'moveElf: Elf moving from x y',currentElfX,currentElfY,'to x y',newX,newY
+	if debug_getNextElfPosition:
+		print 'getNextElfPosition: Elf moving from x y',currentElfX,currentElfY,'to x y',newX,newY
 	symbolAtMovePosition = tracksMap[newY][newX]
 	newArrowChar = currentElfArrowValue
 	newDirection = nextDirectionChange
 	if symbolAtMovePosition == '+':
-		if debug_moveElf:
-			print 'moveElf: Elf is at an intersection'
+		if debug_getNextElfPosition:
+			print 'getNextElfPosition: Elf is at an intersection'
 		if nextDirectionChange == 'left':
 			if currentElfArrowValue == '<':
 				newArrowChar = 'v'
@@ -337,34 +267,9 @@ def moveElf(elf,tracksMap):
 	elif symbolAtMovePosition == llC_val and currentElfArrowValue == 'v':
 		newArrowChar = '>'
 	retVal = [currentElfNumber,newX,newY,newArrowChar,newDirection]
-	if debug_moveElf:
-		print 'moveElf: retVal',retVal
+	if debug_getNextElfPosition:
+		print 'getNextElfPosition: retVal',retVal
 	return retVal
-
-def checkCurrentElfValueForCollision(elfIn,elfList,elfCollisionList):
-	"""Check a particular elf to see if it collides with another elf.
-	
-	:param 
-	:returns: Empty list if there is no collision and list of elves if there is a collision.
-	"""
-	debug_checkCurrentElfValueForCollision = False
-	if debug_checkCurrentElfValueForCollision:
-		print 'checkCurrentElfValueForCollision: there are',len(elfList),'elves in elfList'
-	elfNumber = elfIn[0]
-	if debug_checkCurrentElfValueForCollision:
-		print 'checkCurrentElfValueForCollision: elfIn',elfIn
-		print 'checkCurrentElfValueForCollision: elfNumber',elfNumber
-	for elf in elfList:
-		if debug_checkCurrentElfValueForCollision:
-			print 'checkCurrentElfValueForCollision: elf in elfList',elf
-		if elfNumber != elf[0]:
-			if elf not in elfCollisionList:
-				if (elf[1] == elfIn[1]) and (elf[2] == elfIn[2]):
-					# collision at this point
-					if debug_checkCurrentElfValueForCollision:
-						print 'checkCurrentElfValueForCollision: elves collided',elfNumber,elf[0]
-					return [elfNumber, elf[0]]
-	return []
 
 def getNextXY(x,y,currentElfArrowValue):
 	"""Given an x,y location and a movement direction, return the next x,y value.
@@ -423,22 +328,19 @@ def findElves(mineMap):
 		for elf in elvesList:
 			print elf
 	return elvesList
-			
-def drawElvesInMap(elvesList,traks):
-	"""drawElvesInMap
 	
-	:param elvesList: list of elves - [elfNumber,x,y,currentDire ction,nextDirection,collision]
-	:param traks: 
+def clearElvesMap(elfArrayAsList):
+	"""clearElvesMap - Clear the elves list
+	
+	:param elfArrayAsList: The array that the elves get placed into.
+	:return: nothing
 	"""
-	debug_drawElvesInMap = False
-	newMap = map(list, traks)	# 2D list copy that really does a copy
-	for elf in elvesList:
-		x = elf[1]
-		y = elf[2]
-		newMap[elf[2]][elf[1]] = elf[3]
-	if debug_drawElvesInMap:
-		dumpMapList(newMap)
-	return
+	print 'elfArrayAsList',elfArrayAsList
+	for yVal in xrange(len(elfArrayAsList)):		# clear out the elfArrayAsList to empty
+		for xVal in xrange(len(elfArrayAsList[0])):
+			#print 'x y',xVal,yVal
+			elfArrayAsList[yVal][xVal] = -1
+	return elfArrayAsList
 
 def printElfCurrentStatus(elf,tracksMap):
 	"""Elf vector is [elfNumber,x,y,currentDirection,nextDirection]
@@ -447,7 +349,7 @@ def printElfCurrentStatus(elf,tracksMap):
 	currentElfY = elf[2]
 	debug_printElfCurrentStatus = False
 	if debug_printElfCurrentStatus:
-		print 'printElfCurrentStatus moveElf passed elf at x y',currentElfX,currentElfY,'is moving',
+		print 'printElfCurrentStatus getNextElfPosition passed elf at x y',currentElfX,currentElfY,'is moving',
 	currentElfArrowValue = elf[3]
 	if debug_printElfCurrentStatus:
 		if currentElfArrowValue == '>':
@@ -481,6 +383,23 @@ def makeMapArray(theTextList):
 	for yValueNum in theTextList:
 		yValueNumList = list(yValueNum)
 		mapArray.append(yValueNumList)
+	return mapArray
+	
+def makeElfArray(unpaddedMineMap):
+	"""Make an empty map for the elves that is the same size as the map
+	
+	:param unpaddedMineMap: The unpadded version of the map (used for sizing)
+	:returns: 2D list the same size as the map
+	"""
+	debug_makeMapArray = False
+	if debug_makeMapArray:
+		print 'makeMapArray: make an array from the text lines'
+	mapArray = []
+	for yVal in xrange(len(unpaddedMineMap)):
+		mapRow = []
+		for xVal in xrange(len(unpaddedMineMap[0])):
+			mapRow.append(-1)
+		mapArray.append(mapRow)
 	return mapArray
 	
 def unPadMapArray(mapArray):
@@ -675,7 +594,8 @@ direction = ['left','straight','right']
 #inFileName = 'input_Part2_Example.txt'
 #inFileName = 'input_1Elf_3Tracks.txt'
 #inFileName = 'input_2Elves_1Track.txt'
-inFileName = 'input_3Elves_4Tracks.txt'
+#inFileName = 'input_3Elves_4Tracks.txt'
+inFileName = 'input_3Elves_1 Corner.txt'
 
 debug_main = True
 print 'Reading in file',time.strftime('%X %x %Z')
@@ -685,6 +605,8 @@ textList = InputFileClass.readTextFileLinesToList(inFileName)
 	# print 'main: input file as a textList'
 	# print textList
 unpaddedMineMap = makeMapArray(textList)				# Get the map from the file
+print 'unPadMapArray',unpaddedMineMap
+elfArrayAsList = makeElfArray(unpaddedMineMap)					# Make an array for the elves to populate
 elvesList = findElves(unpaddedMineMap)					# Find the elves on the map
 if debug_main:
 	print 'main: elvesList before sort',elvesList
@@ -699,5 +621,5 @@ tracksMap = unPadMapArray(cornersFixedMap)				# Unpad the map
 InputFileClass.writeOutMapFile(tracksMap)				# Write out the new map
 if debug_main:
 	dumpMapList(mapWithoutElves)
-runElves(elvesList,tracksMap)
+lastElf = runElves(elvesList,tracksMap,elfArrayAsList)
 print 'Finished processing',time.strftime('%X %x %Z')
