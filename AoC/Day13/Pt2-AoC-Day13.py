@@ -4,6 +4,10 @@
 # Part 2
 # https://adventofcode.com/2018/day/13
 
+## TODO
+## Try case with three elves all 1 away from each other.
+## Only 2 should be cleared not all three.
+
 import time
 import re
 import os
