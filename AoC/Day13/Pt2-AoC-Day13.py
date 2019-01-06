@@ -157,6 +157,7 @@ def runElves(elvesList,tracksMap,elfArrayAsList):
 			elfNumber = elf[0]
 			newElfX = newElfPosition[1]
 			newElfY = newElfPosition[2]
+			elf[3] = newElfPosition[3]
 			if elfArrayAsList[newElfY][newElfX] == -1:		# There is no elf there yet
 				elfArrayAsList[newElfY][newElfX] = elfNumber
 				if debug_runElves:
@@ -167,9 +168,9 @@ def runElves(elvesList,tracksMap,elfArrayAsList):
 					print 'runElves: Elf conflict - removing both elves'
 		elvesList = getElvesFromMap(elvesList,elfArrayAsList)
 		elvesList = sortElfList(elvesList)					# need a sorted list to get the reading order to work (maybe reading order doesn't matter in Part 2)
-		if debug_runElves:
-			os.system('pause')
-			os.system('cls')
+		# if debug_runElves:
+			# os.system('pause')
+			# os.system('cls')
 	return elvesList
 	
 def getElvesFromMap(elvesList,elfArrayAsList):
@@ -182,17 +183,26 @@ def getElvesFromMap(elvesList,elfArrayAsList):
 	"""
 	debug_getElvesFromMap = True
 	newElvesList = []
-	for yVal in elfArrayAsList:
-		for xVal in yVal:
+	for yVal in xrange(len(elfArrayAsList)):
+		for xVal in xrange(len(elfArrayAsList[0])):
 			if elfArrayAsList[yVal][xVal] != -1:	# Found an elf
 				if debug_getElvesFromMap:
 					print 'getElvesFromMap: found elf at',xVal,yVal
 				elfNumberInMap = elfArrayAsList[yVal][xVal]
 				elfVector = findElfNumberInElvesList(elfNumberInMap,elvesList)
+				elfVector[1] = xVal
+				elfVector[2] = yVal
 				newElvesList.append(elfVector)
 	if debug_getElvesFromMap:
 		print 'getElvesFromMap: newElvesList',newElvesList
+		print 'getElvesFromMap: elves left',len(newElvesList)
 	return newElvesList
+	
+def findElfNumberInElvesList(elfNumberInMap,elvesList):
+	for elf in elvesList:
+		if elf[0] == elfNumberInMap:
+			return elf
+	abbyTerminate('Could not find the elf in the list')
 
 def getNextElfPosition(elf,tracksMap):
 	"""Move the particular elf through the tracks map.
@@ -335,7 +345,7 @@ def clearElvesMap(elfArrayAsList):
 	:param elfArrayAsList: The array that the elves get placed into.
 	:return: nothing
 	"""
-	print 'elfArrayAsList',elfArrayAsList
+	#print 'elfArrayAsList',elfArrayAsList
 	for yVal in xrange(len(elfArrayAsList)):		# clear out the elfArrayAsList to empty
 		for xVal in xrange(len(elfArrayAsList[0])):
 			#print 'x y',xVal,yVal
@@ -597,15 +607,15 @@ direction = ['left','straight','right']
 #inFileName = 'input_3Elves_4Tracks.txt'
 inFileName = 'input_3Elves_1 Corner.txt'
 
-debug_main = True
-print 'Reading in file',time.strftime('%X %x %Z')
+debug_main = False
+print 'Reading in file',inFileName,'at',time.strftime('%X %x %Z')
 InputFileClass = InputFileHandler()
 textList = InputFileClass.readTextFileLinesToList(inFileName)
-# if debug_main:
-	# print 'main: input file as a textList'
-	# print textList
+if debug_main:
+	print 'main: input file as a textList'
+	print textList
 unpaddedMineMap = makeMapArray(textList)				# Get the map from the file
-print 'unPadMapArray',unpaddedMineMap
+#print 'unPadMapArray',unpaddedMineMap
 elfArrayAsList = makeElfArray(unpaddedMineMap)					# Make an array for the elves to populate
 elvesList = findElves(unpaddedMineMap)					# Find the elves on the map
 if debug_main:
@@ -622,4 +632,5 @@ InputFileClass.writeOutMapFile(tracksMap)				# Write out the new map
 if debug_main:
 	dumpMapList(mapWithoutElves)
 lastElf = runElves(elvesList,tracksMap,elfArrayAsList)
+print 'lastElf',lastElf
 print 'Finished processing',time.strftime('%X %x %Z')
