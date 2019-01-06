@@ -66,9 +66,9 @@ After four very expensive crashes, a tick ends with only one cart remaining; its
 
 What is the location of the last cart at the end of the first tick where it is the only cart left?
 
-That's not the right answer. 
-If you're stuck, there are some general tips on the about page, or you can ask for hints on the subreddit. 
-Please wait one minute before trying again. (You guessed 125,37.)
+Your puzzle answer was 86,18.
+
+Both parts of this puzzle are complete! They provide two gold stars: **
 
 """
 
@@ -118,6 +118,9 @@ class InputFileHandler():
 		
 	def mapToList(self,mapList):
 		"""Write out the mapList to a file because it is too big to see on the screen
+		
+		:param mapList: The array that is the map
+		:returns: The array turned into a list of strings which can be printed to a file
 		"""
 		debug_mapToList = False
 		if debug_mapToList:
@@ -146,33 +149,70 @@ def abbyTerminate(string):
 def runElves(elvesList,tracksMap,elfArrayAsList):
 	"""runElves - Takes the elves through their paces.
 	
+	The elf vector - [elfNumber,x,y,currentDirection,nextDirection]
+	Example: [2, 0, '>', 'left']
+
 	:param elvesList: the original elves list
 	:param tracksMap: field of tracks without elves
 	"""
 	debug_runElves = False
+	elfArrayAsList = clearElvesMap(elfArrayAsList)
+	elfLocations = []
+	elfCount = len(elvesList)
+	print 'runElves: there are',len(elvesList),'elves at the start'
 	while len(elvesList) > 1:
-		elfArrayAsList = clearElvesMap(elfArrayAsList)						# Set the elves positions to uninitialized
 		for elf in elvesList:
-			newElfPosition = getNextElfPosition(elf,tracksMap)
-			elfNumber = elf[0]
-			newElfX = newElfPosition[1]
-			newElfY = newElfPosition[2]
-			elf[3] = newElfPosition[3]
-			if elfArrayAsList[newElfY][newElfX] == -1:		# There is no elf there yet
-				elfArrayAsList[newElfY][newElfX] = elfNumber
-				if debug_runElves:
-					print 'runElves: There was no elf there so placing elf into array'
-			else:											
-				elfArrayAsList[newElfY][newElfX] = -1		# Remove the conflicting elf
-				if debug_runElves:
-					print 'runElves: Elf conflict - removing both elves'
-		elvesList = getElvesFromMap(elvesList,elfArrayAsList)
-		elvesList = sortElfList(elvesList)					# need a sorted list to get the reading order to work (maybe reading order doesn't matter in Part 2)
-		# if debug_runElves:
-			# os.system('pause')
-			# os.system('cls')
+			myElfX = elf[1]
+			myElfY = elf[2]
+			if elfArrayAsList[myElfY][myElfX] != -1:
+				print 'runElves: last move put on elf where I currently am at'
+				elfArrayAsList[myElfY][myElfX] = -1	# need to eliminate the elf that is there and not place myself
+			else:
+				newElfPosition = getNextElfPosition(elf,tracksMap)	# determines the next elf position
+				newElfX = newElfPosition[1]
+				newElfY = newElfPosition[2]
+				elf[3] = newElfPosition[3]
+				elf[4] = newElfPosition[4]
+				if elfArrayAsList[newElfY][newElfX] == -1:		# There is no elf there yet
+					elfArrayAsList[newElfY][newElfX] = elf[0]	# Place elf number at that position
+					if debug_runElves:
+						print 'runElves: There was no elf there so placing elf into array'
+					elfXYLocation = [newElfX,newElfY]
+					elfLocations.append(elfXYLocation)
+				else:											
+					if debug_runElves:
+						elfCount -= 2
+						print 'runElves: Elf conflict - removing both elves, new elf count',elfCount
+						print 'runElves: elf removed was elf number',elfArrayAsList[newElfY][newElfX]
+						print 'runElves: elf not placed was elf number',elf[0]
+					elfArrayAsList[newElfY][newElfX] = -1		# Remove the conflicting elf and don't place new elf there
+		elvesList = getElvesFromMap(elvesList,elfArrayAsList)						# reading the map in reading order eliminates need to sort
+		elfArrayAsList = removeElvesAtLocations(elfArrayAsList,elfLocations)		# Reset the placed elves positions to uninitialized		
+		elfLocations = []
+		
+		if debug_runElves:
+			print 'elves left after move',len(elvesList)
+			for elf in elvesList:
+				print elf
+			os.system('pause')
+			os.system('cls')
+	if len(elvesList) > 0:
+		print 'runElves: last elf is at x y',elvesList[0][1],elvesList[0][2]
+	else:
+		print 'runElves: No elves left'
 	return elvesList
 	
+def removeElvesAtLocations(elfArrayAsList,elvesToRemoveList):
+	"""removeElvesAtLocations  - Only need to clear off the elves that were added to the map
+	
+	nextDirection moves through left,straight,right	:param elfArrayAsList: 
+	:param elvesToRemoveList:
+	:returns: elfArrayAsList
+	"""
+	for elf in elvesToRemoveList:
+		elfArrayAsList[elf[1]][elf[0]] = -1
+	return elfArrayAsList
+
 def getElvesFromMap(elvesList,elfArrayAsList):
 	"""getElvesFromMap - Go through the elfArrayAsList and get the elf in each cell
 	Put the elves found into a new elvesList
@@ -181,7 +221,7 @@ def getElvesFromMap(elvesList,elfArrayAsList):
 	:param elfArrayAsList: The array that the elves were placed into
 	:returns: newElvesList which has 
 	"""
-	debug_getElvesFromMap = True
+	debug_getElvesFromMap = False
 	newElvesList = []
 	for yVal in xrange(len(elfArrayAsList)):
 		for xVal in xrange(len(elfArrayAsList[0])):
@@ -190,7 +230,7 @@ def getElvesFromMap(elvesList,elfArrayAsList):
 					print 'getElvesFromMap: found elf at',xVal,yVal
 				elfNumberInMap = elfArrayAsList[yVal][xVal]
 				elfVector = findElfNumberInElvesList(elfNumberInMap,elvesList)
-				elfVector[1] = xVal
+				elfVector[1] = xVal	# patch the xy with the new elf position from the map
 				elfVector[2] = yVal
 				newElvesList.append(elfVector)
 	if debug_getElvesFromMap:
@@ -345,11 +385,9 @@ def clearElvesMap(elfArrayAsList):
 	:param elfArrayAsList: The array that the elves get placed into.
 	:return: nothing
 	"""
-	#print 'elfArrayAsList',elfArrayAsList
 	for yVal in xrange(len(elfArrayAsList)):		# clear out the elfArrayAsList to empty
 		for xVal in xrange(len(elfArrayAsList[0])):
-			#print 'x y',xVal,yVal
-			elfArrayAsList[yVal][xVal] = -1
+			elfArrayAsList[yVal][xVal] = -1			# Uninitialized format
 	return elfArrayAsList
 
 def printElfCurrentStatus(elf,tracksMap):
@@ -600,12 +638,12 @@ direction = ['left','straight','right']
 ## May have to make an array that tracks just the elves
 ## Coordinate the two arrays
 
-#inFileName = 'input.txt'
+inFileName = 'input.txt'
 #inFileName = 'input_Part2_Example.txt'
 #inFileName = 'input_1Elf_3Tracks.txt'
 #inFileName = 'input_2Elves_1Track.txt'
 #inFileName = 'input_3Elves_4Tracks.txt'
-inFileName = 'input_3Elves_1 Corner.txt'
+#inFileName = 'input_3Elves_1 Corner.txt'
 
 debug_main = False
 print 'Reading in file',inFileName,'at',time.strftime('%X %x %Z')
@@ -628,8 +666,8 @@ mapWithoutElves = replaceElvesWithTrack(unpaddedMineMap,elvesList)	# Remove the 
 paddedMap = padMapArray(mapWithoutElves)				# Pad the map with spaces all around
 cornersFixedMap = figureOutCorners(paddedMap)			# Replace corners with corner numbers
 tracksMap = unPadMapArray(cornersFixedMap)				# Unpad the map
-InputFileClass.writeOutMapFile(tracksMap)				# Write out the new map
 if debug_main:
+	InputFileClass.writeOutMapFile(tracksMap)				# Write out the new map
 	dumpMapList(mapWithoutElves)
 lastElf = runElves(elvesList,tracksMap,elfArrayAsList)
 print 'lastElf',lastElf
