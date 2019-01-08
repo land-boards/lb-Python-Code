@@ -128,7 +128,7 @@ def parseTextFileIntoListOfNumbers(textFile):
 			continue
 		elif line[0:4] == '#ip ':
 			instructionPointer = line[4]
-			print 'instruction pointer',line[4]
+			print 'instruction pointer',instructionPointer
 			exit()
 		elif line[0] == 'B':
 			newLine = line[9:-1]
