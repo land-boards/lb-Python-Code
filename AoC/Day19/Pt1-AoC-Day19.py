@@ -126,6 +126,10 @@ def parseTextFileIntoListOfNumbers(textFile):
 	for line in textFile:
 		if len(line) == 0:
 			continue
+		elif line[0:4] == '#ip ':
+			instructionPointer = line[4]
+			print 'instruction pointer',line[4]
+			exit()
 		elif line[0] == 'B':
 			newLine = line[9:-1]
 			newLine = newLine.replace(' ','')
@@ -762,7 +766,7 @@ def processListPart1(theList,myCPU):
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readTextFileToList('input-mjg.txt')
+textList = readTextFileToList('input.txt')
 
 myList = parseTextFileIntoListOfNumbers(textList)
 
