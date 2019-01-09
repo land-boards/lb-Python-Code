@@ -66,26 +66,37 @@ ip=4 [4, 5, 6, 0, 0, 0] setr 1 0 0 [5, 5, 6, 0, 0, 0]
 ip=6 [6, 5, 6, 0, 0, 0] seti 9 0 5 [6, 5, 6, 0, 0, 9]
 In detail, when running this program, the following events occur:
 
+#ip 0
 The first line (#ip 0) indicates that the instruction pointer should be bound to register 0 in this program. 
 This is not an instruction, and so the value of the instruction pointer does not change during 
 the processing of this line.
+
+ip=0 [0, 0, 0, 0, 0, 0] seti 5 0 1 [0, 5, 0, 0, 0, 0]
 The instruction pointer contains 0, and so the first instruction is executed (seti 5 0 1). 
 It updates register 0 to the current instruction pointer value (0), sets register 1 to 5, 
 sets the instruction pointer to the value of register 0 (which has no effect, as the instruction 
 did not modify register 0), and then adds one to the instruction pointer.
+
+ip=1 [1, 5, 0, 0, 0, 0] seti 6 0 2 [1, 5, 6, 0, 0, 0]
 The instruction pointer contains 1, and so the second instruction, seti 6 0 2, is executed. 
 This is very similar to the instruction before it: 6 is stored in register 2, and the instruction pointer 
 is left with the value 2.
+
+ip=2 [2, 5, 6, 0, 0, 0] addi 0 1 0 [3, 5, 6, 0, 0, 0]
 The instruction pointer is 2, which points at the instruction addi 0 1 0. 
 This is like a relative jump: the value of the instruction pointer, 2, is loaded into register 0. 
 Then, addi finds the result of adding the value in register 0 and the value 1, storing the result, 3, 
 back in register 0. Register 0 is then copied back to the instruction pointer, 
 which will cause it to end up 1 larger than it would have otherwise and skip the next instruction 
 (addr 1 2 3) entirely. Finally, 1 is added to the instruction pointer.
+
+ip=4 [4, 5, 6, 0, 0, 0] setr 1 0 0 [5, 5, 6, 0, 0, 0]
 The instruction pointer is 4, so the instruction setr 1 0 0 is run. 
 This is like an absolute jump: it copies the value contained in register 1, 5, into register 0, 
 which causes it to end up in the instruction pointer. The instruction pointer is then incremented, 
 leaving it at 6.
+
+ip=6 [6, 5, 6, 0, 0, 0] seti 9 0 5 [6, 5, 6, 0, 0, 9]
 The instruction pointer is 6, so the instruction seti 9 0 5 stores 9 into register 5. 
 The instruction pointer is incremented, causing it to point outside the program, and so the program ends.
 What value is left in register 0 when the background process halts?
@@ -94,18 +105,25 @@ What value is left in register 0 when the background process halts?
 Notes about this problem.
 
 The opcodes have already been translated into their mnemonic. 
-Could either use the opcode directly and add a "parser" or could translate the opcode into the previous opcode numbers.
+Could either use the opcode directly and add a "parser" 
+or could translate the opcode into the previous opcode numbers.
 Probably easier to use the opcode directly and parse it.
 
 """
 
 def printList(listToPrint):
+	"""printList
+	
+	:param listToPrint: - The list to print
+	"""
 	for row in listToPrint:
 		print row
 
 def readtextFileAsListOfLinesToList(fileName):
 	"""readtextFileAsListOfLinesAndSrtToList - open file and read the content to a list
 	File is sorted to produce a date/time ordered file
+	
+	:param fileName: path and name of the file to load
 	:returns: the text file as a list of input lines
 	"""
 	textFileAsListOfLines = []
@@ -115,6 +133,8 @@ def readtextFileAsListOfLinesToList(fileName):
 	return textFileAsListOfLines
 	
 def abbyTerminate(strToPrint):
+	"""abbyTerminate - abnormal termination condition
+	"""
 	print 'abbyTerminate: terminating due to',
 	print strToPrint
 	exit()
@@ -146,8 +166,9 @@ class CPU:
 	CPU_Reg3 = 0
 	CPU_Reg4 = 0
 	CPU_Reg5 = 0
-	CPU_IP = 0
-	
+	instructionPointer = 0
+	instructionPointerRegisterNumber = 0
+
 	def emulator(self,vector):
 		"""emulator - The function that calls the ALU and returns the return value
 		Extended from Day 16 example to load (if necessary) and increment the CPU Instruction Pointer.
@@ -156,22 +177,20 @@ class CPU:
 		:returns: the contents of the registers.
 		"""
 		debug_emulator = False
-		global instructionPointerRegisterNumber
-		global instructionPointer
 		if debug_emulator:
 			print 'emulator:',vector
 		self.setRegToIPValue()
-		print 'IP =',instructionPointer,
+		print 'IP =',self.instructionPointer,
 		print self.getRegisterAfterValues(),
 		self.printInstruction(vector)
 		self.doALU(vector[0:4])
 		print self.getRegisterAfterValues()
-		if instructionPointerRegisterNumber == vector[3]:	# Only load if there was a change to the register
+		if self.instructionPointerRegisterNumber == vector[3]:	# Only load if there was a change to the register
 			if debug_emulator:
 				print 'changed IP register'
 			self.loadAddressForJump(vector[0][3])
 		self.setIPToRegValue()
-		instructionPointer += 1		# Always increment address pointer regardless of the previous
+		self.instructionPointer += 1		# Always increment address pointer regardless of the previous
 		return self.getRegisterAfterValues()
 	
 	def printInstruction(self,vector):
@@ -180,44 +199,49 @@ class CPU:
 		print vector[2],
 		print vector[3],
 		
+	def setInstructionPointerRegisterNumber(self,pointerNumber):
+		instructionPointerRegisterNumber = pointerNumber
+		return
+	
+	def getInstructionPointer(self):
+		"""getInstructionPointer - Gets the instruction pointer
+		"""
+		return self.instructionPointer
+		
 	def setRegToIPValue(self):
 		"""setRegToIPValue - Set the currently selected instruction pointer register to the program counter
 
 		:param None: No passed parameters
 		:return: No return value
 		"""
-		global instructionPointer
-		global instructionPointerRegisterNumber
-		if instructionPointerRegisterNumber == 0:
-			self.CPU_Reg0 = instructionPointer
-		elif instructionPointerRegisterNumber == 1:
-			self.CPU_Reg1 = instructionPointer
-		elif instructionPointerRegisterNumber == 2:
-			self.CPU_Reg2 = instructionPointer
-		elif instructionPointerRegisterNumber == 3:
-			self.CPU_Reg3 = instructionPointer
-		elif instructionPointerRegisterNumber == 4:
-			self.CPU_Reg4 = instructionPointer
-		elif instructionPointerRegisterNumber == 5:
-			self.CPU_Reg5 = instructionPointer
+		if self.instructionPointerRegisterNumber == 0:
+			self.CPU_Reg0 = self.instructionPointer
+		elif self.instructionPointerRegisterNumber == 1:
+			self.CPU_Reg1 = self.instructionPointer
+		elif self.instructionPointerRegisterNumber == 2:
+			self.CPU_Reg2 = self.instructionPointer
+		elif self.instructionPointerRegisterNumber == 3:
+			self.CPU_Reg3 = self.instructionPointer
+		elif self.instructionPointerRegisterNumber == 4:
+			self.CPU_Reg4 = self.instructionPointer
+		elif self.instructionPointerRegisterNumber == 5:
+			self.CPU_Reg5 = self.instructionPointer
 	
 	def setIPToRegValue(self):
 		"""setIPToRegValue - set the Instruction Pointer register to the register value
 		"""
-		global instructionPointer
-		global instructionPointerRegisterNumber
-		if instructionPointerRegisterNumber == 0:
-			instructionPointer = self.CPU_Reg0
-		elif instructionPointerRegisterNumber == 1:
-			instructionPointer = self.CPU_Reg1
-		elif instructionPointerRegisterNumber == 2:
-			instructionPointer = self.CPU_Reg2
-		elif instructionPointerRegisterNumber == 3:
-			instructionPointer = self.CPU_Reg3
-		elif instructionPointerRegisterNumber == 4:
-			instructionPointer = self.CPU_Reg4
-		elif instructionPointerRegisterNumber == 5:
-			instructionPointer = self.CPU_Reg5
+		if self.instructionPointerRegisterNumber == 0:
+			self.instructionPointer = self.CPU_Reg0
+		elif self.instructionPointerRegisterNumber == 1:
+			self.instructionPointer = self.CPU_Reg1
+		elif self.instructionPointerRegisterNumber == 2:
+			self.instructionPointer = self.CPU_Reg2
+		elif self.instructionPointerRegisterNumber == 3:
+			self.instructionPointer = self.CPU_Reg3
+		elif self.instructionPointerRegisterNumber == 4:
+			self.instructionPointer = self.CPU_Reg4
+		elif self.instructionPointerRegisterNumber == 5:
+			self.instructionPointer = self.CPU_Reg5
 	
 	def loadAddressForJump(self,relAbsFlag):
 		"""loadAddressForJump - Load the instruction pointer (address) from the register 
@@ -228,8 +252,6 @@ class CPU:
 		The instruction pointer is then incremented, leaving it at 6.
 		"""
 		debug_loadAddressForJump = False
-		global instructionPointerRegisterNumber
-		global instructionPointer
 		if debug_loadAddressForJump:
 			print 'loadAddressForJump: reached jmp function',
 		operation = ''
@@ -239,39 +261,39 @@ class CPU:
 			operation = 'relative'
 		if debug_loadAddressForJump:
 			print operation,
-			print 'IP before',instructionPointer,
-		if instructionPointerRegisterNumber == 0:
+			print 'IP before',self.instructionPointer,
+		if self.instructionPointerRegisterNumber == 0:
 			if relAbsFlag == 'absolute':
-				instructionPointer = self.CPU_Reg0
+				self.instructionPointer = self.CPU_Reg0
 			elif relAbsFlag == 'relative':
-				instructionPointer += self.CPU_Reg0
-		elif instructionPointerRegisterNumber == 1:
+				self.instructionPointer += self.CPU_Reg0
+		elif self.instructionPointerRegisterNumber == 1:
 			if relAbsFlag == 'absolute':
-				instructionPointer = self.CPU_Reg1
+				self.instructionPointer = self.CPU_Reg1
 			elif relAbsFlag == 'relative':
-				instructionPointer += self.CPU_Reg1
-		elif instructionPointerRegisterNumber == 2:
+				self.instructionPointer += self.CPU_Reg1
+		elif self.instructionPointerRegisterNumber == 2:
 			if relAbsFlag == 'absolute':
-				instructionPointer = self.CPU_Reg2
+				self.instructionPointer = self.CPU_Reg2
 			elif relAbsFlag == 'relative':
-				instructionPointer += self.CPU_Reg2
-		elif instructionPointerRegisterNumber == 3:
+				self.instructionPointer += self.CPU_Reg2
+		elif self.instructionPointerRegisterNumber == 3:
 			if relAbsFlag == 'absolute':
-				instructionPointer = self.CPU_Reg3
+				self.instructionPointer = self.CPU_Reg3
 			elif relAbsFlag == 'relative':
-				instructionPointer += self.CPU_Reg3
-		elif instructionPointerRegisterNumber == 4:
+				self.instructionPointer += self.CPU_Reg3
+		elif self.instructionPointerRegisterNumber == 4:
 			if relAbsFlag == 'absolute':
-				instructionPointer = self.CPU_Reg4
+				self.instructionPointer = self.CPU_Reg4
 			elif relAbsFlag == 'relative':
-				instructionPointer += self.CPU_Reg4
-		elif instructionPointerRegisterNumber == 5:
+				self.instructionPointer += self.CPU_Reg4
+		elif self.instructionPointerRegisterNumber == 5:
 			if relAbsFlag == 'absolute':
-				instructionPointer = self.CPU_Reg5
+				self.instructionPointer = self.CPU_Reg5
 			elif relAbsFlag == 'relative':
-				instructionPointer += self.CPU_Reg5
+				self.instructionPointer += self.CPU_Reg5
 		if debug_loadAddressForJump:
-				print 'IP after',instructionPointer
+				print 'IP after',self.instructionPointer
 	
 	def initializeCPU(self):
 		"""Sets the registers in the CPU to zeros.
@@ -285,22 +307,23 @@ class CPU:
 		self.CPU_Reg3 = 0
 		self.CPU_Reg4 = 0
 		self.CPU_Reg5 = 0
-		self.CPU_IP = 0
+		self.instructionPointer = 0
+		self.instructionPointerRegisterNumber = 0
 
-	def setBeforeOperationRegisterValues(self,beforeRegs):
-		"""setBeforeOperationRegisterValues
+	# def setBeforeOperationRegisterValues(self,beforeRegs):
+		# """setBeforeOperationRegisterValues
 		
-		:param beforeRegs: The registers before the operation.
-		:returns: nothing
-		"""
-		#print 'setBeforeOperationRegisterValues: beforeRegs',beforeRegs
-		self.CPU_Reg0 = beforeRegs[0]
-		self.CPU_Reg1 = beforeRegs[1]
-		self.CPU_Reg2 = beforeRegs[2]
-		self.CPU_Reg3 = beforeRegs[3]
-		self.CPU_Reg4 = beforeRegs[4]
-		self.CPU_Reg5 = beforeRegs[5]
-		return
+		# :param beforeRegs: The registers before the operation.
+		# :returns: nothing
+		# """
+		# #print 'setBeforeOperationRegisterValues: beforeRegs',beforeRegs
+		# self.CPU_Reg0 = beforeRegs[0]
+		# self.CPU_Reg1 = beforeRegs[1]
+		# self.CPU_Reg2 = beforeRegs[2]
+		# self.CPU_Reg3 = beforeRegs[3]
+		# self.CPU_Reg4 = beforeRegs[4]
+		# self.CPU_Reg5 = beforeRegs[5]
+		# return
 	
 	def getRegisterAfterValues(self):
 		"""getRegisterAfterValues - get the contents of the register after the operation completes
@@ -384,6 +407,8 @@ class CPU:
 		:param: cVal: Output from the ALU (aka "C")
 		"""
 		debug_storeCVal = False
+		if cVal > 255:				# clip cVal to 8-bit result
+			cVal = 255
 		if debug_storeCVal:
 			print 'storeCVal: regSel,cVal',regSel,cVal
 		if regSel == 0:
@@ -590,9 +615,6 @@ def convertOpcodeStringToVector(opcodeString):
 		abbyTerminate('convertOpcodeStringToVector: opcode not in the opcode list, exiting')
 	return opcodeVector
 
-instructionPointer = 0
-instructionPointerRegisterNumber = 0
-
 def loadProgramToList(textFileAsListOfLines,myCPU):
 	"""Convert the text file into a list
 	
@@ -605,7 +627,7 @@ def loadProgramToList(textFileAsListOfLines,myCPU):
 		if len(line) == 0:				# skip blank lines
 			continue
 		elif line[0:4] == '#ip ':		# Bind the Instruction Counter to a particular register
-			instructionPointerRegisterNumber = int(line[4])
+			myCPU.setInstructionPointerRegisterNumber(int(line[4]))
 		else:							# opcode case
 			newOpCode = convertOpcodeStringToVector(line)
 			programListing.append(newOpCode)
@@ -616,25 +638,40 @@ def loadProgramToList(textFileAsListOfLines,myCPU):
 	return programListing
 
 def runTillDone(programCode,myCPU):
-	global instructionPointer
-	while instructionPointer < len(programCode):
-		vector = programCode[instructionPointer]
+	"""runTillDone - Load the instruction pointed at by the program counter and call the emulator.
+	Runs until past the end of the program space.
+	
+	"""
+	while myCPU.getInstructionPointer() < len(programCode):
+		vector = programCode[myCPU.getInstructionPointer()]
 		myCPU.emulator(vector)
 	registerVect = myCPU.getRegisterAfterValues()
 	print 'runTillDone: register values after the run',registerVect
 	print 'runTillDone: register 0 contains',registerVect[0]
-	return
+	return registerVect
 
 ########################################################################
 ## Code
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readtextFileAsListOfLinesToList('input.txt')
-
 myCPU = CPU()
 
+# Run the sample program to verify that any code changes haven't broken basic functionality
+textList = readtextFileAsListOfLinesToList('input2.txt')
 programCode = loadProgramToList(textList,myCPU)
+print 'program is',len(programCode),'lines long'
+retVal = runTillDone(programCode,myCPU)
+if retVal != [6,5,6,0,0,9]:		# Expected value is known
+	print 'main: example test failed',retVal
+	exit()
+else:
+	print 'main: example test passed'
+
+myCPU.initializeCPU()
+textList = readtextFileAsListOfLinesToList('input.txt')
+programCode = loadProgramToList(textList,myCPU)
+print 'program is',len(programCode),'lines long'
 runTillDone(programCode,myCPU)
 
 print 'Completed processing',time.strftime('%X %x %Z')
