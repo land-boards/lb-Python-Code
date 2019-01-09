@@ -163,22 +163,31 @@ class CPU:
 		self.setRegToIPValue()
 		print 'IP =',instructionPointer,
 		print self.getRegisterAfterValues(),
-		print vector[0],
-		print vector[1],
-		print vector[2],
-		print vector[3],
+		self.printInstruction(vector)
 		self.doALU(vector[0:4])
 		print self.getRegisterAfterValues()
 		if instructionPointerRegisterNumber == vector[3]:	# Only load if there was a change to the register
 			if debug_emulator:
 				print 'changed IP register'
 			self.loadAddressForJump(vector[0][3])
+		self.setIPToRegValue()
 		instructionPointer += 1		# Always increment address pointer regardless of the previous
-		self.setIPReg(instructionPointer)
 		return self.getRegisterAfterValues()
 	
+	def printInstruction(self,vector):
+		print vector[0],
+		print vector[1],
+		print vector[2],
+		print vector[3],
+		
 	def setRegToIPValue(self):
+		"""setRegToIPValue - Set the currently selected instruction pointer register to the program counter
+
+		:param None: No passed parameters
+		:return: No return value
+		"""
 		global instructionPointer
+		global instructionPointerRegisterNumber
 		if instructionPointerRegisterNumber == 0:
 			self.CPU_Reg0 = instructionPointer
 		elif instructionPointerRegisterNumber == 1:
@@ -192,19 +201,23 @@ class CPU:
 		elif instructionPointerRegisterNumber == 5:
 			self.CPU_Reg5 = instructionPointer
 	
-	def setIPReg(self,IPRegVal):
+	def setIPToRegValue(self):
+		"""setIPToRegValue - set the Instruction Pointer register to the register value
+		"""
+		global instructionPointer
+		global instructionPointerRegisterNumber
 		if instructionPointerRegisterNumber == 0:
-			self.CPU_Reg0 = IPRegVal
+			instructionPointer = self.CPU_Reg0
 		elif instructionPointerRegisterNumber == 1:
-			self.CPU_Reg1 = IPRegVal
+			instructionPointer = self.CPU_Reg1
 		elif instructionPointerRegisterNumber == 2:
-			self.CPU_Reg2 = IPRegVal
+			instructionPointer = self.CPU_Reg2
 		elif instructionPointerRegisterNumber == 3:
-			self.CPU_Reg3 = IPRegVal
+			instructionPointer = self.CPU_Reg3
 		elif instructionPointerRegisterNumber == 4:
-			self.CPU_Reg4 = IPRegVal
+			instructionPointer = self.CPU_Reg4
 		elif instructionPointerRegisterNumber == 5:
-			self.CPU_Reg5 = IPRegVal
+			instructionPointer = self.CPU_Reg5
 	
 	def loadAddressForJump(self,relAbsFlag):
 		"""loadAddressForJump - Load the instruction pointer (address) from the register 
@@ -214,16 +227,19 @@ class CPU:
 		which causes it to end up in the instruction pointer. 
 		The instruction pointer is then incremented, leaving it at 6.
 		"""
+		debug_loadAddressForJump = False
 		global instructionPointerRegisterNumber
 		global instructionPointer
-		print 'loadAddressForJump: reached jmp function',
+		if debug_loadAddressForJump:
+			print 'loadAddressForJump: reached jmp function',
 		operation = ''
 		if relAbsFlag == 'r':
 			operation = 'absolute'
 		else:
 			operation = 'relative'
-		print operation,
-		print 'IP before',instructionPointer,
+		if debug_loadAddressForJump:
+			print operation,
+			print 'IP before',instructionPointer,
 		if instructionPointerRegisterNumber == 0:
 			if relAbsFlag == 'absolute':
 				instructionPointer = self.CPU_Reg0
@@ -254,7 +270,8 @@ class CPU:
 				instructionPointer = self.CPU_Reg5
 			elif relAbsFlag == 'relative':
 				instructionPointer += self.CPU_Reg5
-		print 'IP after',instructionPointer
+		if debug_loadAddressForJump:
+				print 'IP after',instructionPointer
 	
 	def initializeCPU(self):
 		"""Sets the registers in the CPU to zeros.
@@ -441,19 +458,14 @@ class CPU:
 	def INSTR_addi(self,vector):
 		"""# (add immediate) stores into register C the result of adding register A and value B.
 		"""
-		#print 'INSTR_addi: vector',vector
 		aVal = self.getInputA(vector[1],'Register')
-		#print 'INSTR_addi: aVal',aVal
 		bVal = self.getInputB(vector[2],'Immediate')
-		#print 'INSTR_addi: bVal',bVal
 		cVal = aVal + bVal
-		#print 'INSTR_addi: cVal',cVal
 		self.storeCVal(vector[3],cVal)
 
 	def INSTR_mulr(self,vector):
 		"""(multiply register) stores into register C the result of multiplying register A and register B.
 		"""
-		#print 'INSTR_mulr: vector',vector
 		aVal = self.getInputA(vector[1],'Register')
 		bVal = self.getInputB(vector[2],'Register')
 		cVal = aVal * bVal
@@ -497,7 +509,6 @@ class CPU:
 	def INSTR_seti(self,vector):
 		"""(set immediate) stores value A into register C. (Input B is ignored.)
 		"""
-		#print 'seti instruction decode'
 		aVal = self.getInputA(vector[1],'Immediate')
 		cVal = aVal
 		self.storeCVal(vector[3],cVal)
@@ -588,6 +599,7 @@ def loadProgramToList(textFileAsListOfLines,myCPU):
 	:param textFileAsListOfLines: the input file as a list of strings where each string is one line of the input file
 	:param myCPU: - points to the CPU class
 	"""
+	debug_loadProgramToList= False
 	programListing = []
 	for line in textFileAsListOfLines:
 		if len(line) == 0:				# skip blank lines
@@ -597,15 +609,20 @@ def loadProgramToList(textFileAsListOfLines,myCPU):
 		else:							# opcode case
 			newOpCode = convertOpcodeStringToVector(line)
 			programListing.append(newOpCode)
-	print 'loadProgramToList: program is'
-	for location in programListing:
-		print location
+	if debug_loadProgramToList:
+		print 'loadProgramToList: program is'
+		for location in programListing:
+			print location
 	return programListing
 
 def runTillDone(programCode,myCPU):
+	global instructionPointer
 	while instructionPointer < len(programCode):
 		vector = programCode[instructionPointer]
 		myCPU.emulator(vector)
+	registerVect = myCPU.getRegisterAfterValues()
+	print 'runTillDone: register values after the run',registerVect
+	print 'runTillDone: register 0 contains',registerVect[0]
 	return
 
 ########################################################################
