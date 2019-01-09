@@ -109,6 +109,10 @@ Could either use the opcode directly and add a "parser"
 or could translate the opcode into the previous opcode numbers.
 Probably easier to use the opcode directly and parse it.
 
+Your puzzle answer was 2160.
+
+That's the right answer! You are one gold star closer to fixing the time stream.
+
 """
 
 def printList(listToPrint):
@@ -180,11 +184,13 @@ class CPU:
 		if debug_emulator:
 			print 'emulator:',vector
 		self.setRegToIPValue()
-		print 'IP =',self.instructionPointer,
-		print self.getRegisterAfterValues(),
-		self.printInstruction(vector)
+		if debug_emulator:
+			print 'IP =',self.instructionPointer,
+			print self.getRegisterAfterValues(),
+			self.printInstruction(vector)
 		self.doALU(vector[0:4])
-		print self.getRegisterAfterValues()
+		if debug_emulator:
+			print self.getRegisterAfterValues()
 		if self.instructionPointerRegisterNumber == vector[3]:	# Only load if there was a change to the register
 			if debug_emulator:
 				print 'changed IP register'
@@ -200,7 +206,8 @@ class CPU:
 		print vector[3],
 		
 	def setInstructionPointerRegisterNumber(self,pointerNumber):
-		instructionPointerRegisterNumber = pointerNumber
+		print 'setInstructionPointerRegisterNumber: bound IP to register',pointerNumber
+		self.instructionPointerRegisterNumber = pointerNumber
 		return
 	
 	def getInstructionPointer(self):
@@ -407,8 +414,8 @@ class CPU:
 		:param: cVal: Output from the ALU (aka "C")
 		"""
 		debug_storeCVal = False
-		if cVal > 255:				# clip cVal to 8-bit result
-			cVal = 255
+		# if cVal > 255:				# clip cVal to 8-bit result
+			# cVal = 255
 		if debug_storeCVal:
 			print 'storeCVal: regSel,cVal',regSel,cVal
 		if regSel == 0:
@@ -628,6 +635,7 @@ def loadProgramToList(textFileAsListOfLines,myCPU):
 			continue
 		elif line[0:4] == '#ip ':		# Bind the Instruction Counter to a particular register
 			myCPU.setInstructionPointerRegisterNumber(int(line[4]))
+			print 'loadProgramToList: bound IP to register',int(line[4])
 		else:							# opcode case
 			newOpCode = convertOpcodeStringToVector(line)
 			programListing.append(newOpCode)
@@ -659,6 +667,7 @@ myCPU = CPU()
 
 # Run the sample program to verify that any code changes haven't broken basic functionality
 textList = readtextFileAsListOfLinesToList('input2.txt')
+myCPU.initializeCPU()
 programCode = loadProgramToList(textList,myCPU)
 print 'program is',len(programCode),'lines long'
 retVal = runTillDone(programCode,myCPU)
