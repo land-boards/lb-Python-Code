@@ -148,21 +148,113 @@ class CPU:
 	CPU_Reg5 = 0
 	CPU_IP = 0
 	
-	def executeOpCode(self,opCodeToExecute):
-		return True
-		
 	def emulator(self,vector):
 		"""emulator - The function that calls the ALU and returns the return value
-		TBD - extend to increment the CPU Instruction Pointer.
+		Extended from Day 16 example to load (if necessary) and increment the CPU Instruction Pointer.
 		
 		:param vector: The instruction vector fields 0-3
 		:returns: the contents of the registers.
 		"""
 		debug_emulator = False
+		global instructionPointerRegisterNumber
+		global instructionPointer
 		if debug_emulator:
 			print 'emulator:',vector
+		self.setRegToIPValue()
+		print 'IP =',instructionPointer,
+		print self.getRegisterAfterValues(),
+		print vector[0],
+		print vector[1],
+		print vector[2],
+		print vector[3],
 		self.doALU(vector[0:4])
+		print self.getRegisterAfterValues()
+		if instructionPointerRegisterNumber == vector[3]:	# Only load if there was a change to the register
+			if debug_emulator:
+				print 'changed IP register'
+			self.loadAddressForJump(vector[0][3])
+		instructionPointer += 1		# Always increment address pointer regardless of the previous
+		self.setIPReg(instructionPointer)
 		return self.getRegisterAfterValues()
+	
+	def setRegToIPValue(self):
+		global instructionPointer
+		if instructionPointerRegisterNumber == 0:
+			self.CPU_Reg0 = instructionPointer
+		elif instructionPointerRegisterNumber == 1:
+			self.CPU_Reg1 = instructionPointer
+		elif instructionPointerRegisterNumber == 2:
+			self.CPU_Reg2 = instructionPointer
+		elif instructionPointerRegisterNumber == 3:
+			self.CPU_Reg3 = instructionPointer
+		elif instructionPointerRegisterNumber == 4:
+			self.CPU_Reg4 = instructionPointer
+		elif instructionPointerRegisterNumber == 5:
+			self.CPU_Reg5 = instructionPointer
+	
+	def setIPReg(self,IPRegVal):
+		if instructionPointerRegisterNumber == 0:
+			self.CPU_Reg0 = IPRegVal
+		elif instructionPointerRegisterNumber == 1:
+			self.CPU_Reg1 = IPRegVal
+		elif instructionPointerRegisterNumber == 2:
+			self.CPU_Reg2 = IPRegVal
+		elif instructionPointerRegisterNumber == 3:
+			self.CPU_Reg3 = IPRegVal
+		elif instructionPointerRegisterNumber == 4:
+			self.CPU_Reg4 = IPRegVal
+		elif instructionPointerRegisterNumber == 5:
+			self.CPU_Reg5 = IPRegVal
+	
+	def loadAddressForJump(self,relAbsFlag):
+		"""loadAddressForJump - Load the instruction pointer (address) from the register 
+		selected by the #IP directive.
+		The instruction pointer is 4, so the instruction setr 1 0 0 is run. 
+		This is like an absolute jump: it copies the value contained in register 1, 5, into register 0, 
+		which causes it to end up in the instruction pointer. 
+		The instruction pointer is then incremented, leaving it at 6.
+		"""
+		global instructionPointerRegisterNumber
+		global instructionPointer
+		print 'loadAddressForJump: reached jmp function',
+		operation = ''
+		if relAbsFlag == 'r':
+			operation = 'absolute'
+		else:
+			operation = 'relative'
+		print operation,
+		print 'IP before',instructionPointer,
+		if instructionPointerRegisterNumber == 0:
+			if relAbsFlag == 'absolute':
+				instructionPointer = self.CPU_Reg0
+			elif relAbsFlag == 'relative':
+				instructionPointer += self.CPU_Reg0
+		elif instructionPointerRegisterNumber == 1:
+			if relAbsFlag == 'absolute':
+				instructionPointer = self.CPU_Reg1
+			elif relAbsFlag == 'relative':
+				instructionPointer += self.CPU_Reg1
+		elif instructionPointerRegisterNumber == 2:
+			if relAbsFlag == 'absolute':
+				instructionPointer = self.CPU_Reg2
+			elif relAbsFlag == 'relative':
+				instructionPointer += self.CPU_Reg2
+		elif instructionPointerRegisterNumber == 3:
+			if relAbsFlag == 'absolute':
+				instructionPointer = self.CPU_Reg3
+			elif relAbsFlag == 'relative':
+				instructionPointer += self.CPU_Reg3
+		elif instructionPointerRegisterNumber == 4:
+			if relAbsFlag == 'absolute':
+				instructionPointer = self.CPU_Reg4
+			elif relAbsFlag == 'relative':
+				instructionPointer += self.CPU_Reg4
+		elif instructionPointerRegisterNumber == 5:
+			if relAbsFlag == 'absolute':
+				instructionPointer = self.CPU_Reg5
+			elif relAbsFlag == 'relative':
+				instructionPointer += self.CPU_Reg5
+		print 'IP after',instructionPointer
 	
 	def initializeCPU(self):
 		"""Sets the registers in the CPU to zeros.
@@ -510,15 +602,22 @@ def loadProgramToList(textFileAsListOfLines,myCPU):
 		print location
 	return programListing
 
+def runTillDone(programCode,myCPU):
+	while instructionPointer < len(programCode):
+		vector = programCode[instructionPointer]
+		myCPU.emulator(vector)
+	return
+
 ########################################################################
 ## Code
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readtextFileAsListOfLinesToList('input.txt')
+textList = readtextFileAsListOfLinesToList('input2.txt')
 
 myCPU = CPU()
 
-loadProgramToList(textList,myCPU)
+programCode = loadProgramToList(textList,myCPU)
+runTillDone(programCode,myCPU)
 
 print 'Completed processing',time.strftime('%X %x %Z')
