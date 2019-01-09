@@ -630,7 +630,7 @@ def runTillDone(programCode,myCPU):
 
 print 'Reading in file',time.strftime('%X %x %Z')
 
-textList = readtextFileAsListOfLinesToList('input2.txt')
+textList = readtextFileAsListOfLinesToList('input.txt')
 
 myCPU = CPU()
 
