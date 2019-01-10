@@ -280,7 +280,7 @@ class CPU:
 		return self.instructionPointer
 		
 	def setRegToIPValue(self):
-		"""setRegToIPValue - Set the currently selected instruction pointer register to the program counter
+		"""setRegToIPValue - Set the currently selected instruction pointer register to the program counter.
 
 		:param None: No passed parameters
 		:return: No return value
@@ -300,6 +300,8 @@ class CPU:
 	
 	def setIPToRegValue(self):
 		"""setIPToRegValue - set the Instruction Pointer register to the register value
+		Always do the load of the IP from the selected register regardless of whether last
+		instruction was to that register or not.
 		"""
 		if self.instructionPointerRegisterNumber == 0:
 			self.instructionPointer = self.CPU_Reg0
