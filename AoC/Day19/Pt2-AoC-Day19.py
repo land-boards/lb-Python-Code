@@ -172,10 +172,70 @@ class CPU:
 	CPU_Reg5 = 0
 	instructionPointer = 0
 	instructionPointerRegisterNumber = 0
+	
+	loopDotCounter = 0
 
 	def emulator(self,vector):
 		"""emulator - The function that calls the ALU and returns the return value
 		Extended from Day 16 example to load (if necessary) and increment the CPU Instruction Pointer.
+		
+		Program gets caught in a long loop between IP=3 and IP=11. 
+		Program runs for hours.
+		
+		Captured this trace after it was running for a bit.
+		
+		IP = 3 [0, 3, 96, 10551320, 0, 1] mulr 5 2 4 [0, 3, 96, 10551320, 96, 1]
+		emulator: ['eqrr', 4, 3, 4]
+		IP = 4 [0, 4, 96, 10551320, 96, 1] eqrr 4 3 4 [0, 4, 96, 10551320, 0, 1]
+		emulator: ['addr', 4, 1, 1]
+		IP = 5 [0, 5, 96, 10551320, 0, 1] addr 4 1 1 [0, 5, 96, 10551320, 0, 1]
+		changed IP register
+		emulator: ['addi', 1, 1, 1]
+		IP = 6 [0, 6, 96, 10551320, 0, 1] addi 1 1 1 [0, 7, 96, 10551320, 0, 1]
+		changed IP register
+		emulator: ['addi', 2, 1, 2]
+		IP = 8 [0, 8, 96, 10551320, 0, 1] addi 2 1 2 [0, 8, 97, 10551320, 0, 1]
+		emulator: ['gtrr', 2, 3, 4]
+		IP = 9 [0, 9, 97, 10551320, 0, 1] gtrr 2 3 4 [0, 9, 97, 10551320, 0, 1]
+		emulator: ['addr', 1, 4, 1]
+		IP = 10 [0, 10, 97, 10551320, 0, 1] addr 1 4 1 [0, 10, 97, 10551320, 0, 1]
+		changed IP register
+		emulator: ['seti', 2, 6, 1]
+		IP = 11 [0, 11, 97, 10551320, 0, 1] seti 2 6 1 [0, 2, 97, 10551320, 0, 1]
+		changed IP register
+		emulator: ['mulr', 5, 2, 4]
+		
+		## Loop repeats below, reg 2 is incremented by the loop
+		
+		IP = 3 [0, 3, 97, 10551320, 0, 1] mulr 5 2 4 [0, 3, 97, 10551320, 97, 1]
+		emulator: ['eqrr', 4, 3, 4]
+		IP = 4 [0, 4, 97, 10551320, 97, 1] eqrr 4 3 4 [0, 4, 97, 10551320, 0, 1]
+		emulator: ['addr', 4, 1, 1]
+		IP = 5 [0, 5, 97, 10551320, 0, 1] addr 4 1 1 [0, 5, 97, 10551320, 0, 1]
+		changed IP register
+		emulator: ['addi', 1, 1, 1]
+		IP = 6 [0, 6, 97, 10551320, 0, 1] addi 1 1 1 [0, 7, 97, 10551320, 0, 1]
+		changed IP register
+		emulator: ['addi', 2, 1, 2]
+		IP = 8 [0, 8, 97, 10551320, 0, 1] addi 2 1 2 [0, 8, 98, 10551320, 0, 1]
+		emulator: ['gtrr', 2, 3, 4]
+		IP = 9 [0, 9, 98, 10551320, 0, 1] gtrr 2 3 4 [0, 9, 98, 10551320, 0, 1]
+		emulator: ['addr', 1, 4, 1]
+		IP = 10 [0, 10, 98, 10551320, 0, 1] addr 1 4 1 [0, 10, 98, 10551320, 0, 1]
+		changed IP register
+		emulator: ['seti', 2, 6, 1]
+		IP = 11 [0, 11, 98, 10551320, 0, 1] seti 2 6 1 [0, 2, 98, 10551320, 0, 1]
+		changed IP register
+		emulator: ['mulr', 5, 2, 4]
+		
+		Observations about the loop
+		1 - Register 0 has 0 in it all the way through but 0 is not the right answer when program ends
+		2 - Program register 1 is bound to the instruction pointer
+		3 - Quite a few lines have register 1 as their destination 
+		4 - IP = 9 compares register 2 and 3 which are a long ways from each other since 3 has a big numbered
+		in it and 2 is counting up slowly.
+		5 - Could manually load register value into register 2 to start it close to register 3 since that's
+		the only relevant thing this loop does. Would need to set the IP correctly, too.
 		
 		:param vector: The instruction vector fields 0-3
 		:returns: the contents of the registers.
@@ -197,6 +257,10 @@ class CPU:
 			self.loadAddressForJump(vector[0][3])
 		self.setIPToRegValue()
 		self.instructionPointer += 1		# Always increment address pointer regardless of the previous
+		self.loopDotCounter += 1
+		if self.loopDotCounter > 10000:
+			print '.',
+			self.loopDotCounter = 0
 		return self.getRegisterAfterValues()
 	
 	def printInstruction(self,vector):
@@ -649,6 +713,8 @@ def runTillDone(programCode,myCPU):
 	"""runTillDone - Load the instruction pointed at by the program counter and call the emulator.
 	Runs until past the end of the program space.
 	
+	:param programCode: The program as a list
+	:param myCPU: Class that defines the functions related to the CPU
 	"""
 	while myCPU.getInstructionPointer() < len(programCode):
 		vector = programCode[myCPU.getInstructionPointer()]
