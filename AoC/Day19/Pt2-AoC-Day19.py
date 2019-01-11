@@ -240,7 +240,7 @@ class CPU:
 		:param vector: The instruction vector fields 0-3
 		:returns: the contents of the registers.
 		"""
-		debug_emulator = False
+		debug_emulator = True
 		if debug_emulator:
 			print 'emulator:',vector
 		self.setRegToIPValue()
