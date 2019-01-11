@@ -104,9 +104,9 @@ def interateOverFuelArraySizes(fuelCellArrayAs2DList):
 ########################################################################
 ## Main
 
-comm = MPI.COMM_WORLD
-MPsize = comm.Get_size()
-MPrank = comm.Get_rank()
+comm = MPI.COMM_WORLD		# 
+MPsize = comm.Get_size() 	# number of cores
+MPrank = comm.Get_rank()	# node that I am
 
 gridSerialNumber = 18
 #gridSerialNumber = 42
@@ -135,5 +135,5 @@ if MPrank == 0:
 	if processor[3] > maxPowerFound:
 		maxPowerFound = processor[3]
 	print 'Max power is',maxPowerFound
-		
+	
 print 'Ended Processing at',time.strftime('%X %x %Z')
