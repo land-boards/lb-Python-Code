@@ -42,9 +42,9 @@ for x in xrange(MPrank, 301, MPsize):
       my_best = current_best
 
 answers = comm.gather(my_best,root=0)
+best = None
 
 if MPrank == 0:
-  best = None
   for answer in answers:
     if not best or answer[0][0] > best[0][0]:
       best = answer
