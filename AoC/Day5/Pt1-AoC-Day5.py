@@ -58,9 +58,9 @@ def matchCheck(char1, char2):
 	#print 'match',char1,char2
 	return True
 	
-polymereString = readTextFileToString('input2.txt')
-print 'polymereString',polymereString
-print 'len of polymereString before',len(polymereString)
+polymereString = readTextFileToString('input.txt')
+#print 'polymereString',polymereString
+#print 'len of polymereString before',len(polymereString)
 currentColumn = 0
 newString = ''
 changesFound = True
@@ -82,6 +82,6 @@ while changesFound:
 	newString = ''
 	currentColumn = 0
 	#print 'polymereString',polymereString
-print 'polymereString',polymereString
+#print 'polymereString',polymereString
 print 'len of polymereString after',len(polymereString)
 
