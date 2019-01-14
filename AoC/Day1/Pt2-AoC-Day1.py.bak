@@ -28,7 +28,6 @@ What is the first frequency your device reaches twice?
 Your puzzle answer was 72889.
 
 """
-from __future__ import print_function
 
 import time
 
@@ -44,25 +43,25 @@ def readTextFileToList(fileName):
 	return freqChangesAsInts
 
 def findLoopPoint(changes):
-	print('Scanning for loop')
+	print 'Scanning for loop'
 	currentFreqAccum = 0					# Accumulated frequency starts at 0
 	freqsList = []							# define an empty list to hold all frequencies
 	freqsList.append(currentFreqAccum)		# Put first 0 into the list
 	while True:	# Loop through the list over and over
-		print('+', end=' ')	# Print a plus every time through the list
+		print '+',	# Print a plus every time through the list
 		for currentFreqChange in changes:
 			currentFreqAccum += currentFreqChange
 			if currentFreqAccum in freqsList:
-				print('\nLength of Frequency list loop',len(freqsList))
+				print '\nLength of Frequency list loop',len(freqsList)
 				return(currentFreqAccum)
 			freqsList.append(currentFreqAccum)	# add item to the list
 
-print('started', time.strftime('%X %x %Z'))
+print 'started', time.strftime('%X %x %Z')
 
 freqChanges = readTextFileToList('input.txt')
 
 accumFreq = findLoopPoint(freqChanges)
 
-print('Ended',time.strftime('%X %x %Z'))
-print('***Found first duplicated frequency***')
-print('Repeated frequency=', accumFreq)
+print 'Ended',time.strftime('%X %x %Z')
+print '***Found first duplicated frequency***'
+print 'Repeated frequency=', accumFreq

@@ -30,7 +30,6 @@ What is the checksum for your list of box IDs?
 
 Your puzzle answer was 8118.
 """
-from __future__ import print_function
 
 # define an empty list
 boxIDs = []
@@ -38,7 +37,7 @@ boxIDs = []
 accum = 0	# Accumulated sum
 
 def countN(theLineString,testCount):
-	print('looking for',testCount)
+	print 'looking for',testCount
 	countOfNs = 0
 	arrayOfPossibleChars = []
 	i = 0
@@ -70,6 +69,6 @@ for theLine in boxIDs:
 		count2 += 1
 	if countN(theLine,3):
 		count3 += 1
-print('count of 2s',count2)
-print('count of 3s',count3)
-print('checksum',count2*count3)
+print 'count of 2s',count2
+print 'count of 3s',count3
+print 'checksum',count2*count3

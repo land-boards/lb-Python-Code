@@ -31,7 +31,6 @@ Starting with a frequency of zero, what is the resulting frequency after all of 
 
 Your puzzle answer was 518.
 """
-from __future__ import print_function
 
 accum = 0	# Accumulated sum
 
@@ -40,4 +39,4 @@ with open('input.txt', 'r') as filehandle:
 	for line in filehandle:
 		currentPlace = int(line.strip())
 		accum += currentPlace
-print('sum =',accum)
+print 'sum =',accum
