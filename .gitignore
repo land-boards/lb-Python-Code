@@ -15,3 +15,4 @@ dgCommonModules/dgWriteListtoCSV.pyc
 *.pyc
 *.pyc
 *.pyc
+pyLbInv/DataFiles/orders.tsv
