@@ -48,7 +48,7 @@ import csv
 import string
 import os
 import sys
-import json
+import mysql.connector
 
 import time
 from datetime import date
@@ -120,6 +120,9 @@ class ControlClass:
 		defaultPath = myCSVFileReadClass.getLastPath()
 		defaultParmsClass.storeKeyValuePair('DEFAULT_PATH',defaultPath)
 		dateToAppend = str(date.today())
+
+
+print(mydb)
 
 	def mapTindieInList(self, header):
 		"""
@@ -199,6 +202,8 @@ class ControlClass:
 				#print 'unknown/unused header',item
 			itemNum += 1
 		return
+
+	#mydb = mysql.connector.connect(host="localhost",user="yourusername",passwd="yourpassword")
 
 class UIManager:
 	"""The UI manager
