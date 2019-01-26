@@ -17,3 +17,5 @@ dgCommonModules/dgWriteListtoCSV.pyc
 *.pyc
 pyLbInv/DataFiles/orders.tsv
 pyLbInv/DataFiles/lbmysql.txt
+*.mwb
+*.bak

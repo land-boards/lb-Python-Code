@@ -6,6 +6,7 @@ Features
 --------
 
 * Uses MySQL to manage inventory.
+* https://www.w3schools.com/python/python_mysql_getstarted.asp
 
 -----
 Setup
