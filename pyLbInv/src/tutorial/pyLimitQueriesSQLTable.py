@@ -1,4 +1,5 @@
 import mysql.connector
+# https://www.youtube.com/watch?v=W321PFPLcHk
 
 mydb = mysql.connector.connect(user='test',
 	password='test',
@@ -6,8 +7,10 @@ mydb = mysql.connector.connect(user='test',
 	host='127.0.0.1',
 	auth_plugin='mysql_native_password')
 
-print(mydb)
 mycursor = mydb.cursor()
-mycursor.execute("SHOW TABLES")
-for tb in mycursor:
-	print tb
+sql = "SELECT * FROM parts LIMIT 2"
+mycursor.execute(sql)
+myresult = mycursor.fetchall()
+for result in myresult:
+	print (result)
+	

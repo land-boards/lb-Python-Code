@@ -1,4 +1,5 @@
 import mysql.connector
+# https://www.youtube.com/watch?v=-YU36D7oTLA
 
 mydb = mysql.connector.connect(user='test',
 	password='test',
