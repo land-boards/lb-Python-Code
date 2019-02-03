@@ -18,9 +18,7 @@ Background
 ==========
 
 """
-from __future__ import print_function
 
-from builtins import object
 import os
 import datetime
 import time
@@ -36,7 +34,7 @@ import gtk
 
 # Check for new pygtk: this is new class in PyGtk 2.4
 if gtk.pygtk_version < (2,3,90):
-	print("PyGtk 2.3.90 or later required for this example")
+	print "PyGtk 2.3.90 or later required for this example"
 	raise SystemExit
 
 verboseMode = False
@@ -52,7 +50,7 @@ def errorDialog(errorString):
 	message.destroy()	# Takes down the dialog box
 	return
 
-class WriteListtoCSV(object):
+class WriteListtoCSV():
 	"""This is the class that has the methods which are used to write out a CSV list.
 	The typical method that is called is writeOutList(outPathFilename, header, csvListToWrite)
 	Alternately the file can be selected
@@ -78,7 +76,7 @@ class WriteListtoCSV(object):
 			dialog.destroy()
 			return(retFileName)
 		elif response == gtk.RESPONSE_CANCEL: 
-			print('Closed, no files selected')
+			print 'Closed, no files selected'
 		dialog.destroy()
 		exit()
 	
@@ -88,7 +86,7 @@ class WriteListtoCSV(object):
 		global verboseMode
 		outFileNm = self.createOutputFilename(outPathFilename)
 		if verboseMode:
-			print('Output file name :', end=' ')
+			print 'Output file name :',
 			print (self.extractFilenameFromPathfilename(outFileNm))
 		if csvListToWrite == []:
 			errorDialog('Write list is empty for some reason')

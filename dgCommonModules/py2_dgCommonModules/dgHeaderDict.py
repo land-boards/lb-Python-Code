@@ -17,12 +17,11 @@ API
 
 """
 
-from builtins import object
 headerDictionary = {}
 
 import os
 
-class headerDict(object):
+class headerDict():
 	"""Make dictionary from a header of a CSV spreadsheet
 	"""
 	def makeHeaderDict(self, headerLine):

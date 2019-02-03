@@ -34,9 +34,7 @@ Code
 ====
 
 """
-from __future__ import print_function
 
-from builtins import object
 import string
 import csv
 import os
@@ -53,7 +51,7 @@ defaultsFileNamePath = '.\\Defaults.csv'
 
 verboseMode = False
 
-class HandleDefault(object):
+class HandleDefault:
 	""""Load and save defaults file
 	This can be used to save stuff like the default path
 	The file is a simple list with KEY, value pairs on individual lines
@@ -65,23 +63,23 @@ class HandleDefault(object):
 		defaultFilePath = os.getcwd()
 		defaultsFileNamePath = defaultFilePath + '\\Defaults.csv'
 		if verboseMode:
-			print('set defaultsFileNamePath to', defaultsFileNamePath)
+			print 'set defaultsFileNamePath to', defaultsFileNamePath
 		if self.ifExistsDefaults() == True:
 			detailParmList = self.loadDefaults()
 			if verboseMode:
-				print('loaded defaults file')
+				print 'loaded defaults file'
 		else:
 			if verboseMode:
-				print('defaults file did not exist')
+				print 'defaults file did not exist'
 			self.createDefaults()
 			if verboseMode:
-				print('created defaults file')
+				print 'created defaults file'
 			detailParmList = self.loadDefaults()
 			if verboseMode:
-				print('loaded defaults file')
+				print 'loaded defaults file'
 		if self.getKeyVal('DEFAULT_PATH') == False:
 			if verboseMode:
-				print('There was no default path set')
+				print 'There was no default path set'
 			self.storeKeyValuePair('DEFAULT_PATH',defaultPath)
 		return True
 		
@@ -108,7 +106,7 @@ class HandleDefault(object):
 		#print 'getKeyVal: got here'
 		if self.ifExistsDefaults() == False:
 			if verboseMode:
-				print('getKeyVal: had to creat defaults')
+				print 'getKeyVal: had to creat defaults'
 			self.createDefaults()
 		defaultFileHdl = open(defaultsFileNamePath, 'rb')
 		defaultListItem = csv.reader(defaultFileHdl)
@@ -116,17 +114,17 @@ class HandleDefault(object):
 		for row in defaultListItem:
 			if row[0] == keyName:
 				if verboseMode:
-					print('getKeyVal: found a match for key, match was', row[1])
+					print 'getKeyVal: found a match for key, match was', row[1]
 				return row[1]
 		if verboseMode:
-			print('getKeyVal: did not find a match for the key',keyName)
+			print 'getKeyVal: did not find a match for the key',keyName
 		return ''
 	
 	def storeKeyValuePair(self,keyName,valueToWrite):
 		if verboseMode:
-			print('storeKeyValuePair: storing value =', valueToWrite, 'to key =', keyName)
+			print 'storeKeyValuePair: storing value =', valueToWrite, 'to key =', keyName
 		if self.ifExistsDefaults() == False:
-			print('had to create defaults')
+			print 'had to create defaults'
 			self.createDefaults()
 		defaultFileHdl = open(defaultsFileNamePath, 'rb')
 		defaultListItem = csv.reader(defaultFileHdl)
@@ -134,14 +132,14 @@ class HandleDefault(object):
 		foundKey = False
 		for item in defaultListItem:
 			if verboseMode:
-				print('item',item)
+				print 'item',item
 			newLine = []
 			if item[0] == keyName:
 				newLine.append(item[0])
 				newLine.append(valueToWrite)
 				foundKey = True
 				if verboseMode:
-					print('found the key',foundKey)
+					print 'found the key',foundKey
 			else:
 				newLine = item
 			newList.append(newLine)
@@ -161,7 +159,7 @@ class HandleDefault(object):
 		Store the key name and key value pair list to the defaults file
 		"""
 		if verboseMode:
-			print('storing list', defaultList)
+			print 'storing list', defaultList
 		defaultFileHdl = open(defaultsFileNamePath, 'wb')
 		defaultFile = csv.writer(defaultFileHdl)
 		defaultFile.writerows(defaultList)

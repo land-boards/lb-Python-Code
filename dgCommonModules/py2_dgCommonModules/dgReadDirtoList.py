@@ -31,11 +31,7 @@ API
 ===
 
 """
-from __future__ import print_function
 
-from builtins import str
-from builtins import input
-from builtins import object
 import os
 import datetime
 import time
@@ -60,7 +56,7 @@ tempFileName = ''
 import gtk
 # Check for new pygtk: this is new class in PyGtk 2.4
 if gtk.pygtk_version < (2,3,90):
-	print("PyGtk 2.3.90 or later required for this example")
+	print "PyGtk 2.3.90 or later required for this example"
 	raise SystemExit
 
 def errorDialog(errorString):
@@ -73,7 +69,7 @@ def errorDialog(errorString):
 	message.destroy()	# Takes down the dialog box
 	return
 
-class ReadDirectoryToList(object):
+class ReadDirectoryToList:
 	"""
 	This class does all the work of reading a directory tree into a list of lists.
 	
@@ -210,11 +206,11 @@ class ReadDirectoryToList(object):
 		commandString = self.formCommandLine(pathToDir)
 		rval = os.system(commandString)
 		if rval == 1:		# error because the c:\temp folder does not exist
-			print('Creating c:\\temp folder')
+			print 'Creating c:\\temp folder'
 			rval2 = os.system('md c:\\temp\\')
 			if rval2 == 1:
-				print('unable to create c:\\temp\\ folder')
-				s = input('--> ')
+				print 'unable to create c:\\temp\\ folder'
+				s = raw_input('--> ')
 				exit()
 			rval = os.system(commandString)
 		fileNamePath = 'c:\\temp\\'

@@ -31,9 +31,7 @@ API
 ===
 
 """
-from __future__ import print_function
 
-from builtins import object
 import os
 import datetime
 import time
@@ -61,7 +59,7 @@ useSniffer = False
 import gtk
 # Check for new pygtk: this is new class in PyGtk 2.4
 if gtk.pygtk_version < (2,3,90):
-	print("PyGtk 2.3.90 or later required for this example")
+	print "PyGtk 2.3.90 or later required for this example"
 	raise SystemExit
 
 def errorDialog(errorString):
@@ -74,7 +72,7 @@ def errorDialog(errorString):
 	message.destroy()	# Takes down the dialog box
 	return
 
-class ReadCSVtoList(object):
+class ReadCSVtoList():
 	def findOpenReadCSV(self, defaultPath='', dialogHeader='Open File'):
 		"""
 		:global lastPathFileName: The path asset by this function based on the path found by the browser.
@@ -99,13 +97,13 @@ class ReadCSVtoList(object):
 		myDefaultHandler = HandleDefault()
 		myDefaultHandler.storeKeyValuePair('DEFAULT_PATH',defaultPath)
 		if verboseMode:
-			print('Input file name :', end=' ')
-			print(self.extractFilenameFromPathfilename(inPathFilename))
+			print 'Input file name :',
+			print self.extractFilenameFromPathfilename(inPathFilename)
 		if freshFlag:
 			myFreshCheck = CheckFreshness()
 			if not myFreshCheck.isFresh(inPathFilename):
 				if verboseMode:
-					print('fresh flag was set to check freshness for CSV files')
+					print 'fresh flag was set to check freshness for CSV files'
 				errorDialog("The CSV File is not fresh\nEither change the Options to ignore the freshness check\nor create/choose a fresh file")
 				return []
 		csvFileAsReadIn = self.readInCSV(inPathFilename)
@@ -168,7 +166,7 @@ class ReadCSVtoList(object):
 		# select the input file names and open the files
 		intFileHdl = open(inFileN, 'rb')
 		if useSniffer:
-			print('using sniffer')
+			print 'using sniffer'
 			try:
 				dialect = csv.Sniffer().sniff(intFileHdl.read(2048))
 			except:
@@ -253,7 +251,7 @@ class ReadCSVtoList(object):
 		global freshFlag
 		global verboseMode
 		if verboseMode:
-			print('CheckFreshness:setFreshCheckFlag: setting freshness flag', freshnessFlag)
+			print 'CheckFreshness:setFreshCheckFlag: setting freshness flag', freshnessFlag
 		freshFlag = freshnessFlag
 		return True
 		
@@ -269,7 +267,7 @@ class ReadCSVtoList(object):
 		global freshFlag
 		global verboseMode
 		if verboseMode:
-			print('CheckFreshness:getFreshFlag: getting freshness flag',freshFlag)
+			print 'CheckFreshness:getFreshFlag: getting freshness flag',freshFlag
 		return freshFlag
 
 	def setUseSnifferFlag(self,snifferFlag):

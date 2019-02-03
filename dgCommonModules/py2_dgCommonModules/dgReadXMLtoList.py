@@ -11,9 +11,7 @@ Background
 ==========
 
 """
-from __future__ import print_function
 
-from builtins import object
 import os
 import datetime
 import time
@@ -30,7 +28,7 @@ pygtk.require('2.0')
 import gtk
 # Check for new pygtk: this is new class in PyGtk 2.4
 if gtk.pygtk_version < (2,3,90):
-	print("PyGtk 2.3.90 or later required for this example")
+	print "PyGtk 2.3.90 or later required for this example"
 	raise SystemExit
 
 # Use the ElementTree module but alias it as "Xml"
@@ -49,7 +47,7 @@ def errorDialog(errorString):
 	message.destroy()	# Takes down the dialog box
 	return
 
-class XMLtoList(object):
+class XMLtoList:
 	"""Reads the XML file into a list and returns the list
 	"""
 	def findReadXMLSpreadsheet(self,startingPath):
@@ -65,7 +63,7 @@ class XMLtoList(object):
 		if freshnessCheck:
 			myFreshCheck = CheckFreshness()
 			if not myFreshCheck.isFresh(xmlFileName):
-				print('xml file is not fresh... Exiting')
+				print 'xml file is not fresh... Exiting'
 				errorDialog("The XML File is not fresh\nEither change the Options to ignore the freshness check\nor create/choose a fresh file")
 				return []
 		xmlList = self.readSpreadsheetXML2List(xmlFileName)
@@ -103,7 +101,7 @@ class XMLtoList(object):
 	def setFreshCheckFlag(self,freshCheckValue):
 		global freshnessCheck
 		if verboseMode:
-			print('XMLtoList:setFreshCheckFlag: set the check fresh flag to :',freshCheckValue)
+			print 'XMLtoList:setFreshCheckFlag: set the check fresh flag to :',freshCheckValue
 		freshnessCheck = freshCheckValue
 	
 	def getFilePath(self):
@@ -151,7 +149,7 @@ class XMLtoList(object):
 			errorDialog("No file was selected")
 			return ''
 		else:
-			print('unexpected response was', response)
+			print 'unexpected response was', response
 		dialog.destroy()
 
 	def setVerboseMode(self,verboseFlag):

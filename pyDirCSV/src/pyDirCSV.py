@@ -39,7 +39,10 @@ API
 ===
 
 """
+from __future__ import print_function
 
+from builtins import input
+from builtins import object
 import pygtk
 pygtk.require('2.0')
 
@@ -47,7 +50,7 @@ import gtk
 
 # Check for new pygtk: this is new class in PyGtk 2.4
 if gtk.pygtk_version < (2,3,90):
-   print "PyGtk 2.3.90 or later required"
+   print("PyGtk 2.3.90 or later required")
    raise SystemExit
 
 import csv
@@ -61,7 +64,7 @@ import sys
 # 2 - Size
 # 3 = FileName
 # 4 - Path
-class readDirectoryToList:
+class readDirectoryToList(object):
 	"""Class to read a directory into a list
 	"""
 	def browseToFolder(self):
@@ -81,7 +84,7 @@ class readDirectoryToList:
 			dialog.destroy()
 			return(retFileName)
 		elif response == gtk.RESPONSE_CANCEL: 
-			print 'Closed, no files selected'
+			print('Closed, no files selected')
 			dialog.destroy()
 			exit()
 	
@@ -100,8 +103,8 @@ class readDirectoryToList:
 			elif len(sys.argv) == 1:
 				None
 		elif len(sys.argv) > 2:						# command line with too many passed values
-			print 'usage pyDirCSV path_to_search'
-			s = raw_input('--> ')
+			print('usage pyDirCSV path_to_search')
+			s = input('--> ')
 			exit()
 		elif len(sys.argv) == 2:					# run from drag/drop
 			pathToDir = sys.argv[0] 
@@ -163,8 +166,8 @@ class readDirectoryToList:
 		try:
 			os.system('del c:\\temp\\tempDir.txt')
 		except:
-			print "Couldn't delete temp file"
-			s = raw_input('Hit ENTER to continue --> ')
+			print("Couldn't delete temp file")
+			s = input('Hit ENTER to continue --> ')
 			exit()
 	
 	def doReadDir(self):
@@ -176,11 +179,11 @@ class readDirectoryToList:
 		commandString = readDirectoryToList.formCommandLine(self, pathToDir)
 		rval = os.system(commandString)
 		if rval == 1:		# error because the c:\temp folder does not exist
-			print 'Creating c:\\temp folder'
+			print('Creating c:\\temp folder')
 			rval2 = os.system('md c:\\temp\\')
 			if rval2 == 1:
-				print 'unable to create c:\\temp\\ folder'
-				s = raw_input('Hit ENTER to continue --> ')
+				print('unable to create c:\\temp\\ folder')
+				s = input('Hit ENTER to continue --> ')
 				exit()
 			rval = os.system(commandString)
 		readFile = open('c:\\temp\\tempDir.txt','rb')
@@ -189,7 +192,7 @@ class readDirectoryToList:
 		readDirectoryToList.deleteTempFile(self)
 		return(dirFileL)
 		
-class selOutputFile:
+class selOutputFile(object):
 	"""This class allows the user to select the output file name and opens the output file as a csv file
 	"""
 	def selectOutputFileName(self):
@@ -209,7 +212,7 @@ class selOutputFile:
 			dialog.destroy()
 			return(retFileName)
 		elif response == gtk.RESPONSE_CANCEL: 
-			print 'Closed, no files selected'
+			print('Closed, no files selected')
 		dialog.destroy()
 		exit()
 	
@@ -222,8 +225,8 @@ class selOutputFile:
 		try:
 			myCSVFile = open(csvName, 'wb')
 		except:
-			print "Couldn't open the output file. Is the file open in EXCEL?"
-			s = raw_input('Hit ENTER to exit --> ')	# wait for enter to be pressed
+			print("Couldn't open the output file. Is the file open in EXCEL?")
+			s = input('Hit ENTER to exit --> ')	# wait for enter to be pressed
 			exit()
 		outFil = csv.writer(myCSVFile)
 		return(outFil)
@@ -238,4 +241,4 @@ outFile = myOutFile.openCSVFile(outCSVFileName)				# Open the output csv file
 outFile.writerow(['Date','Time','Size','FileName','Path'])	# File header
 outFile.writerows(dirFileList)
 
-print 'Files : ', len(dirFileList)
+print('Files : ', len(dirFileList))

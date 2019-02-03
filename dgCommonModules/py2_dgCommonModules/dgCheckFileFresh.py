@@ -16,10 +16,7 @@ API
 ===
 
 """
-from __future__ import print_function
 
-from builtins import str
-from builtins import object
 import os
 import datetime
 import time
@@ -27,7 +24,7 @@ import time
 verboseMode = False
 freshFlag = True
 
-class CheckFreshness(object):
+class CheckFreshness():
 	"""Class which checks a file to see if it is fresh
 	"""
 	## Returns True if the file was saved today, False otherwise
@@ -45,11 +42,11 @@ class CheckFreshness(object):
 		currentDate = time.strftime("%Y-%m-%d")
 		if fileDateStamp == currentDate:
 			if verboseMode:
-				print('File is fresh')
+				print 'File is fresh'
 			return True
 		else:
 			if verboseMode:
-				print('file was not fresh')
+				print 'file was not fresh'
 			return False
 		
 	def setVerboseMode(self,verboseFlag):
@@ -64,7 +61,7 @@ class CheckFreshness(object):
 		global verboseMode
 		verboseMode = verboseFlag
 		if verboseMode:
-			print('setVerboseMode: setting VerboseMode flag to Verbose')
+			print 'setVerboseMode: setting VerboseMode flag to Verbose'
 		
 	def setFreshCheckFlag(self,freshnessFlag):
 		"""
@@ -75,7 +72,7 @@ class CheckFreshness(object):
 		global freshFlag
 		global verboseMode
 		if verboseMode:
-			print('CheckFreshness:setFreshCheckFlag: setting freshness flag', freshnessFlag)
+			print 'CheckFreshness:setFreshCheckFlag: setting freshness flag', freshnessFlag
 		freshFlag = freshnessFlag
 		
 	def getFreshFlag(self):
@@ -86,5 +83,5 @@ class CheckFreshness(object):
 		global freshFlag
 		global verboseMode
 		if verboseMode:
-			print('CheckFreshness:getFreshFlag: getting freshness flag',freshFlag)
+			print 'CheckFreshness:getFreshFlag: getting freshness flag',freshFlag
 		return freshFlag
