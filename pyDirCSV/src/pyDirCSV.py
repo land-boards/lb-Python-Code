@@ -1,3 +1,4 @@
+#!/usr/bin/env python      1
 """
 
 ===========
@@ -43,15 +44,9 @@ from __future__ import print_function
 
 from builtins import input
 from builtins import object
-import pygtk
-pygtk.require('2.0')
 
-import gtk
-
-# Check for new pygtk: this is new class in PyGtk 2.4
-if gtk.pygtk_version < (2,3,90):
-   print("PyGtk 2.3.90 or later required")
-   raise SystemExit
+from tkinter import *
+from tkinter import filedialog
 
 import csv
 import os
@@ -71,22 +66,9 @@ class readDirectoryToList(object):
 		"""Opens a windows file browser to allow user to navigate to the directory to read
 		returns the file name of the path that was selected
 		"""
-		dialog = gtk.FileChooserDialog(title="Select folder", 
-			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
-		filter = gtk.FileFilter() 
-		filter.set_name("Select Folder")
-		filter.add_pattern("*") # what's the pattern for a folder 
-		dialog.add_filter(filter)
-		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-			retFileName = dialog.get_filename()
-			dialog.destroy()
-			return(retFileName)
-		elif response == gtk.RESPONSE_CANCEL: 
-			print('Closed, no files selected')
-			dialog.destroy()
-			exit()
+		retFileName = filedialog.askdirectory()
+		print ("Selected Folder: ",retFileName)
+		return retFileName
 	
 	def dealWithCommandLine(self):
 		"""
@@ -126,14 +108,14 @@ class readDirectoryToList(object):
 	def parseDirTxt(self, filePtr):
 		"""
 		:param filePtr: file handle
-		:return: list of directors contents
+		:return: list of directories contents
 
 		Parse through the text file that was created when the directory was set up
 		"""
 		dirFiles = []
 		dirName = ""
 		for textLine in filePtr:
-			textLine = textLine.strip('\r\n')
+			textLine = textLine.strip()
 			if len(textLine) == 0:
 				None
 			elif textLine.find("Volume in drive ") != -1:
@@ -149,8 +131,8 @@ class readDirectoryToList(object):
 				dirLine.append(textLine[0:10])
 				dirLine.append(textLine[12:20])
 				dirLine.append(textLine[22:38].strip())
-				dirLine.append(textLine[39:])
-				dirLine.append(dirName)
+				dirLine.append(textLine[39:].strip())
+				dirLine.append(dirName.strip())
 				dirFiles.append(dirLine)
 			elif textLine.find('File(s)') > 0:
 				None
@@ -186,7 +168,7 @@ class readDirectoryToList(object):
 				s = input('Hit ENTER to continue --> ')
 				exit()
 			rval = os.system(commandString)
-		readFile = open('c:\\temp\\tempDir.txt','rb')
+		readFile = open('c:\\temp\\tempDir.txt','r')
 		dirFileL = readDirectoryToList.parseDirTxt(self, readFile)
 		readFile.close()
 		readDirectoryToList.deleteTempFile(self)
@@ -199,22 +181,8 @@ class selOutputFile(object):
 		"""
 		# returns the name of the output csv file
 		"""
-		dialog = gtk.FileChooserDialog(title="Save as", 
-			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
-		filter = gtk.FileFilter() 
-		filter.set_name("*.csv")
-		filter.add_pattern("*.csv") # whats the pattern for a folder 
-		dialog.add_filter(filter)
-		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-			retFileName = dialog.get_filename()
-			dialog.destroy()
-			return(retFileName)
-		elif response == gtk.RESPONSE_CANCEL: 
-			print('Closed, no files selected')
-		dialog.destroy()
-		exit()
+		retFileName = filedialog.asksaveasfilename()
+		return(retFileName)
 	
 	def openCSVFile(self, csvName):
 		"""
@@ -223,7 +191,7 @@ class selOutputFile(object):
 		if csvName[-4:] != '.csv' and csvName[-4:] != '.CSV':
 			csvName += '.csv'
 		try:
-			myCSVFile = open(csvName, 'wb')
+			myCSVFile = open(csvName, 'w')
 		except:
 			print("Couldn't open the output file. Is the file open in EXCEL?")
 			s = input('Hit ENTER to exit --> ')	# wait for enter to be pressed
