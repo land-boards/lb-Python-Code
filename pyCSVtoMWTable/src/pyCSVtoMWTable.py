@@ -28,7 +28,9 @@ API
 ===
 
 """
+from __future__ import print_function
 
+from builtins import object
 import pygtk
 pygtk.require('2.0')
 
@@ -36,7 +38,7 @@ import gtk
 
 # Check for new pygtk: this is new class in PyGtk 2.4
 if gtk.pygtk_version < (2,3,90):
-	 print "PyGtk 2.3.90 or later required"
+	 print("PyGtk 2.3.90 or later required")
 	 raise SystemExit
 
 import csv
@@ -65,7 +67,7 @@ def errorDialog(errorString):
 	message.destroy()	# Takes down the dialog box
 	return
 	
-class ControlClass:
+class ControlClass(object):
 	def theExecutive(self):
 		"""
 		:global lastPathFileName: The path and file name that was found by the browser.
@@ -118,7 +120,7 @@ class ControlClass:
 			outFilePtr.write('|-\n')
 		outFilePtr.write('|}\n')
 
-class UIManager:
+class UIManager(object):
 	"""The UI manager
 	"""
 	interface = """
