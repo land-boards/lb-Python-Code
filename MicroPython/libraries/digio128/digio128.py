@@ -105,18 +105,18 @@ def writeRegister(regAdr,wrValue):
 	i2c.writeto_mem(chipAddr,regAdr,outBuff)	# Write to OLATA register
 	return
 	
-def blinkLED0():
-	pinMode(0,OUTPUT)
-	for loopCount in range(0,6):
-		digitalWrite(0,1)
-		time.sleep(0.25)
-		digitalWrite(0,0)
-		time.sleep(0.25)
+# def blinkLED0():
+	# pinMode(0,OUTPUT)
+	# for loopCount in range(0,6):
+		# digitalWrite(0,1)
+		# time.sleep(0.25)
+		# digitalWrite(0,0)
+		# time.sleep(0.25)
 
-def fastToggle():
-	pinMode(0,OUTPUT)
-	for loopCount in range(0,6):
-		digitalWrite(0,1)
-		digitalWrite(0,0)
+# def fastToggle():
+	# pinMode(0,OUTPUT)
+	# for loopCount in range(0,6):
+		# digitalWrite(0,1)
+		# digitalWrite(0,0)
 
-blinkLED0()
+# blinkLED0()
