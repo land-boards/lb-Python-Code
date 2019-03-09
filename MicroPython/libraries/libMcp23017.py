@@ -1,6 +1,8 @@
 import time
 import machine
 
+MCP23017_BASEADDR=0x20
+
 # IOCON.BANK0
 MCP23017_IODIRA=0x00
 MCP23017_IPOLA=0x02
@@ -30,7 +32,7 @@ INPUT=0x0
 OUTPUT=0x1
 INPUT_PULLUP=0x2
 
-i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21))		# Set up pins
+i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=400000)		# Set up pins
 outdata=bytearray(b'\x00') 				# IODIRA value lowest bit output
 i2c.writeto_mem(0x20,MCP23017_IOCONA,outdata) 		# Set the IODIRA to output for lowest bit
 #outdata=bytearray(b'\xfe') 				# IODIRA value lowest bit output
