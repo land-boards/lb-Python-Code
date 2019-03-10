@@ -13,8 +13,8 @@ def testDigio128():
 	print("Testing DIGIO-128 card")
 	for bit in range(0,128):
 		digio128.pinMode(bit,digio128.INPUT_PULLUP)
-	for readBit in range(0,128):
-		if digio128.digitalRead(readBit) != 1:
+	for bit in range(0,128):
+		if digio128.digitalRead(bit) != 1:
 			print("testDigio128(1): Expected pullup on input pin")
 			sys.exit(1)
 	for testingBit in range(0,128):
