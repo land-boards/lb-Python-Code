@@ -64,7 +64,7 @@ def digitalRead(bit):			# Reads a single bit
 		regAdr=MCP23017_GPIOA
 	else:
 		regAdr=MCP23017_GPIOB
-	rdValreadRegister(regAdr)
+	rdVal=readRegister(regAdr)
 	return ((rdVal>>(bit&7))&0x01)
 
 def pinMode(bit,value):			# Set the single bit direction (INPUT, INPUT_PULLUP, OUTPUT)
