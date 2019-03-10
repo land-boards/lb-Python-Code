@@ -2,12 +2,10 @@
 # digio128 - DIGIO-128 library
 ###############################################################################
 
-import time
 import machine
 
 MCP23017_BASEADDR=0x20
 
-# IOCON.BANK0
 MCP23017_IODIRA=0x00
 MCP23017_IPOLA=0x02
 MCP23017_GPINTENA=0x04
@@ -38,8 +36,8 @@ INPUT_PULLUP=0x2
 
 i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=400000)
 outdata=bytearray(b'\x00')
-for chipAddr in range(MCP23017_BASEADDR,MCP23017_BASEADDR+8):
-	i2c.writeto_mem(chipAddr,MCP23017_IOCONA,outdata)	# set all bits to inputs
+for locChipAddr in range(MCP23017_BASEADDR,MCP23017_BASEADDR+8):
+	i2c.writeto_mem(locChipAddr,MCP23017_IOCONA,outdata)	# set all bits to inputs
 chipAddr = MCP23017_BASEADDR
 
 def digitalWrite(bit,value): 	# Writes to a single bit
@@ -105,18 +103,3 @@ def writeRegister(regAdr,wrValue):
 	i2c.writeto_mem(chipAddr,regAdr,outBuff)	# Write to OLATA register
 	return
 	
-# def blinkLED0():
-	# pinMode(0,OUTPUT)
-	# for loopCount in range(0,6):
-		# digitalWrite(0,1)
-		# time.sleep(0.25)
-		# digitalWrite(0,0)
-		# time.sleep(0.25)
-
-# def fastToggle():
-	# pinMode(0,OUTPUT)
-	# for loopCount in range(0,6):
-		# digitalWrite(0,1)
-		# digitalWrite(0,0)
-
-# blinkLED0()
