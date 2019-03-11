@@ -1,5 +1,5 @@
 ###############################################################################
-# digio128 - DIGIO-128 library
+# digio32 - DIGIO32-I2C library
 ###############################################################################
 
 import machine
@@ -34,15 +34,15 @@ INPUT=0x0
 OUTPUT=0x1
 INPUT_PULLUP=0x2
 
-i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=400000)
+i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=200000)
 outdata=bytearray(b'\x00')
-for locChipAddr in range(MCP23017_BASEADDR,MCP23017_BASEADDR+8):
-	i2c.writeto_mem(locChipAddr,MCP23017_IOCONA,outdata)	# set all bits to inputs
+i2c.writeto_mem(MCP23017_BASEADDR,MCP23017_IOCONA,outdata)	# set all bits to inputs
+i2c.writeto_mem(MCP23017_BASEADDR+1,MCP23017_IOCONA,outdata)	# set all bits to inputs
 chipAddr = MCP23017_BASEADDR
 
 def digitalWrite(bit,value): 	# Writes to a single bit
 	global chipAddr
-	chipAddr = MCP23017_BASEADDR | ((bit & 0x70) >> 4)
+	chipAddr = MCP23017_BASEADDR | ((bit & 0x10) >> 4)
 	if ((bit & 0x08) == 0):
 		regAdr=MCP23017_OLATA
 	else:
@@ -57,7 +57,7 @@ def digitalWrite(bit,value): 	# Writes to a single bit
 
 def digitalRead(bit):			# Reads a single bit
 	global chipAddr
-	chipAddr = MCP23017_BASEADDR | ((bit & 0x70) >> 4)
+	chipAddr = MCP23017_BASEADDR | ((bit & 0x10) >> 4)
 	if ((bit & 0x08) == 0):
 		regAdr=MCP23017_GPIOA
 	else:
@@ -67,7 +67,7 @@ def digitalRead(bit):			# Reads a single bit
 
 def pinMode(bit,value):			# Set the single bit direction (INPUT, INPUT_PULLUP, OUTPUT)
 	global chipAddr
-	chipAddr = MCP23017_BASEADDR | ((bit & 0x70) >> 4)
+	chipAddr = MCP23017_BASEADDR | ((bit & 0x10) >> 4)
 	changeBit = 1 << (bit & 0x7)
 	if ((bit & 0x08) == 0):
 		puRegAdr=MCP23017_GPPUA
