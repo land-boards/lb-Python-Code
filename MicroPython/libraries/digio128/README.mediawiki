@@ -1,5 +1,7 @@
 == land-boards DIGIO-128 MicroPython Code ==
 
+<img src="http://land-boards.com/blwiki/images/2/26/DIGIO-128-X3-CCA_5847-640px.jpg" alt="DIGIO-128 Card photo"></img>
+
 * These are our [http://www.micropython.org/ MicroPython] Library and example code files for the [http://land-boards.com/blwiki/index.php?title=DIGIO-128 DIGIO-128] card
 
 == Files ==
