@@ -1,3 +1,9 @@
+####################################################################
+# blinkMcp23017Led.py - Blinks an LED on an MCP23017 partition
+# Does not require libraries other than standard MicroPython libraries
+####################################################################
+
+
 import time
 import machine
 
