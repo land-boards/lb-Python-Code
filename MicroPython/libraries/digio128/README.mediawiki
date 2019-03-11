@@ -1,4 +1,4 @@
-== Land Boards, LLC - DIGIO-128 MicroPython Code ==
+== Land Boards, LLC - DIGIO-128 MicroPython Driver and Example Code ==
 
 <img src="http://land-boards.com/blwiki/images/2/26/DIGIO-128-X3-CCA_5847-640px.jpg" alt="DIGIO-128 Card photo"></img>
 
