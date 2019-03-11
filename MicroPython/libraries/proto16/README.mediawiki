@@ -1,0 +1,20 @@
+== land-boards DIGIO32-I2C MicroPython Code ==
+
+* These are our [http://www.micropython.org/ MicroPython] Library and example code files for the [http://land-boards.com/blwiki/index.php?title=DIGIO32-I2C DIGIO-32] card
+
+== Files ==
+
+* digio32.py - Library/driver for the [http://land-boards.com/blwiki/index.php?title=DIGIO32-I2C DIGIO-32] card
+* testDigio32.py - Example code which bounces an 1 across all of the DIGIO32-I2C pins. Used to blink an LED and test the card.
+
+== Ownership ==
+
+* Some of these files (particularly libraries) were created by others.
+** There may be newer versions of these libraries "out there".
+** Some libraries even have the same names but don't work the same.
+* Many of these files were created by us based on the work of others.
+
+=== Warning ===
+
+* Use at your own risk.
+** If you brick your part or it melt to a puddle, it's on you not us.
