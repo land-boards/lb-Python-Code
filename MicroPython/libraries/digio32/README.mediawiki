@@ -25,6 +25,7 @@
 *** Setting freq=100000 is close.
 *** Setting freq=200000 is 328 KHz
 *** Setting freq=400000 is 750 KHz.
+** MCP23017 is only guaranteed to run at 400 KHz with 3.3V power
 
 == Ownership ==
 
