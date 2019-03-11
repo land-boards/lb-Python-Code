@@ -1,11 +1,28 @@
-== land-boards DIGIO21-I2C MicroPython Code ==
+== land-boards DIGIO32-I2C MicroPython Code ==
 
 * These are our [http://www.micropython.org/ MicroPython] Library and example code files for the [http://land-boards.com/blwiki/index.php?title=DIGIO32-I2C DIGIO-32] card
+* * Board is sold on the [https://www.tindie.com/products/land_boards/32-bit-digital-io-card-digio32-i2c/ Land Boards store on Tindie]
+<img src="http://land-boards.com/blwiki/images/5/51/Tindie-mediums.png" alt="Tindie logo"></img>
 
 == Files ==
 
-* digio32.py - Library/driver for the [http://land-boards.com/blwiki/index.php?title=DIGIO32-I2C DIGIO-32] card
-* testDigio32.py - Example code which bounces an 1 across all of the DIGIO32-I2C pins. Used to blink an LED and test the card.
+* [https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio32/digio32.py digio32.py] - Library/driver for the [http://land-boards.com/blwiki/index.php?title=DIGIO32-I2C DIGIO-32] card
+** Uses Arduino style functions but in Python with methods extended to 128 bits.
+*** [https://www.arduino.cc/reference/en/language/functions/digital-io/digitalread/ digitalRead(bit)] - bit is 0-31, returns o or 1
+*** [https://www.arduino.cc/reference/en/language/functions/digital-io/digitalwrite/ digitalWrite(bit,val)] - write val (0 or 1) to bit (0-31)
+*** [https://www.arduino.cc/reference/en/language/functions/digital-io/pinmode/ pinMode(bit,val)] - Set the DIGIO pin to
+**** INPUT
+**** OUTPUT
+**** INPUT_PULLUP
+* []https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio32/testDigio32.py testDigio32.py] - Example code which bounces an 1 across all of the DIGIO32-I2C pins. Used to blink an LED and test the card.
+
+== Cautions ==
+
+* MicroPython uses software timing loops for the SCL frequency and is inaccurate
+** See our ticket [https://github.com/micropython/micropython/issues/4595 ESP32 I2C speed issue #4595]
+*** Setting freq=100000 is close.
+*** Setting freq=200000 is 328 KHz
+*** Setting freq=400000 is 750 KHz.
 
 == Ownership ==
 
