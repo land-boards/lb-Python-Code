@@ -16,6 +16,14 @@
 * [https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio128/testDigio128.py testDigio128.py] - Used with port to port jumper cables to test [http://land-boards.com/blwiki/index.php?title=DIGIO-128 DIGIO-128] card. Cards are wired like [http://land-boards.com/blwiki/index.php?title=DIGIO-128#Factory_Acceptance_tests DIGIO-128 Factory Acceptance Test].
 * [https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio128/blinkDigio128.py blinkDigio128.py] - Example code which blinks an LED on the bottom bit of the DIGIO-128. 
 
+== Cautions ==
+
+* MicroPython uses software timing loops for the SCL frequency and is inaccurate
+** See our ticket [https://github.com/micropython/micropython/issues/4595 ESP32 I2C speed issue #4595]
+*** Setting freq=100000 is close.
+*** Setting freq=200000 is 328 KHz
+*** Setting freq=400000 is 750 KHz.
+
 == Ownership ==
 
 * Some of these files (particularly libraries) were created by others.
