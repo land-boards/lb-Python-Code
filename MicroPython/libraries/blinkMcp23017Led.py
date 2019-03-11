@@ -1,6 +1,8 @@
 ####################################################################
 # blinkMcp23017Led.py - Blinks an LED on an MCP23017 partition
 # Does not require libraries other than standard MicroPython libraries
+# MCP23017 datasheet is
+# http://ww1.microchip.com/downloads/en/devicedoc/20001952c.pdf
 ####################################################################
 
 
