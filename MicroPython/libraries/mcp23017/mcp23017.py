@@ -1,7 +1,7 @@
 ###############################################################
 # MCP23017 library
 # Implements an Arduino style call library
-# Uses MicroPython library as described
+# Uses MicroPython machine I2C library as described
 # http://docs.micropython.org/en/latest/library/machine.I2C.html
 # MCP23017 datasheet is
 # http://ww1.microchip.com/downloads/en/devicedoc/20001952c.pdf
@@ -41,7 +41,7 @@ INPUT=0x0
 OUTPUT=0x1
 INPUT_PULLUP=0x2
 
-i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=400000)		# Set up pins
+i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=200000)		# Set up pins
 outdata=bytearray(b'\x00') 				# IODIRA value lowest bit output
 i2c.writeto_mem(0x20,MCP23017_IOCONA,outdata) 		# Set the IODIRA to output for lowest bit
 
