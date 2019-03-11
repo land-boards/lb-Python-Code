@@ -3,7 +3,7 @@
 <img src="http://land-boards.com/blwiki/images/5/53/DIGIO32-I2C-P232-720px.jpg" alt="DIGIO32-I2C Card photo"></img>
 
 * These are our [http://www.micropython.org/ MicroPython] Library and example code files for the [http://land-boards.com/blwiki/index.php?title=DIGIO32-I2C DIGIO-32] card
-* * Board is sold on the [https://www.tindie.com/products/land_boards/32-bit-digital-io-card-digio32-i2c/ Land Boards store on Tindie]
+* Board is sold on the [https://www.tindie.com/products/land_boards/32-bit-digital-io-card-digio32-i2c/ Land Boards store on Tindie]
 <img src="http://land-boards.com/blwiki/images/5/51/Tindie-mediums.png" alt="Tindie logo"></img>
 
 == Files ==
