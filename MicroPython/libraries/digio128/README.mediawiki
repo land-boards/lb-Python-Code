@@ -12,7 +12,7 @@
 ** Uses Arduino style functions but in Python with methods extended to 128 bits.
 *** [https://www.arduino.cc/reference/en/language/functions/digital-io/digitalread/ digitalRead(bit)] - bit is 0-127, returns o or 1
 *** [https://www.arduino.cc/reference/en/language/functions/digital-io/digitalwrite/ digitalWrite(bit,val)] - write val (0 or 1) to bit (0-127)
-*** pinMode(bit,val) - Set the DIGIO pin to either INPUT, OUTPUT, or INPUT_PULLUP
+*** [https://www.arduino.cc/reference/en/language/functions/digital-io/pinmode/ pinMode(bit,val)] - Set the DIGIO pin to either INPUT, OUTPUT, or INPUT_PULLUP
 * [https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio128/testDigio128.py testDigio128.py] - Used with port to port jumper cables to test [http://land-boards.com/blwiki/index.php?title=DIGIO-128 DIGIO-128] card. Cards are wired like [http://land-boards.com/blwiki/index.php?title=DIGIO-128#Factory_Acceptance_tests DIGIO-128 Factory Acceptance Test].
 * [https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio128/blinkDigio128.py blinkDigio128.py] - Example code which blinks an LED on the bottom bit of the DIGIO-128. 
 
