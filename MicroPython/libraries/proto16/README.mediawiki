@@ -1,11 +1,10 @@
-== land-boards DIGIO32-I2C MicroPython Code ==
+== land-boards PROTO16-I2C MicroPython Code ==
 
-* These are our [http://www.micropython.org/ MicroPython] Library and example code files for the [http://land-boards.com/blwiki/index.php?title=DIGIO32-I2C DIGIO-32] card
+* These are our [http://www.micropython.org/ MicroPython] Library and example code files for the [http://land-boards.com/blwiki/index.php?title=PROTO16-I2C PROTO16-I2C] card
 
 == Files ==
 
-* digio32.py - Library/driver for the [http://land-boards.com/blwiki/index.php?title=DIGIO32-I2C DIGIO-32] card
-* testDigio32.py - Example code which bounces an 1 across all of the DIGIO32-I2C pins. Used to blink an LED and test the card.
+* testPROTO16.py - Example code which bounces an 1 across all of the PROTO16-I2C pins. Used to blink an LED and test the card.
 
 == Ownership ==
 
