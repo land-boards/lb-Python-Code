@@ -5,7 +5,6 @@
 # http://ww1.microchip.com/downloads/en/devicedoc/20001952c.pdf
 ####################################################################
 
-
 import time
 import machine
 
