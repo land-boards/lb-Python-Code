@@ -1,7 +1,7 @@
 ###############################################################
 # MCP23008 library
 # Implements an Arduino style call library
-# Uses MicroPython library as described
+# Uses MicroPython machine I2C library as described
 # http://docs.micropython.org/en/latest/library/machine.I2C.html
 # MCP23008 datasheet is at
 # https://ww1.microchip.com/downloads/en/DeviceDoc/21919e.pdf
