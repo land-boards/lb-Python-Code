@@ -14,7 +14,7 @@
 **** INPUT
 **** OUTPUT
 **** INPUT_PULLUP
-* []https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio32/testDigio32.py testDigio32.py] - Example code which bounces an 1 across all of the DIGIO32-I2C pins. Used to blink an LED and test the card.
+* [https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio32/testDigio32.py testDigio32.py] - Example code which bounces an 1 across all of the DIGIO32-I2C pins. Used to blink an LED and test the card.
 
 == Cautions ==
 
