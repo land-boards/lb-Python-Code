@@ -10,9 +10,9 @@ def testProto16():
 	start = time.ticks_ms()
 	print("Bounce LED on PROTO16-I2C card")
 
-	# Set all of the pins to pulled up inputs
+	# Set all of the pins to outputs
 	for bit in range(0,16):
-		mcp23017.digitalWrite(bit,0)
+		mcp23017.digitalWrite(bit,0)	# preset to zero so LED doesn't blink
 		mcp23017.pinMode(bit,mcp23017.OUTPUT)
 		if mcp23017.digitalRead(bit)!=0:
 			print("testProto16 (1): readback failed - expected 0, got 1")
