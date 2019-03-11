@@ -1,4 +1,4 @@
-== land-boards DDIGIO-128 MicroPython Code ==
+== land-boards DIGIO-128 MicroPython Code ==
 
 * These are our [http://www.micropython.org/ MicroPython] Library and example code files for the [http://land-boards.com/blwiki/index.php?title=DIGIO-128 DIGIO-128] card
 
