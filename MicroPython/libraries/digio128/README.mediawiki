@@ -4,8 +4,7 @@
 
 * These are our [http://www.micropython.org/ MicroPython] Library and example code files for the [http://land-boards.com/blwiki/index.php?title=DIGIO-128 DIGIO-128] card
 * Board is sold on the [https://www.tindie.com/products/land_boards/64128-channel-digital-io-card-digio-128/ Land Boards store on Tindie]
-
-[[File:tindie-mediums.png|link=https://www.tindie.com/products/land_boards/digio-128/]]
+<img src="http://land-boards.com/blwiki/images/5/51/Tindie-mediums.png" alt="Tindie logo"></img>
 
 == Files ==
 
