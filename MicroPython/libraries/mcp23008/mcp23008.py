@@ -30,11 +30,11 @@ INPUT_PULLUP=0x2
 
 i2c=machine.I2C(scl=machine.Pin(22),sd=machine.Pin(21),freq=200000)		# Set up pins
 outdat=bytearray(b'\x00') 				# IODIRA value lowest bit output
-i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_IOCONA,outdata) 		# Set the IODIRA to output for lowest bit
+i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_IOCON,outdata) 		# Set the IODIRA to output for lowest bit
 
 def digitalWrite(bit,value): 	# Writes to a single bit
 	# Need to do a read-modify-write to not mess up other bits
-	rwValue=readRegister(MCP23008_OLATA)
+	rwValue=readRegister(MCP23008_OLAT)
 	if (value == 0):
 		rwValue &= ~(1 << (bit&0x7))
 	else:

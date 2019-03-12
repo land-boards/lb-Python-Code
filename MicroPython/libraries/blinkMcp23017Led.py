@@ -3,6 +3,8 @@
 # Does not require libraries other than standard MicroPython libraries
 # MCP23017 datasheet is
 # http://ww1.microchip.com/downloads/en/devicedoc/20001952c.pdf
+# Add LED with series resistor (at least 220 Ohms recommended)
+# Attach LED+ to P1-8 and LED- to P1-10
 ####################################################################
 
 import time
