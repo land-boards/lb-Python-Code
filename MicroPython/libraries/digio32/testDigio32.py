@@ -22,7 +22,7 @@ def testDigio32():
 	for loopCount in range(0,10):
 		for bit in range(0,32):
 			digio32.digitalWrite(bit,1)
-			time.sleep(0.5)
+			time.sleep(0.25)
 			if digio32.digitalRead(bit)!=1:
 				print("testDigio32 (2): readback failed - expected 1, got 0")
 				sys.exit(1)
