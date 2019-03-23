@@ -44,7 +44,7 @@ class MCP():
         is not specified it will default to the appropriate platform detected bus.
         """
         self.address = address
-        self.i2c = I2C(scl=Pin(gpioScl),sda=Pin(gpioSda))
+        self.i2c = I2C(1)
         # Assume starting in ICON.BANK = 0 mode (sequential access).
         # Compute how many bytes are needed to store count of GPIO.
         self.gpio_bytes = self.NUM_GPIO//8

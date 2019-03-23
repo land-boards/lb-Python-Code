@@ -34,7 +34,7 @@ INPUT=0x0
 OUTPUT=0x1
 INPUT_PULLUP=0x2
 
-i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=200000)
+i2c=machine.I2C(1)
 outdata=bytearray(b'\x00')
 i2c.writeto_mem(MCP23017_BASEADDR,MCP23017_IOCONA,outdata)	# set all bits to inputs
 i2c.writeto_mem(MCP23017_BASEADDR+1,MCP23017_IOCONA,outdata)	# set all bits to inputs

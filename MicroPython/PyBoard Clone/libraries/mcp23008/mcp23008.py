@@ -28,7 +28,7 @@ INPUT=0x0
 OUTPUT=0x1
 INPUT_PULLUP=0x2
 
-i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=200000)		# Set up pins
+i2c=machine.I2C(1)		# Set up pins
 outdata=bytearray(b'\x00') 				# IODIRA value lowest bit output
 i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_IOCON,outdata) 		# Set the IODIRA to output for lowest bit
 
