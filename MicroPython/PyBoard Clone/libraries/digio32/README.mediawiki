@@ -1,0 +1,40 @@
+== land-boards DIGIO32-I2C MicroPython Code ==
+
+<img src="http://land-boards.com/blwiki/images/5/53/DIGIO32-I2C-P232-720px.jpg" alt="DIGIO32-I2C Card photo"></img>
+
+* These are our [http://www.micropython.org/ MicroPython] Library and example code files for the [http://land-boards.com/blwiki/index.php?title=DIGIO32-I2C DIGIO-32] card
+* Board is sold on the [https://www.tindie.com/products/land_boards/32-bit-digital-io-card-digio32-i2c/ Land Boards store on Tindie]
+<img src="http://land-boards.com/blwiki/images/5/51/Tindie-mediums.png" alt="Tindie logo"></img>
+
+== Files ==
+
+* [https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio32/digio32.py digio32.py] - Library/driver for the [http://land-boards.com/blwiki/index.php?title=DIGIO32-I2C DIGIO-32] card
+** Uses Arduino style functions but in Python with methods extended to 128 bits.
+*** [https://www.arduino.cc/reference/en/language/functions/digital-io/digitalread/ digitalRead(bit)] - bit is 0-31, returns o or 1
+*** [https://www.arduino.cc/reference/en/language/functions/digital-io/digitalwrite/ digitalWrite(bit,val)] - write val (0 or 1) to bit (0-31)
+*** [https://www.arduino.cc/reference/en/language/functions/digital-io/pinmode/ pinMode(bit,val)] - Set the DIGIO pin to
+**** INPUT
+**** OUTPUT
+**** INPUT_PULLUP
+* [https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio32/testDigio32.py testDigio32.py] - Example code which bounces an 1 across all of the DIGIO32-I2C pins. Used to blink an LED and test the card.
+
+== Cautions ==
+
+* MicroPython uses software timing loops for the SCL frequency and is inaccurate
+** See our ticket [https://github.com/micropython/micropython/issues/4595 ESP32 I2C speed issue #4595]
+*** Setting freq=100000 is close.
+*** Setting freq=200000 is 328 KHz
+*** Setting freq=400000 is 750 KHz.
+** MCP23017 is only guaranteed to run at 400 KHz with 3.3V power
+
+== Ownership ==
+
+* Some of these files (particularly libraries) were created by others.
+** There may be newer versions of these libraries "out there".
+** Some libraries even have the same names but don't work the same.
+* Many of these files were created by us based on the work of others.
+
+=== Warning ===
+
+* Use at your own risk.
+** If you brick your part or it melt to a puddle, it's on you not us.

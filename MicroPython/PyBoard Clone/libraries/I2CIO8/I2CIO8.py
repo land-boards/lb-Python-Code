@@ -7,6 +7,8 @@
 # https://ww1.microchip.com/downloads/en/DeviceDoc/21919e.pdf
 #	D0-D3 are LEDs D0-D3
 #	D4-D7 are H5-H8 jumpers
+# I2CIO8 card docs are at
+#	http://land-boards.com/blwiki/index.php?title=I2CIO-8
 ###############################################################
 
 import time
@@ -30,15 +32,15 @@ INPUT=0x0
 OUTPUT=0x1
 INPUT_PULLUP=0x2
 
-i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=200000)
+i2c=machine.I2C(1)
 outdata=bytearray(b'\xf0')
 i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_IOCON,outdata)
+i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_IODIR,outdata)
 i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_IPOL,outdata)
 i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_GPINTEN,outdata)
 outdata=bytearray(b'\x00')
 i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_GPIO,outdata)
 i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_INTCON,outdata)
-i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_IOCON,outdata)
 
 def digitalWrite(bit,value): 	# Writes to a single bit
 	# Need to do a read-modify-write to not mess up other bits
