@@ -4,6 +4,11 @@
 * [http://land-boards.com/blwiki/index.php?title=Main_Page Wiki pages for the cards which use this code]
 * Most of this code was created to exercise our [http://land-boards.com/blwiki/index.php?title=Open_Data_Acquisition_System Open Data Acquisition System cards]
 
+== Cards ==
+
+* [http://land-boards.com/blwiki/index.php?title=ESP32 Land Boards ESP32 Wiki Page] 
+* [http://land-boards.com/blwiki/index.php?title=STM32F405_PyBoard_Clone Land Boards PyBoard Clone Wiki Page]
+
 == Ownership ==
 
 * Some of these files (particularly libraries) were created by others.
