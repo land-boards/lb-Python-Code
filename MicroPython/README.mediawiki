@@ -3,6 +3,9 @@
 * These are our [http://www.micropython.org/ MicroPython] Source Code/Library files.
 * [http://land-boards.com/blwiki/index.php?title=Main_Page Wiki pages for the cards which use this code]
 * Most of this code was created to exercise our [http://land-boards.com/blwiki/index.php?title=Open_Data_Acquisition_System Open Data Acquisition System cards]
+* Cards Supported
+** ESP32
+** PyBoard Clone
 
 == Ownership ==
 
