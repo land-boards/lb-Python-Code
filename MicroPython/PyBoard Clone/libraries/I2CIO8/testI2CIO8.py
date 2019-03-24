@@ -14,11 +14,11 @@ def testI2CIO8():
 	while True:
 		for port in range(0,4):
 			I2CIO8.digitalWrite(port,1)
-			time.sleep(0.5)
+			time.sleep(0.25)
 			I2CIO8.digitalWrite(port,0)
 		for port in range(2,0,-1):
 			I2CIO8.digitalWrite(port,1)
-			time.sleep(0.5)
+			time.sleep(0.25)
 			I2CIO8.digitalWrite(port,0)
 		if I2CIO8.digitalRead(4) != jumper0:
 			print("Jumper H5 changed")
