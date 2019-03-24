@@ -6,7 +6,7 @@
 
 == Cards ==
 
-*
+* [http://land-boards.com/blwiki/index.php?title=ESP32 Land Boards ESP32 Wiki Page] 
 * [http://land-boards.com/blwiki/index.php?title=STM32F405_PyBoard_Clone Land Boards PyBoard Clone Wiki Page]
 
 == Ownership ==
