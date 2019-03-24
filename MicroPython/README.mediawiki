@@ -5,7 +5,7 @@
 * Most of this code was created to exercise our [http://land-boards.com/blwiki/index.php?title=Open_Data_Acquisition_System Open Data Acquisition System cards]
 * Cards Supported
 ** [https://github.com/land-boards/lb-Python-Code/tree/master/MicroPython/ESP32 ESP32]
-** PyBoard Clone
+** [https://github.com/land-boards/lb-Python-Code/tree/master/MicroPython/PyBoard%20Clone PyBoard Clone]
 
 == Ownership ==
 
