@@ -1,5 +1,5 @@
 ###############################################################################
-# testProto16 - Test the digital IO lines with port-to-port loop cables
+# testProto16 - Blink an LED across the ports
 ###############################################################################
 
 import time
@@ -21,7 +21,7 @@ def testProto16():
 			print("testProto16 (2): readback failed - expected 0, got 1")
 			sys.exit(1)
 		
-	# Blink all LEDs
+	# Blink first LED
 	for loopCount in range(0,10):
 		for bit in range(0,32):
 			mcp23017.digitalWrite(bit,1)

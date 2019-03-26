@@ -7,5 +7,3 @@ def fastBlinkLED():
 	while True:
 		pyb.LED(1).on()
 		pyb.LED(1).off()
-
-fastBlinkLED()
