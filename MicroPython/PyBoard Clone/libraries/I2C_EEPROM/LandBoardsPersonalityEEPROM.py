@@ -21,8 +21,9 @@
 #		};
 # Code is a port of the Arduino sketch
 #	https://github.com/land-boards/lb-Arduino-Code/blob/master/LBCards/ODAS/ODASTESTER/ODASEEPROM.ino
-#
-# Product ID (pid) table  
+# 
+# Product ID (pid) table
+
 PID_NONE=0
 PID_DIGIO16I2C_CARD=1
 PID_DIGIO128_CARD=2
@@ -42,9 +43,13 @@ PID_OPTOFST_SML_INVERTING_CARD=504
 PID_I2CRPT01_CARD=505
 PID_SWLEDX8_I2C_CARD=506
 
-def getPID(pidString):
-	pidDict={
-	PID_DIGIO16I2C_CARD : "DIGIO16-I2C",
+def getProductStringFromPID(pidNumber):
+	"""getProductStringFromPID
+	
+	:param pidNumber: The Product ID number
+	:returns: String which is the board identifier in plain text
+	"""
+	pidDict={PID_DIGIO16I2C_CARD : "DIGIO16-I2C",
 	PID_DIGIO128_CARD : "DIGIO-128",
 	PID_DIGIO128_64_CARD : "DIGIO-128/64",
 	PID_OPTOIN8I2C_CARD : "OptoIn8-I2C",
@@ -52,6 +57,10 @@ def getPID(pidString):
 	PID_DIGIO32I2C_CARD : "DIGIO32-I2C",
 	PID_PROTO16I2C_CARD : "PROTO16-I2C",
 	PID_ODASPSOC5_CARD : "ODAS-PSOC5",
-	PID_ODASRELAY16_CARD : "ODAS-RELAY16"
-	}
-	
+	PID_ODASRELAY16_CARD : "ODAS-RELAY16"}
+	try:
+		dictString = pidDict[pidNumber]
+	except KeyError:
+		print("getProductStringFromPID: Board has no text description")
+		exit()
+	return 
