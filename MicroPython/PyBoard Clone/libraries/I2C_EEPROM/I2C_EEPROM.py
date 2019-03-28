@@ -1,16 +1,18 @@
 # I2C_EEPROM Methods
-# MicroPython
+# MicroPython code
 # EEPROM access are similar to the indirect accesses like the MCP23017
 # They require read from/to memory calls
 # 24LC024 EEPROM is organized as a single block of 256 bytes (256 x 8)
 # This simplifies the addressing since only a single 8-bit address is needed
 # Larger EEPROMs will have different addressing schemes
+# These EEPROMs have a 10 ms max. write cycle time
 
 import time
 import machine
 
 boardBaseAddress = 0x0
 EEPROMAddress = 0x50
+EEPROMSize = 256
 
 i2c=machine.I2C(1)		# Set up pins
 
@@ -35,6 +37,7 @@ def writeEEPROM_8bits(memAdr,wrValue):
 	outBuff=bytearray(1)
 	outBuff[0]=wrValue
 	i2c.writeto_mem(0x20,memAdr,outBuff)
+	time.sleep_ms(10)	# sleep for 10 mS between writes
 	return
 
 def readEEPROM_String(memAdr,length):
@@ -56,13 +59,16 @@ def readEEPROM_String(memAdr,length):
 	return retString
 	
 def writeEEPROM_String(memAdr,stringToWrite):
-	"""writeEEPROM_String
+	"""writeEEPROM_String - Write a string to the EEPROM
 	
 	:param memAdr: EEPROM 8-bit memory address (0-0xff)
 	:param stringToWrite: The string that is being written to EEPROM
 	:returns: no return value
 	"""
 	adrEEPROM = memAdr
+	if (memAdr+len(stringToWrite) > EEPROMSize:
+		print("String would go past the end of memory")
+		exit()
 	for charToWrite in stringToWrite:
 		writeEEPROM_8bits(adrEEPROM,charToWrite)
 		adrEEPROM += 1
@@ -75,9 +81,16 @@ def testEEPROM():
 	writeEEPROM_8bits(1,0xad)
 	rdVal = readEEPROM_8bits(0)
 	if rdVal != 0xde:
-		print("testEEPROM(1): Write 0xde, read back", rdVal)
+		print("testEEPROM(1): Error wrote 0xde, read back", rdVal)
 		exit()
 	rdVal = readEEPROM_8bits(1)
 	if rdVal != 0xad:
-		print("testEEPROM(2): Write 0xad, read back", rdVal)
+		print("testEEPROM(2): Error wrote 0xad, read back", rdVal)
 		exit()
+	writeString = 'TheQuickBrownFoxJumpedOverTheLazyDog'
+	writeEEPROM_String(10,writeString)
+	readString = readEEPROM_String(10)
+	if readString != writeString:
+		print("testEEPROM(3): Error read/write of test string")
+		print("Wrote string",writeString)
+		print("Read back",readString)
