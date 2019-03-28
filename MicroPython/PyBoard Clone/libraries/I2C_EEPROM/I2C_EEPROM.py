@@ -62,6 +62,7 @@ def writeEEPROM_String(memAdr,stringToWrite):
 	"""writeEEPROM_String - Write a string to the EEPROM
 	
 	:param memAdr: EEPROM 8-bit memory address (0-0xff)
+	If larger parts are used then address size would need to be set
 	:param stringToWrite: The string that is being written to EEPROM
 	:returns: no return value
 	"""
@@ -92,5 +93,5 @@ def testEEPROM():
 	readString = readEEPROM_String(10)
 	if readString != writeString:
 		print("testEEPROM(3): Error read/write of test string")
-		print("Wrote string",writeString)
-		print("Read back",readString)
+		print(" Wrote string",writeString)
+		print(" Read back",readString)
