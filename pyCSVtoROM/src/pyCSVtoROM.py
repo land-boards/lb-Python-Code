@@ -9,8 +9,10 @@ Convert a CSV into a VHDL ROM table.
 Background
 ==========
 
-It is easy to make CSV files in EXCEL
 Altera Quartus II can make tables into logic saving on RAM usage.
+It is easy to make CSV files in EXCEL.
+It is a pain to convert them into VHDL arrays.
+This program makes it easy.
 
 =====
 Usage
@@ -18,6 +20,12 @@ Usage
 
 This program prompts for a path and file to select for input.
 The output file is created in the same path with a .vhd output file name.
+
+=====
+Input
+=====
+
+CSV file with data on each row. This format is EXCEL and LibreOffice friendly.
 
 ===
 API
