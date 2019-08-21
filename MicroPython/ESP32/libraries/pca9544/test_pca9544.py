@@ -33,8 +33,8 @@ INPUT=0x0
 OUTPUT=0x1
 INPUT_PULLUP=0x2
 
-i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=100000)
-outBuff=bytearray(b'\x04')		# Set up pins
+i2c=machine.I2C(scl=machine.Pin(22),sda=machine.Pin(21),freq=400000)
+outBuff=bytearray(b'\x04')		# Set I2C port hub
 i2c.writeto(PCA9544_BASEADDR,outBuff)
 outdata=bytearray(b'\xf0')
 i2c.writeto_mem(MCP23008_BASEADDR,MCP23008_IOCON,outdata)
