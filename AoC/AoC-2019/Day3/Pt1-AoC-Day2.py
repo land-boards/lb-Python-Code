@@ -87,12 +87,17 @@ def makeLinesList(listOfCircuits):
 	print("lines",lines)
 	return(lines)
 
+def checkIntersect(wire1,wire2):
+	print("wires",wire1,wire2)
+
 def findIntersections(nets):
 	net1 = nets[0]
 	net2 = nets[1]
 	print("Net1:",net1)
 	print("Net2:",net2)
-	
+	for wire1 in net1:
+		for wire2 in net2:
+			checkIntersect(wire1,wire2)
 
 # open file and read the content into an accumulated sum
 circuits = []
@@ -106,4 +111,4 @@ with open('input2.txt', 'r') as filehandle:
 	#print(circuits)
 linesList = makeLinesList(circuits)
 print(linesList)
-#findIntersections(linesList)
+findIntersections(linesList)
