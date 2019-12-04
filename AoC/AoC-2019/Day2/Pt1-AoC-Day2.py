@@ -1,7 +1,8 @@
-# Pt1-AoCDay1.py
-# 2018 Advent of Code
-# Day 1
+# Pt1-AoCDay2.py
+# 2019 Advent of Code
+# Day 2
 # Part 1
+
 """
 --- Day 2: 1202 Program Alarm ---
 

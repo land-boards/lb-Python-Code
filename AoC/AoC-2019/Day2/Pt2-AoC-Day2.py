@@ -1,7 +1,8 @@
-# Pt1-AoCDay1.py
-# 2018 Advent of Code
-# Day 1
-# Part 1
+# Pt2-AoCDay2.py
+# 2019 Advent of Code
+# Day 2
+# Part 2
+
 """
 --- Part Two ---
 

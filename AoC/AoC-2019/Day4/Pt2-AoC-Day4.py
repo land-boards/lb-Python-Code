@@ -1,7 +1,8 @@
 # Pt2-AoCDay3.py
 # 2019 Advent of Code
 # Day 3
-# Part 1
+# Part 2
+
 """
 --- Day 4: Secure Container ---
 You arrive at the Venus fuel depot only to discover it's protected by a password. The Elves had written the password on a sticky note, but someone threw it out.
@@ -22,6 +23,7 @@ How many different passwords within the range given in your puzzle input meet th
 Your puzzle input is 125730-579381.
 6655 is too high
 2081 is the right answer
+
 --- Part Two ---
 An Elf just remembered one more important detail: the two adjacent matching digits are not part of a larger group of matching digits.
 
@@ -33,75 +35,58 @@ Given this additional criterion, but still ignoring the range rule, the followin
 How many different passwords within the range given in your puzzle input meet all of the criteria?
 
 1015 is too low
-1862 is too high
-
 val 566777 should have been ok
 val 566688 should have been ok
+
+1862 is too high
+577999 should have been OK since there is a pair in there
+
+1063 is too low
+
+1167 is not right
+
+1652 is not right
+
+1411 is correct
+
 """
 from __future__ import print_function
 
 def makeListFromInt(val):
+	""" Turn an integer into a list of digits
+	"""
 	digitString=str(val)
 	resultList = []
 	for charVal in digitString:
 		resultList.append(charVal)
 	return resultList
 
-def checkPassword(digitString):
-	if (digitString[0]>digitString[1]):
-		return False
-	if (digitString[1]>digitString[2]):
-		return False
-	if (digitString[2]>digitString[3]):
-		return False
-	if (digitString[3]>digitString[4]):
-		return False
-	if (digitString[4]>digitString[5]):
-		return False
-
-	if (digitString[0]==digitString[1]):
-		return True
-	if (digitString[1]==digitString[2]):
-		return True
-	if (digitString[2]==digitString[3]):
-		return True
-	if (digitString[3]==digitString[4]):
-		return True
-	if (digitString[4]==digitString[5]):
-		return True
-		
-	return False
-		
-def checkLonger(stringVal):
-	if ((stringVal[0] == stringVal[1]) and (stringVal[1] == stringVal[2])):
-		print("Failed first three digits the same")
-		return False
-	if ((stringVal[1] == stringVal[2]) and (stringVal[2] == stringVal[3])):
-		print("Failed second three digits the same")
-		return False
-	if ((stringVal[2] == stringVal[3]) and (stringVal[3] == stringVal[4])):
-		print("Failed third three digits the same")
-		return False
-	if ((stringVal[3] == stringVal[4]) and (stringVal[4] == stringVal[5])):
-		print("Failed third three digits the same")
-		return False
+def hasAscendingChars(digitString):
+	""" All of the digits should be the same or ascending
+	:returns: False if any digits is descending
+	"""
+	for i in range(len(digitString)-1):
+		if digitString[i]>digitString[i+1]:
+			return False
 	return True
-
-def checkForPair(stringVal):
-	if ((stringVal[0] == stringVal[1]) and (stringVal[1] != stringVal[2])):
-		print("Found pair at first position")
-		return True
-	if ((stringVal[1] == stringVal[2]) and (stringVal[2] != stringVal[3])):
-		print("Found pair at second position")
-		return True
-	if ((stringVal[2] == stringVal[3]) and (stringVal[3] != stringVal[4])):
-		print("Found pair at third position")
-		return True
-	if ((stringVal[3] == stringVal[4]) and (stringVal[4] != stringVal[5])):
-		print("Found pair at 4th position")
-		return True
-	return False
-
+	
+def countPairs(stringVal):
+	""" Precisely count the exact number of pairs where pairs are two adjacent same with no other same of the number.
+	There can be multiple pairs that are different numbers.
+	"""
+	pairCount = 0
+	if                                    ((stringVal[0] == stringVal[1]) and (stringVal[1] != stringVal[2])):
+		pairCount = pairCount + 1
+	if ((stringVal[0] != stringVal[1]) and (stringVal[1] == stringVal[2]) and (stringVal[2] != stringVal[3])):
+		pairCount = pairCount + 1
+	if ((stringVal[1] != stringVal[2]) and (stringVal[2] == stringVal[3]) and (stringVal[3] != stringVal[4])):
+		pairCount = pairCount + 1
+	if ((stringVal[2] != stringVal[3]) and (stringVal[3] == stringVal[4]) and (stringVal[4] != stringVal[5])):
+		pairCount = pairCount + 1
+	if ((stringVal[3] != stringVal[4]) and (stringVal[4] == stringVal[5])):
+		pairCount = pairCount + 1
+	return pairCount
+	
 ###################################################################################
 
 startVal = 125730
@@ -111,12 +96,10 @@ passwordsCount = 0
 val = startVal
 while (val < endVal):
 	myList = makeListFromInt(val)
-	if checkPassword(myList):
-		print("First pass value",val)
-		if checkLonger(myList):
+	if hasAscendingChars(myList):
+		pairCount = countPairs(myList)
+		if pairCount != 0:
+			print("First pass possible value :",val)
 			passwordsCount = passwordsCount + 1
-		else:
-			if checkForPair(myList):
-				passwordsCount = passwordsCount + 1				
 	val = val + 1
 print("Count :",passwordsCount)

@@ -1,7 +1,8 @@
-# Pt1-AoCDay1.py
-# 2018 Advent of Code
+# Pt2-AoCDay1.py
+# 2019 Advent of Code
 # Day 1
-# Part 1
+# Part 2
+
 """
 --- Part Two ---
 During the second Go / No Go poll, the Elf in charge of the Rocket Equation Double-Checker stops the launch sequence. Apparently, you forgot to include additional fuel for the fuel you just added.
