@@ -142,6 +142,8 @@ def orderPoints(points):
 		print("Error points were not resortable")
 
 def checkIntersect(wire1,wire2):
+	""" Check to see if two wires intersect
+	"""
 	newWire1 = orderPoints(wire1)
 	newWire2 = orderPoints(wire2)
 	#print("Checking wire pair",newWire1,newWire2)
@@ -168,6 +170,9 @@ def checkIntersect(wire1,wire2):
 	return([0,0])
 	
 def findIntersections(nets):
+	""" Create a list of intersections
+	Ignore node at 0,0
+	"""
 	net1 = nets[0]
 	net2 = nets[1]
 	#print("Net1:",net1)
@@ -183,6 +188,8 @@ def findIntersections(nets):
 	return intersectList
 
 def isBetween(coord1,coord2,pointToCheck):
+	""" Return True if the point is between two ends (in a single axis)
+	"""
 	if (pointToCheck >= coord1) and (pointToCheck <= coord2):
 		return True
 	elif (pointToCheck <= coord1) and (pointToCheck >= coord2):
@@ -190,60 +197,82 @@ def isBetween(coord1,coord2,pointToCheck):
 	else:
 		return False
 
-def findIntersectionOnLine(lineEndPoints, intersections):
+def manhattanDistanceBetweenPins(pinsPair):
+	return(abs(pinsPair[0]-pinsPair[2])+abs(pinsPair[1]-pinsPair[3]))
+
+def findIntersectionOnLine(lineEndPoints, currentIntersection):
 	"""
 	Returns intersection if the line has an intersection
 	Otherwise returns [0,0]
 	"""
-	for currentIntersection in intersections:
-		print("Checking line",lineEndPoints," for intersection",currentIntersection)
-		if ((lineEndPoints[0] != currentIntersection[0]) and (lineEndPoints[1] != currentIntersection[1])):
-#			print("Not on line")
-			return [0,0]
-		if (lineEndPoints[0] == lineEndPoints[2]):
-			if (isBetween(lineEndPoints[1],lineEndPoints[3],currentIntersection[1])):
-#				print("Is on X line")
-				return currentIntersection
-		if (lineEndPoints[1] == lineEndPoints[3]):
-			if (isBetween(lineEndPoints[0],lineEndPoints[2],currentIntersection[0])):
-#				print("Is on Y line")
-				return currentIntersection
-		print("Not on line")
+#	print("findIntersectionOnLine: currentIntersection",currentIntersection)
+#	print("Checking line :",lineEndPoints," for intersection at :",currentIntersection)
+	if ((lineEndPoints[0] != currentIntersection[0]) and (lineEndPoints[1] != currentIntersection[1])):
+#		print("findIntersectionOnLine: Not on line")
 		return [0,0]
-
-def manhattanDistanceBetweenPins(pinsPair):
-	return(abs(pinsPair[0]-pinsPair[2])+abs(pinsPair[1]-pinsPair[3]))
+	if ((lineEndPoints[2] != currentIntersection[0]) and (lineEndPoints[3] != currentIntersection[1])):
+#		print("findIntersectionOnLine: Not on line")
+		return [0,0]
+	if (lineEndPoints[0] == lineEndPoints[2]):
+		if (isBetween(lineEndPoints[1],lineEndPoints[3],currentIntersection[1])):
+			#print("*** findIntersectionOnLine: Is on X line")
+			return currentIntersection
+	if (lineEndPoints[1] == lineEndPoints[3]):
+		if (isBetween(lineEndPoints[0],lineEndPoints[2],currentIntersection[0])):
+			#print("*** findIntersectionOnLine: Is on Y line")
+			return currentIntersection
+#		print("findIntersectionOnLine: Not on line")
+		return [0,0]
 
 def distToIntersects(linesList,intersList):
 	"""
 	"""
-	nodeAccumDist1 = 0
-	distanceToNode = 0;
-	for lineEndPoints in linesList[0]:
-		checkIfPointOnLine = findIntersectionOnLine(lineEndPoints, intersList)
-		if checkIfPointOnLine!=[0,0]:
-			distanceToNode = nodeAccumDist1 + manhattanDistanceBetweenPins([lineEndPoints[0],lineEndPoints[1],checkIfPointOnLine[0],checkIfPointOnLine[1]])
-			print("Found intersection at distance :",distanceToNode)
-		else:
-			print("Line doesn't have an intersection - length : ",manhattanDistanceBetweenPins(lineEndPoints))
-		nodeAccumDist1 = nodeAccumDist1 + manhattanDistanceBetweenPins(lineEndPoints)
-		print("Accumulated line 1 distance : ",nodeAccumDist1)
-	nodeAccumDist2 = 0
-	distanceToNode = 0;
-	for lineEndPoints in linesList[1]:
-		checkIfPointOnLine = findIntersectionOnLine(lineEndPoints, intersList)
-		if checkIfPointOnLine!=[0,0]:
-			distanceToNode = nodeAccumDist2 + manhattanDistanceBetweenPins([lineEndPoints[0],lineEndPoints[1],checkIfPointOnLine[0],checkIfPointOnLine[1]])
-			print("Found intersection at distance :",distanceToNode)
-		else:
-			print("Line doesn't have an intersection - length : ",manhattanDistanceBetweenPins(lineEndPoints))
-		nodeAccumDist2 = nodeAccumDist2 + manhattanDistanceBetweenPins(lineEndPoints)
-		print("Accumulated line 2 distance : ",nodeAccumDist2)
+	print("*** distToIntersects: Going through first chain of wires")
+	distancesList1 = []
+	for intersPoint in intersList:
+		nodeAccumDist1 = 0
+		distanceToNode = 0;
+		for lineEndPoints in linesList[0]:
+			#print("distToIntersects: lineEndPoints",lineEndPoints)
+			#print("distToIntersects: Checking for intersection with point",intersPoint)
+			checkIfPointOnLine = findIntersectionOnLine(lineEndPoints, intersPoint)
+			if checkIfPointOnLine!=[0,0]:
+				distanceToNode = nodeAccumDist1 + manhattanDistanceBetweenPins([lineEndPoints[0],lineEndPoints[1],checkIfPointOnLine[0],checkIfPointOnLine[1]])
+				print("*** distToIntersects: Found intersection",intersPoint,"at distance :",distanceToNode)
+				distancesList1.append(distanceToNode)
+			#else:
+				#print("distToIntersects: Line doesn't have an intersection - length : ",manhattanDistanceBetweenPins(lineEndPoints))
+			nodeAccumDist1 = nodeAccumDist1 + manhattanDistanceBetweenPins(lineEndPoints)
+			#print("distToIntersects: Accumulated line 1 distance : ",nodeAccumDist1)
+	print("*** distToIntersects: Going through second chain of wires")
+	distancesList2 = []
+	for intersPoint in intersList:
+		nodeAccumDist2 = 0
+		distanceToNode = 0;
+		for lineEndPoints in linesList[1]:
+			#print("distToIntersects: lineEndPoints",lineEndPoints)
+			#print("distToIntersects: Checking for intersection with point",intersPoint)
+			checkIfPointOnLine = findIntersectionOnLine(lineEndPoints, intersPoint)
+			if checkIfPointOnLine!=[0,0]:
+				distanceToNode = nodeAccumDist2 + manhattanDistanceBetweenPins([lineEndPoints[0],lineEndPoints[1],checkIfPointOnLine[0],checkIfPointOnLine[1]])
+				print("*** distToIntersects: Found intersection",intersPoint,"at distance :",distanceToNode)
+				distancesList2.append(distanceToNode)
+			#else:
+				#print("distToIntersects: Line doesn't have an intersection - length : ",manhattanDistanceBetweenPins(lineEndPoints))
+			nodeAccumDist2 = nodeAccumDist2 + manhattanDistanceBetweenPins(lineEndPoints)
+			#print("distToIntersects: Accumulated line 2 distance : ",nodeAccumDist2)
+	listOffset = 0
+	distMin=999999
+	while(listOffset < len(distancesList1)):
+		if (distancesList1[listOffset] + distancesList2[listOffset]) < distMin:
+			distMin = distancesList1[listOffset] + distancesList2[listOffset]
+		listOffset = listOffset + 1
+	print("distMin : ",distMin)
 
 #########################################################################
 				
 circuits = []
-inFileName="input1.txt"
+inFileName="input.txt"
 print("Input File Name :",inFileName)
 with open(inFileName, 'r') as filehandle:
 	lines = filehandle.readlines()
