@@ -52,6 +52,7 @@ Finally, the program will output a diagnostic code and immediately halt. This fi
 After providing 1 to the only input instruction and passing all the tests, what diagnostic code does the program produce?
 
 223 is too low
+Output value : 7286649
 
 """
 from __future__ import print_function
@@ -78,7 +79,7 @@ def processList(listOfNumbers):
 				val2 = listOfNumbers[programCounter+2]
 				print("Add: Immed parm 2 :",val2)
 			if currentOp[3] != 0:	
-				print("Should have been position mode not immediate mode")
+				print("Error - Should have been position mode not immediate mode")
 				exit()
 			result = val1 + val2
 			posOut = listOfNumbers[programCounter+3]
@@ -92,28 +93,29 @@ def processList(listOfNumbers):
 				print("Mult: Read parm 1 from pos :",pos,"value :",val1)
 			elif currentOp[1] == 1:	# immediate mode
 				val1 = listOfNumbers[programCounter+1]
+				print("Mult: Immed parm 1 :",val1)
 			if currentOp[2] == 0:	# position mode
 				pos = listOfNumbers[programCounter+2]
 				val2 = listOfNumbers[pos]
 				print("Mult: Read parm 2 from pos :",pos,"value :",val2)
 			elif currentOp[2] == 1:	# immediate mode
 				val2 = listOfNumbers[programCounter+2]
+				print("Mult: Read parm 2 from pos :",pos,"value :",val2)
 			if currentOp[3] != 0:	
-				print("Should have been position mode not immediate mode")
+				print("Error - Should have been position mode not immediate mode")
 				exit()
 			result = val1 * val2
 			posOut = listOfNumbers[programCounter+3]
 			listOfNumbers[posOut] = result
-			print("Stored product : ",result,"at :",posOut)
+			print("Mult: Stored product at pos : ",posOut,"value :",result)
 			programCounter = programCounter + 4
 		elif currentOp[0] == 3:	# Input Operator
 			pos = listOfNumbers[programCounter+1]
 			listOfNumbers[pos] = inputVal
-			print("Read input value :",inputVal)
-			print("Storing at :",pos)
+			print("Read input value :",inputVal,"Storing at :",pos)
 			programCounter = programCounter + 2
 		elif currentOp[0] == 4:	# Output Operator
-			print("*** Output value :",listOfNumbers[programCounter+1])
+			print("*** Output value :",listOfNumbers[programCounter+3])
 			programCounter = programCounter + 2
 		elif currentOp[0] == 99:
 			print("Program ended normally")
