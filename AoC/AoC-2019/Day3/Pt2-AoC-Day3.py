@@ -289,5 +289,5 @@ intersList = findIntersections(sortedLinesList)
 # Make list of lines that have ends touching
 #print("Intersection list",intersList)
 chainedLinesList = makechainedLinesList(circuits)
-#print("Ordered lines list",chainedLinesList)
+print("Chained lines list",chainedLinesList)
 distToIntersects(chainedLinesList,intersList)
