@@ -54,47 +54,64 @@ def mathOperation(programCounter,currentOp,listOfNumbers):
 	if currentOp[1] == 0:	# position mode
 		pos = listOfNumbers[programCounter+1]
 		val1 = listOfNumbers[pos]
-		#print("mathOperation: Read parm 1 from pos :",pos,"value :",val1)
+		if debugMessage:
+			print("mathOperation: Read parm 1 from pos :",pos,"value :",val1)
 	elif currentOp[1] == 1:	# immediate mode
 		val1 = listOfNumbers[programCounter+1]
-		#print("mathOperation: Immed parm 1 :",val1)
+		if debugMessage:
+			print("mathOperation: Immed parm 1 :",val1)
 	else:
-		print("mathOperation: Unexpected currentOp[1]",currentOp[1])
+		if debugMessage:
+			print("mathOperation: Unexpected currentOp[1]",currentOp[1])
 		exit()
 	if currentOp[2] == 0:	# position mode
 		pos = listOfNumbers[programCounter+2]
 		val2 = listOfNumbers[pos]
-		#print("mathOperation: Read parm 2 from pos :",pos,"value :",val2)
+		if debugMessage:
+			print("mathOperation: Read parm 2 from pos :",pos,"value :",val2)
 	elif currentOp[2] == 1:	# immediate mode
 		val2 = listOfNumbers[programCounter+2]
-		#print("mathOperation: Immed parm 2 :",val2)
+		if debugMessage:
+			print("mathOperation: Immed parm 2 :",val2)
 	else:
-		print("mathOperation: Unexpected currentOp[2]",currentOp[2])
+		if debugMessage:
+			print("mathOperation: Unexpected currentOp[2]",currentOp[2])
 		exit()
 	if currentOp[3] != 0:	
-		print("mathOperation: Error - Should have been position mode not immediate mode")
+		if debugMessage:
+			print("mathOperation: Error - Should have been position mode not immediate mode")
 		exit()
 	return[val1,val2]
 	
 def branchEval(programCounter,currentOp,listOfNumbers):
+	if debugMessage:
+		print("branchEval: Reached function")
 	if currentOp[1] == 0:	# position mode
 		pos = listOfNumbers[programCounter+1]
 		val1 = listOfNumbers[pos]
-		#print("branchEval: Read parm 1 from pos :",pos,"value :",val1)
+		if debugMessage:
+			print("branchEval: Read (parm 1) from pos :",pos,"value :",val1)
 	elif currentOp[1] == 1:	# immediate mode
 		val1 = listOfNumbers[programCounter+1]
-		#print("branchEval: Immed parm 1 :",val1)
+		if debugMessage:
+			print("branchEval: Immed parm 1 :",val1)
 	else:
-		print("branchEval: Unexpected currentOp[1]",currentOp[1])
+		pass
+		if debugMessage:
+			print("branchEval: Unexpected currentOp[1]",currentOp[1])
 	if currentOp[2] == 0:	# position mode
 		pos = listOfNumbers[programCounter+2]
 		val2 = listOfNumbers[pos]
-		#print("branchEval: Read parm 2 from pos :",pos,"value :",val2)
+		if debugMessage:
+			print("branchEval: Read (parm 2) from pos :",pos,"value :",val2)
 	elif currentOp[2] == 1:	# immediate mode
 		val2 = listOfNumbers[programCounter+2]
-		#print("branchEval: Immed parm 2 :",val2)
+		if debugMessage:
+			print("branchEval: Immed parm 2 :",val2)
 	else:
-		print("branchEval: Unexpected currentOp[2]",currentOp[2])
+		pass
+		if debugMessage:
+			print("branchEval: Unexpected currentOp[2]",currentOp[2])
 	return[val1,val2]
 	
 
@@ -105,51 +122,61 @@ def processList(listOfNumbers):
 	while 1:
 		#print("Memory Dump :",listOfNumbers)
 		currentOp = extractFieldsFromInstruction(listOfNumbers[programCounter])
-		#print("PC",programCounter,"Opcode",listOfNumbers[programCounter],"currentOp",currentOp)
+		if debugMessage:
+			print("PC =",programCounter,", Opcode",listOfNumbers[programCounter],", currentOp",currentOp)
 		if currentOp[0] == 1:		# Addition Operator
 			valPair = mathOperation(programCounter,currentOp,listOfNumbers)
 			result = valPair[0] + valPair[1]
 			posOut = listOfNumbers[programCounter+3]
 			listOfNumbers[posOut] = result
-			print("Add: Store sum at pos :",posOut,"value :",result)
+			if debugMessage:
+					print("Add: Store sum at pos :",posOut,"value :",result)
 			programCounter = programCounter + 4
 		elif currentOp[0] == 2:		# Multiplication Operator
 			valPair = mathOperation(programCounter,currentOp,listOfNumbers)
 			result = valPair[0] * valPair[1]
 			posOut = listOfNumbers[programCounter+3]
 			listOfNumbers[posOut] = result
-			print("Mult: Stored product at pos : ",posOut,"value :",result)
+			if debugMessage:
+				print("Mult: Stored product at pos : ",posOut,"value :",result)
 			programCounter = programCounter + 4
 		elif currentOp[0] == 3:		# Input Operator
 			pos = listOfNumbers[programCounter+1]
 			listOfNumbers[pos] = inputVal
-			#print("Read input value :",inputVal,"Storing at pos :",pos)
+			if debugMessage:
+				print("Read input value :",inputVal,"Storing at pos :",pos)
 			programCounter = programCounter + 2
 		elif currentOp[0] == 4:		# Output Operator
 			pos = listOfNumbers[programCounter+1]
-			#print("*** Output value :",listOfNumbers[pos])
+			if debugMessage:
+				print("*** Output value :",listOfNumbers[pos])
 			outVal = listOfNumbers[pos]
 			programCounter = programCounter + 2
 		elif currentOp[0] == 5:		# Jump if true
 			valPair = branchEval(programCounter,currentOp,listOfNumbers)
-			#print("Jump-if-true parm 1 :",valPair[0])
-			#print("Jump-if-true parm 2 :",valPair[1])
+			if debugMessage:
+				print("Jump-if-true parm 1 :",valPair[0])
+				print("Jump-if-true parm 2 :",valPair[1])
 			if valPair[0] != 0:
-				programCounter = listOfNumbers[programCounter+2]
-			else:
-				programCounter = programCounter + 4
-		elif currentOp[0] == 6:		# Jump if false
-			valPair = branchEval(programCounter,currentOp,listOfNumbers)
-			#print("Jump-if-false parm 1 :",valPair[0])
-			#print("Jump-if-false parm 2 :",valPair[1])
-			if valPair[0] == 0:
 				programCounter = valPair[1]
 			else:
-				programCounter = programCounter + 4		
+				programCounter = programCounter + 3
+		elif currentOp[0] == 6:		# Jump if false
+			valPair = branchEval(programCounter,currentOp,listOfNumbers)
+			if debugMessage:
+				print("processList: Jump-if-false parm 1 :",valPair[0])
+				print("processList: Jump-if-false parm 2 :",valPair[1])
+			if valPair[0] == 0:
+				print("Taking branch")
+				programCounter = valPair[1]
+			else:
+				print("Not taking branch")
+				programCounter = programCounter + 3	
 		elif currentOp[0] == 7:	# Evaluate if less-than
 			valPair = branchEval(programCounter,currentOp,listOfNumbers)
-			#print("Evaluate-if-less-than parm 1 :",valPair[0])
-			#print("Evaluate-if-less-than parm 2 :",valPair[1])
+			if debugMessage:
+				print("Evaluate-if-less-than parm 1 :",valPair[0])
+				print("Evaluate-if-less-than parm 2 :",valPair[1])
 			pos = listOfNumbers[programCounter+3]
 			if valPair[0] < valPair[1]:
 				listOfNumbers[pos] = 1
@@ -158,8 +185,9 @@ def processList(listOfNumbers):
 			programCounter = programCounter + 4
 		elif currentOp[0] == 8:	# Evaluate if equal
 			valPair = branchEval(programCounter,currentOp,listOfNumbers)
-			#print("Evaluate-if-equal parm 1 :",valPair[0])
-			#print("Evaluate-if-equal parm 2 :",valPair[1])
+			if debugMessage:
+				print("Evaluate-if-equal parm 1 :",valPair[0])
+				print("Evaluate-if-equal parm 2 :",valPair[1])
 			pos = listOfNumbers[programCounter+3]
 			if valPair[0] == valPair[1]:
 				listOfNumbers[pos] = 1
@@ -167,7 +195,8 @@ def processList(listOfNumbers):
 				listOfNumbers[pos] = 0
 			programCounter = programCounter + 4
 		elif currentOp[0] == 99:
-			#print("Program ended normally")
+			if debugMessage:
+				print("Program ended normally")
 			return(outVal)
 		else:
 			print("error - unexpected opcode", currentOp[0])
@@ -210,6 +239,7 @@ def extractFieldsFromInstruction(instruction):
 #	print(retVal)
 	return retVal
 
+debugMessage = False
 # Using position mode, consider whether the input is equal to 8; output 1 (if it is) or 0 (if it is not).
 print("Test case 01A - ",end='')
 inputVal = 7
@@ -258,6 +288,7 @@ if processList(numbers) == 1:
 else:
 	print("Failed")
 	
+# Using immediate mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
 print("Test case 04A - ",end='')
 inputVal = 7
 numbers=[3,3,1107,-1,8,3,4,3,99]
@@ -265,7 +296,6 @@ if processList(numbers) == 1:
 	print("Passed")
 else:
 	print("Failed")
-
 print("Test case 04B - ",end='')
 inputVal = 8
 numbers=[3,3,1107,-1,8,3,4,3,99]
@@ -274,22 +304,30 @@ if processList(numbers) == 0:
 else:
 	print("Failed")
 	
-# Using immediate mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
+debugMessage = True
 print("Test case 05A - ",end='')
-inputVal = 0
-numbers=[3,3,1107,-1,8,3,4,3,99]
+inputVal = 1
+numbers=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9]
+if debugMessage:
+	print("numbers",numbers)
+	print("inputVal",inputVal)
 if processList(numbers) == 1:
 	print("Passed")
 else:
 	print("Failed")
-
+	exit()
+	
 print("Test case 05B - ",end='')
-inputVal = 8
-numbers=[3,3,1107,-1,8,3,4,3,99]
+inputVal = 0
+numbers=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9]
+if debugMessage:
+	print("05B - numbers :",numbers)
+	print("05B - inputVal :",inputVal)
 if processList(numbers) == 0:
 	print("Passed")
 else:
 	print("Failed")
+	exit()
 	
 
 	
@@ -301,12 +339,14 @@ else:
 # else:
 	# print("Failed")
 
+debugMessage = True
 
+print("\n*** Real data")
 inputVal = 5
 #open file and read the content into an accumulated sum
 with open('input.txt', 'r') as filehandle:  
 	inLine = filehandle.readline()
 	numbers = map(int, inLine.split(','))
-	print(numbers)
+#	print(numbers)
 print(processList(numbers))
 exit()
