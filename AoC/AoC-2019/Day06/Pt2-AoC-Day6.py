@@ -120,4 +120,3 @@ for node in nodeNames:
 	# print(node,end=' ')
 # print()
 processList(newNodeNames,nodesList)
-
