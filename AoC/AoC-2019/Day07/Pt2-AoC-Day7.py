@@ -390,9 +390,11 @@ debugMessage = False
 #debugMessage = True
 
 progName = "input.txt"
+
 startPhase = 0
 endPhase = 4
 testVectors = genTestVecs(startPhase,endPhase)
+onePass = True
 
 maxVal = 0
 AmpCPUA = CPU()
@@ -404,6 +406,7 @@ AmpCPUE = CPU()
 initInput = 0
 resultE = 0
 
+
 for phaseSettings in testVectors:
 	progRunning = True
 	while progRunning:
@@ -413,13 +416,15 @@ for phaseSettings in testVectors:
 		with open(progName, 'r') as filehandle:  
 			inLine = filehandle.readline()
 			program1 = map(int, inLine.split(','))
-		# if initInput == 0:
-			# resultA = AmpCPUA.runCPU(program1,initInput)
-			# initInput = -1
-		# else:
-			# resultA = AmpCPUA.runCPU(program1,resultE)
-		resultA = AmpCPUA.runCPU(program1,initInput)
-		#print("AmpA",resultA)
+		if onePass:
+			resultA = AmpCPUA.runCPU(program1,initInput)
+		else:
+			if initInput == 0:
+				resultA = AmpCPUA.runCPU(program1,initInput)
+				initInput = -1
+			else:
+				resultA = AmpCPUA.runCPU(program1,resultE)
+			print("AmpA",resultA)
 
 		AmpCPUB.setPhase(phaseSettings[1])
 		inputValsB = resultA
