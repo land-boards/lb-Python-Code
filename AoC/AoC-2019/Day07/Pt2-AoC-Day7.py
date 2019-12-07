@@ -57,12 +57,12 @@ class CPU:
 	phaseVal = 0
 	def setPhase(self, phaseVal):
 		self.phaseVal = phaseVal
+		self.inputState = 'phaseState'
 	def runCPU(self, programMemory, inputVal):
 		#print("Length of list is :",len(programMemory))
 		programCounter = 0
 		outVal = 0
 		inputValCounter = 0
-		inputPhase0Val1 = 0
 		while 1:
 			#print("Memory Dump :",programMemory)
 			currentOp = self.extractFieldsFromInstruction(programMemory[programCounter])
@@ -86,16 +86,19 @@ class CPU:
 				programCounter = programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
 				pos = programMemory[programCounter+1]
-				if inputPhase0Val1 == 0:
+				if self.inputState == 'phaseState':
 					programMemory[pos] = self.phaseVal
-					inputPhase0Val1 = 1
-				else:
+					self.inputState = 'inputState'
+					programCounter = programCounter + 2
+				elif self.inputState == 'inputState':
 					pos = programMemory[programCounter+1]
 					programMemory[pos] = inputVal
-					inputPhase0Val1 = 0
+					self.inputState = 'waitOnInputState'
+					programCounter = programCounter + 2
+				elif self.inputState == 'waitOnInputState':					
+					return(-1)
 				if debugMessage:
 					print("Read input value :",inputVal,"Storing at pos :",pos)
-				programCounter = programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
 				pos = programMemory[programCounter+1]
 				if debugMessage:
