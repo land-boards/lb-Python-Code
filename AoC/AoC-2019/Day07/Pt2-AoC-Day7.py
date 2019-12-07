@@ -63,8 +63,8 @@ class CPU:
 		self.progState = 'phaseState' 
 		# state transitions are 
 		# 'phaseState' => 
-		# 'progState' => 'waitOnprogState' => 
-		# 'progState' => 'waitOnprogState' => 
+		# 'inputReady' => 'waitingOnInput' => 
+		# 'inputReady' => 'waitingOnInput' => 
 		# 'progDone'
 		self.programCounter = 0
 		self.outVal = 0
@@ -74,6 +74,8 @@ class CPU:
 	
 	def runCPU(self, programMemory, inputVal):
 		#print("Length of list is :",len(programMemory))
+		if self.progState == 'waitingOnInput':
+			self.progState = 'inputReady'
 		while 1:
 			#print("Memory Dump :",programMemory)
 			currentOp = self.extractFieldsFromInstruction(programMemory[self.programCounter])
@@ -96,18 +98,20 @@ class CPU:
 					print("Mult: Stored product at pos : ",posOut,"value :",result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
+				#print("Reached input operator state =",self.progState)
 				pos = programMemory[self.programCounter+1]
 				if self.progState == 'phaseState':
 					programMemory[pos] = self.phaseVal
-					self.progState = 'progState'
+					self.progState = 'inputReady'
 					self.programCounter = self.programCounter + 2
-				elif self.progState == 'progState':
+				elif self.progState == 'inputReady':
 					pos = programMemory[self.programCounter+1]
 					programMemory[pos] = inputVal
-					self.progState = 'waitOnprogState'
+					self.progState = 'waitingOnInput'
 					self.programCounter = self.programCounter + 2
-				elif self.progState == 'waitOnprogState':					
+				elif self.progState == 'waitingOnInput':					
 					print("ERROR")
+					exit()
 					return(-1)
 				if debugMessage:
 					print("Read input value :",inputVal,"Storing at pos :",pos)
@@ -165,7 +169,7 @@ class CPU:
 				self.progState = 'progDone'
 				if debugMessage:
 					pass
-				print("Program ended normally")
+					print("Program ended normally")
 				return(outVal)
 			else:
 				print("error - unexpected opcode", currentOp[0])
@@ -415,7 +419,7 @@ for phaseSettings in testVectors:
 		# else:
 			# resultA = AmpCPUA.runCPU(program1,resultE)
 		resultA = AmpCPUA.runCPU(program1,initInput)
-		print("AmpA",resultA)
+		#print("AmpA",resultA)
 
 		AmpCPUB.setPhase(phaseSettings[1])
 		inputValsB = resultA
@@ -423,7 +427,7 @@ for phaseSettings in testVectors:
 			inLine = filehandle.readline()
 			program2 = map(int, inLine.split(','))
 		resultB = AmpCPUB.runCPU(program2,inputValsB)
-		print("AmpB",resultB)
+		#print("AmpB",resultB)
 
 		AmpCPUC.setPhase(phaseSettings[2])
 		inputValsC = resultB
@@ -431,7 +435,7 @@ for phaseSettings in testVectors:
 			inLine = filehandle.readline()
 			program3 = map(int, inLine.split(','))
 		resultC = AmpCPUC.runCPU(program3,inputValsC)
-		print("AmpC",resultC)
+		#print("AmpC",resultC)
 
 		AmpCPUD.setPhase(phaseSettings[3])
 		inputValsD = resultC
@@ -439,7 +443,7 @@ for phaseSettings in testVectors:
 			inLine = filehandle.readline()
 			program4 = map(int, inLine.split(','))
 		resultD = AmpCPUD.runCPU(program4,inputValsD)
-		print("AmpD",resultD)
+		#print("AmpD",resultD)
 
 		AmpCPUE.setPhase(phaseSettings[4])
 		inputValsE = resultD
@@ -447,7 +451,7 @@ for phaseSettings in testVectors:
 			inLine = filehandle.readline()
 			program5 = map(int, inLine.split(','))
 		resultE = AmpCPUE.runCPU(program5,inputValsE)
-		print("AmpE",resultE)
+		#print("AmpE",resultE)
 
 		if ((AmpCPUA.getProgState() == 'progDone') and (AmpCPUB.getProgState() == 'progDone') and (AmpCPUC.getProgState() == 'progDone') and (AmpCPUD.getProgState() == 'progDone') and (AmpCPUE.getProgState() == 'progDone')):
 			progRunning = False
