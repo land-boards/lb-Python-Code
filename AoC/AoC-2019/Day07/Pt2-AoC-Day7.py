@@ -55,100 +55,103 @@ class CPU:
 	Returns the output value
 	"""
 	phaseVal = 0
+	inputState = ''
+	programCounter = 0
+	outVal = 0
 	def setPhase(self, phaseVal):
 		self.phaseVal = phaseVal
-		self.inputState = 'phaseState'
+		self.inputState = 'phaseState' 
+		# state transitions are 'phaseState' => 'inputState' => 'waitOnInputState' => 'inputState' => 'waitOnInputState'
+		self.programCounter = 0
+		self.outVal = 0
 	def runCPU(self, programMemory, inputVal):
 		#print("Length of list is :",len(programMemory))
-		programCounter = 0
-		outVal = 0
-		inputValCounter = 0
 		while 1:
 			#print("Memory Dump :",programMemory)
-			currentOp = self.extractFieldsFromInstruction(programMemory[programCounter])
+			currentOp = self.extractFieldsFromInstruction(programMemory[self.programCounter])
 			if debugMessage:
-				print("PC =",programCounter,", Opcode",programMemory[programCounter],", currentOp",currentOp)
+				print("PC =",self.programCounter,", Opcode",programMemory[self.programCounter],", currentOp",currentOp)
 			if currentOp[0] == 1:		# Addition Operator
-				valPair = self.mathOperation(programCounter,currentOp,programMemory)
+				valPair = self.mathOperation(currentOp,programMemory)
 				result = valPair[0] + valPair[1]
-				posOut = programMemory[programCounter+3]
+				posOut = programMemory[self.programCounter+3]
 				programMemory[posOut] = result
 				if debugMessage:
 						print("Add: Store sum at pos :",posOut,"value :",result)
-				programCounter = programCounter + 4
+				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 2:		# Multiplication Operator
-				valPair = self.mathOperation(programCounter,currentOp,programMemory)
+				valPair = self.mathOperation(currentOp,programMemory)
 				result = valPair[0] * valPair[1]
-				posOut = programMemory[programCounter+3]
+				posOut = programMemory[self.programCounter+3]
 				programMemory[posOut] = result
 				if debugMessage:
 					print("Mult: Stored product at pos : ",posOut,"value :",result)
-				programCounter = programCounter + 4
+				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
-				pos = programMemory[programCounter+1]
+				pos = programMemory[self.programCounter+1]
 				if self.inputState == 'phaseState':
 					programMemory[pos] = self.phaseVal
 					self.inputState = 'inputState'
-					programCounter = programCounter + 2
+					self.programCounter = self.programCounter + 2
 				elif self.inputState == 'inputState':
-					pos = programMemory[programCounter+1]
+					pos = programMemory[self.programCounter+1]
 					programMemory[pos] = inputVal
 					self.inputState = 'waitOnInputState'
-					programCounter = programCounter + 2
+					self.programCounter = self.programCounter + 2
 				elif self.inputState == 'waitOnInputState':					
 					return(-1)
 				if debugMessage:
 					print("Read input value :",inputVal,"Storing at pos :",pos)
 			elif currentOp[0] == 4:		# Output Operator
-				pos = programMemory[programCounter+1]
+				pos = programMemory[self.programCounter+1]
 				if debugMessage:
 					print("*** Output value :",programMemory[pos])
 				outVal = programMemory[pos]
-				programCounter = programCounter + 2
+				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 5:		# Jump if true
-				valPair = self.branchEval(programCounter,currentOp,programMemory)
+				valPair = self.branchEval(currentOp,programMemory)
 				if debugMessage:
 					print("Jump-if-true parm 1 :",valPair[0])
 					print("Jump-if-true parm 2 :",valPair[1])
 				if valPair[0] != 0:
-					programCounter = valPair[1]
+					self.programCounter = valPair[1]
 				else:
-					programCounter = programCounter + 3
+					self.programCounter = self.programCounter + 3
 			elif currentOp[0] == 6:		# Jump if false
-				valPair = self.branchEval(programCounter,currentOp,programMemory)
+				valPair = self.branchEval(currentOp,programMemory)
 				if debugMessage:
 					print("runCPU: Jump-if-false parm 1 :",valPair[0])
 					print("runCPU: Jump-if-false parm 2 :",valPair[1])
 				if valPair[0] == 0:
 					if debugMessage:
 						print("Taking branch")
-					programCounter = valPair[1]
+					self.programCounter = valPair[1]
 				else:
 					if debugMessage:
 						print("Not taking branch")
-					programCounter = programCounter + 3	
+					self.programCounter = self.programCounter + 3	
 			elif currentOp[0] == 7:		# Evaluate if less-than
-				valPair = self.branchEval(programCounter,currentOp,programMemory)
+				valPair = self.branchEval(currentOp,programMemory)
 				if debugMessage:
 					print("Evaluate-if-less-than parm 1 :",valPair[0])
 					print("Evaluate-if-less-than parm 2 :",valPair[1])
-				pos = programMemory[programCounter+3]
+				pos = programMemory[self.programCounter+3]
 				if valPair[0] < valPair[1]:
 					programMemory[pos] = 1
 				else:
 					programMemory[pos] = 0
-				programCounter = programCounter + 4
+				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 8:		# Evaluate if equal
-				valPair = self.branchEval(programCounter,currentOp,programMemory)
+				valPair = self.branchEval(currentOp,programMemory)
 				if debugMessage:
 					print("Evaluate-if-equal parm 1 :",valPair[0])
 					print("Evaluate-if-equal parm 2 :",valPair[1])
-				pos = programMemory[programCounter+3]
+				pos = programMemory[self.programCounter+3]
 				if valPair[0] == valPair[1]:
 					programMemory[pos] = 1
 				else:
 					programMemory[pos] = 0
-				programCounter = programCounter + 4
+				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 99:
 				if debugMessage:
 					print("Program ended normally")
@@ -157,14 +160,14 @@ class CPU:
 				print("error - unexpected opcode", currentOp[0])
 				exit()
 
-	def mathOperation(self, programCounter, currentOp, programMemory):
+	def mathOperation(self, currentOp, programMemory):
 		if currentOp[1] == 0:	# position mode
-			pos = programMemory[programCounter+1]
+			pos = programMemory[self.programCounter+1]
 			val1 = programMemory[pos]
 			if debugMessage:
 				print("mathOperation: Read parm 1 from pos :",pos,"value :",val1)
 		elif currentOp[1] == 1:	# immediate mode
-			val1 = programMemory[programCounter+1]
+			val1 = programMemory[self.programCounter+1]
 			if debugMessage:
 				print("mathOperation: Immed parm 1 :",val1)
 		else:
@@ -172,12 +175,12 @@ class CPU:
 				print("mathOperation: Unexpected currentOp[1]",currentOp[1])
 			exit()
 		if currentOp[2] == 0:	# position mode
-			pos = programMemory[programCounter+2]
+			pos = programMemory[self.programCounter+2]
 			val2 = programMemory[pos]
 			if debugMessage:
 				print("mathOperation: Read parm 2 from pos :",pos,"value :",val2)
 		elif currentOp[2] == 1:	# immediate mode
-			val2 = programMemory[programCounter+2]
+			val2 = programMemory[self.programCounter+2]
 			if debugMessage:
 				print("mathOperation: Immed parm 2 :",val2)
 		else:
@@ -190,16 +193,16 @@ class CPU:
 			exit()
 		return[val1,val2]
 		
-	def branchEval(self, programCounter, currentOp, programMemory):
+	def branchEval(self, currentOp, programMemory):
 		if debugMessage:
 			print("branchEval: Reached function")
 		if currentOp[1] == 0:	# position mode
-			pos = programMemory[programCounter+1]
+			pos = programMemory[self.programCounter+1]
 			val1 = programMemory[pos]
 			if debugMessage:
 				print("branchEval: Read (parm 1) from pos :",pos,"value :",val1)
 		elif currentOp[1] == 1:	# immediate mode
-			val1 = programMemory[programCounter+1]
+			val1 = programMemory[self.programCounter+1]
 			if debugMessage:
 				print("branchEval: Immed parm 1 :",val1)
 		else:
@@ -207,12 +210,12 @@ class CPU:
 			if debugMessage:
 				print("branchEval: Unexpected currentOp[1]",currentOp[1])
 		if currentOp[2] == 0:	# position mode
-			pos = programMemory[programCounter+2]
+			pos = programMemory[self.programCounter+2]
 			val2 = programMemory[pos]
 			if debugMessage:
 				print("branchEval: Read (parm 2) from pos :",pos,"value :",val2)
 		elif currentOp[2] == 1:	# immediate mode
-			val2 = programMemory[programCounter+2]
+			val2 = programMemory[self.programCounter+2]
 			if debugMessage:
 				print("branchEval: Immed parm 2 :",val2)
 		else:
@@ -377,16 +380,26 @@ endPhase = 4
 testVectors = genTestVecs(startPhase,endPhase)
 
 maxVal = 0
+AmpCPUA = CPU()
+AmpCPUB = CPU()
+AmpCPUC = CPU()
+AmpCPUD = CPU()
+AmpCPUE = CPU()
+
+initInput = 0
+resultE = 0
+
 for phaseSettings in testVectors:
-	AmpCPUA = CPU()
 	AmpCPUA.setPhase(phaseSettings[0])
 	inputValsA = 0
 	with open(progName, 'r') as filehandle:  
 		inLine = filehandle.readline()
 		program = map(int, inLine.split(','))
-	resultA = AmpCPUA.runCPU(program,inputValsA)
+	if initInput == 0:
+		resultA = AmpCPUA.runCPU(program,initInput)
+	else:
+		resultA = AmpCPUA.runCPU(program,resultE)
 
-	AmpCPUB = CPU()
 	AmpCPUB.setPhase(phaseSettings[1])
 	inputValsB = resultA
 	with open(progName, 'r') as filehandle:  
@@ -394,7 +407,6 @@ for phaseSettings in testVectors:
 		program = map(int, inLine.split(','))
 	resultB = AmpCPUB.runCPU(program,inputValsB)
 
-	AmpCPUC = CPU()
 	AmpCPUC.setPhase(phaseSettings[2])
 	inputValsC = resultB
 	with open(progName, 'r') as filehandle:  
@@ -402,7 +414,6 @@ for phaseSettings in testVectors:
 		program = map(int, inLine.split(','))
 	resultC = AmpCPUC.runCPU(program,inputValsC)
 
-	AmpCPUD = CPU()
 	AmpCPUD.setPhase(phaseSettings[3])
 	inputValsD = resultC
 	with open(progName, 'r') as filehandle:  
@@ -410,7 +421,6 @@ for phaseSettings in testVectors:
 		program = map(int, inLine.split(','))
 	resultD = AmpCPUD.runCPU(program,inputValsD)
 
-	AmpCPUE = CPU()
 	AmpCPUE.setPhase(phaseSettings[4])
 	inputValsE = resultD
 	with open(progName, 'r') as filehandle:  
