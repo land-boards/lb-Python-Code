@@ -55,15 +55,23 @@ class CPU:
 	Returns the output value
 	"""
 	phaseVal = 0
-	inputState = ''
+	progState = ''
 	programCounter = 0
 	outVal = 0
 	def setPhase(self, phaseVal):
 		self.phaseVal = phaseVal
-		self.inputState = 'phaseState' 
-		# state transitions are 'phaseState' => 'inputState' => 'waitOnInputState' => 'inputState' => 'waitOnInputState'
+		self.progState = 'phaseState' 
+		# state transitions are 
+		# 'phaseState' => 
+		# 'progState' => 'waitOnprogState' => 
+		# 'progState' => 'waitOnprogState' => 
+		# 'progDone'
 		self.programCounter = 0
 		self.outVal = 0
+		
+	def getProgState(self):
+		return(self.progState)
+	
 	def runCPU(self, programMemory, inputVal):
 		#print("Length of list is :",len(programMemory))
 		while 1:
@@ -89,16 +97,17 @@ class CPU:
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
 				pos = programMemory[self.programCounter+1]
-				if self.inputState == 'phaseState':
+				if self.progState == 'phaseState':
 					programMemory[pos] = self.phaseVal
-					self.inputState = 'inputState'
+					self.progState = 'progState'
 					self.programCounter = self.programCounter + 2
-				elif self.inputState == 'inputState':
+				elif self.progState == 'progState':
 					pos = programMemory[self.programCounter+1]
 					programMemory[pos] = inputVal
-					self.inputState = 'waitOnInputState'
+					self.progState = 'waitOnprogState'
 					self.programCounter = self.programCounter + 2
-				elif self.inputState == 'waitOnInputState':					
+				elif self.progState == 'waitOnprogState':					
+					print("ERROR")
 					return(-1)
 				if debugMessage:
 					print("Read input value :",inputVal,"Storing at pos :",pos)
@@ -153,8 +162,10 @@ class CPU:
 					programMemory[pos] = 0
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 99:
+				self.progState = 'progDone'
 				if debugMessage:
-					print("Program ended normally")
+					pass
+				print("Program ended normally")
 				return(outVal)
 			else:
 				print("error - unexpected opcode", currentOp[0])
@@ -390,45 +401,58 @@ initInput = 0
 resultE = 0
 
 for phaseSettings in testVectors:
-	AmpCPUA.setPhase(phaseSettings[0])
-	inputValsA = 0
-	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program = map(int, inLine.split(','))
-	if initInput == 0:
-		resultA = AmpCPUA.runCPU(program,initInput)
-	else:
-		resultA = AmpCPUA.runCPU(program,resultE)
+	progRunning = True
+	while progRunning:
+		AmpCPUA.setPhase(phaseSettings[0])
+		inputValsA = 0
+		resultA=0
+		with open(progName, 'r') as filehandle:  
+			inLine = filehandle.readline()
+			program1 = map(int, inLine.split(','))
+		# if initInput == 0:
+			# resultA = AmpCPUA.runCPU(program1,initInput)
+			# initInput = -1
+		# else:
+			# resultA = AmpCPUA.runCPU(program1,resultE)
+		resultA = AmpCPUA.runCPU(program1,initInput)
+		print("AmpA",resultA)
 
-	AmpCPUB.setPhase(phaseSettings[1])
-	inputValsB = resultA
-	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program = map(int, inLine.split(','))
-	resultB = AmpCPUB.runCPU(program,inputValsB)
+		AmpCPUB.setPhase(phaseSettings[1])
+		inputValsB = resultA
+		with open(progName, 'r') as filehandle:  
+			inLine = filehandle.readline()
+			program2 = map(int, inLine.split(','))
+		resultB = AmpCPUB.runCPU(program2,inputValsB)
+		print("AmpB",resultB)
 
-	AmpCPUC.setPhase(phaseSettings[2])
-	inputValsC = resultB
-	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program = map(int, inLine.split(','))
-	resultC = AmpCPUC.runCPU(program,inputValsC)
+		AmpCPUC.setPhase(phaseSettings[2])
+		inputValsC = resultB
+		with open(progName, 'r') as filehandle:  
+			inLine = filehandle.readline()
+			program3 = map(int, inLine.split(','))
+		resultC = AmpCPUC.runCPU(program3,inputValsC)
+		print("AmpC",resultC)
 
-	AmpCPUD.setPhase(phaseSettings[3])
-	inputValsD = resultC
-	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program = map(int, inLine.split(','))
-	resultD = AmpCPUD.runCPU(program,inputValsD)
+		AmpCPUD.setPhase(phaseSettings[3])
+		inputValsD = resultC
+		with open(progName, 'r') as filehandle:  
+			inLine = filehandle.readline()
+			program4 = map(int, inLine.split(','))
+		resultD = AmpCPUD.runCPU(program4,inputValsD)
+		print("AmpD",resultD)
 
-	AmpCPUE.setPhase(phaseSettings[4])
-	inputValsE = resultD
-	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program = map(int, inLine.split(','))
-	resultE = AmpCPUE.runCPU(program,inputValsE)
-	if resultE > maxVal:
-		maxVal = resultE
+		AmpCPUE.setPhase(phaseSettings[4])
+		inputValsE = resultD
+		with open(progName, 'r') as filehandle:  
+			inLine = filehandle.readline()
+			program5 = map(int, inLine.split(','))
+		resultE = AmpCPUE.runCPU(program5,inputValsE)
+		print("AmpE",resultE)
 
+		if ((AmpCPUA.getProgState() == 'progDone') and (AmpCPUB.getProgState() == 'progDone') and (AmpCPUC.getProgState() == 'progDone') and (AmpCPUD.getProgState() == 'progDone') and (AmpCPUE.getProgState() == 'progDone')):
+			progRunning = False
+		if resultE > maxVal:
+			maxVal = resultE
+	
 print("Output Result",maxVal)
 exit()
