@@ -41,12 +41,20 @@ Max thruster signal 18216 (from phase setting sequence 9,7,8,5,6):
 Try every combination of the new phase settings on the amplifier feedback loop. What is the highest signal that can be sent to the thrusters?
 
 57045 was the last answer
+
+518910 is too low
+20211922 is too low
+
+Output Result 39016654
+
 """
 
 """
 Instead of getting input fed into the function it has to wait on input from the previous stage
 
 """
+
+debugMessage = False
 
 class CPU:
 	""" CPU class
@@ -69,111 +77,6 @@ class CPU:
 		self.programCounter = 0
 		self.outVal = 0
 		
-	def getProgState(self):
-		return(self.progState)
-	
-	def runCPU(self, programMemory, inputVal):
-		#print("Length of list is :",len(programMemory))
-		if self.progState == 'waitingOnInput':
-			self.progState = 'inputReady'
-		while 1:
-			#print("Memory Dump :",programMemory)
-			currentOp = self.extractFieldsFromInstruction(programMemory[self.programCounter])
-			if debugMessage:
-				print("PC =",self.programCounter,", Opcode",programMemory[self.programCounter],", currentOp",currentOp)
-			if currentOp[0] == 1:		# Addition Operator
-				valPair = self.mathOperation(currentOp,programMemory)
-				result = valPair[0] + valPair[1]
-				posOut = programMemory[self.programCounter+3]
-				programMemory[posOut] = result
-				if debugMessage:
-						print("Add: Store sum at pos :",posOut,"value :",result)
-				self.programCounter = self.programCounter + 4
-			elif currentOp[0] == 2:		# Multiplication Operator
-				valPair = self.mathOperation(currentOp,programMemory)
-				result = valPair[0] * valPair[1]
-				posOut = programMemory[self.programCounter+3]
-				programMemory[posOut] = result
-				if debugMessage:
-					print("Mult: Stored product at pos : ",posOut,"value :",result)
-				self.programCounter = self.programCounter + 4
-			elif currentOp[0] == 3:		# Input Operator
-				#print("Reached input operator state =",self.progState)
-				pos = programMemory[self.programCounter+1]
-				if self.progState == 'phaseState':
-					programMemory[pos] = self.phaseVal
-					self.progState = 'inputReady'
-					self.programCounter = self.programCounter + 2
-				elif self.progState == 'inputReady':
-					pos = programMemory[self.programCounter+1]
-					programMemory[pos] = inputVal
-					self.progState = 'waitingOnInput'
-					self.programCounter = self.programCounter + 2
-				elif self.progState == 'waitingOnInput':					
-					print("ERROR")
-					exit()
-					return(-1)
-				if debugMessage:
-					print("Read input value :",inputVal,"Storing at pos :",pos)
-			elif currentOp[0] == 4:		# Output Operator
-				pos = programMemory[self.programCounter+1]
-				if debugMessage:
-					print("*** Output value :",programMemory[pos])
-				outVal = programMemory[pos]
-				self.programCounter = self.programCounter + 2
-			elif currentOp[0] == 5:		# Jump if true
-				valPair = self.branchEval(currentOp,programMemory)
-				if debugMessage:
-					print("Jump-if-true parm 1 :",valPair[0])
-					print("Jump-if-true parm 2 :",valPair[1])
-				if valPair[0] != 0:
-					self.programCounter = valPair[1]
-				else:
-					self.programCounter = self.programCounter + 3
-			elif currentOp[0] == 6:		# Jump if false
-				valPair = self.branchEval(currentOp,programMemory)
-				if debugMessage:
-					print("runCPU: Jump-if-false parm 1 :",valPair[0])
-					print("runCPU: Jump-if-false parm 2 :",valPair[1])
-				if valPair[0] == 0:
-					if debugMessage:
-						print("Taking branch")
-					self.programCounter = valPair[1]
-				else:
-					if debugMessage:
-						print("Not taking branch")
-					self.programCounter = self.programCounter + 3	
-			elif currentOp[0] == 7:		# Evaluate if less-than
-				valPair = self.branchEval(currentOp,programMemory)
-				if debugMessage:
-					print("Evaluate-if-less-than parm 1 :",valPair[0])
-					print("Evaluate-if-less-than parm 2 :",valPair[1])
-				pos = programMemory[self.programCounter+3]
-				if valPair[0] < valPair[1]:
-					programMemory[pos] = 1
-				else:
-					programMemory[pos] = 0
-				self.programCounter = self.programCounter + 4
-			elif currentOp[0] == 8:		# Evaluate if equal
-				valPair = self.branchEval(currentOp,programMemory)
-				if debugMessage:
-					print("Evaluate-if-equal parm 1 :",valPair[0])
-					print("Evaluate-if-equal parm 2 :",valPair[1])
-				pos = programMemory[self.programCounter+3]
-				if valPair[0] == valPair[1]:
-					programMemory[pos] = 1
-				else:
-					programMemory[pos] = 0
-				self.programCounter = self.programCounter + 4
-			elif currentOp[0] == 99:
-				self.progState = 'progDone'
-				if debugMessage:
-					pass
-					print("Program ended normally")
-				return(outVal)
-			else:
-				print("error - unexpected opcode", currentOp[0])
-				exit()
 
 	def mathOperation(self, currentOp, programMemory):
 		if currentOp[1] == 0:	# position mode
@@ -275,6 +178,118 @@ class CPU:
 		retVal=[opcode,parm1,parm2,parm3]
 	#	print(retVal)
 		return retVal
+
+	def getProgState(self):
+		return(self.progState)
+	
+	def runCPU(self, programMemory, inputVal):
+		#print("Length of list is :",len(programMemory))
+		if debugMessage:
+			print("Reached runCPU")
+		if self.progState == 'waitingOnInput':
+			self.progState = 'inputReady'
+		while self.progState != 'waitingOnInput':
+			#print("Memory Dump :",programMemory)
+			currentOp = self.extractFieldsFromInstruction(programMemory[self.programCounter])
+			if debugMessage:
+				print("PC =",self.programCounter,", Opcode",programMemory[self.programCounter],", currentOp",currentOp)
+			if currentOp[0] == 1:		# Addition Operator
+				valPair = self.mathOperation(currentOp,programMemory)
+				result = valPair[0] + valPair[1]
+				posOut = programMemory[self.programCounter+3]
+				programMemory[posOut] = result
+				if debugMessage:
+						print("Add: Store sum at pos :",posOut,"value :",result)
+				self.programCounter = self.programCounter + 4
+			elif currentOp[0] == 2:		# Multiplication Operator
+				valPair = self.mathOperation(currentOp,programMemory)
+				result = valPair[0] * valPair[1]
+				posOut = programMemory[self.programCounter+3]
+				programMemory[posOut] = result
+				if debugMessage:
+					print("Mult: Stored product at pos : ",posOut,"value :",result)
+				self.programCounter = self.programCounter + 4
+			elif currentOp[0] == 3:		# Input Operator
+				if debugMessage:
+					print("Reached input operator state =",self.progState)
+				pos = programMemory[self.programCounter+1]
+				if self.progState == 'phaseState':
+					programMemory[pos] = self.phaseVal
+					self.progState = 'inputReady'
+					self.programCounter = self.programCounter + 2
+				elif self.progState == 'inputReady':
+					pos = programMemory[self.programCounter+1]
+					programMemory[pos] = inputVal
+					self.progState = 'waitingOnOutput'
+					self.programCounter = self.programCounter + 2
+				elif self.progState == 'waitingOnInput':					
+					print("Waiting on input")
+					return(-1)
+				if debugMessage:
+					print("Received input value :",inputVal,"Storing at pos :",pos)
+			elif currentOp[0] == 4:		# Output Operator
+				if debugMessage:
+					print("Reached output")
+				pos = programMemory[self.programCounter+1]
+				if debugMessage:
+					print("*** Output value :",programMemory[pos])
+				outVal = programMemory[pos]
+				self.progState = 'waitingOnInput'
+				self.programCounter = self.programCounter + 2
+				return(outVal)
+			elif currentOp[0] == 5:		# Jump if true
+				valPair = self.branchEval(currentOp,programMemory)
+				if debugMessage:
+					print("Jump-if-true parm 1 :",valPair[0])
+					print("Jump-if-true parm 2 :",valPair[1])
+				if valPair[0] != 0:
+					self.programCounter = valPair[1]
+				else:
+					self.programCounter = self.programCounter + 3
+			elif currentOp[0] == 6:		# Jump if false
+				valPair = self.branchEval(currentOp,programMemory)
+				if debugMessage:
+					print("runCPU: Jump-if-false parm 1 :",valPair[0])
+					print("runCPU: Jump-if-false parm 2 :",valPair[1])
+				if valPair[0] == 0:
+					if debugMessage:
+						print("Taking branch")
+					self.programCounter = valPair[1]
+				else:
+					if debugMessage:
+						print("Not taking branch")
+					self.programCounter = self.programCounter + 3	
+			elif currentOp[0] == 7:		# Evaluate if less-than
+				valPair = self.branchEval(currentOp,programMemory)
+				if debugMessage:
+					print("Evaluate-if-less-than parm 1 :",valPair[0])
+					print("Evaluate-if-less-than parm 2 :",valPair[1])
+				pos = programMemory[self.programCounter+3]
+				if valPair[0] < valPair[1]:
+					programMemory[pos] = 1
+				else:
+					programMemory[pos] = 0
+				self.programCounter = self.programCounter + 4
+			elif currentOp[0] == 8:		# Evaluate if equal
+				valPair = self.branchEval(currentOp,programMemory)
+				if debugMessage:
+					print("Evaluate-if-equal parm 1 :",valPair[0])
+					print("Evaluate-if-equal parm 2 :",valPair[1])
+				pos = programMemory[self.programCounter+3]
+				if valPair[0] == valPair[1]:
+					programMemory[pos] = 1
+				else:
+					programMemory[pos] = 0
+				self.programCounter = self.programCounter + 4
+			elif currentOp[0] == 99:
+				self.progState = 'progDone'
+				if debugMessage:
+					pass
+					print("CPU program ended normally")
+				return(-2)
+			else:
+				print("error - unexpected opcode", currentOp[0])
+				exit()
 
 def testCPUOps(object):
 	""" Code to test the new opcodes and make sure they work as expected
@@ -387,14 +402,17 @@ debugMessage = False
 #myTestCPU = CPU()
 #testCPUOps(myTestCPU)
 
-#debugMessage = True
+debugMessage = False
 
 progName = "input.txt"
 
-startPhase = 0
-endPhase = 4
+startPhase = 5
+endPhase = 9
 testVectors = genTestVecs(startPhase,endPhase)
-onePass = True
+#print(testVectors)
+
+#testVectors=[[9,7,8,5,6]]
+onePass = False
 
 maxVal = 0
 AmpCPUA = CPU()
@@ -403,65 +421,83 @@ AmpCPUC = CPU()
 AmpCPUD = CPU()
 AmpCPUE = CPU()
 
-initInput = 0
-resultE = 0
-
+program1 = []
+program2 = []
+program3 = []
+program4 = []
+program5 = []
 
 for phaseSettings in testVectors:
+	AmpCPUA.setPhase(phaseSettings[0])
+	AmpCPUB.setPhase(phaseSettings[1])
+	AmpCPUC.setPhase(phaseSettings[2])
+	AmpCPUD.setPhase(phaseSettings[3])
+	AmpCPUE.setPhase(phaseSettings[4])
+
+	#print("Phase settings :",phaseSettings,"= ",end='')
 	progRunning = True
+	with open(progName, 'r') as filehandle:  
+		inLine = filehandle.readline()
+		program1 = map(int, inLine.split(','))
+	with open(progName, 'r') as filehandle:  
+		inLine = filehandle.readline()
+		program2 = map(int, inLine.split(','))
+	with open(progName, 'r') as filehandle:  
+		inLine = filehandle.readline()
+		program3 = map(int, inLine.split(','))
+	with open(progName, 'r') as filehandle:  
+		inLine = filehandle.readline()
+		program4 = map(int, inLine.split(','))
+	with open(progName, 'r') as filehandle:  
+		inLine = filehandle.readline()
+		program5 = map(int, inLine.split(','))
+	if debugMessage:
+		print("Program code:",program1)
+
+	resultE = 0
+	biggest = 0
 	while progRunning:
-		AmpCPUA.setPhase(phaseSettings[0])
-		inputValsA = 0
-		resultA=0
-		with open(progName, 'r') as filehandle:  
-			inLine = filehandle.readline()
-			program1 = map(int, inLine.split(','))
-		if onePass:
-			resultA = AmpCPUA.runCPU(program1,initInput)
-		else:
-			if initInput == 0:
-				resultA = AmpCPUA.runCPU(program1,initInput)
-				initInput = -1
-			else:
-				resultA = AmpCPUA.runCPU(program1,resultE)
-			print("AmpA",resultA)
+		if debugMessage:
+			print("AmpA")
+		inputValsA = resultE
+		resultA = AmpCPUA.runCPU(program1,resultE)
+		if debugMessage:
+			print("resultA :",resultA)
 
-		AmpCPUB.setPhase(phaseSettings[1])
+		if debugMessage:
+			print("AmpB")
 		inputValsB = resultA
-		with open(progName, 'r') as filehandle:  
-			inLine = filehandle.readline()
-			program2 = map(int, inLine.split(','))
 		resultB = AmpCPUB.runCPU(program2,inputValsB)
-		#print("AmpB",resultB)
+		if debugMessage:
+			print("resultB :",resultB)
 
-		AmpCPUC.setPhase(phaseSettings[2])
+		if debugMessage:
+			print("AmpC")
 		inputValsC = resultB
-		with open(progName, 'r') as filehandle:  
-			inLine = filehandle.readline()
-			program3 = map(int, inLine.split(','))
 		resultC = AmpCPUC.runCPU(program3,inputValsC)
-		#print("AmpC",resultC)
+		if debugMessage:
+			print("resultC :",resultC)
 
-		AmpCPUD.setPhase(phaseSettings[3])
+		if debugMessage:
+			print("AmpD")
 		inputValsD = resultC
-		with open(progName, 'r') as filehandle:  
-			inLine = filehandle.readline()
-			program4 = map(int, inLine.split(','))
 		resultD = AmpCPUD.runCPU(program4,inputValsD)
-		#print("AmpD",resultD)
+		if debugMessage:
+			print("resultC :",resultD)
 
-		AmpCPUE.setPhase(phaseSettings[4])
+		if debugMessage:
+			print("AmpE")
 		inputValsE = resultD
-		with open(progName, 'r') as filehandle:  
-			inLine = filehandle.readline()
-			program5 = map(int, inLine.split(','))
 		resultE = AmpCPUE.runCPU(program5,inputValsE)
-		#print("AmpE",resultE)
+		if debugMessage:
+			print("resultE :",resultE)
 
 		if ((AmpCPUA.getProgState() == 'progDone') and (AmpCPUB.getProgState() == 'progDone') and (AmpCPUC.getProgState() == 'progDone') and (AmpCPUD.getProgState() == 'progDone') and (AmpCPUE.getProgState() == 'progDone')):
 			progRunning = False
 		if resultE > maxVal:
 			maxVal = resultE
+	if maxVal > biggest:
+		biggest = maxVal
 	
-print("Output Result",maxVal)
+print("Result",biggest)
 exit()

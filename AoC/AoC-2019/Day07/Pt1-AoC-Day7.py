@@ -46,6 +46,113 @@ Try every combination of phase settings on the amplifiers. What is the highest s
 """
 from __future__ import print_function
 
+def testCPUOps(object):
+	""" Code to test the new opcodes and make sure they work as expected
+	"""
+	# Using position mode, consider whether the input is equal to 8; output 1 (if it is) or 0 (if it is not).
+	print("Test case 01A - ",end='')
+	inputVal = [7]
+	numbers=[3,9,8,9,10,9,4,9,99,-1,8]
+	if object.runCPU(numbers,inputVal) == 0:
+		print("Passed")
+	else:
+		print("Failed")
+	print("Test case 01B - ",end='')
+	inputVal = [8]
+	numbers=[3,9,8,9,10,9,4,9,99,-1,8]
+	if object.runCPU(numbers,inputVal) == 1:
+		print("Passed")
+	else:
+		print("Failed")
+
+	# Using position mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
+	print("Test case 02A - ",end='')
+	inputVal = [7]
+	numbers=[3,9,7,9,10,9,4,9,99,-1,8]
+	if object.runCPU(numbers,inputVal) == 1:
+		print("Passed")
+	else:
+		print("Failed")
+	print("Test case 02B - ",end='')
+	inputVal = [8]
+	numbers=[3,9,7,9,10,9,4,9,99,-1,8]
+	if object.runCPU(numbers,inputVal) == 0:
+		print("Passed")
+	else:
+		print("Failed")
+
+	# Using immediate mode, consider whether the input is equal to 8; output 1 (if it is) or 0 (if it is not).
+	print("Test case 03A - ",end='')
+	inputVal = [7]
+	numbers=[3,3,1108,-1,8,3,4,3,99]
+	if object.runCPU(numbers,inputVal) == 0:
+		print("Passed")
+	else:
+		print("Failed")
+	print("Test case 03B - ",end='')
+	inputVal = [8]
+	numbers=[3,3,1108,-1,8,3,4,3,99]
+	if object.runCPU(numbers,inputVal) == 1:
+		print("Passed")
+	else:
+		print("Failed")
+		
+	# Using immediate mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
+	print("Test case 04A - ",end='')
+	inputVal = [7]
+	numbers=[3,3,1107,-1,8,3,4,3,99]
+	if object.runCPU(numbers,inputVal) == 1:
+		print("Passed")
+	else:
+		print("Failed")
+	print("Test case 04B - ",end='')
+	inputVal = [8]
+	numbers=[3,3,1107,-1,8,3,4,3,99]
+	if object.runCPU(numbers,inputVal) == 0:
+		print("Passed")
+	else:
+		print("Failed")
+		
+	#debugMessage = True
+	print("Test case 05A - ",end='')
+	inputVal = [1]
+	numbers=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9]
+	if debugMessage:
+		print("numbers",numbers)
+		print("inputVal",inputVal)
+	if object.runCPU(numbers,inputVal) == 1:
+		print("Passed")
+	else:
+		print("Failed")
+		exit()
+		
+	print("Test case 05B - ",end='')
+	inputVal = [0]
+	numbers=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9]
+	if debugMessage:
+		print("05B - numbers :",numbers)
+		print("05B - inputVal :",inputVal)
+	if object.runCPU(numbers,inputVal) == 0:
+		print("Passed")
+	else:
+		print("Failed")
+		exit()
+
+def genTestVecs():
+	vecsList = []
+	for dig0 in range(0,5):
+		print("dig0",dig0)
+		for dig1 in range(0,5):
+			if dig1!= dig0:
+				for dig2 in range(0,5):
+					if ((dig2 != dig1) and (dig2 != dig0)):
+						for dig3 in range(0,5):
+							if ((dig3 != dig2) and (dig3 != dig1) and (dig3 != dig0)):
+								for dig4 in range(0,5):
+									if ((dig4 != dig3) and (dig4 != dig2) and (dig4 != dig1) and (dig4 != dig0)):
+										vecsList.append([dig0,dig1,dig2,dig3,dig4])	
+	return(vecsList)
+
 class CPU:
 	""" CPU class
 	Runs the program on the CPU 
@@ -243,113 +350,6 @@ class CPU:
 		retVal=[opcode,parm1,parm2,parm3]
 	#	print(retVal)
 		return retVal
-
-def testCPUOps(object):
-	""" Code to test the new opcodes and make sure they work as expected
-	"""
-	# Using position mode, consider whether the input is equal to 8; output 1 (if it is) or 0 (if it is not).
-	print("Test case 01A - ",end='')
-	inputVal = [7]
-	numbers=[3,9,8,9,10,9,4,9,99,-1,8]
-	if object.runCPU(numbers,inputVal) == 0:
-		print("Passed")
-	else:
-		print("Failed")
-	print("Test case 01B - ",end='')
-	inputVal = [8]
-	numbers=[3,9,8,9,10,9,4,9,99,-1,8]
-	if object.runCPU(numbers,inputVal) == 1:
-		print("Passed")
-	else:
-		print("Failed")
-
-	# Using position mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
-	print("Test case 02A - ",end='')
-	inputVal = [7]
-	numbers=[3,9,7,9,10,9,4,9,99,-1,8]
-	if object.runCPU(numbers,inputVal) == 1:
-		print("Passed")
-	else:
-		print("Failed")
-	print("Test case 02B - ",end='')
-	inputVal = [8]
-	numbers=[3,9,7,9,10,9,4,9,99,-1,8]
-	if object.runCPU(numbers,inputVal) == 0:
-		print("Passed")
-	else:
-		print("Failed")
-
-	# Using immediate mode, consider whether the input is equal to 8; output 1 (if it is) or 0 (if it is not).
-	print("Test case 03A - ",end='')
-	inputVal = [7]
-	numbers=[3,3,1108,-1,8,3,4,3,99]
-	if object.runCPU(numbers,inputVal) == 0:
-		print("Passed")
-	else:
-		print("Failed")
-	print("Test case 03B - ",end='')
-	inputVal = [8]
-	numbers=[3,3,1108,-1,8,3,4,3,99]
-	if object.runCPU(numbers,inputVal) == 1:
-		print("Passed")
-	else:
-		print("Failed")
-		
-	# Using immediate mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
-	print("Test case 04A - ",end='')
-	inputVal = [7]
-	numbers=[3,3,1107,-1,8,3,4,3,99]
-	if object.runCPU(numbers,inputVal) == 1:
-		print("Passed")
-	else:
-		print("Failed")
-	print("Test case 04B - ",end='')
-	inputVal = [8]
-	numbers=[3,3,1107,-1,8,3,4,3,99]
-	if object.runCPU(numbers,inputVal) == 0:
-		print("Passed")
-	else:
-		print("Failed")
-		
-	#debugMessage = True
-	print("Test case 05A - ",end='')
-	inputVal = [1]
-	numbers=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9]
-	if debugMessage:
-		print("numbers",numbers)
-		print("inputVal",inputVal)
-	if object.runCPU(numbers,inputVal) == 1:
-		print("Passed")
-	else:
-		print("Failed")
-		exit()
-		
-	print("Test case 05B - ",end='')
-	inputVal = [0]
-	numbers=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9]
-	if debugMessage:
-		print("05B - numbers :",numbers)
-		print("05B - inputVal :",inputVal)
-	if object.runCPU(numbers,inputVal) == 0:
-		print("Passed")
-	else:
-		print("Failed")
-		exit()
-
-def genTestVecs():
-	vecsList = []
-	for dig0 in range(0,5):
-		print("dig0",dig0)
-		for dig1 in range(0,5):
-			if dig1!= dig0:
-				for dig2 in range(0,5):
-					if ((dig2 != dig1) and (dig2 != dig0)):
-						for dig3 in range(0,5):
-							if ((dig3 != dig2) and (dig3 != dig1) and (dig3 != dig0)):
-								for dig4 in range(0,5):
-									if ((dig4 != dig3) and (dig4 != dig2) and (dig4 != dig1) and (dig4 != dig0)):
-										vecsList.append([dig0,dig1,dig2,dig3,dig4])	
-	return(vecsList)
 
 debugMessage = False
 
