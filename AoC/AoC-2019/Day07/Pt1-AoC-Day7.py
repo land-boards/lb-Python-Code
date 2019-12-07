@@ -372,7 +372,7 @@ for phaseSettings in testVectors:
 		inLine = filehandle.readline()
 		program = map(int, inLine.split(','))
 	resultA = AmpCPUA.runCPU(program,inputValsA)
-#	print(resultA)
+	print("AmpA",resultA)
 
 	AmpCPUB = CPU()
 #	print("Amplifier B = ",end='')
@@ -381,7 +381,7 @@ for phaseSettings in testVectors:
 		inLine = filehandle.readline()
 		program = map(int, inLine.split(','))
 	resultB = AmpCPUB.runCPU(program,inputValsB)
-#	print(resultB)
+	print("AmpB",resultB)
 
 	AmpCPUC = CPU()
 #	print("Amplifier C = ",end='')
@@ -390,7 +390,7 @@ for phaseSettings in testVectors:
 		inLine = filehandle.readline()
 		program = map(int, inLine.split(','))
 	resultC = AmpCPUC.runCPU(program,inputValsC)
-#	print(resultC)
+	print("AmpC",resultC)
 
 	AmpCPUD = CPU()
 #	print("Amplifier D = ",end='')
@@ -399,7 +399,7 @@ for phaseSettings in testVectors:
 		inLine = filehandle.readline()
 		program = map(int, inLine.split(','))
 	resultD = AmpCPUD.runCPU(program,inputValsD)
-#	print(resultD)
+	print("AmpD",resultD)
 
 	AmpCPUE = CPU()
 #	print("Amplifier E = ",end='')
@@ -408,7 +408,7 @@ for phaseSettings in testVectors:
 		inLine = filehandle.readline()
 		program = map(int, inLine.split(','))
 	resultE = AmpCPUE.runCPU(program,inputValsE)
-#	print(resultE)
+	print("AmpE",resultE)
 	if resultE > maxVal:
 		maxVal = resultE
 
