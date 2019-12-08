@@ -1,4 +1,4 @@
-# Pt1-AoCDay9.py
+# Pt1-AoCDay8.py
 # 2019 Advent of Code
 # Day 8
 # Part 1
