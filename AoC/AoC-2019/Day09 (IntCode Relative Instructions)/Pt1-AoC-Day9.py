@@ -49,7 +49,7 @@ Instead of getting input fed into the function it has to wait on input from the 
 """
 
 debugMessage = False
-disassemble = True
+disassemble = False
 
 programMemory = []
 
@@ -68,33 +68,6 @@ class CPU:
 	programCounter = 0
 	relativeBaseRegister = 0
 	outVal = 0
-	
-	def evaluateSingleOperation(self,currentOp):
-		debugMessage = True
-		if debugMessage:
-			print("\nevaluateSingleOperation: ",end='')
-		if currentOp[1] == 0:	# position mode
-			pos = programMemory[self.programCounter+1]
-			val1 = programMemory[pos]
-			if debugMessage:
-				print("Read parm 1 from pos :",pos,"value :",val1,end='')
-		elif currentOp[1] == 1:	# immediate mode
-			val1 = programMemory[self.programCounter+1]
-			if debugMessage:
-				print("Immed parm :",val1,end='')
-		elif currentOp[1] == 2:	# relative mode
-			val1 = programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister]
-			print("Rel Mode - Base Reg =",self.relativeBaseRegister,end='')
-			print(" op1 val =",val1,end='')
-			if debugMessage:
-				print(" Rel parm :",val1,end='')
-		else:
-			print("Unexpected currentOp",currentOp[1])
-			exit()
-		if debugMessage:
-			print(" ")
-		debugMessage = False
-		return (val1)
 	
 	def mathOperation(self, currentOp):
 		if currentOp[1] == 0:	# position mode
@@ -219,6 +192,34 @@ class CPU:
 		self.programCounter = 0
 		self.relativeBaseRegister = 0
 		self.outVal = 0
+
+	def evaluateSingleOperation(self,currentOp):
+		debugMessage = True
+		if debugMessage:
+			print("\nevaluateSingleOperation: ",end='')
+		if currentOp[1] == 0:	# position mode
+			pos = programMemory[self.programCounter+1]
+			val1 = programMemory[pos]
+			if debugMessage:
+				print("Read parm 1 from pos :",pos,"value :",val1,end='')
+		elif currentOp[1] == 1:	# immediate mode
+			val1 = programMemory[self.programCounter+1]
+			if debugMessage:
+				print("Immed parm :",val1,end='')
+		elif currentOp[1] == 2:	# relative mode
+			val1 = programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister]
+			print("Rel Mode - Base Reg =",self.relativeBaseRegister,end='')
+			print(" op1 val =",val1,end='')
+			if debugMessage:
+				print(" Rel parm :",val1,end='')
+		else:
+			print("Unexpected currentOp",currentOp[1])
+			exit()
+		if debugMessage:
+			print(" ")
+		debugMessage = False
+		return (val1)
+	
 		
 	def runCPU(self):
 		if debugMessage:
@@ -265,13 +266,32 @@ class CPU:
 			elif currentOp[0] == 4:		# Output Operator
 				if debugMessage or disassemble:
 					print("PC =",self.programCounter,"OUT, Location =",self.programCounter+1,", Value = ",end='')
-				opVal = self.evaluateSingleOperation(currentOp)
+				if currentOp[1] == 0:	# position mode
+					val1 = programMemory[programMemory[self.programCounter+1]]
+					if debugMessage or disassemble:
+						print("Read parm 1 from pos :",pos,"value :",val1,end='')
+					programMemory[programMemory[self.programCounter+1]] = val1
+					outputQueue.append(val1)
+				elif currentOp[1] == 1:	# immediate mode
+					val1 = programMemory[self.programCounter+1]
+					programMemory[self.programCounter+1] = val1
+					if debugMessage or disassemble:
+						print("Immed parm :",val1,end='')
+					outputQueue.append(val1)
+				elif currentOp[1] == 2:	# relative mode
+					val1 = programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister]
+					programMemory[programMemory[self.programCounter+1]] = val1
+					if debugMessage or disassemble:
+						print("Rel Mode - Base Reg =",self.relativeBaseRegister,end='')
+						print(" op1 val =",val1,end='')
+					if debugMessage or disassemble:
+						print(" Rel parm :",val1,end='')
+					outputQueue.append(val1)
+				else:
+					print("Unexpected currentOp",currentOp[1])
+					exit()
 				if debugMessage or disassemble:
-					print("Returned opVal =",opVal,"Storing at ",self.programCounter+1)
-				programMemory[programMemory[self.programCounter+1]] = opVal
-				if debugMessage or disassemble:
-					print(programMemory[programMemory[self.programCounter+1]])
-				outputQueue.append(programMemory[programMemory[self.programCounter+1]])
+						print(" ")
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 5:		# Jump if true
 				if debugMessage or disassemble:
@@ -344,98 +364,6 @@ class CPU:
 		print("self.progState",self.progState)
 		return(-9999)
 
-def testCPUOps(object):
-	""" Code to test the opcodes and make sure they work as expected
-	"""
-	# Using position mode, consider whether the input is equal to 8; output 1 (if it is) or 0 (if it is not).
-	print("Test case 01A - ",end='')
-	inputVal = [7]
-	numbers=[3,9,8,9,10,9,4,9,99,-1,8]
-	if object.runCPU(numbers,inputVal) == 0:
-		print("Passed")
-	else:
-		print("Failed")
-	print("Test case 01B - ",end='')
-	inputVal = [8]
-	numbers=[3,9,8,9,10,9,4,9,99,-1,8]
-	if object.runCPU(numbers,inputVal) == 1:
-		print("Passed")
-	else:
-		print("Failed")
-
-	# Using position mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
-	print("Test case 02A - ",end='')
-	inputVal = [7]
-	numbers=[3,9,7,9,10,9,4,9,99,-1,8]
-	if object.runCPU(numbers,inputVal) == 1:
-		print("Passed")
-	else:
-		print("Failed")
-	print("Test case 02B - ",end='')
-	inputVal = [8]
-	numbers=[3,9,7,9,10,9,4,9,99,-1,8]
-	if object.runCPU(numbers,inputVal) == 0:
-		print("Passed")
-	else:
-		print("Failed")
-
-	# Using immediate mode, consider whether the input is equal to 8; output 1 (if it is) or 0 (if it is not).
-	print("Test case 03A - ",end='')
-	inputVal = [7]
-	numbers=[3,3,1108,-1,8,3,4,3,99]
-	if object.runCPU(numbers,inputVal) == 0:
-		print("Passed")
-	else:
-		print("Failed")
-	print("Test case 03B - ",end='')
-	inputVal = [8]
-	numbers=[3,3,1108,-1,8,3,4,3,99]
-	if object.runCPU(numbers,inputVal) == 1:
-		print("Passed")
-	else:
-		print("Failed")
-		
-	# Using immediate mode, consider whether the input is less than 8; output 1 (if it is) or 0 (if it is not).
-	print("Test case 04A - ",end='')
-	inputVal = [7]
-	numbers=[3,3,1107,-1,8,3,4,3,99]
-	if object.runCPU(numbers,inputVal) == 1:
-		print("Passed")
-	else:
-		print("Failed")
-	print("Test case 04B - ",end='')
-	inputVal = [8]
-	numbers=[3,3,1107,-1,8,3,4,3,99]
-	if object.runCPU(numbers,inputVal) == 0:
-		print("Passed")
-	else:
-		print("Failed")
-		
-	#debugMessage = True
-	print("Test case 05A - ",end='')
-	inputVal = [1]
-	numbers=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9]
-	if debugMessage:
-		print("numbers",numbers)
-		print("inputVal",inputVal)
-	if object.runCPU(numbers,inputVal) == 1:
-		print("Passed")
-	else:
-		print("Failed")
-		exit()
-		
-	print("Test case 05B - ",end='')
-	inputVal = [0]
-	numbers=[3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9]
-	if debugMessage:
-		print("05B - numbers :",numbers)
-		print("05B - inputVal :",inputVal)
-	if object.runCPU(numbers,inputVal) == 0:
-		print("Passed")
-	else:
-		print("Failed")
-		exit()
-
 myCPU = CPU()
 myCPU.initCPU()
 
@@ -452,7 +380,7 @@ for i in range(512):
 	programMemory.append(0)
 inputQueue.append(0)
 myCPU.runCPU()
-print("Output : ",end='')
 print("Output Queue :", outputQueue)
-print("programMemory :",programMemory)
+if debugMessage:
+	print("programMemory :",programMemory)
 exit()
