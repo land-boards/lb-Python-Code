@@ -2,6 +2,7 @@
 # 2019 Advent of Code
 # Day 9
 # Part 1
+# https://adventofcode.com/2019/day/9
 
 from __future__ import print_function
 
@@ -57,6 +58,7 @@ class CPU:
 	"""
 	progState = ''
 	programCounter = 0
+	relativeBaseRegister = 0
 	outVal = 0
 
 	def mathOperation(self, currentOp, programMemory):
@@ -104,6 +106,11 @@ class CPU:
 			val1 = programMemory[self.programCounter+1]
 			if debugMessage:
 				print("branchEval: Immed parm 1 :",val1)
+		elif currentOp[1] == 2:	# relative mode
+			#TBD
+			val1 = programMemory[self.programCounter+1] + self.relativeBaseRegister
+			if debugMessage:
+				print("branchEval: Rel parm 1 :",val1)
 		else:
 			pass
 			if debugMessage:
@@ -115,6 +122,11 @@ class CPU:
 				print("branchEval: Read (parm 2) from pos :",pos,"value :",val2)
 		elif currentOp[2] == 1:	# immediate mode
 			val2 = programMemory[self.programCounter+2]
+			if debugMessage:
+				print("branchEval: Immed parm 2 :",val2)
+		elif currentOp[2] == 2:	# relative mode
+			#TBD
+			val2 = programMemory[self.programCounter+2]  + self.relativeBaseRegister
 			if debugMessage:
 				print("branchEval: Immed parm 2 :",val2)
 		else:
@@ -158,12 +170,13 @@ class CPU:
 		return retVal
 
 	def initCPU(self):
-		self.progState = 'waitingOnInput' 
 		# state transitions are 
 		# 'inputReady' => 'waitingOnInput' => 
 		# 'inputReady' => 'waitingOnInput' => 
 		# 'progDone'
+		self.progState = 'waitingOnInput' 
 		self.programCounter = 0
+		self.relativeBaseRegister = 0
 		self.outVal = 0
 		
 	def getProgState(self):
@@ -268,6 +281,9 @@ class CPU:
 				else:
 					programMemory[pos] = 0
 				self.programCounter = self.programCounter + 4
+			elif currentOp[0] == 9:		# Sets relative base register value
+				self.relativeBaseRegister = programMemory[self.programCounter+1]
+				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 99:
 				self.progState = 'progDone'
 				if debugMessage:
@@ -279,7 +295,7 @@ class CPU:
 				exit()
 
 def testCPUOps(object):
-	""" Code to test the new opcodes and make sure they work as expected
+	""" Code to test the opcodes and make sure they work as expected
 	"""
 	# Using position mode, consider whether the input is equal to 8; output 1 (if it is) or 0 (if it is not).
 	print("Test case 01A - ",end='')
@@ -372,8 +388,8 @@ def testCPUOps(object):
 
 debugMessage = False
 
-#myTestCPU = CPU()
-#testCPUOps(myTestCPU)
+myTestCPU = CPU()
+testCPUOps(myTestCPU)
 
 debugMessage = False
 
