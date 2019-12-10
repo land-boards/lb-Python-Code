@@ -106,9 +106,17 @@ from __future__ import print_function
 inFileName = "TestCase1_1.txt"
 
 inList = [line.rstrip('\n') for line in open(inFileName)]
+asteroidField = []
 for line in inList:
 	#print(line)
+	newRow=[]
 	for lineChar in line:
-		print(lineChar," ",end='')
-	print("")
-		
+		newRow.append(lineChar)
+	asteroidField.append(newRow)
+print(asteroidField)
+for row in asteroidField:
+	print(row)
+columns = len(asteroidField[0])
+rows = len(asteroidField)
+print("Rows",rows)
+print("Columns",columns)
