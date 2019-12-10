@@ -294,8 +294,8 @@ for compareAsteroid in asteroidLocations:
 		if ((checkAsteroid == compareAsteroid) or (checkAsteroid == currentAsteroid)):
 			foundBlockingAsteroid = True
 			break
-		print("Checking",currentAsteroid,compareAsteroid,checkAsteroid,end='')
-		rVal = isPointOnLineBetweenPoints(currentAsteroid,compareAsteroid,checkAsteroid)
+		print("Checking",checkAsteroid,compareAsteroid,currentAsteroid,end='')
+		rVal = isPointOnLineBetweenPoints(checkAsteroid,compareAsteroid,currentAsteroid)
 		print(" ",rVal)
 		if rVal == 'pointIsOnLine':
 			foundBlockingAsteroid = True
