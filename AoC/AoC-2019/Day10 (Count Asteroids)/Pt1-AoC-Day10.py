@@ -112,53 +112,153 @@ def isPointOnLineBetweenPoints(startXY, endXY, testXY):
 	endXY is the end point
 	testXY is the point to test to see if it is on the line
 	"""
-	equationOfALineDebug = True
+	equationOfALineDebug = False
+	if equationOfALineDebug:
+		print("Original end points",startXY,endXY,"testing",testXY)
+	if testXY == startXY:
+		return "duplicatePoint"
+	if testXY == endXY:
+		return "duplicatePoint"
 	if equationOfALineDebug:
 		print("Check if point is outside bounding box")
 	if ((testXY[0] > startXY[0]) and (testXY[0] > endXY[0])):
 		if equationOfALineDebug:
 			print("Outside X to the right")
-		return False
+		return "outsideBoundingBox"
 	elif ((testXY[0] < startXY[0]) and (testXY[0] < endXY[0])):
 		if equationOfALineDebug:
 			print("Outside X to the left")
-		return False
+		return "outsideBoundingBox"
 	elif ((testXY[1] > startXY[1]) and (testXY[1] > endXY[1])):
 		if equationOfALineDebug:
 			print("Outside Y to the bottom")
-		return False
+		return "outsideBoundingBox"
 	elif ((testXY[1] < startXY[1]) and (testXY[1] < endXY[1])):
 		if equationOfALineDebug:
 			print("Outside Y to the top")
-		return False
+		return "outsideBoundingBox"
 	if equationOfALineDebug:
 		print("Check if point is on horizontal line")
 	if ((testXY[0] == startXY[0]) and (testXY[0] == endXY[0])):
 		if equationOfALineDebug:
 			print("Point is on horizontal line")
-		return True
+		return "pointIsOnLine"
 	if equationOfALineDebug:
 		print("Check if point is on vertical line")
 	if ((testXY[1] == startXY[1]) and (testXY[1] == endXY[1])):
 		if equationOfALineDebug:
 			print("Point is on vertical line")
-		return True
-	if startXYin[0] > startXYin:
-		startXY[0] = startXYin[0]
-		startXY[1] = startXYin[1]
-		endXY[0] = endXYin[0]
-		startXY[1] = startXYin[1]
-		
-		
+		return "pointIsOnLine"
 	if equationOfALineDebug:
-		print("Still maybe")
-	return True
+		print("Move line and points to Quadrant I")
+	startXYQ1 = [abs(startXY[0]),abs(startXY[1])]
+	endXYQ1 = [abs(endXY[0]),abs(endXY[1])]
+	testXYQ1 = [abs(testXY[0]),abs(testXY[1])]
+	if equationOfALineDebug:
+		print("Points in Quadrant I",startXYQ1,endXYQ1,testXYQ1)
+		print("Ordering points to have start on the left")
+	if startXYQ1[0] > endXYQ1[0]:
+		startOrderedXY = endXYQ1
+		endOrderedXY = startXYQ1
+	else:
+		startOrderedXY = startXYQ1
+		endOrderedXY = endXYQ1
+	if equationOfALineDebug:
+		print("Shift in X,Y to have y intercept = 0")
+	shiftX = startOrderedXY[0]
+	shiftY = startOrderedXY[1]
+	startZeroBasedXY 	= [startOrderedXY[0]-shiftX,startOrderedXY[1]-shiftY]
+	endZeroBasedXY 		= [endOrderedXY[0]-shiftX,endOrderedXY[1]-shiftY]
+	testZeroBasedXY 	= [testXYQ1[0]-shiftX,testXYQ1[1]-shiftY]
+	if equationOfALineDebug:
+		print("Shifted to x=0 points",startZeroBasedXY,endZeroBasedXY,testZeroBasedXY)
+	deltaY = endZeroBasedXY[1]-startZeroBasedXY[1]
+	deltaX = endZeroBasedXY[0]-startZeroBasedXY[0]
+	testY = (testZeroBasedXY[0] * deltaY) / deltaX
+	if equationOfALineDebug:
+		print("deltaX,deltaY,testY",deltaX,deltaY,testY)
+	if testY == testZeroBasedXY[1]:
+		if equationOfALineDebug:
+			print("Point is on line")
+		return "pointIsOnLine"
+	else:
+		if equationOfALineDebug:
+			print("Point is not on line")
+		return "pointNotOnLine"
 	
-xy1=[1,1]
-xy2=[3,3]
-xyTest=[2,2]
-print("Is test point on the line between the two points",isPointOnLineBetweenPoints(xy1,xy2,xyTest))
-assert False,"Done"
+def testCases():
+	# Test cases for the line equation checker
+	print("Test Case 01 (point on line) - ",end='')
+	xy1=[1,1]
+	xy2=[3,3]
+	xyTest=[2,2]
+	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
+	if checkPoint == "pointIsOnLine":
+		print("Passed")
+	else:
+		print("Failed",checkPoint)
+
+	print("Test Case 02 (point not on line) - ",end='')
+	xy1=[1,1]
+	xy2=[3,3]
+	xyTest=[2,3]
+	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
+	if checkPoint == "pointNotOnLine":
+		print("Passed")
+	else:
+		print("Failed",checkPoint)
+
+	print("Test Case 03 (Duplicate end point) - ",end='')
+	xy1=[1,1]
+	xy2=[3,3]
+	xyTest=[1,1]
+	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
+	if checkPoint == "duplicatePoint":
+		print("Passed")
+	else:
+		print("Failed",checkPoint)
+
+	print("Test Case 04 (Duplicate end point) - ",end='')
+	xy1=[1,1]
+	xy2=[3,3]
+	xyTest=[3,3]
+	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
+	if checkPoint == "duplicatePoint":
+		print("Passed")
+	else:
+		print("Failed",checkPoint)
+
+	print("Test Case 05 (outside bounding box) - ",end='')
+	xy1=[1,1]
+	xy2=[3,3]
+	xyTest=[4,1]
+	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
+	if checkPoint == "outsideBoundingBox":
+		print("Passed")
+	else:
+		print("Failed",checkPoint)
+
+	print("Test Case 06 (longer line) - ",end='')
+	xy1=[0,0]
+	xy2=[99,99]
+	xyTest=[49,49]
+	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
+	if checkPoint == "pointIsOnLine":
+		print("Passed")
+	else:
+		print("Failed",checkPoint)
+
+	print("Test Case 07 (point slightly off line) - ",end='')
+	xy1=[0,0]
+	xy2=[99,99]
+	xyTest=[50,51]
+	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
+	if checkPoint != "pointIsOnLine":
+		print("Passed")
+	else:
+		print("Failed",checkPoint)
+
+testCases()
 inFileName = "TestCase1_1.txt"
 
 inList = [line.rstrip('\n') for line in open(inFileName)]
@@ -180,3 +280,26 @@ for row in range(rows):
 		if asteroidField[row][column] == '#':
 			asteroidLocations.append([column,row])
 print("Asteroid Locations at at: ", asteroidLocations)
+
+# Check pairs of asteroids one at a time and see if there are any other points which are in the way
+
+#for currentAsteroid in asteroidLocations:
+currentAsteroid = [3,4]
+for compareAsteroid in asteroidLocations:
+	if compareAsteroid == currentAsteroid:
+		foundBlockingAsteroid = True
+		break
+	foundBlockingAsteroid = False
+	for checkAsteroid in asteroidLocations:
+		if ((checkAsteroid == compareAsteroid) or (checkAsteroid == currentAsteroid)):
+			foundBlockingAsteroid = True
+			break
+		print("Checking",currentAsteroid,compareAsteroid,checkAsteroid,end='')
+		rVal = isPointOnLineBetweenPoints(currentAsteroid,compareAsteroid,checkAsteroid)
+		print(" ",rVal)
+		if rVal == 'pointIsOnLine':
+			foundBlockingAsteroid = True
+	if not foundBlockingAsteroid:
+		print("Didn't find blocking asteroid", currentAsteroid, compareAsteroid, checkAsteroid)
+
+assert False,"Done"
