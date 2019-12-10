@@ -103,20 +103,80 @@ Find the best location for a new monitoring station. How many other asteroids ca
 """
 from __future__ import print_function
 
+# Look between all points and see if there is a point between the two points
+# If there is no point between the two points can see each other
+
+def isPointOnLineBetweenPoints(startXY, endXY, testXY):
+	""" 
+	startXY is the start point
+	endXY is the end point
+	testXY is the point to test to see if it is on the line
+	"""
+	equationOfALineDebug = True
+	if equationOfALineDebug:
+		print("Check if point is outside bounding box")
+	if ((testXY[0] > startXY[0]) and (testXY[0] > endXY[0])):
+		if equationOfALineDebug:
+			print("Outside X to the right")
+		return False
+	elif ((testXY[0] < startXY[0]) and (testXY[0] < endXY[0])):
+		if equationOfALineDebug:
+			print("Outside X to the left")
+		return False
+	elif ((testXY[1] > startXY[1]) and (testXY[1] > endXY[1])):
+		if equationOfALineDebug:
+			print("Outside Y to the bottom")
+		return False
+	elif ((testXY[1] < startXY[1]) and (testXY[1] < endXY[1])):
+		if equationOfALineDebug:
+			print("Outside Y to the top")
+		return False
+	if equationOfALineDebug:
+		print("Check if point is on horizontal line")
+	if ((testXY[0] == startXY[0]) and (testXY[0] == endXY[0])):
+		if equationOfALineDebug:
+			print("Point is on horizontal line")
+		return True
+	if equationOfALineDebug:
+		print("Check if point is on vertical line")
+	if ((testXY[1] == startXY[1]) and (testXY[1] == endXY[1])):
+		if equationOfALineDebug:
+			print("Point is on vertical line")
+		return True
+	if startXYin[0] > startXYin:
+		startXY[0] = startXYin[0]
+		startXY[1] = startXYin[1]
+		endXY[0] = endXYin[0]
+		startXY[1] = startXYin[1]
+		
+		
+	if equationOfALineDebug:
+		print("Still maybe")
+	return True
+	
+xy1=[1,1]
+xy2=[3,3]
+xyTest=[2,2]
+print("Is test point on the line between the two points",isPointOnLineBetweenPoints(xy1,xy2,xyTest))
+assert False,"Done"
 inFileName = "TestCase1_1.txt"
 
 inList = [line.rstrip('\n') for line in open(inFileName)]
 asteroidField = []
 for line in inList:
-	#print(line)
 	newRow=[]
 	for lineChar in line:
 		newRow.append(lineChar)
 	asteroidField.append(newRow)
-print(asteroidField)
 for row in asteroidField:
 	print(row)
 columns = len(asteroidField[0])
 rows = len(asteroidField)
-print("Rows",rows)
-print("Columns",columns)
+print("Rows :",rows)
+print("Cols :",columns)
+asteroidLocations = []
+for row in range(rows):
+	for column in range(columns):
+		if asteroidField[row][column] == '#':
+			asteroidLocations.append([column,row])
+print("Asteroid Locations at at: ", asteroidLocations)
