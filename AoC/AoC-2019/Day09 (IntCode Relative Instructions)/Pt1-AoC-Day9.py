@@ -41,22 +41,14 @@ Here are some example programs that use these features:
 The BOOST program will ask for a single input; run it in test mode by providing it the value 1. It will perform a series of checks on each opcode, output any opcodes (and the associated parameter modes) that seem to be functioning incorrectly, and finally output a BOOST keycode.
 
 Once your Intcode computer is fully functional, the BOOST program should report no malfunctioning opcodes when run in test mode; it should only output a single value, the BOOST keycode. What BOOST keycode does it produce?
-"""
 
-"""
-Instead of getting input fed into the function it has to wait on input from the previous stage
+203 is too low
+
 
 """
 
 debugMessage = False
 disassemble = False
-
-programMemory = []
-
-inputQueuePtr = 0
-inputQueue = []
-outputQueuePtr = 0
-outputQueue = []
 
 class CPU:
 	""" CPU class
@@ -70,83 +62,78 @@ class CPU:
 	outVal = 0
 	
 	def mathOperation(self, currentOp):
+		global debugMessage
+		if debugMessage or disassemble:
+			print("mathOperation: ")
 		if currentOp[1] == 0:	# position mode
-			pos = programMemory[self.programCounter+1]
-			val1 = programMemory[pos]
-			if debugMessage:
-				print("mathOperation: Read parm 1 from pos :",pos,"value :",val1)
+			val1 = programMemory[programMemory[self.programCounter+1]]
+			if debugMessage or disassemble:
+				print("mathOperation: Read parm 1 from pos :",self.programCounter+1,"value :",val1)
 		elif currentOp[1] == 1:	# immediate mode
 			val1 = programMemory[self.programCounter+1]
-			if debugMessage:
+			if debugMessage or disassemble:
 				print("mathOperation: Immed parm 1 :",val1)
 		elif currentOp[1] == 2:	# relative mode
-			val1 = programMemory[self.programCounter+1] + self.relativeBaseRegister
-			if debugMessage:
+			val1 = programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister]
+			if debugMessage or disassemble:
 				print("mathOperation: Relative parm 1 :",val1)
 		else:
 			print("\nmathOperation: Unexpected currentOp[1]",currentOp[1])
 			exit()
 		if currentOp[2] == 0:	# position mode
-			pos = programMemory[self.programCounter+2]
-			val2 = programMemory[pos]
+			val2 = programMemory[programMemory[self.programCounter+2]]
 			if debugMessage:
-				print("mathOperation: Read parm 2 from pos :",pos,"value :",val2)
+				print("mathOperation: Read parm 2 from pos :",self.programCounter+1,"value :",val2)
 		elif currentOp[2] == 1:	# immediate mode
 			val2 = programMemory[self.programCounter+2]
 			if debugMessage:
 				print("mathOperation: Immed parm 2 :",val2)
 		elif currentOp[2] == 2:	# relative mode
-			val1 = programMemory[self.programCounter+2] + self.relativeBaseRegister
+			val2 = programMemory[programMemory[self.programCounter+2] + self.relativeBaseRegister]
 			if debugMessage:
 				print("mathOperation: Relative parm 2 :",val1)
 		else:
 			if debugMessage:
 				print("mathOperation: Unexpected currentOp[2]",currentOp[2])
 			exit()
-		if currentOp[3] != 0:	
-			print("mathOperation: Error - Should have been position mode not immediate mode")
-			exit()
+		# if currentOp[3] != 0:
+			# print("currentOp[3]",currentOp[3])
+			# assert False,"mathOperation: Error - Should have been position"
 		return[val1,val2]
 		
 	def branchEval(self, currentOp):
-		if debugMessage:
-			print("branchEval: Reached function")
+		if debugMessage or disassemble:
+			print("branchEval: Reached function currentOp =",currentOp)
 		if currentOp[1] == 0:	# position mode
-			pos = programMemory[self.programCounter+1]
-			val1 = programMemory[pos]
-			if debugMessage:
-				print("branchEval: Read (parm 1) from pos :",pos,"value :",val1)
+			val1 = programMemory[programMemory[self.programCounter+1]]
+			if debugMessage or disassemble:
+				print("branchEval: Read (parm 1) from pos :",self.programCounter+1,"value :",val1)
 		elif currentOp[1] == 1:	# immediate mode
 			val1 = programMemory[self.programCounter+1]
-			if debugMessage:
+			if debugMessage or disassemble:
 				print("branchEval: Immed parm 1 :",val1)
 		elif currentOp[1] == 2:	# relative mode
-			#TBD
-			val1 = programMemory[self.programCounter+1] + self.relativeBaseRegister
-			if debugMessage:
+			val1 = programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister]
+			if debugMessage or disassemble:
 				print("branchEval: Relative parm 1 :",val1)
 		else:
-			pass
-			if debugMessage:
-				print("branchEval: Unexpected currentOp[1]",currentOp[1])
+			assert False,"branchEval: WTF-1"
+			
 		if currentOp[2] == 0:	# position mode
-			pos = programMemory[self.programCounter+2]
-			val2 = programMemory[pos]
+			val2 = programMemory[programMemory[self.programCounter+2]]
 			if debugMessage:
-				print("branchEval: Read (parm 2) from pos :",pos,"value :",val2)
+				print("branchEval: Read (parm 2) from pos :",self.programCounter+2,"value :",val2)
 		elif currentOp[2] == 1:	# immediate mode
 			val2 = programMemory[self.programCounter+2]
 			if debugMessage:
 				print("branchEval: Immed parm 2 :",val2)
 		elif currentOp[2] == 2:	# relative mode
 			#TBD
-			val2 = programMemory[self.programCounter+2]  + self.relativeBaseRegister
+			val2 = programMemory[programMemory[self.programCounter+2]  + self.relativeBaseRegister]
 			if debugMessage:
 				print("branchEval: Relative parm 2 :",val2)
 		else:
-			pass
-			if debugMessage:
-				print("branchEval: Unexpected currentOp[2]",currentOp[2])
+			assert False,"branchEval: WTF-2"
 		return[val1,val2]
 	
 	def intTo5DigitString(self, instruction):
@@ -192,36 +179,11 @@ class CPU:
 		self.programCounter = 0
 		self.relativeBaseRegister = 0
 		self.outVal = 0
-
-	def evaluateSingleOperation(self,currentOp):
-		debugMessage = True
-		if debugMessage:
-			print("\nevaluateSingleOperation: ",end='')
-		if currentOp[1] == 0:	# position mode
-			pos = programMemory[self.programCounter+1]
-			val1 = programMemory[pos]
-			if debugMessage:
-				print("Read parm 1 from pos :",pos,"value :",val1,end='')
-		elif currentOp[1] == 1:	# immediate mode
-			val1 = programMemory[self.programCounter+1]
-			if debugMessage:
-				print("Immed parm :",val1,end='')
-		elif currentOp[1] == 2:	# relative mode
-			val1 = programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister]
-			print("Rel Mode - Base Reg =",self.relativeBaseRegister,end='')
-			print(" op1 val =",val1,end='')
-			if debugMessage:
-				print(" Rel parm :",val1,end='')
-		else:
-			print("Unexpected currentOp",currentOp[1])
-			exit()
-		if debugMessage:
-			print(" ")
-		debugMessage = False
-		return (val1)
-	
 		
 	def runCPU(self):
+		global inputQueuePtr
+		global inputQueue
+		global disassemble
 		if debugMessage:
 			print("Reached runCPU")
 			print("Length of list is :",len(programMemory))
@@ -238,8 +200,15 @@ class CPU:
 					print("Values",valPair[0],"+",valPair[1],"= ",end='')
 				result = valPair[0] + valPair[1]
 				if debugMessage or disassemble:
-					print(result," stored at loc :",programMemory[self.programCounter+3])
-				programMemory[programMemory[self.programCounter+3]] = result
+					print(result," stored at loc :",self.programCounter+3)
+				if currentOp[3] == 0:		# position mode
+					programMemory[programMemory[self.programCounter+3]] = result					
+				elif currentOp[3] == 1:	# immediate mode
+					programMemory[self.programCounter+3] = result
+					assert False,"multiply in immediate mode"
+				elif currentOp[3] == 2:	# relative mode
+					programMemory[programMemory[self.programCounter+3] + self.relativeBaseRegister] = result
+#					assert False,"multiply in relative mode"
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 2:		# Multiplication Operator
 				if debugMessage or disassemble:
@@ -248,20 +217,34 @@ class CPU:
 				if debugMessage or disassemble:
 					print("Values",valPair[0],"*",valPair[1],"= ",end='')
 				result = valPair[0] * valPair[1]
-				programMemory[programMemory[self.programCounter+3]] = result
 				if debugMessage or disassemble:
 					print(result," stored at loc :",self.programCounter+3)
+				if currentOp[3] == 0:		# position mode
+					programMemory[programMemory[self.programCounter+3]] = result					
+				elif currentOp[3] == 1:	# immediate mode
+					programMemory[self.programCounter+3] = result
+					assert False,"multiply in immediate mode"
+				elif currentOp[3] == 2:	# relative mode
+					programMemory[programMemory[self.programCounter+3] + self.relativeBaseRegister] = result
+#					assert False,"multiply in relative mode"
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
+				print(inputQueue[0])
+				print(inputQueuePtr)
+				#print("currentOp",currentOp)
 				if debugMessage or disassemble:
-					print("PC =",self.programCounter,"INP, Value :",inputQueue[inputQueuePtr]," from input queue",end='')
-				opVal = self.evaluateSingleOperation(currentOp)
-				if debugMessage or disassemble:
-					print("Value",opVal,end='')
-				programMemory[programMemory[opVal]] = inputQueue[inputQueuePtr]
-				if debugMessage or disassemble:
-					print("Storing at pos :",opVal)
-				inputQueuePtr = inputQueuePtr + 1
+					print("PC =",self.programCounter,"INP, Value :",inputQueue[inputQueuePtr]," from input queue ",end='')
+				if currentOp[1] == 0:	# position mode
+					pass
+					print(" INPut position value")
+				elif currentOp[1] == 1:	# immediate mode
+					pass
+					print(" INPut immediate value")
+				elif currentOp[1] == 2:	# relative mode
+					print("INPut relative value, RBR = ",self.relativeBaseRegister,end='')
+					programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister] = inputQueue[inputQueuePtr]
+					print(" storing to ",programMemory[self.programCounter+1] + self.relativeBaseRegister)
+					inputQueuePtr = inputQueuePtr + 1
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
 				if debugMessage or disassemble:
@@ -269,12 +252,12 @@ class CPU:
 				if currentOp[1] == 0:	# position mode
 					val1 = programMemory[programMemory[self.programCounter+1]]
 					if debugMessage or disassemble:
-						print("Read parm 1 from pos :",pos,"value :",val1,end='')
+						print("Read parm 1 from pos :",programMemory[self.programCounter+1],"value :",val1,end='')
 					programMemory[programMemory[self.programCounter+1]] = val1
 					outputQueue.append(val1)
 				elif currentOp[1] == 1:	# immediate mode
 					val1 = programMemory[self.programCounter+1]
-					programMemory[self.programCounter+1] = val1
+#					programMemory[self.programCounter+1] = val1
 					if debugMessage or disassemble:
 						print("Immed parm :",val1,end='')
 					outputQueue.append(val1)
@@ -291,34 +274,40 @@ class CPU:
 					print("Unexpected currentOp",currentOp[1])
 					exit()
 				if debugMessage or disassemble:
-						print(" ")
+						print(" end of OUT")
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 5:		# Jump if true
 				if debugMessage or disassemble:
-					print("PC =",self.programCounter,"Jump-if-true opcode")
+					print("PC =",self.programCounter,"JIT ",end='')
 				valPair = self.branchEval(currentOp)
-				if debugMessage:
-					print("Jump-if-true parm 1 :",valPair[0])
-					print("Jump-if-true parm 2 :",valPair[1])
+				if debugMessage or disassemble:
+					print(" parm 1 :",valPair[0])
+					print(" parm 2 :",valPair[1])
 				if valPair[0] != 0:
 					self.programCounter = valPair[1]
 				else:
 					self.programCounter = self.programCounter + 3
+				if currentOp[3] != 0:
+					print("currentOp[3]",currentOp[3])
+					assert False,"wtf-JIT"
 			elif currentOp[0] == 6:		# Jump if false
 				if debugMessage or disassemble:
 					print("PC =",self.programCounter,"JIF, ")
 				valPair = self.branchEval(currentOp)
-				if debugMessage:
-					print("runCPU: Jump-if-false parm 1 :",valPair[0])
-					print("runCPU: Jump-if-false parm 2 :",valPair[1])
+				if debugMessage or disassemble:
+					print("runCPU: parm 1 :",valPair[0])
+					print("runCPU: parm 2 :",valPair[1])
 				if valPair[0] == 0:
 					if debugMessage:
 						print("Taking branch")
 					self.programCounter = valPair[1]
 				else:
-					if debugMessage:
+					if debugMessage or disassemble:
 						print("Not taking branch")
 					self.programCounter = self.programCounter + 3	
+				if currentOp[3] != 0:
+					print("currentOp[3]",currentOp[3])
+					assert False,"wtf-JIF"
 			elif currentOp[0] == 7:		# Evaluate if less-than
 				if debugMessage or disassemble:
 					print("PC =",self.programCounter,"ELT, ")
@@ -327,10 +316,17 @@ class CPU:
 					print("Evaluate-if-less-than parm 1 :",valPair[0])
 					print("Evaluate-if-less-than parm 2 :",valPair[1])
 				pos = programMemory[self.programCounter+3]
+				result = 0
 				if valPair[0] < valPair[1]:
-					programMemory[pos] = 1
+					result = 1
 				else:
-					programMemory[pos] = 0
+					result = 0
+				if currentOp[3] == 0:
+					programMemory[programMemory[self.programCounter+3]] = result
+				elif currentOp[3] == 1:
+					programMemory[self.programCounter+3] = result
+				elif currentOp[3] == 2:
+					programMemory[programMemory[self.programCounter+3] + self.relativeBaseRegister] = result
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 8:		# Evaluate if equal
 				if debugMessage or disassemble:
@@ -340,16 +336,32 @@ class CPU:
 					print("Evaluate-if-equal parm 1 :",valPair[0])
 					print("Evaluate-if-equal parm 2 :",valPair[1])
 				pos = programMemory[self.programCounter+3]
+				result = 0
 				if valPair[0] == valPair[1]:
-					programMemory[pos] = 1
+					result = 1
 				else:
-					programMemory[pos] = 0
+					result = 0
+				if currentOp[3] == 0:
+					programMemory[programMemory[self.programCounter+3]] = result
+				elif currentOp[3] == 1:
+					programMemory[self.programCounter+3] = result
+				elif currentOp[3] == 2:
+					programMemory[programMemory[self.programCounter+3] + self.relativeBaseRegister] = result
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 9:		# Sets relative base register value
-				self.relativeBaseRegister = self.relativeBaseRegister + programMemory[self.programCounter+1]
+				#print("currentOp",currentOp)
+				if currentOp[1] == 0:
+					self.relativeBaseRegister = self.relativeBaseRegister + programMemory[programMemory[self.programCounter+1]]
+				elif currentOp[1] == 1:
+					self.relativeBaseRegister = self.relativeBaseRegister + programMemory[self.programCounter+1]
+				elif currentOp[1] == 2:
+					self.relativeBaseRegister = self.relativeBaseRegister + programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister]
 				if debugMessage or disassemble:
 					print("PC =",self.programCounter,"SBR, Val =",self.relativeBaseRegister)
 				self.programCounter = self.programCounter + 2
+				if currentOp[3] != 0:
+					print("currentOp[3]",currentOp[3])
+					assert False,"wtf-SBR"
 			elif currentOp[0] == 99:
 				self.progState = 'progDone'
 				if debugMessage:
@@ -367,20 +379,29 @@ class CPU:
 myCPU = CPU()
 myCPU.initCPU()
 
-progName = "testCasePt1_2.txt"
+progName = "input.txt"
+print("Input File Name :",progName)
+
+programMemory = []
+
+inputQueuePtr = 0
+inputQueue = []
+outputQueuePtr = 0
+outputQueue = []
 
 with open(progName, 'r') as filehandle:  
 	inLine = filehandle.readline()
 	programMemory = map(int, inLine.split(','))
-#print("Program loaded")
-print(" ")
+print("Program length",len(programMemory))
+#print("programMemory :",programMemory)
+#print(" ")
 lenOfProgram=len(programMemory)
 # Reserve an extra 512B of memory for program
-for i in range(512):
+for i in range(10000):
 	programMemory.append(0)
-inputQueue.append(0)
+inputQueue.append(2)
 myCPU.runCPU()
 print("Output Queue :", outputQueue)
-if debugMessage:
-	print("programMemory :",programMemory)
+#if debugMessage:
+#print("programMemory :",programMemory)
 exit()
