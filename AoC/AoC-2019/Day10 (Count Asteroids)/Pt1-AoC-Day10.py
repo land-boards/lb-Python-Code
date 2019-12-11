@@ -115,22 +115,23 @@ def isPointOnLineBetweenPoints(startXY, endXY, testXY):
 	endXY is the end point
 	testXY is the point to test to see if it is on the line
 	"""
-	equationOfALineDebug = False
+	if testXY == [7,2]:
+		equationOfALineDebug = True
+	else:
+		equationOfALineDebug = False
 	if equationOfALineDebug:
 		print("Original end points",startXY,endXY,"testing",testXY)
 	if testXY == startXY:
 		if equationOfALineDebug:
 			print("Duplicate")
 		return "duplicatePoint"
-	if testXY == endXY:
+	elif testXY == endXY:
 		if equationOfALineDebug:
 			print("Duplicate")
 		return "duplicatePoint"
-	if equationOfALineDebug:
-		print("Check if point is outside bounding box")
 	if ((testXY[0] > startXY[0]) and (testXY[0] > endXY[0])):
 		if equationOfALineDebug:
-			print("Outside X to the right")
+			print("Point is outside bounding box (right)")
 		return "outsideBoundingBox"
 	elif ((testXY[0] < startXY[0]) and (testXY[0] < endXY[0])):
 		if equationOfALineDebug:
@@ -144,18 +145,16 @@ def isPointOnLineBetweenPoints(startXY, endXY, testXY):
 		if equationOfALineDebug:
 			print("Outside Y to the top")
 		return "outsideBoundingBox"
-	if equationOfALineDebug:
-		print("Check if point is on horizontal line")
-	if ((testXY[0] == startXY[0]) and (testXY[0] == endXY[0])):
+	elif ((testXY[0] == startXY[0]) and (testXY[0] == endXY[0])):
 		if equationOfALineDebug:
 			print("Point is on horizontal line")
 		return "pointIsOnLine"
-	if equationOfALineDebug:
-		print("Check if point is on vertical line")
-	if ((testXY[1] == startXY[1]) and (testXY[1] == endXY[1])):
+	elif ((testXY[1] == startXY[1]) and (testXY[1] == endXY[1])):
 		if equationOfALineDebug:
 			print("Point is on vertical line")
 		return "pointIsOnLine"
+	elif equationOfALineDebug:
+		print("Point is in bounding box and is not on vertical or horizontal line")
 	if equationOfALineDebug:
 		print("Move line and points to Quadrant I")
 	startXYQ1 = startXY
@@ -291,7 +290,8 @@ def readInFile(inFileName):
 #testCases()
 inFileName = "TestCase1_2.txt"
 asteroidLocations = readInFile(inFileName)
-print("Asteroid Locations at at: ", asteroidLocations,"\n")
+print("Asteroid count  =",len(asteroidLocations))
+print("Asteroid Locations at at: ",asteroidLocations)
 
 # Check pairs of asteroids one at a time and see if there are any other points which are in the way
 
@@ -300,19 +300,19 @@ print("Asteroid Locations at at: ", asteroidLocations,"\n")
 # maxAsteriodCount = 0
 
 currentAsteroid = [5,8]
-# compareAsteroid = [0,2]
+compareAsteroid = [8,0]
 # checkAsteroid = [1,2]
 visibleAsteroids = 0
-for compareAsteroid in asteroidLocations:
-	foundBlockingAsteroid = False
-	for checkAsteroid in asteroidLocations:
-		rVal = isPointOnLineBetweenPoints(currentAsteroid,compareAsteroid,checkAsteroid)
-		#print("Checking",currentAsteroid,"against",compareAsteroid,"for",checkAsteroid," ",rVal)
-		if rVal == 'pointIsOnLine':
-			foundBlockingAsteroid = True
-	if not foundBlockingAsteroid:
-		visibleAsteroids = visibleAsteroids + 1
-		print("Didn't find blocking asteroid between",currentAsteroid,"and",compareAsteroid,"count",visibleAsteroids)
+#for compareAsteroid in asteroidLocations:
+foundBlockingAsteroid = False
+for checkAsteroid in asteroidLocations:
+	rVal = isPointOnLineBetweenPoints(currentAsteroid,compareAsteroid,checkAsteroid)
+	#print("Checking",currentAsteroid,"against",compareAsteroid,"for",checkAsteroid," ",rVal)
+	if rVal == 'pointIsOnLine':
+		foundBlockingAsteroid = True
+if not foundBlockingAsteroid:
+	visibleAsteroids = visibleAsteroids + 1
+	print("Didn't find blocking asteroid between",currentAsteroid,"and",compareAsteroid,"count",visibleAsteroids)
 print("Found visible asteroid count :",visibleAsteroids)
 assert False,"Done"
 
