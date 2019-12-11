@@ -100,22 +100,21 @@ def readInFile(inFileName):
 
 #inFileName = "TestCase2_1.txt"
 inFileName = "input.txt"
+inFileName = "TrivialTestCase.txt"
 print("Input data :",inFileName)
 asteroidLocations = readInFile(inFileName)
 print("Asteroid count  =",len(asteroidLocations))
 print("Asteroid Locations at at: ",asteroidLocations)
-
-# Check pairs of asteroids one at a time and see if there are any other points which are in the way
 
 def buildAnglesTable(currentAsteroid,asteroidLocations):
 	anglesTable = []
 	for compareAsteroid in asteroidLocations:
 		newList = []
 		if currentAsteroid != compareAsteroid:
-			deltaYFloat = float(currentAsteroid[1]) - float(compareAsteroid[1])
-			deltaXFloat = float(currentAsteroid[0]) - float(compareAsteroid[0])
-			angle = numpy.arctan2(deltaXFloat,deltaYFloat)
-			distance = (abs(currentAsteroid[1]) - abs(compareAsteroid[1])) + (abs(currentAsteroid[0]) - abs(compareAsteroid[0]))
+			deltaYFloat = float(currentAsteroid[1] - compareAsteroid[1])
+			deltaXFloat = float(currentAsteroid[0] - compareAsteroid[0])
+			angle = numpy.arctan2(deltaYFloat,deltaXFloat)
+			distance = (abs(currentAsteroid[1] - compareAsteroid[1])) + (abs(currentAsteroid[0] -compareAsteroid[0]))
 			newList.append(compareAsteroid[0])
 			newList.append(compareAsteroid[1])
 			newList.append(angle)
@@ -144,9 +143,12 @@ for currentAsteroid in asteroidLocations:
 		bestLocation = currentAsteroid[0:2]
 print("Maximum number of Asteroids",maxAsteroids)
 print("Best Location",bestLocation)
-print("Sorted angles table :",sortedAngleTable)
+#print("Sorted angles table :",sortedAngleTable)
 print("Number of unique angles :",len(sortedAngleTable))
-print("200th angle",sortedAngleTable[199])
-for asteroid in angleTable:
-	if asteroid[2] == sortedAngleTable[199]:
-		print(asteroid)
+anglesFromBase = buildAnglesTable(bestLocation,asteroidLocations)
+for angle in anglesFromBase:
+	print("anglesFromBase",angle[2])
+# print("200th angle",sortedAngleTable[199])
+# for asteroid in angleTable:
+	# if asteroid[2] == sortedAngleTable[199]:
+		# print(asteroid)
