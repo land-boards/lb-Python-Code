@@ -3,6 +3,9 @@
 # Day 10
 # Part 1
 
+from __future__ import print_function
+import numpy
+
 """
 --- Day 10: Monitoring Station ---
 You fly into the asteroid belt and reach the Ceres monitoring station. The Elves here have an emergency: they're having trouble tracking all of the asteroids and can't be sure they're safe.
@@ -104,167 +107,6 @@ Find the best location for a new monitoring station. How many other asteroids ca
 274 is too gigh
 
 """
-from __future__ import print_function
-
-# Look between all points and see if there is a point between the two points
-# If there is no point between the two points can see each other
-
-def isPointOnLineBetweenPoints(startXY, endXY, testXY):
-	""" 
-	startXY is the start point
-	endXY is the end point
-	testXY is the point to test to see if it is on the line
-	"""
-	if testXY == [7,2]:
-		equationOfALineDebug = True
-	else:
-		equationOfALineDebug = False
-	if equationOfALineDebug:
-		print("Original end points",startXY,endXY,"testing",testXY)
-	if testXY == startXY:
-		if equationOfALineDebug:
-			print("Duplicate")
-		return "duplicatePoint"
-	elif testXY == endXY:
-		if equationOfALineDebug:
-			print("Duplicate")
-		return "duplicatePoint"
-	if ((testXY[0] > startXY[0]) and (testXY[0] > endXY[0])):
-		if equationOfALineDebug:
-			print("Point is outside bounding box (right)")
-		return "outsideBoundingBox"
-	elif ((testXY[0] < startXY[0]) and (testXY[0] < endXY[0])):
-		if equationOfALineDebug:
-			print("Outside X to the left")
-		return "outsideBoundingBox"
-	elif ((testXY[1] > startXY[1]) and (testXY[1] > endXY[1])):
-		if equationOfALineDebug:
-			print("Outside Y to the bottom")
-		return "outsideBoundingBox"
-	elif ((testXY[1] < startXY[1]) and (testXY[1] < endXY[1])):
-		if equationOfALineDebug:
-			print("Outside Y to the top")
-		return "outsideBoundingBox"
-	elif ((testXY[0] == startXY[0]) and (testXY[0] == endXY[0])):
-		if equationOfALineDebug:
-			print("Point is on horizontal line")
-		return "pointIsOnLine"
-	elif ((testXY[1] == startXY[1]) and (testXY[1] == endXY[1])):
-		if equationOfALineDebug:
-			print("Point is on vertical line")
-		return "pointIsOnLine"
-	elif equationOfALineDebug:
-		print("Point is in bounding box and is not on vertical or horizontal line")
-	if equationOfALineDebug:
-		print("Move line and points to Quadrant I")
-	startXYQ1 = startXY
-	endXYQ1 = endXY
-	testXYQ1 = testXY
-	if equationOfALineDebug:
-		print("Points in Quadrant I",startXYQ1,endXYQ1,testXYQ1)
-		print("Ordering points to have start on the left")
-	if startXYQ1[0] > endXYQ1[0]:
-		startOrderedXY = endXYQ1
-		endOrderedXY = startXYQ1
-	else:
-		startOrderedXY = startXYQ1
-		endOrderedXY = endXYQ1
-	if equationOfALineDebug:
-		print("Ordered result",startOrderedXY,endOrderedXY,testXYQ1)
-		print("Shift in Y to have y intercept = 0")
-	shiftY = startOrderedXY[1]
-	startZeroBasedXY 	= [startOrderedXY[0],startOrderedXY[1]-shiftY]
-	endZeroBasedXY 		= [endOrderedXY[0],endOrderedXY[1]-shiftY]
-	testZeroBasedXY 	= [testXYQ1[0],testXYQ1[1]-shiftY]
-	if equationOfALineDebug:
-		print("Shifted to x=0 points",startZeroBasedXY,endZeroBasedXY,testZeroBasedXY)
-	deltaY = endZeroBasedXY[1]-startZeroBasedXY[1]
-	deltaX = endZeroBasedXY[0]-startZeroBasedXY[0]
-	if equationOfALineDebug:
-		print("deltaX :",deltaX,"deltaY :",deltaY)
-	testY = (10000*testZeroBasedXY[0] * deltaY) / deltaX
-	if equationOfALineDebug:
-		print("testY",testY)
-	if testY == 10000*testZeroBasedXY[1]:
-		if equationOfALineDebug:
-			print("Point is on line")
-		return "pointIsOnLine"
-	else:
-		if equationOfALineDebug:
-			print("Point is not on line")
-		return "pointNotOnLine"
-	
-def testCases():
-	# Test cases for the line equation checker
-	print("Test Case 01 (point on line) - ",end='')
-	xy1=[1,1]
-	xy2=[3,3]
-	xyTest=[2,2]
-	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
-	if checkPoint == "pointIsOnLine":
-		print("Passed")
-	else:
-		print("Failed",checkPoint)
-
-	print("Test Case 02 (point not on line) - ",end='')
-	xy1=[1,1]
-	xy2=[3,3]
-	xyTest=[2,3]
-	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
-	if checkPoint == "pointNotOnLine":
-		print("Passed")
-	else:
-		print("Failed",checkPoint)
-
-	print("Test Case 03 (Duplicate end point) - ",end='')
-	xy1=[1,1]
-	xy2=[3,3]
-	xyTest=[1,1]
-	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
-	if checkPoint == "duplicatePoint":
-		print("Passed")
-	else:
-		print("Failed",checkPoint)
-
-	print("Test Case 04 (Duplicate end point) - ",end='')
-	xy1=[1,1]
-	xy2=[3,3]
-	xyTest=[3,3]
-	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
-	if checkPoint == "duplicatePoint":
-		print("Passed")
-	else:
-		print("Failed",checkPoint)
-
-	print("Test Case 05 (outside bounding box) - ",end='')
-	xy1=[1,1]
-	xy2=[3,3]
-	xyTest=[4,1]
-	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
-	if checkPoint == "outsideBoundingBox":
-		print("Passed")
-	else:
-		print("Failed",checkPoint)
-
-	print("Test Case 06 (longer line) - ",end='')
-	xy1=[0,0]
-	xy2=[99,99]
-	xyTest=[49,49]
-	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
-	if checkPoint == "pointIsOnLine":
-		print("Passed")
-	else:
-		print("Failed",checkPoint)
-
-	print("Test Case 07 (point slightly off line) - ",end='')
-	xy1=[0,0]
-	xy2=[99,99]
-	xyTest=[50,51]
-	checkPoint = isPointOnLineBetweenPoints(xy1,xy2,xyTest)
-	if checkPoint != "pointIsOnLine":
-		print("Passed")
-	else:
-		print("Failed",checkPoint)
 
 def readInFile(inFileName):
 	inList = [line.rstrip('\n') for line in open(inFileName)]
@@ -287,95 +129,51 @@ def readInFile(inFileName):
 				asteroidLocations.append([column,row])
 	return(asteroidLocations)
 
-#testCases()
-inFileName = "TestCase1_2.txt"
+inFileName = "input.txt"
 asteroidLocations = readInFile(inFileName)
 print("Asteroid count  =",len(asteroidLocations))
 print("Asteroid Locations at at: ",asteroidLocations)
 
 # Check pairs of asteroids one at a time and see if there are any other points which are in the way
 
-# for currentAsteroid in asteroidLocations:
-# currentAsteroid = [3,4]
-# maxAsteriodCount = 0
-
-currentAsteroid = [5,8]
-compareAsteroid = [8,0]
-# checkAsteroid = [1,2]
-visibleAsteroids = 0
-#for compareAsteroid in asteroidLocations:
-foundBlockingAsteroid = False
-for checkAsteroid in asteroidLocations:
-	rVal = isPointOnLineBetweenPoints(currentAsteroid,compareAsteroid,checkAsteroid)
-	#print("Checking",currentAsteroid,"against",compareAsteroid,"for",checkAsteroid," ",rVal)
-	if rVal == 'pointIsOnLine':
-		foundBlockingAsteroid = True
-if not foundBlockingAsteroid:
-	visibleAsteroids = visibleAsteroids + 1
-	print("Didn't find blocking asteroid between",currentAsteroid,"and",compareAsteroid,"count",visibleAsteroids)
-print("Found visible asteroid count :",visibleAsteroids)
-assert False,"Done"
-
-maxAsteriodCount = 0
-for currentAsteroid in asteroidLocations:
-	#print("\n*** Checking asteroid", currentAsteroid,"***")
-	visibleAsteroids = 0
+def buildAnglesTable(currentAsteroid,asteroidLocations):
+	anglesTable = []
 	for compareAsteroid in asteroidLocations:
+		newList = []
 		if currentAsteroid != compareAsteroid:
-			#print("Checking asteroid", currentAsteroid,"against",compareAsteroid)
-			foundBlockingAsteroid = False
-			for checkAsteroid in asteroidLocations:
-				if (checkAsteroid != currentAsteroid) and (checkAsteroid != compareAsteroid):
-					rVal = isPointOnLineBetweenPoints(currentAsteroid,compareAsteroid,checkAsteroid)
-					#print("Checking",currentAsteroid,"against",compareAsteroid,"for",checkAsteroid," ",rVal)
-					if rVal == 'pointIsOnLine':
-						foundBlockingAsteroid = True
-				# else:
-					# print("Duplicate(1) :",checkAsteroid,currentAsteroid,compareAsteroid)
-			if not foundBlockingAsteroid:
-				visibleAsteroids = visibleAsteroids + 1
-				#print("Didn't find blocking asteroid between",currentAsteroid,"and",compareAsteroid,"count",visibleAsteroids)
-			# else:
-				# print("Blocking asteroid between",currentAsteroid,"and",compareAsteroid)
-	print("Asteroid",currentAsteroid,"Count :",visibleAsteroids)
-	if (visibleAsteroids > maxAsteriodCount):
-		maxAsteriodCount = visibleAsteroids
-		bestLoc = currentAsteroid
-		#print("asteroids from",currentAsteroid,"count =",visibleAsteroids)
-	# else:
-		# print("Duplicate(2) :",currentAsteroid,compareAsteroid)		
-print("Max asteroid count =",maxAsteriodCount,"at ",bestLoc)
+			deltaYFloat = float(currentAsteroid[1]) - float(compareAsteroid[1])
+			deltaXFloat = float(currentAsteroid[0]) - float(compareAsteroid[0])
+			angle = numpy.arctan2(deltaXFloat,deltaYFloat)
+			distance = (abs(currentAsteroid[1]) - abs(compareAsteroid[1])) + (abs(currentAsteroid[0]) - abs(compareAsteroid[0]))
+			newList.append(compareAsteroid[0])
+			newList.append(compareAsteroid[1])
+			newList.append(angle)
+			newList.append(distance)
+			#print("Point/Angle,distance",newList)
+			anglesTable.append(newList)
+		# else:
+			# print("Skipping self at :",compareAsteroid)
+	return anglesTable
 
+def stuffAngleTable(angleTable):
+	newAngleTable = []
+	for point in angleTable:
+		if point[2] not in newAngleTable:
+			newAngleTable.append(point[2])
+	#print("Unique Angles count =",len(newAngleTable))
+	return(newAngleTable)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+maxAsteroids = 0
+for currentAsteroid in asteroidLocations:
+	print("For asteroid at :",currentAsteroid," ",end='')
+	angleTable = buildAnglesTable(currentAsteroid,asteroidLocations)
+	sortedAngleTable = sorted(stuffAngleTable(angleTable))
+	print("currentAsteroid","count",len(sortedAngleTable))
+	if len(sortedAngleTable) > maxAsteroids:
+		maxAsteroids = len(sortedAngleTable)
+	# for angle in sortedAngleTable:
+		# print("\nasteroid angle",angle," ",end='')
+		# for asteroidWithAngle in angleTable:
+			# if asteroidWithAngle[2] == angle:
+				# print(asteroidWithAngle[0:2],end='')
+print("maxAsteroids",maxAsteroids)
