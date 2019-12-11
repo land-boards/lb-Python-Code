@@ -100,6 +100,9 @@ Best is 11,13 with 210 other asteroids detected:
 #.#.#.#####.####.###
 ###.##.####.##.#..##
 Find the best location for a new monitoring station. How many other asteroids can be detected from that location?
+
+274 is too gigh
+
 """
 from __future__ import print_function
 
@@ -116,8 +119,12 @@ def isPointOnLineBetweenPoints(startXY, endXY, testXY):
 	if equationOfALineDebug:
 		print("Original end points",startXY,endXY,"testing",testXY)
 	if testXY == startXY:
+		if equationOfALineDebug:
+			print("Duplicate")
 		return "duplicatePoint"
 	if testXY == endXY:
+		if equationOfALineDebug:
+			print("Duplicate")
 		return "duplicatePoint"
 	if equationOfALineDebug:
 		print("Check if point is outside bounding box")
@@ -151,9 +158,9 @@ def isPointOnLineBetweenPoints(startXY, endXY, testXY):
 		return "pointIsOnLine"
 	if equationOfALineDebug:
 		print("Move line and points to Quadrant I")
-	startXYQ1 = [abs(startXY[0]),abs(startXY[1])]
-	endXYQ1 = [abs(endXY[0]),abs(endXY[1])]
-	testXYQ1 = [abs(testXY[0]),abs(testXY[1])]
+	startXYQ1 = startXY
+	endXYQ1 = endXY
+	testXYQ1 = testXY
 	if equationOfALineDebug:
 		print("Points in Quadrant I",startXYQ1,endXYQ1,testXYQ1)
 		print("Ordering points to have start on the left")
@@ -164,20 +171,22 @@ def isPointOnLineBetweenPoints(startXY, endXY, testXY):
 		startOrderedXY = startXYQ1
 		endOrderedXY = endXYQ1
 	if equationOfALineDebug:
-		print("Shift in X,Y to have y intercept = 0")
-	shiftX = startOrderedXY[0]
+		print("Ordered result",startOrderedXY,endOrderedXY,testXYQ1)
+		print("Shift in Y to have y intercept = 0")
 	shiftY = startOrderedXY[1]
-	startZeroBasedXY 	= [startOrderedXY[0]-shiftX,startOrderedXY[1]-shiftY]
-	endZeroBasedXY 		= [endOrderedXY[0]-shiftX,endOrderedXY[1]-shiftY]
-	testZeroBasedXY 	= [testXYQ1[0]-shiftX,testXYQ1[1]-shiftY]
+	startZeroBasedXY 	= [startOrderedXY[0],startOrderedXY[1]-shiftY]
+	endZeroBasedXY 		= [endOrderedXY[0],endOrderedXY[1]-shiftY]
+	testZeroBasedXY 	= [testXYQ1[0],testXYQ1[1]-shiftY]
 	if equationOfALineDebug:
 		print("Shifted to x=0 points",startZeroBasedXY,endZeroBasedXY,testZeroBasedXY)
 	deltaY = endZeroBasedXY[1]-startZeroBasedXY[1]
 	deltaX = endZeroBasedXY[0]-startZeroBasedXY[0]
-	testY = (testZeroBasedXY[0] * deltaY) / deltaX
 	if equationOfALineDebug:
-		print("deltaX,deltaY,testY",deltaX,deltaY,testY)
-	if testY == testZeroBasedXY[1]:
+		print("deltaX :",deltaX,"deltaY :",deltaY)
+	testY = (10000*testZeroBasedXY[0] * deltaY) / deltaX
+	if equationOfALineDebug:
+		print("testY",testY)
+	if testY == 10000*testZeroBasedXY[1]:
 		if equationOfALineDebug:
 			print("Point is on line")
 		return "pointIsOnLine"
@@ -258,48 +267,115 @@ def testCases():
 	else:
 		print("Failed",checkPoint)
 
-testCases()
-inFileName = "TestCase1_1.txt"
+def readInFile(inFileName):
+	inList = [line.rstrip('\n') for line in open(inFileName)]
+	asteroidField = []
+	for line in inList:
+		newRow=[]
+		for lineChar in line:
+			newRow.append(lineChar)
+		asteroidField.append(newRow)
+	for row in asteroidField:
+		print(row)
+	columns = len(asteroidField[0])
+	rows = len(asteroidField)
+	print("Rows :",rows)
+	print("Cols :",columns)
+	asteroidLocations = []
+	for row in range(rows):
+		for column in range(columns):
+			if asteroidField[row][column] == '#':
+				asteroidLocations.append([column,row])
+	return(asteroidLocations)
 
-inList = [line.rstrip('\n') for line in open(inFileName)]
-asteroidField = []
-for line in inList:
-	newRow=[]
-	for lineChar in line:
-		newRow.append(lineChar)
-	asteroidField.append(newRow)
-for row in asteroidField:
-	print(row)
-columns = len(asteroidField[0])
-rows = len(asteroidField)
-print("Rows :",rows)
-print("Cols :",columns)
-asteroidLocations = []
-for row in range(rows):
-	for column in range(columns):
-		if asteroidField[row][column] == '#':
-			asteroidLocations.append([column,row])
-print("Asteroid Locations at at: ", asteroidLocations)
+#testCases()
+inFileName = "TestCase1_2.txt"
+asteroidLocations = readInFile(inFileName)
+print("Asteroid Locations at at: ", asteroidLocations,"\n")
 
 # Check pairs of asteroids one at a time and see if there are any other points which are in the way
 
-#for currentAsteroid in asteroidLocations:
-currentAsteroid = [3,4]
+# for currentAsteroid in asteroidLocations:
+# currentAsteroid = [3,4]
+# maxAsteriodCount = 0
+
+currentAsteroid = [5,8]
+# compareAsteroid = [0,2]
+# checkAsteroid = [1,2]
+visibleAsteroids = 0
 for compareAsteroid in asteroidLocations:
-	if compareAsteroid == currentAsteroid:
-		foundBlockingAsteroid = True
-		break
 	foundBlockingAsteroid = False
 	for checkAsteroid in asteroidLocations:
-		if ((checkAsteroid == compareAsteroid) or (checkAsteroid == currentAsteroid)):
-			foundBlockingAsteroid = True
-			break
-		print("Checking",checkAsteroid,compareAsteroid,currentAsteroid,end='')
-		rVal = isPointOnLineBetweenPoints(checkAsteroid,compareAsteroid,currentAsteroid)
-		print(" ",rVal)
+		rVal = isPointOnLineBetweenPoints(currentAsteroid,compareAsteroid,checkAsteroid)
+		#print("Checking",currentAsteroid,"against",compareAsteroid,"for",checkAsteroid," ",rVal)
 		if rVal == 'pointIsOnLine':
 			foundBlockingAsteroid = True
 	if not foundBlockingAsteroid:
-		print("Didn't find blocking asteroid", currentAsteroid, compareAsteroid, checkAsteroid)
-
+		visibleAsteroids = visibleAsteroids + 1
+		print("Didn't find blocking asteroid between",currentAsteroid,"and",compareAsteroid,"count",visibleAsteroids)
+print("Found visible asteroid count :",visibleAsteroids)
 assert False,"Done"
+
+maxAsteriodCount = 0
+for currentAsteroid in asteroidLocations:
+	#print("\n*** Checking asteroid", currentAsteroid,"***")
+	visibleAsteroids = 0
+	for compareAsteroid in asteroidLocations:
+		if currentAsteroid != compareAsteroid:
+			#print("Checking asteroid", currentAsteroid,"against",compareAsteroid)
+			foundBlockingAsteroid = False
+			for checkAsteroid in asteroidLocations:
+				if (checkAsteroid != currentAsteroid) and (checkAsteroid != compareAsteroid):
+					rVal = isPointOnLineBetweenPoints(currentAsteroid,compareAsteroid,checkAsteroid)
+					#print("Checking",currentAsteroid,"against",compareAsteroid,"for",checkAsteroid," ",rVal)
+					if rVal == 'pointIsOnLine':
+						foundBlockingAsteroid = True
+				# else:
+					# print("Duplicate(1) :",checkAsteroid,currentAsteroid,compareAsteroid)
+			if not foundBlockingAsteroid:
+				visibleAsteroids = visibleAsteroids + 1
+				#print("Didn't find blocking asteroid between",currentAsteroid,"and",compareAsteroid,"count",visibleAsteroids)
+			# else:
+				# print("Blocking asteroid between",currentAsteroid,"and",compareAsteroid)
+	print("Asteroid",currentAsteroid,"Count :",visibleAsteroids)
+	if (visibleAsteroids > maxAsteriodCount):
+		maxAsteriodCount = visibleAsteroids
+		bestLoc = currentAsteroid
+		#print("asteroids from",currentAsteroid,"count =",visibleAsteroids)
+	# else:
+		# print("Duplicate(2) :",currentAsteroid,compareAsteroid)		
+print("Max asteroid count =",maxAsteriodCount,"at ",bestLoc)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
