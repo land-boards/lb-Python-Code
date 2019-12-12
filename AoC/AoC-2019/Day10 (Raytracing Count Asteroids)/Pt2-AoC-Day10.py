@@ -74,7 +74,7 @@ In the large example above (the one with the best monitoring station location at
 The Elves are placing bets on which will be the 200th asteroid to be vaporized. Win the bet by determining which asteroid that will be; what do you get if you multiply its X coordinate by 100 and then add its Y coordinate? (For example, 8,2 becomes 802.)
 
 121 is too low
-
+1103 is too low
 """
 
 def readInFile(inFileName):
@@ -99,8 +99,8 @@ def readInFile(inFileName):
 	return(asteroidLocations)
 
 #inFileName = "TestCase2_1.txt"
-inFileName = "input.txt"
-inFileName = "TrivialTestCase.txt"
+inFileName = "input.txt"#
+#inFileName = "TrivialTestCase.txt"
 print("Input data :",inFileName)
 asteroidLocations = readInFile(inFileName)
 print("Asteroid count  =",len(asteroidLocations))
@@ -113,7 +113,8 @@ def buildAnglesTable(currentAsteroid,asteroidLocations):
 		if currentAsteroid != compareAsteroid:
 			deltaYFloat = float(currentAsteroid[1] - compareAsteroid[1])
 			deltaXFloat = float(currentAsteroid[0] - compareAsteroid[0])
-			angle = numpy.arctan2(deltaYFloat,deltaXFloat)
+			angle = (numpy.arctan2(deltaYFloat,deltaXFloat) * (180.0 / 3.1415926) - 90.0) % 360.0
+			angle = round(angle,6)
 			distance = (abs(currentAsteroid[1] - compareAsteroid[1])) + (abs(currentAsteroid[0] -compareAsteroid[0]))
 			newList.append(compareAsteroid[0])
 			newList.append(compareAsteroid[1])
@@ -125,9 +126,9 @@ def buildAnglesTable(currentAsteroid,asteroidLocations):
 			# print("Skipping self at :",compareAsteroid)
 	return anglesTable
 
-def stuffAngleTable(angleTable):
+def stuffAngleTable(asteroidXYAngleDist):
 	newAngleTable = []
-	for point in angleTable:
+	for point in asteroidXYAngleDist:
 		if point[2] not in newAngleTable:
 			newAngleTable.append(point[2])
 	return(newAngleTable)
@@ -135,9 +136,11 @@ def stuffAngleTable(angleTable):
 maxAsteroids = 0
 bestLocation = []
 for currentAsteroid in asteroidLocations:
-	#print("For asteroid at :",currentAsteroid," ",end='')
-	angleTable = buildAnglesTable(currentAsteroid,asteroidLocations)
-	sortedAngleTable = sorted(stuffAngleTable(angleTable))
+	#print("For asteroid at :",currentAsteroid," ")
+	asteroidXYAngleDist = buildAnglesTable(currentAsteroid,asteroidLocations)
+	#print("asteroidXYAngleDist",asteroidXYAngleDist)
+	sortedAngleTable = sorted(stuffAngleTable(asteroidXYAngleDist))
+	#print("sortedAngleTable",sortedAngleTable)
 	if len(sortedAngleTable) > maxAsteroids:
 		maxAsteroids = len(sortedAngleTable)
 		bestLocation = currentAsteroid[0:2]
@@ -145,10 +148,20 @@ print("Maximum number of Asteroids",maxAsteroids)
 print("Best Location",bestLocation)
 #print("Sorted angles table :",sortedAngleTable)
 print("Number of unique angles :",len(sortedAngleTable))
-anglesFromBase = buildAnglesTable(bestLocation,asteroidLocations)
-for angle in anglesFromBase:
-	print("anglesFromBase",angle[2])
+asteroidXYAngleDist = buildAnglesTable(bestLocation,asteroidLocations)
+#print("asteroidXYAngleDist",asteroidXYAngleDist)
+sortedAngleTable = sorted(stuffAngleTable(asteroidXYAngleDist))
+#print("sortedAngleTable",sortedAngleTable)
+asteroidNum = 1
+for angle in sortedAngleTable:
+	print("asteroide Number",asteroidNum,"check for anglesFromBase",angle," ",end="")
+	for asteroid in asteroidXYAngleDist:
+		#print("asteroid",asteroid)
+		if asteroid[0:2] != bestLocation:
+			if asteroid[2] == angle:
+				print("asteroid",asteroid)
+	asteroidNum = asteroidNum + 1
 # print("200th angle",sortedAngleTable[199])
-# for asteroid in angleTable:
+# for asteroid in asteroidXYAngleDist:
 	# if asteroid[2] == sortedAngleTable[199]:
 		# print(asteroid)
