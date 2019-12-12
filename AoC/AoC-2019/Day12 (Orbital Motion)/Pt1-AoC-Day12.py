@@ -205,62 +205,116 @@ def printPositionAndVelocity(position,velocity):
 	
 def calVelocityDelta(refPos,other1,other2,other3):
 	# returns a relative velocity adjustment based on the other moon
+	#print("calVelocityDelta: ",refPos,other1,other2,other3,end='')
 	if other1 > refPos:
 		delta1 = 1
-	else:
+	elif other1 < refPos:
 		delta1 = -1
+	else:
+		delta1 = 0
 	if other2 > refPos:
 		delta2 = 1
-	else:
+	elif other2 < refPos:
 		delta2 = -1
+	else:
+		delta2 = 0
 	if other3 > refPos:
 		delta3 = 1
-	else:
+	elif other3 < refPos:
 		delta3 = -1
-	return(delta1 + delta2 + delta3)
+	else:
+		delta3 = 0
+	totalDelta = delta1 + delta2 + delta3
+	#print(", totalDelta",totalDelta)
+	return(totalDelta)
 
 moonPositions = example1Data
-newMoonPositions = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
-newVelocity = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
 
 step = 0
-lastStep = 2
+lastStep = 10
 
-while step < lastStep+1:
-	print("\nmoonPositions before",moonPositions)
-	print("velocities before",moonVelocities)
+# p0 = -1
+# v0 = 0
+# p1 = 2
+# v1 = 0
+# p2 = 4
+# v2 = 0
+# p3 = 3
+# v3 = 0
 
-	printPositionAndVelocity(moonPositions,moonVelocities)
-	step += 1
-	velDelta0x = calVelocityDelta(moonPositions[0][0],moonPositions[1][0],moonPositions[2][0],moonPositions[3][0])
-	velDelta0y = calVelocityDelta(moonPositions[0][1],moonPositions[1][1],moonPositions[2][1],moonPositions[3][1])
-	velDelta0z = calVelocityDelta(moonPositions[0][2],moonPositions[1][2],moonPositions[2][2],moonPositions[3][2])
-
-	velDelta1x = calVelocityDelta(moonPositions[1][0],moonPositions[0][0],moonPositions[2][0],moonPositions[3][0])
-	velDelta1y = calVelocityDelta(moonPositions[1][1],moonPositions[0][1],moonPositions[2][1],moonPositions[3][1])
-	velDelta1z = calVelocityDelta(moonPositions[1][2],moonPositions[0][2],moonPositions[2][2],moonPositions[3][2])
-
-	velDelta2x = calVelocityDelta(moonPositions[2][0],moonPositions[0][0],moonPositions[1][0],moonPositions[3][0])
-	velDelta2y = calVelocityDelta(moonPositions[2][1],moonPositions[0][1],moonPositions[1][1],moonPositions[3][1])
-	velDelta2z = calVelocityDelta(moonPositions[2][2],moonPositions[0][2],moonPositions[1][2],moonPositions[3][2])
-
-	velDelta3x = calVelocityDelta(moonPositions[3][0],moonPositions[0][0],moonPositions[1][0],moonPositions[2][0])
-	velDelta3y = calVelocityDelta(moonPositions[3][1],moonPositions[0][1],moonPositions[1][1],moonPositions[2][1])
-	velDelta3z = calVelocityDelta(moonPositions[3][2],moonPositions[0][2],moonPositions[1][2],moonPositions[2][2])
+# while step < lastStep:
+	# step += 1
+	# print("\nstep",step)
+	# g0 = calVelocityDelta(p0,p1,p2,p3)
+	# g1 = calVelocityDelta(p1,p0,p2,p3)
+	# g2 = calVelocityDelta(p2,p1,p0,p3)
+	# g3 = calVelocityDelta(p3,p1,p2,p0)
+	# #print("x velocity deltas",g0,g1,g2,g3)
+	# p0 += g0 + v0
+	# p1 += g1 + v1
+	# p2 += g2 + v2
+	# p3 += g3 + v3
+	# v0 += g0
+	# v1 += g1
+	# v2 += g2
+	# v3 += g3
+	# print("x position after",p0,p1,p2,p3)
+	# print("x velocity after",v0,v1,v2,v3)
 	
-	moonPositions[0][0] = moonPositions[0][0] + velDelta0x
-	moonPositions[0][1] = moonPositions[0][1] + velDelta0y
-	moonPositions[0][2] = moonPositions[0][2] + velDelta0z
 
-	moonPositions[1][0] = moonPositions[1][0] + velDelta1x
-	moonPositions[1][1] = moonPositions[1][1] + velDelta1y
-	moonPositions[1][2] = moonPositions[1][2] + velDelta1z
+# exit()
+	
+while step < lastStep:
+	step += 1
+	print("Step ",step)
+	gravityDelta00 = calVelocityDelta(moonPositions[0][0],moonPositions[1][0],moonPositions[2][0],moonPositions[3][0])
+	gravityDelta01 = calVelocityDelta(moonPositions[0][1],moonPositions[1][1],moonPositions[2][1],moonPositions[3][1])
+	gravityDelta02 = calVelocityDelta(moonPositions[0][2],moonPositions[1][2],moonPositions[2][2],moonPositions[3][2])
+	
+	gravityDelta10 = calVelocityDelta(moonPositions[1][0],moonPositions[0][0],moonPositions[2][0],moonPositions[3][0])
+	gravityDelta11 = calVelocityDelta(moonPositions[1][1],moonPositions[0][1],moonPositions[2][1],moonPositions[3][1])
+	gravityDelta12 = calVelocityDelta(moonPositions[1][2],moonPositions[0][2],moonPositions[2][2],moonPositions[3][2])
+	
+	gravityDelta20 = calVelocityDelta(moonPositions[2][0],moonPositions[0][0],moonPositions[1][0],moonPositions[3][0])
+	gravityDelta21 = calVelocityDelta(moonPositions[2][1],moonPositions[0][1],moonPositions[1][1],moonPositions[3][1])
+	gravityDelta22 = calVelocityDelta(moonPositions[2][2],moonPositions[0][2],moonPositions[1][2],moonPositions[3][2])
 
-	moonPositions[2][0] = moonPositions[2][0] + velDelta2x
-	moonPositions[2][1] = moonPositions[2][1] + velDelta2y
-	moonPositions[2][2] = moonPositions[2][2] + velDelta2z
+	gravityDelta30 = calVelocityDelta(moonPositions[3][0],moonPositions[0][0],moonPositions[1][0],moonPositions[2][0])
+	gravityDelta31 = calVelocityDelta(moonPositions[3][1],moonPositions[0][1],moonPositions[1][1],moonPositions[2][1])
+	gravityDelta32 = calVelocityDelta(moonPositions[3][2],moonPositions[0][2],moonPositions[1][2],moonPositions[2][2])
 
-	moonPositions[3][0] = moonPositions[3][0] + velDelta3x
-	moonPositions[3][1] = moonPositions[3][1] + velDelta3y
-	moonPositions[3][2] = moonPositions[3][2] + velDelta3z
+	moonPositions[0][0] += gravityDelta00 + moonVelocities[0][0]
+	moonPositions[0][1] += gravityDelta01 + moonVelocities[0][1]
+	moonPositions[0][2] += gravityDelta02 + moonVelocities[0][2]
 
+	moonPositions[1][0] += gravityDelta10 + moonVelocities[1][0]
+	moonPositions[1][1] += gravityDelta11 + moonVelocities[1][1]
+	moonPositions[1][2] += gravityDelta12 + moonVelocities[1][2]
+
+	moonPositions[2][0] += gravityDelta20 + moonVelocities[2][0]
+	moonPositions[2][1] += gravityDelta21 + moonVelocities[2][1]
+	moonPositions[2][2] += gravityDelta22 + moonVelocities[2][2]
+
+	moonPositions[3][0] += gravityDelta30 + moonVelocities[3][0]
+	moonPositions[3][1] += gravityDelta31 + moonVelocities[3][1]
+	moonPositions[3][2] += gravityDelta32 + moonVelocities[3][2]
+	
+	moonVelocities[0][0] += gravityDelta00
+	moonVelocities[0][1] += gravityDelta01
+	moonVelocities[0][2] += gravityDelta02
+
+	moonVelocities[1][0] += gravityDelta10
+	moonVelocities[1][1] += gravityDelta11
+	moonVelocities[1][2] += gravityDelta12
+	
+	moonVelocities[2][0] += gravityDelta20
+	moonVelocities[2][1] += gravityDelta21
+	moonVelocities[2][2] += gravityDelta22
+	
+	moonVelocities[3][0] += gravityDelta30
+	moonVelocities[3][1] += gravityDelta31
+	moonVelocities[3][2] += gravityDelta32
+	
+	print("Moon positions",moonPositions)
+	print("Moon Velocities",moonVelocities)
+	
