@@ -48,6 +48,10 @@ This set of initial positions takes 4686774924 steps before it repeats a previou
 
 How many steps does it take to reach the first state that exactly matches a previous state?
 
+4225920359840280	too high
+
+528250271633772 right on 
+
 
 """
 
@@ -91,24 +95,34 @@ def calVelocityDelta(refPos,other1,other2,other3):
 	#print(", totalDelta",totalDelta)
 	return(totalDelta)
 
-moonPositions = problemData
+moonPositions = example1Data
 
 step = 0
 lastStep = 2000
 
 axisList = []
 
-p0 = -19
+checkIndex = 0
+
+checkVal = [moonPositions[0][checkIndex],moonPositions[1][checkIndex],moonPositions[2][checkIndex],moonPositions[3][checkIndex]]
+
+#checkVal = [-88,-195,340,-88]
+
+p0 = checkVal[0]
 v0 = 0
-p1 = -9
+p1 = checkVal[1]
 v1 = 0
-p2 = -4
+p2 = checkVal[2]
 v2 = 0
-p3 = 1
+p3 = checkVal[3]
 v3 = 0
 
+print("Looking for :",checkVal)
+
 step = 0
-while step < 1000000:
+repeated = False
+print("Repeated at step ",end='')
+while step < 3000000:
 	step += 1
 	#print("\nstep",step)
 	g0 = calVelocityDelta(p0,p1,p2,p3)
@@ -126,9 +140,15 @@ while step < 1000000:
 	v3 += g3
 	# print("x position after",p0,p1,p2,p3)
 	# print("x velocity after",v0,v1,v2,v3)
-	if [p0,p1,p2,p3] == [-10,-5,-10,-6]:
-		print("Repeated at step",step)
-print(step)
+	if [p0,p1,p2,p3] == [checkVal[0],checkVal[1],checkVal[2],checkVal[3]]:
+		print(step)
+		repeated = True
+		break
+if repeated:
+	print(step)
+else:
+	print("Never before count",step)
+print([p0,p1,p2,p3])
 
 exit()
 	
