@@ -350,6 +350,12 @@ myCPU.initCPU()
 progName = "input.txt"
 print("Input File Name :",progName)
 
+directionArrows = ['<','^','>','v']
+currentRobotLocation = [0,0,0]
+currentDirection = '^'
+colors = ['Black','White']
+currentColor = 'Black'
+
 programMemory = []
 
 inputQueuePtr = 0
