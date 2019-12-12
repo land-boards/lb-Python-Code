@@ -228,10 +228,10 @@ def calVelocityDelta(refPos,other1,other2,other3):
 	#print(", totalDelta",totalDelta)
 	return(totalDelta)
 
-moonPositions = example1Data
+moonPositions = problemData
 
 step = 0
-lastStep = 10
+lastStep = 1000
 
 # p0 = -1
 # v0 = 0
@@ -317,4 +317,23 @@ while step < lastStep:
 	
 	print("Moon positions",moonPositions)
 	print("Moon Velocities",moonVelocities)
+	
+	pe0 = abs(moonPositions[0][0]) + abs(moonPositions[0][1]) + abs(moonPositions[0][2])
+	pe1 = abs(moonPositions[1][0]) + abs(moonPositions[1][1]) + abs(moonPositions[1][2])
+	pe2 = abs(moonPositions[2][0]) + abs(moonPositions[2][1]) + abs(moonPositions[2][2])
+	pe3 = abs(moonPositions[3][0]) + abs(moonPositions[3][1]) + abs(moonPositions[3][2])
+	
+	ke0 = abs(moonVelocities[0][0]) + abs(moonVelocities[0][1]) + abs(moonVelocities[0][2])
+	ke1 = abs(moonVelocities[1][0]) + abs(moonVelocities[1][1]) + abs(moonVelocities[1][2])
+	ke2 = abs(moonVelocities[2][0]) + abs(moonVelocities[2][1]) + abs(moonVelocities[2][2])
+	ke3 = abs(moonVelocities[3][0]) + abs(moonVelocities[3][1]) + abs(moonVelocities[3][2])
+	
+	te0 = pe0 * ke0
+	te1 = pe1 * ke1
+	te2 = pe2 * ke2
+	te3 = pe3 * ke3
+	
+	teSum = te0 + te1 + te2 + te3
+	print("Total Kinetic Energy", teSum)
+	
 	
