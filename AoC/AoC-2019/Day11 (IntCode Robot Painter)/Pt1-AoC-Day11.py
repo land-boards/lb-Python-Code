@@ -130,7 +130,7 @@ class CPU:
 		# 'inputReady' => 'waitingOnInput' => 
 		# 'inputReady' => 'waitingOnInput' => 
 		# 'progDone'
-		self.setProgState('initCPU')
+		self.setProgState('waitingForFirstINPinstruction')
 		self.programCounter = 0
 		self.relativeBaseRegister = 0
 		if debug_initCPU:
@@ -163,25 +163,25 @@ class CPU:
 			assert False,"dealWithOp: WTF-dealWithOp"
 		return val1
 	
-	def writeOp3Result(self,opcode,result):
+	def writeOpResult(self,opcode,result):
 		global programMemory
 		global programCounter
 		debug_writeEqLtResult = False
-		if opcode[3] == 0:
+		if opcode == 0:
 			programMemory[programMemory[self.programCounter+3]] = result
 			if debug_writeEqLtResult:
 				print("         output position mode comparison result =",result)
-		elif opcode[3] == 1:
+		elif opcode == 1:
 			programMemory[self.programCounter+3] = result
 			if debug_writeEqLtResult:
 				print("         output immediate mode comparison result =",result,)
-		elif opcode[3] == 2:
+		elif opcode == 2:
 			programMemory[programMemory[self.programCounter+3] + self.relativeBaseRegister] = result
 			if debug_writeEqLtResult:
 				print("         output relative mode comparison result =",result,)
 	
 	def runCPU(self):
-		debug_runCPU = False
+		debug_runCPU = True
 		global inputQueuePtr
 		global inputQueue
 		global outputQueue
@@ -191,67 +191,37 @@ class CPU:
 			if currentOp[0] == 1:		# Addition Operator
 				if debug_runCPU:
 					print("PC =",self.programCounter,"ADD")
-				valPair = self.evalOpPair(currentOp)
-				result = valPair[0] + valPair[1]
-				self.writeOp3Result(currentOp,result)
+				result = self.dealWithOp(currentOp,1) + self.dealWithOp(currentOp,2)
+				self.writeOpResult(currentOp[3],result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 2:		# Multiplication Operator
 				if debug_runCPU:
 					print("PC =",self.programCounter,"MUL")
-				valPair = self.evalOpPair(currentOp)
-				result = valPair[0] * valPair[1]
-				self.writeOp3Result(currentOp,result)
+				result = self.dealWithOp(currentOp,1) * self.dealWithOp(currentOp,2)
+				self.writeOpResult(currentOp[3],result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
-				debug_CPUInput = True
+				debug_CPUInput = False
 				if debug_runCPU or debug_CPUInput:
 					print("PC =",self.programCounter,"INP ",end='')
 				if inputQueuePtr >= len(inputQueue):
 					if debug_runCPU or debug_CPUInput:
-						print("inputQueuePtr",inputQueuePtr,"len(inputQueue)",len(inputQueue),"Returning to main loop for input")
+						print("inputQueuePtr",inputQueuePtr,"len(inputQueue)",len(inputQueue),end='')
+						print("Returning to main for input")
 					return
-				if currentOp[1] == 0:	# position mode
-					if debug_runCPU or debug_CPUInput:
-						print("Position mode inputQueuePtr =",inputQueuePtr,"Value :",inputQueue[inputQueuePtr])
-					programMemory[self.programCounter+3] = inputQueue[inputQueuePtr]
-					inputQueuePtr += 1
-				elif currentOp[1] == 1:	# immediate mode
-					if debug_runCPU or debug_CPUInput:
-						print("Value Immediate mode from input queue,",inputQueue[inputQueuePtr],"Taking Value :",inputQueue[inputQueuePtr]," from input queue, ")
-					assert False," INPut immediate value"
-				elif currentOp[1] == 2:	# relative mode
-					if debug_runCPU or debug_CPUInput:
-						print("Value :",inputQueue[inputQueuePtr],"Relative  mode from input queue, ",end='')
-					programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister] = inputQueue[inputQueuePtr]
-					inputQueuePtr = inputQueuePtr + 1
+				self.writeOpResult(currentOp[1],inputQueue[inputQueuePtr])
+				inputQueuePtr = inputQueuePtr + 1
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
-				debug_CPUOutput = True
+				debug_CPUOutput = False
 				if debug_runCPU or debug_CPUOutput:
-					print("PC =",self.programCounter,"OUT ",end='')
-				if currentOp[1] == 0:	# position mode
-					val1 = programMemory[programMemory[self.programCounter+1]]
-					if debug_runCPU or debug_CPUOutput:
-						print("Position Mode, Location =",self.programCounter+1," Read parm from pos :",programMemory[self.programCounter+1],"value :",val1)
-					outputQueue.append(val1)
-				elif currentOp[1] == 1:	# immediate mode
-					val1 = programMemory[self.programCounter+1]
-					if debug_runCPU or debug_CPUOutput:
-						print("Immediate value from location =",self.programCounter+1,", Value = ",val1)
-					outputQueue.append(val1)
-				elif currentOp[1] == 2:	# relative mode
-					val1 = programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister]
-					if debug_runCPU or debug_CPUOutput:
-						print("Relative Mode Location =",self.programCounter+1," Base Reg =",self.relativeBaseRegister,"value :",val1)
-					outputQueue.append(val1)
-				else:
-					assert False,"OUT: Unexpected currentOp"
-					exit()
+					print("PC =",self.programCounter,"OUT")
+				val1 = self.dealWithOp(currentOp,1)
+				outputQueue.append(val1)
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 5:		# Jump if true
-				valPair = self.evalOpPair(currentOp)
-				if valPair[0] != 0:
-					self.programCounter = valPair[1]
+				if self.dealWithOp(currentOp,1) != 0:
+					self.programCounter = self.dealWithOp(currentOp,2)
 					if debug_runCPU:
 						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch taken")
 				else:
@@ -259,15 +229,14 @@ class CPU:
 					if debug_runCPU:
 						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch not taken")
 			elif currentOp[0] == 6:		# Jump if false
-				valPair = self.evalOpPair(currentOp)
-				if valPair[0] == 0:
-					self.programCounter = valPair[1]
+				if self.dealWithOp(currentOp,1) == 0:
+					self.programCounter = self.dealWithOp(currentOp,2)
 					if debug_runCPU:
-						print("PC =",self.programCounter,"JIF currentOp",currentOp,"Branch taken")
+						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch taken")
 				else:
-					self.programCounter = self.programCounter + 3	
+					self.programCounter = self.programCounter + 3		
 					if debug_runCPU:
-						print("PC =",self.programCounter,"JIF currentOp",currentOp,"Branch not taken")
+						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch not taken")
 			elif currentOp[0] == 7:		# Evaluate if less-than
 				valPair = self.evalOpPair(currentOp)
 				pos = programMemory[self.programCounter+3]
@@ -279,7 +248,7 @@ class CPU:
 					result = 0
 					if debug_runCPU:
 						print("PC =",self.programCounter,"ELT is",valPair[0],"less than =",valPair[1],"False")
-				self.writeOp3Result(currentOp,result)
+				self.writeOpResult(currentOp[3],result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 8:		# Evaluate if equal
 				valPair = self.evalOpPair(currentOp)
@@ -292,7 +261,7 @@ class CPU:
 					result = 0
 					if debug_runCPU:
 						print("PC =",self.programCounter,"EEQ does",valPair[0],"equal =",valPair[1],"False")
-				self.writeOp3Result(currentOp,result)
+				self.writeOpResult(currentOp[3],result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 9:		# Sets relative base register value
 				if debug_runCPU:
@@ -307,71 +276,56 @@ class CPU:
 				exit()
 		assert False,"Unexpected exit of the CPU"
 
-def moveRobot(currentLocation,currentDirection,newTurn):
-	debugMoveRobot = False
-	if debugMoveRobot:
-		print("\n@moveRobot : currentLocation",currentLocation)
-		print("@moveRobot : currentDirection",currentDirection)
-		print("@moveRobot : newTurn",newTurn)
-	xVal = currentLocation[0]
-	yVal = currentLocation[1]
+def getNewRobotDirection(currentRobotDirection,newTurn):
+	debug_getNewRobotDirection = False
+	if debug_getNewRobotDirection:
+		print("@getNewRobotDirection : currentRobotDirection",currentRobotDirection)
+		print("@getNewRobotDirection : newTurn",newTurn)
 	if newTurn == '<':
-		if currentDirection == '^':
+		if currentRobotDirection == '^':
 			resultingDirection = '<'
-			newLocation = [xVal-1,yVal]
-		elif currentDirection == '<':
+		elif currentRobotDirection == '<':
 			resultingDirection = 'v'
-			newLocation = [xVal,yVal-1]
-		elif currentDirection == '>':
+		elif currentRobotDirection == '>':
 			resultingDirection = '^'
-			newLocation = [xVal,yVal+1]
-		elif currentDirection == 'v':
+		elif currentRobotDirection == 'v':
 			resultingDirection = '>'
-			newLocation = [xVal+1,yVal]
 		else:
-			assert False,"moveRobot : bad current direction"
+			assert False,"getNewRobotDirection : bad current direction"
 	elif newTurn == '>':
-		if currentDirection == '^':
+		if currentRobotDirection == '^':
 			resultingDirection = '>'
-			newLocation = [xVal+1,yVal]
-		elif currentDirection == '<':
+		elif currentRobotDirection == '<':
 			resultingDirection = '^'
-			newLocation = [xVal,yVal+1]
-		elif currentDirection == '>':
+		elif currentRobotDirection == '>':
 			resultingDirection = 'v'
-			newLocation = [xVal,yVal-1]
-		elif currentDirection == 'v':
+		elif currentRobotDirection == 'v':
 			resultingDirection = '<'
-			newLocation = [xVal-1,yVal]
 		else:
-			assert False,"moveRobot : bad current direction"
+			assert False,"getNewRobotDirection : bad current direction"
 	else:
-		assert False,"moveRobot: Illegal direction"
-	retVec = [newLocation[0],newLocation[1],resultingDirection]
-	if debugMoveRobot:
-		print("@moveRobot : returning",retVec)
-	return retVec
-
-def getColor(pointList,currentPointLocation,colorsList):
-	debug_getColor = False
-	if debug_getColor:
-		print("@getColor pointList",pointList)
-		print("@getColor currentPointLocation",currentPointLocation)
-		print("@getColor colorsList",colorsList)
-	if currentPointLocation not in pointList:
-		if debug_getColor:
-			print("@getColor current point is not in the list so current color is black")
-		return 0
-	else:
-		pass
-		if debug_getColor:
-			print("@getColor current point is in the list")
-	for count in range(len(pointList)):
-		if pointList[count] == currentPointLocation:
-			if debug_getColor:
-				print("@getColor color at point is",colorsList[count])
-			return colorsList[count]
-
+		assert False,"getNewRobotDirection: Illegal direction"
+	if debug_getNewRobotDirection:
+		print("@debug_getNewRobotDirection : resultingDirection",resultingDirection)
+	return resultingDirection
+	
+def getNewRobotLocation(currentRobotLocation,nextDirection):
+	debug_getNewRobotLocation = False
+	if debug_getNewRobotLocation:
+		print("@getNewRobotLocation : currentRobotLocation",currentRobotLocation)
+		print("@getNewRobotLocation : nextDirection",nextDirection)
+	if nextDirection == '^':
+		newLocation = [currentRobotLocation[0],currentRobotLocation[1]+1]
+	elif nextDirection == '<':
+		newLocation = [currentRobotLocation[0]-1,currentRobotLocation[1]]
+	elif nextDirection == '>':
+		newLocation = [currentRobotLocation[0]+1,currentRobotLocation[1]]
+	elif nextDirection == 'v':
+		newLocation = [currentRobotLocation[0],currentRobotLocation[1]-1]
+	if debug_getNewRobotLocation:
+		print("@getNewRobotLocation : newLocation",newLocation)
+	return newLocation
+	
 def bAndWText(colorCode):
 	if colorCode == 0:
 		return("black")
@@ -391,6 +345,29 @@ def turnsText(turnCode):
 		return("left")
 	else:
 		assert False,"illegal color"
+
+def getColor(pointList,currentPointLocation,colorsList):
+	debug_getColor = False
+	if debug_getColor:
+		print("\n@getColor pointList            :",pointList)
+		print("@getColor currentPointLocation :",currentPointLocation)
+		print("@getColor colorsList           :",colorsList)
+	# if currentPointLocation not in pointList:
+		# if debug_getColor:
+			# print("@getColor current point is not in the list so current color returns black")
+		# return 0
+	# else:
+		# pass
+		# if debug_getColor:
+			# print("@getColor current point is in the list")
+	for count in range(len(pointList)):
+		if pointList[count] == currentPointLocation:
+			if debug_getColor:
+				print("@getColor color at point is",bAndWText(colorsList[count]))
+			return colorsList[count]
+	if debug_getColor:
+		print("@getColor current point is not in the list so current color returns black")
+	return 0
 		
 # Initialize queues
 inputQueuePtr = 0
@@ -400,7 +377,7 @@ outputQueue = []
 
 # Initialize robot states
 currentRobotLocation = []
-currentDirection = ''
+currentRobotDirection = ''
 pointsOnPath = []
 colorsOnPath = []
 
@@ -427,99 +404,75 @@ while step < finalStep:
 	debug_main = True
 	myCPU.runCPU()
 	progStateVal = myCPU.getProgState()
-	print("progStateVal",progStateVal)
+	#print("progStateVal",progStateVal)
 	if progStateVal == 'progDone':
 		print("Reached end of program")
 		break
-	elif progStateVal== 'initCPU':
-		if debug_main:
-			print("\n@main Loading initial position and instruction")
-			print("@main Before initialization")
-			print("@main currentRobotLocation =",currentRobotLocation)
-			print("@main pointsOnPath         =",pointsOnPath)
-			print("@main colorsOnPath         =",colorsOnPath)
-			print("@main inputQueue           =",inputQueue)
-			print("@main inputQueuePtr        =",inputQueuePtr)
-			print("@main CPU outputQueue      =",outputQueue)
-			print("@main CPU outputQueuePtr   =",outputQueuePtr)
-		currentRobotLocation.append(0)	# X
-		currentRobotLocation.append(0)	# Y
-		#colorsOnPath.append(0)
-		currentDirection = '^'
+	elif progStateVal== 'waitingForFirstINPinstruction':
+		currentRobotLocation = [0,0]	# X,Y
+		currentRobotDirection = '^'
 		inputQueue.append(0)
 		inputQueuePtr = 0
 		outputQueuePtr = 0
-		currentColor = 0
 		if debug_main:
 			print("@main after initialization")
-			print("@main currentRobotLocation =",currentRobotLocation)
-			print("@main pointsOnPath         =",pointsOnPath)
-			print("@main colorsOnPath         =",colorsOnPath)
-			print("@main inputQueue           =",inputQueue)
-			print("@main inputQueuePtr        =",inputQueuePtr)
-			print("@main CPU outputQueue      =",outputQueue)
-			print("@main CPU outputQueuePtr   =",outputQueuePtr)
+			print("@main currentRobotLocation  =",currentRobotLocation)
+			print("@main currentRobotDirection =",currentRobotDirection)
+			print("@main pointsOnPath          =",pointsOnPath)
+			print("@main colorsOnPath          =",colorsOnPath)
+			print("@main inputQueue            =",inputQueue)
+			print("@main inputQueuePtr         =",inputQueuePtr)
+			print("@main CPU outputQueue       =",outputQueue)
+			print("@main CPU outputQueuePtr    =",outputQueuePtr)
 		myCPU.setProgState('waitForInput')
 	elif progStateVal == 'waitForInput':
-		if debug_main:
-			print("\n@main currentRobotLocation      =",currentRobotLocation)
-			print("@main Before move pointsOnPath  =",pointsOnPath)
-			print("@main Before move colorsOnPath  =",colorsOnPath)
-			print("@main Before move inputQueue    =",inputQueue)
-			print("@main Before move inputQueuePtr =",inputQueuePtr)
-			print("@main CPU outputQueue           =",outputQueue)
-			print("@main CPU outputQueuePtr        =",outputQueuePtr)
-			print("      Paint the block           = ",end='')
-			print(bAndWText(outputQueue[outputQueuePtr]))
-		colorsOnPath.append(currentColor)
-		newColor = outputQueue[outputQueuePtr]
-		if newColor != 0 and newColor != 1:
-			print("Error\n@main bad color",newColor)
+		colorFromCPU = outputQueue[outputQueuePtr]
+		if colorFromCPU > 1:
+			print("\n@main Error - bad color",colorFromCPU)
+			print("outputQueue",outputQueue)
 			assert False,"Bad color received from output routine"
-		if (outputQueue[outputQueuePtr+1] == 0):
-			turnLeftRight = '<'
-		elif (outputQueue[outputQueuePtr+1] == 1):
-			turnLeftRight = '>'
+		if outputQueue[outputQueuePtr+1] == 0:
+			turnDirection = '<'
+		elif outputQueue[outputQueuePtr+1] == 1:
+			turnDirection = '>'
 		else:
-			print("\n@main Error outputQueue",outputQueue)
-			print("@main New robot location",currentRobotLocation,"painting color",currentColor)
-			print("@main pointsOnPath (after)",pointsOnPath)
-			print("@main colorsOnPath (after)",colorsOnPath)
-			assert False,"Bad direction"
-		if debug_main:
-			print("      Turn (relative) is       =",turnsText(turnLeftRight))
-			print("@main Before move direction    =",turnsText(currentDirection))
-		currentColor = getColor(pointsOnPath,currentRobotLocation,colorsOnPath)
+			assert False,"Bad Turn Direction"
+		newDirection = getNewRobotDirection(currentRobotDirection,turnDirection)
+		newLocation = getNewRobotLocation(currentRobotLocation,newDirection)
+		colorOnPath = getColor(pointsOnPath,currentRobotLocation,colorsOnPath)
+		inputQueue.append(colorOnPath)
 		pointsOnPath.append(currentRobotLocation)
-		inputQueue.append(currentColor)
-		if currentColor > 1:
-			print("@main got back a bad color from getColor",currentColor)
+		if colorOnPath > 1:
+			print("@main got back a bad color from getColor",colorOnPath)
 			assert False,"@main back color from getColor"		
-		newVals = moveRobot(currentRobotLocation,currentDirection,turnLeftRight)
-		if debug_main:
-			print("@main Before move location     =",currentRobotLocation)
-		currentRobotLocation = newVals[0:2]
-		currentDirection = newVals[2]
+		newDirection = getNewRobotDirection(currentRobotDirection,turnDirection)
+		newLocation = getNewRobotLocation(currentRobotLocation,newDirection)
+		colorsOnPath.append(colorFromCPU)
 		outputQueuePtr += 2
 		if debug_main:
-			print("      New direction will be    =",turnsText(currentDirection))
-			print("@main inputQueue               =",inputQueue)
-			print("@main inputQueuePtr            =",inputQueuePtr)
-			print("@main outputQueue              =",outputQueue)
-			print("@main outputQueuePtr           =",outputQueuePtr)
-			print("@main New robot location       =",currentRobotLocation)
-			print("@main painting color           =",bAndWText(currentColor))
-			print("@main pointsOnPath (after)     =",pointsOnPath)
-			print("@main colorsOnPath (after)     =",colorsOnPath)
+			print("\n@main Before move direction     =",currentRobotDirection)
+			print("@main Turn (relative) is        =",turnDirection)
+			print("@main After move direction      =",newDirection)
+			print("@main Before move location      =",currentRobotLocation)
+			print("@main After move location       =",newLocation)
+			print("@main After move inputQueue     =",inputQueue)
+			print("@main After move inputQueuePtr  =",inputQueuePtr)
+			print("@main After move outputQueue    =",outputQueue)
+			print("@main After move outputQueuePtr =",outputQueuePtr)
+			print("@main colorFromCPU              =",bAndWText(colorFromCPU))
+			print("@main colorOnPath               =",bAndWText(colorOnPath))
+			print("@main After move pointsOnPath   =",pointsOnPath)
+			print("@main After move colorsOnPath   =",colorsOnPath)
+		currentRobotDirection = newDirection
+		currentRobotLocation = newLocation
 	else:
 		print("progStateVal =",progStateVal)
 		assert False,"@main : Something happened bad to the program state"
 	step += 1
 print("Output Queue :", outputQueue)
-print("      New direction will be    =",turnsText(currentDirection))
+print("      New direction will be    =",turnsText(currentRobotDirection))
 print("@main inputQueue               =",inputQueue)
 print("@main New robot location       =",currentRobotLocation)
-print("@main painting color           =",bAndWText(currentColor))
 print("@main pointsOnPath (after)     =",pointsOnPath)
 print("@main colorsOnPath (after)     =",colorsOnPath)
 print("@main CPU outputQueue          =",outputQueue)
@@ -529,3 +482,6 @@ for item in outputQueue:
 	if item >= 1:
 		paintedCount += 1
 print("paintedCount=",paintedCount)
+
+for offset in range(len(colorsOnPath)):
+	print(pointsOnPath[offset]," ",bAndWText(colorsOnPath[offset]))
