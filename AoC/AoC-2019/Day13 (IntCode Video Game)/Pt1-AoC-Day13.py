@@ -1,71 +1,14 @@
-# Pt1-AoCDay11.py
+# Pt1-AoCDay13.py
 # 2019 Advent of Code
-# Day 11
+# Day 13
 # Part 1
-# https://adventofcode.com/2019/day/11
+# https://adventofcode.com/2019/day/13
 
 from __future__ import print_function
 
 """
---- Day 11: Space Police ---
-On the way to Jupiter, you're pulled over by the Space Police.
-
-"Attention, unmarked spacecraft! You are in violation of Space Law! All spacecraft must have a clearly visible registration identifier! You have 24 hours to comply or be sent to Space Jail!"
-
-Not wanting to be sent to Space Jail, you radio back to the Elves on Earth for help. Although it takes almost three hours for their reply signal to reach you, they send instructions for how to power up the emergency hull painting robot and even provide a small Intcode program (your puzzle input) that will cause it to paint your ship appropriately.
-
-There's just one problem: you don't have an emergency hull painting robot.
-
-You'll need to build a new emergency hull painting robot. The robot needs to be able to move around on the grid of square panels on the side of your ship, detect the color of its current panel, and paint its current panel black or white. (All of the panels are currently black.)
-
-The Intcode program will serve as the brain of the robot. The program uses input instructions to access the robot's camera: provide 0 if the robot is over a black panel or 1 if the robot is over a white panel. Then, the program will output two values:
-
-First, it will output a value indicating the color to paint the panel the robot is over: 0 means to paint the panel black, and 1 means to paint the panel white.
-Second, it will output a value indicating the direction the robot should turn: 0 means it should turn left 90 degrees, and 1 means it should turn right 90 degrees.
-After the robot turns, it should always move forward exactly one panel. The robot starts facing up.
-
-The robot will continue running for a while like this and halt when it is finished drawing. Do not restart the Intcode computer inside the robot during this process.
-
-For example, suppose the robot is about to start running. Drawing black panels as ., white panels as #, and the robot pointing the direction it is facing (< ^ > v), the initial state and region near the robot looks like this:
-
-.....
-.....
-..^..
-.....
-.....
-The panel under the robot (not visible here because a ^ is shown instead) is also black, and so any input instructions at this point should be provided 0. Suppose the robot eventually outputs 1 (paint white) and then 0 (turn left). After taking these actions and moving forward one panel, the region now looks like this:
-
-.....
-.....
-.<#..
-.....
-.....
-Input instructions should still be provided 0. Next, the robot might output 0 (paint black) and then 0 (turn left):
-
-.....
-.....
-..#..
-.v...
-.....
-After more outputs (1,0, 1,0):
-
-.....
-.....
-..^..
-.##..
-.....
-The robot is now back where it started, but because it is now on a white panel, input instructions should be provided 1. After several more outputs (0,1, 1,0, 1,0), the area looks like this:
-
-.....
-..<#.
-...#.
-.##..
-.....
-Before you deploy the robot, you should probably have an estimate of the area it will cover: specifically, you need to know the number of panels it paints at least once, regardless of color. In the example above, the robot painted 6 panels at least once. (It painted its starting panel twice, but that panel is still only counted once; it also never painted the panel it ended on.)
-
-Build a new emergency hull painting robot and run the Intcode program on it. How many panels does it paint at least once?
-
-498 is too low
+1092 is too high
+380 is the right answer
 """
 
 debugAll = False
@@ -203,7 +146,7 @@ class CPU:
 				self.writeOp3Result(currentOp,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
-				debug_CPUInput = True
+				debug_CPUInput = False
 				if debug_runCPU or debug_CPUInput:
 					print("PC =",self.programCounter,"INP ",end='')
 				if inputQueuePtr >= len(inputQueue):
@@ -226,7 +169,7 @@ class CPU:
 					inputQueuePtr = inputQueuePtr + 1
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
-				debug_CPUOutput = True
+				debug_CPUOutput = False
 				if debug_runCPU or debug_CPUOutput:
 					print("PC =",self.programCounter,"OUT ",end='')
 				if currentOp[1] == 0:	# position mode
@@ -431,101 +374,14 @@ while step < finalStep:
 	if progStateVal == 'progDone':
 		print("Reached end of program")
 		break
-	elif progStateVal== 'initCPU':
-		if debug_main:
-			print("\n@main Loading initial position and instruction")
-			print("@main Before initialization")
-			print("@main currentRobotLocation =",currentRobotLocation)
-			print("@main pointsOnPath         =",pointsOnPath)
-			print("@main colorsOnPath         =",colorsOnPath)
-			print("@main inputQueue           =",inputQueue)
-			print("@main inputQueuePtr        =",inputQueuePtr)
-			print("@main CPU outputQueue      =",outputQueue)
-			print("@main CPU outputQueuePtr   =",outputQueuePtr)
-		currentRobotLocation.append(0)	# X
-		currentRobotLocation.append(0)	# Y
-		#colorsOnPath.append(0)
-		currentDirection = '^'
-		inputQueue.append(0)
-		inputQueuePtr = 0
-		outputQueuePtr = 0
-		currentColor = 0
-		if debug_main:
-			print("@main after initialization")
-			print("@main currentRobotLocation =",currentRobotLocation)
-			print("@main pointsOnPath         =",pointsOnPath)
-			print("@main colorsOnPath         =",colorsOnPath)
-			print("@main inputQueue           =",inputQueue)
-			print("@main inputQueuePtr        =",inputQueuePtr)
-			print("@main CPU outputQueue      =",outputQueue)
-			print("@main CPU outputQueuePtr   =",outputQueuePtr)
-		myCPU.setProgState('waitForInput')
-	elif progStateVal == 'waitForInput':
-		if debug_main:
-			print("\n@main currentRobotLocation      =",currentRobotLocation)
-			print("@main Before move pointsOnPath  =",pointsOnPath)
-			print("@main Before move colorsOnPath  =",colorsOnPath)
-			print("@main Before move inputQueue    =",inputQueue)
-			print("@main Before move inputQueuePtr =",inputQueuePtr)
-			print("@main CPU outputQueue           =",outputQueue)
-			print("@main CPU outputQueuePtr        =",outputQueuePtr)
-			print("      Paint the block           = ",end='')
-			print(bAndWText(outputQueue[outputQueuePtr]))
-		colorsOnPath.append(currentColor)
-		newColor = outputQueue[outputQueuePtr]
-		if newColor != 0 and newColor != 1:
-			print("Error\n@main bad color",newColor)
-			assert False,"Bad color received from output routine"
-		if (outputQueue[outputQueuePtr+1] == 0):
-			turnLeftRight = '<'
-		elif (outputQueue[outputQueuePtr+1] == 1):
-			turnLeftRight = '>'
-		else:
-			print("\n@main Error outputQueue",outputQueue)
-			print("@main New robot location",currentRobotLocation,"painting color",currentColor)
-			print("@main pointsOnPath (after)",pointsOnPath)
-			print("@main colorsOnPath (after)",colorsOnPath)
-			assert False,"Bad direction"
-		if debug_main:
-			print("      Turn (relative) is       =",turnsText(turnLeftRight))
-			print("@main Before move direction    =",turnsText(currentDirection))
-		currentColor = getColor(pointsOnPath,currentRobotLocation,colorsOnPath)
-		pointsOnPath.append(currentRobotLocation)
-		inputQueue.append(currentColor)
-		if currentColor > 1:
-			print("@main got back a bad color from getColor",currentColor)
-			assert False,"@main back color from getColor"		
-		newVals = moveRobot(currentRobotLocation,currentDirection,turnLeftRight)
-		if debug_main:
-			print("@main Before move location     =",currentRobotLocation)
-		currentRobotLocation = newVals[0:2]
-		currentDirection = newVals[2]
-		outputQueuePtr += 2
-		if debug_main:
-			print("      New direction will be    =",turnsText(currentDirection))
-			print("@main inputQueue               =",inputQueue)
-			print("@main inputQueuePtr            =",inputQueuePtr)
-			print("@main outputQueue              =",outputQueue)
-			print("@main outputQueuePtr           =",outputQueuePtr)
-			print("@main New robot location       =",currentRobotLocation)
-			print("@main painting color           =",bAndWText(currentColor))
-			print("@main pointsOnPath (after)     =",pointsOnPath)
-			print("@main colorsOnPath (after)     =",colorsOnPath)
-	else:
-		print("progStateVal =",progStateVal)
-		assert False,"@main : Something happened bad to the program state"
 	step += 1
 print("Output Queue :", outputQueue)
-print("      New direction will be    =",turnsText(currentDirection))
-print("@main inputQueue               =",inputQueue)
-print("@main New robot location       =",currentRobotLocation)
-print("@main painting color           =",bAndWText(currentColor))
-print("@main pointsOnPath (after)     =",pointsOnPath)
-print("@main colorsOnPath (after)     =",colorsOnPath)
-print("@main CPU outputQueue          =",outputQueue)
-paintedCount = 0
-print("pointsOnPath",pointsOnPath)
-for item in outputQueue:
-	if item >= 1:
-		paintedCount += 1
-print("paintedCount=",paintedCount)
+print("Length divided by 3 is",len(outputQueue)/3)
+blockCount = 0
+for step in range(2,len(outputQueue),3):
+	print("step",step)
+	if outputQueue[step]==2:
+		blockCount += 1
+print(blockCount)
+
+	
