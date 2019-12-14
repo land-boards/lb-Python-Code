@@ -209,7 +209,7 @@ class CPU:
 						print("inputQueuePtr",inputQueuePtr,"len(inputQueue)",len(inputQueue),end='')
 						print("Returning to main for input")
 					return
-				self.writeOpResult(currentOp[1],inputQueue[inputQueuePtr])
+				programMemory[programMemory[self.programCounter+3]] = inputQueue[inputQueuePtr]
 				inputQueuePtr = inputQueuePtr + 1
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
@@ -326,7 +326,7 @@ def getNewRobotLocation(currentRobotLocation,nextDirection):
 		print("@getNewRobotLocation : newLocation",newLocation)
 	return newLocation
 	
-def bAndWText(colorCode):
+def colorsText(colorCode):
 	if colorCode == 0:
 		return("black")
 	elif colorCode == 1:
@@ -352,18 +352,10 @@ def getColor(pointList,currentPointLocation,colorsList):
 		print("\n@getColor pointList            :",pointList)
 		print("@getColor currentPointLocation :",currentPointLocation)
 		print("@getColor colorsList           :",colorsList)
-	# if currentPointLocation not in pointList:
-		# if debug_getColor:
-			# print("@getColor current point is not in the list so current color returns black")
-		# return 0
-	# else:
-		# pass
-		# if debug_getColor:
-			# print("@getColor current point is in the list")
 	for count in range(len(pointList)):
 		if pointList[count] == currentPointLocation:
 			if debug_getColor:
-				print("@getColor color at point is",bAndWText(colorsList[count]))
+				print("@getColor color at point is",colorsText(colorsList[count]))
 			return colorsList[count]
 	if debug_getColor:
 		print("@getColor current point is not in the list so current color returns black")
@@ -389,7 +381,7 @@ with open(progName, 'r') as filehandle:
 	inLine = filehandle.readline()
 	programMemory = map(int, inLine.split(','))
 lenOfProgram=len(programMemory)
-for i in range(10000):
+for i in range(500):
 	programMemory.append(0)
 
 # start up the CPU
@@ -459,8 +451,8 @@ while step < finalStep:
 			print("@main After move inputQueuePtr  =",inputQueuePtr)
 			print("@main After move outputQueue    =",outputQueue)
 			print("@main After move outputQueuePtr =",outputQueuePtr)
-			print("@main colorFromCPU              =",bAndWText(colorFromCPU))
-			print("@main colorOnPath               =",bAndWText(colorOnPath))
+			print("@main colorFromCPU              =",colorsText(colorFromCPU))
+			print("@main colorOnPath               =",colorsText(colorOnPath))
 			print("@main After move pointsOnPath   =",pointsOnPath)
 			print("@main After move colorsOnPath   =",colorsOnPath)
 		currentRobotDirection = newDirection
@@ -484,4 +476,4 @@ for item in outputQueue:
 print("paintedCount=",paintedCount)
 
 for offset in range(len(colorsOnPath)):
-	print(pointsOnPath[offset]," ",bAndWText(colorsOnPath[offset]))
+	print(pointsOnPath[offset]," ",colorsText(colorsOnPath[offset]))
