@@ -183,7 +183,6 @@ class CPU:
 	
 	def runCPU(self):
 		debug_runCPU = False
-		global inputQueuePtr
 		global inputQueue
 		global outputQueue
 		while(1):
@@ -422,8 +421,6 @@ for i in range(5000):
 myCPU = CPU()
 myCPU.initCPU()
 
-stepCount = 0
-
 while True:
 	debug_main = False
 	myCPU.runCPU()
@@ -432,7 +429,6 @@ while True:
 		print("Reached end of program")
 		break
 	elif progStateVal == 'waitForInput':
-		stepCount += 1
 		if firstHit:
 			inputQueue.append(1)
 			firstHit = False
