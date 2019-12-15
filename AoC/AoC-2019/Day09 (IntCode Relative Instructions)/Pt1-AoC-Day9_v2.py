@@ -59,7 +59,6 @@ class CPU:
 	progState = ''
 	programCounter = 0
 	relativeBaseRegister = 0
-	outVal = 0
 	
 	def intTo5DigitString(self, instruction):
 		"""Takes a variable length string and packs the front with zeros to make it
@@ -103,7 +102,6 @@ class CPU:
 		self.progState = 'initInput' 
 		self.programCounter = 0
 		self.relativeBaseRegister = 0
-		self.outVal = 0
 		
 	def evalOpPair(self, currentOp):
 		debug_BranchEval = False
@@ -245,6 +243,10 @@ class CPU:
 				exit()
 		assert False,"Unexpected exit of the CPU"
 
+inputQueuePtr = 0
+inputQueue = []
+outputQueuePtr = 0
+outputQueue = []
 
 myCPU = CPU()
 myCPU.initCPU()
@@ -253,11 +255,6 @@ progName = "input.txt"
 print("Input File Name :",progName)
 
 programMemory = []
-
-inputQueuePtr = 0
-inputQueue = []
-outputQueuePtr = 0
-outputQueue = []
 
 with open(progName, 'r') as filehandle:  
 	inLine = filehandle.readline()
