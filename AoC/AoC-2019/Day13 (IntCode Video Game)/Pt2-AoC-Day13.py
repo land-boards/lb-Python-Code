@@ -6,7 +6,21 @@
 
 from __future__ import print_function
 
-"""
+import os
+import sys
+import time
+
+"""--- Part Two ---
+The game didn't run because you didn't put in any quarters. Unfortunately, you did not bring any quarters. Memory address 0 represents the number of quarters that have been inserted; set it to 2 to play for free.
+
+The arcade cabinet has a joystick that can move left and right. The software reads the position of the joystick with input instructions:
+
+If the joystick is in the neutral position, provide 0.
+If the joystick is tilted to the left, provide -1.
+If the joystick is tilted to the right, provide 1.
+The arcade cabinet also has a segment display capable of showing a single number that represents the player's current score. When three output instructions specify X=-1, Y=0, the third output instruction is not a tile; the value instead specifies the new score to show in the segment display. For example, a sequence of output values like -1,0,12345 would show 12345 as the player's current score.
+
+Beat the game by breaking all the blocks. What is your score after the last block is broken?
 1092 is too high
 380 is the right answer
 """
@@ -125,7 +139,6 @@ class CPU:
 	
 	def runCPU(self):
 		debug_runCPU = False
-		global inputQueuePtr
 		global inputQueue
 		global outputQueue
 		while(1):
@@ -134,67 +147,46 @@ class CPU:
 			if currentOp[0] == 1:		# Addition Operator
 				if debug_runCPU:
 					print("PC =",self.programCounter,"ADD")
-				valPair = self.evalOpPair(currentOp)
-				result = valPair[0] + valPair[1]
+				result = self.dealWithOp(currentOp,1) + self.dealWithOp(currentOp,2)
 				self.writeOp3Result(currentOp,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 2:		# Multiplication Operator
 				if debug_runCPU:
 					print("PC =",self.programCounter,"MUL")
-				valPair = self.evalOpPair(currentOp)
-				result = valPair[0] * valPair[1]
+				result = self.dealWithOp(currentOp,1) * self.dealWithOp(currentOp,2)
 				self.writeOp3Result(currentOp,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
 				debug_CPUInput = False
+#				debug_CPUInput = True
 				if debug_runCPU or debug_CPUInput:
-					print("PC =",self.programCounter,"INP ",end='')
-				if inputQueuePtr >= len(inputQueue):
+					print("PC =",self.programCounter,"INP Opcode = ",currentOp,end='')
+				if len(inputQueue) == 0:
 					if debug_runCPU or debug_CPUInput:
-						print("inputQueuePtr",inputQueuePtr,"len(inputQueue)",len(inputQueue),"Returning to main loop for input")
+						print(" - Returning to main for input value")
+					self.setProgState('waitForInput')
 					return
-				if currentOp[1] == 0:	# position mode
-					if debug_runCPU or debug_CPUInput:
-						print("Position mode inputQueuePtr =",inputQueuePtr,"Value :",inputQueue[inputQueuePtr])
-					programMemory[self.programCounter+3] = inputQueue[inputQueuePtr]
-					inputQueuePtr += 1
-				elif currentOp[1] == 1:	# immediate mode
-					if debug_runCPU or debug_CPUInput:
-						print("Value Immediate mode from input queue,",inputQueue[inputQueuePtr],"Taking Value :",inputQueue[inputQueuePtr]," from input queue, ")
-					assert False," INPut immediate value"
-				elif currentOp[1] == 2:	# relative mode
-					if debug_runCPU or debug_CPUInput:
-						print("Value :",inputQueue[inputQueuePtr],"Relative  mode from input queue, ",end='')
-					programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister] = inputQueue[inputQueuePtr]
-					inputQueuePtr = inputQueuePtr + 1
+				programMemory[programMemory[self.programCounter+1]] = inputQueue[0]
+				if debug_runCPU or debug_CPUInput:
+					print(" value =",inputQueue[0])
+				del inputQueue[0]
+				self.setProgState('inputWasRead')
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
 				debug_CPUOutput = False
+#				debug_CPUOutput = True
+				val1 = self.dealWithOp(currentOp,1)
 				if debug_runCPU or debug_CPUOutput:
-					print("PC =",self.programCounter,"OUT ",end='')
-				if currentOp[1] == 0:	# position mode
-					val1 = programMemory[programMemory[self.programCounter+1]]
-					if debug_runCPU or debug_CPUOutput:
-						print("Position Mode, Location =",self.programCounter+1," Read parm from pos :",programMemory[self.programCounter+1],"value :",val1)
-					outputQueue.append(val1)
-				elif currentOp[1] == 1:	# immediate mode
-					val1 = programMemory[self.programCounter+1]
-					if debug_runCPU or debug_CPUOutput:
-						print("Immediate value from location =",self.programCounter+1,", Value = ",val1)
-					outputQueue.append(val1)
-				elif currentOp[1] == 2:	# relative mode
-					val1 = programMemory[programMemory[self.programCounter+1] + self.relativeBaseRegister]
-					if debug_runCPU or debug_CPUOutput:
-						print("Relative Mode Location =",self.programCounter+1," Base Reg =",self.relativeBaseRegister,"value :",val1)
-					outputQueue.append(val1)
-				else:
-					assert False,"OUT: Unexpected currentOp"
-					exit()
+					print("PC =",self.programCounter,"OUT Opcode = ",currentOp,end='')
+					print(" value =",val1)
+				outputQueue.append(val1)
 				self.programCounter = self.programCounter + 2
+				if len(outputQueue) == 3:
+					self.setProgState('outputReady')
+					return
 			elif currentOp[0] == 5:		# Jump if true
-				valPair = self.evalOpPair(currentOp)
-				if valPair[0] != 0:
-					self.programCounter = valPair[1]
+				if self.dealWithOp(currentOp,1) != 0:
+					self.programCounter = self.dealWithOp(currentOp,2)
 					if debug_runCPU:
 						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch taken")
 				else:
@@ -202,15 +194,14 @@ class CPU:
 					if debug_runCPU:
 						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch not taken")
 			elif currentOp[0] == 6:		# Jump if false
-				valPair = self.evalOpPair(currentOp)
-				if valPair[0] == 0:
-					self.programCounter = valPair[1]
+				if self.dealWithOp(currentOp,1) == 0:
+					self.programCounter = self.dealWithOp(currentOp,2)
 					if debug_runCPU:
-						print("PC =",self.programCounter,"JIF currentOp",currentOp,"Branch taken")
+						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch taken")
 				else:
-					self.programCounter = self.programCounter + 3	
+					self.programCounter = self.programCounter + 3		
 					if debug_runCPU:
-						print("PC =",self.programCounter,"JIF currentOp",currentOp,"Branch not taken")
+						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch not taken")
 			elif currentOp[0] == 7:		# Evaluate if less-than
 				valPair = self.evalOpPair(currentOp)
 				pos = programMemory[self.programCounter+3]
@@ -250,10 +241,37 @@ class CPU:
 				exit()
 		assert False,"Unexpected exit of the CPU"
 
+screenBuffer = []
+
+def createEmptyScreen():
+	for val in range(0,26*42):
+		screenBuffer.append(0)
+
+def displayScreen():
+	#os.system('cls')
+	for yVal in range(0,26):
+		for xVal in range(0,42):
+			spot = screenBuffer[(yVal*42)+xVal]
+			if spot == 0:	# empty
+				print(" ",end='')
+			elif spot == 1:	# wall
+				print("W",end='')
+			elif spot == 2:	# block
+				print("B",end='')
+			elif spot == 3:	# paddle
+				print("=",end='')
+			elif spot == 4:	# ball
+				print("o",end='')
+			else:
+				print("displayScreen: spot =",spot)
+				assert False,"displayScreen: broke"
+		print(" ")
+
+def setPoint(x,y,value):
+	screenBuffer[x+y*42] = value
+
 # Initialize queues
-inputQueuePtr = 0
 inputQueue = []
-outputQueuePtr = 0
 outputQueue = []
 
 # Load program memory from file
@@ -264,33 +282,56 @@ with open(progName, 'r') as filehandle:
 	inLine = filehandle.readline()
 	programMemory = map(int, inLine.split(','))
 lenOfProgram=len(programMemory)
-for i in range(100):
+for i in range(5000):
 	programMemory.append(0)
+programMemory[0] = 2
+
 
 # start up the CPU
 myCPU = CPU()
 myCPU.initCPU()
 
 step = 0
-finalStep = 10
+finalStep = 100
+
+createEmptyScreen()
+displayScreen()
 
 # Run the CPU until program terminates
-while step < finalStep:
+paddleLocX = 0
+ballLocX = 0
+score = 0
+while True:
 	debug_main = True
 	myCPU.runCPU()
 	progStateVal = myCPU.getProgState()
-	print("progStateVal",progStateVal)
-	if progStateVal == 'progDone':
+	if progStateVal == 'outputReady':
+		os.system('cls')		
+		if outputQueue[2] == 4:	# ball
+			ballLocX = outputQueue[0]
+		if outputQueue[2] == 3:	# paddle
+			paddleLocX = outputQueue[0]
+		if (outputQueue[0] == -1) and (outputQueue[1] == 0):
+			score = outputQueue[2]
+#			assert False,"score"
+		else:
+			setPoint(outputQueue[0],outputQueue[1],outputQueue[2])
+			displayScreen()
+		#time.sleep(0.001)
+		del outputQueue[2]
+		del outputQueue[1]
+		del outputQueue[0]
+	elif progStateVal == 'waitForInput':
+		if paddleLocX < ballLocX:
+			inputQueue.append(1)
+		elif paddleLocX > ballLocX:
+			inputQueue.append(-1)
+		else:
+			inputQueue.append(0)
+	elif progStateVal == 'progDone':
 		print("Reached end of program")
 		break
+	else:
+		assert False,"probably input"
 	step += 1
-print("Output Queue :", outputQueue)
-print("Length divided by 3 is",len(outputQueue)/3)
-blockCount = 0
-for step in range(2,len(outputQueue),3):
-	print("step",step)
-	if outputQueue[step]==2:
-		blockCount += 1
-print(blockCount)
-
-	
+print("Score",score)
