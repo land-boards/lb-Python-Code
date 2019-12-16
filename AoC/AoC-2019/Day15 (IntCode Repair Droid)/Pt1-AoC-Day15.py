@@ -373,13 +373,13 @@ while step < 10:
 					print("Checked East")
 				openLocs.append([currentLoc[0]+1,currentLoc[1]])
 				currentLoc[0] += 1
-				testingState = 'testingEast'
+				testingState = 'testingWest'
 			elif testingState == 'testingWest':
 				if debug_main:
 					print("Checked West")
 				openLocs.append([currentLoc[0]-1,currentLoc[1]])
 				currentLoc[0] -= 1
-				testingState = 'testingEast'
+				testingState = 'testingDone'
 			if debug_main:
 				print("Added to openLocs",openLocs)
 			print("Robot moved OK added to openLocs",openLocs)
