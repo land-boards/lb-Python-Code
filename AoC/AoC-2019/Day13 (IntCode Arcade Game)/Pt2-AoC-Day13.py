@@ -268,6 +268,7 @@ def displayScreen():
 		print(" ")
 
 def setPoint(x,y,value):
+#	return
 	screenBuffer[x+y*42] = value
 
 # Initialize queues
@@ -306,18 +307,21 @@ while True:
 	myCPU.runCPU()
 	progStateVal = myCPU.getProgState()
 	if progStateVal == 'outputReady':
-		os.system('cls')		
 		if outputQueue[2] == 4:	# ball
 			ballLocX = outputQueue[0]
 		if outputQueue[2] == 3:	# paddle
 			paddleLocX = outputQueue[0]
 		if (outputQueue[0] == -1) and (outputQueue[1] == 0):
 			score = outputQueue[2]
-#			assert False,"score"
+			os.system('cls')		
+			displayScreen()
+			time.sleep(1)
+			print('score',score)
 		else:
 			setPoint(outputQueue[0],outputQueue[1],outputQueue[2])
-			displayScreen()
-		#time.sleep(0.001)
+#			if (outputQueue[0] == 0) and (outputQueue[1] == 0):
+#				displayScreen()
+#				time.sleep(1)
 		del outputQueue[2]
 		del outputQueue[1]
 		del outputQueue[0]
