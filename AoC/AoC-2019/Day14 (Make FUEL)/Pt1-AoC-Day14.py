@@ -52,9 +52,7 @@ def parseSrcEquations(inLine):
 def getElementList(srcEquations):
 	elementList = []
 	for line in srcEquations:
-		#print("line",line)
 		lineElements = parseSrcEquations(line)
-		#print(lineElements)
 		for element in lineElements:
 			if element not in elementList:
 				elementList.append(element)
@@ -68,10 +66,27 @@ def readInputFile(fileName):
 			srcEquations.append(lineIn.strip())
 	return(srcEquations)
 
+def makeRecipes(srcEquations):
+	for recipe in srcEquations:
+		result = parseSrcEquations(recipe)
+		graphStrings = []
+		for element in result[:-1]:
+			graphString = ''
+			graphString += '"'
+			graphString += element
+			graphString += '" -> "'
+			graphString += result[-1]
+			graphString += '"'
+			graphStrings.append(graphString)
+		print("graphStrings",graphStrings)
+		return graphStrings
+
 goal = 'FUEL'
 start = 'ORE'
 
 srcEquations = readInputFile(fileName)
+print("srcEquations",srcEquations)
+recipesBySingleIngredient = makeRecipes(srcEquations)
 sortedElementList = getElementList(srcEquations)
 print("elementList",sortedElementList)
 
