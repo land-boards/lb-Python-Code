@@ -214,7 +214,7 @@ class CPU:
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
 				debug_CPUInput = False
-				debug_CPUInput = True
+#				debug_CPUInput = True
 				if debug_runCPU or debug_CPUInput:
 					print("PC =",self.programCounter,"INP Opcode = ",currentOp,end='')
 				if len(inputQueue) == 0:
@@ -230,7 +230,7 @@ class CPU:
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
 				debug_CPUOutput = False
-				debug_CPUOutput = True
+#				debug_CPUOutput = True
 				val1 = self.dealWithOp(currentOp,1)
 				if debug_runCPU or debug_CPUOutput:
 					print("PC =",self.programCounter,"OUT Opcode = ",currentOp,end='')
@@ -317,73 +317,107 @@ myCPU.initCPU()
 
 anchorLoc = [0,0]
 walls = []
+openLocs = []
 openLocs.append(anchorLoc)
 scannedLocs = []
 moveState = 'arrivedInBlock'
-testingState = 'initTesting'
+testingState = 'arrivedInBlock'
 destLoc = []
 
-while True:
+step = 0
+while step < 10:
 	debug_main = True
+	step += 1
 	myCPU.runCPU()
 	progStateVal = myCPU.getProgState()
 	if progStateVal == 'outputReady':
 		robotStatus = outputQueue[0]
-		print("outputQueue",outputQueue)
+		if debug_main:
+			print("\noutput: outputQueue        :",outputQueue)
 		if robotStatus == 0:	# Robot hit wall
+			if debug_main:
+				print("output: Move hit wall")
+				print("output: testingState =",testingState)
+				print("output: currentLoc = ",currentLoc)
 			if testingState == 'testingNorth':
-				walls.append(currentLoc)
+				walls.append([currentLoc[0],currentLoc[1]+1])
 			elif testingState == 'testingSouth':
-				walls.append(currentLoc)
+				walls.append([currentLoc[0],currentLoc[1]-1])
 			elif testingState == 'testingEast':
-				walls.append(currentLoc)
+				walls.append([currentLoc[0]+1,currentLoc[1]])
 			elif testingState == 'testingWest':
-				walls.append(currentLoc)
+				walls.append([currentLoc[0]-1,currentLoc[1]])
 			else:
 				print("outputQueue - bad testingState",testingState)
 				assert False,"outputQueue - bad testingState"
 			moveState = 'hitWall'
-			print("Robot hit wall",walls)
+			if debug_main:
+				print("output: Robot hit wall at",walls[:len(walls)])
 		elif robotStatus == 1:	# Robot moved
-			openLocs.append(currentLoc)
+			if debug_main:
+				print("Robot moved ")
 			if testingState == 'testingNorth':
+				if debug_main:
+					print("Checked North")
+				openLocs.append(currentLoc)
 				currentLoc[1] -= 1
-			if testingState == 'testingSouth':
+				testingState = 'testingSouth'
+			elif testingState == 'testingSouth':
+				if debug_main:
+					print("Checked South")
+				openLocs.append([currentLoc[0],currentLoc[1]-1])
 				currentLoc[1] += 1
+				testingState = 'testingEast'
 			elif testingState == 'testingEast':
-				currentLoc[0] -= 1
-			elif testingState == 'testingWest':
+				if debug_main:
+					print("Checked East")
+				openLocs.append([currentLoc[0]+1,currentLoc[1]])
 				currentLoc[0] += 1
-			print("Robot movedOK",)
+				testingState = 'testingEast'
+			elif testingState == 'testingWest':
+				if debug_main:
+					print("Checked West")
+				openLocs.append([currentLoc[0]-1,currentLoc[1]])
+				currentLoc[0] -= 1
+				testingState = 'testingEast'
+			if debug_main:
+				print("Added to openLocs",openLocs)
+			print("Robot moved OK added to openLocs",openLocs)
 		elif robotStatus == 2:	# Robot is at destination
+			if debug_main:
+				print("Robot has arrived at destination",destLoc)
 			destLoc.append(currentLoc)
-			print("Robot has arrived at destination",destLoc)
 			assert False,"Robot has arrived at destination"
 		else:
 			assert False,"Got bogus output"
 		del outputQueue[0]
 	elif progStateVal == 'waitForInput':
-		print("inputQueue",inputQueue)
+		if debug_main:
+			print("\ninput: progStateVal        :",progStateVal)
+			print("input: testingState        :",testingState)
+			print("input: inputQueue (before) :",inputQueue)
 		currentLoc = anchorLoc
-		if moveState == 'arrivedInBlock':
+		if debug_main:
+			print("input: currentLoc          :",currentLoc)
+		if testingState == 'arrivedInBlock':
 			inputQueue.append(1)
 			testingState='testingNorth'
-		elif moveState == 'testingNorth':
+		elif testingState == 'testingNorth':
 			inputQueue.append(2)
 			testingState='testingSouth'
-		elif moveState == 'testingSouth':
+		elif testingState == 'testingSouth':
 			inputQueue.append(3)
 			testingState='testingWest'
-		elif moveState == 'testingWest':
+		elif testingState == 'testingWest':
 			inputQueue.append(4)
 			testingState='testingEast'
-		elif moveState == 'testingWest':
-			moveState = 'doneInBlock'
+		elif testingState == 'testingWest':
+			testingState = 'doneInBlock'
 			assert False,"wait on input"
+		if debug_main:
+			print("input: inputQueue (after)  :",inputQueue)
 	elif progStateVal == 'progDone':
 		print("Reached end of IntCode program")
 		break
 	else:
 		assert False,"bad progStateVal"
-#	step += 1
-print("Score",score)
