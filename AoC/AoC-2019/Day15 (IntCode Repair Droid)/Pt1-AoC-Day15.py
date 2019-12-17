@@ -296,6 +296,48 @@ class CPU:
 				exit()
 		assert False,"Unexpected exit of the CPU"
 
+def nextMove(dir,currentPos):
+	""" returning next point
+	"""
+	if dir == 1:	# north
+		nextPos = [currentPos[0],currentPos[1]+1]
+	elif dir == 2:	# south
+		nextPos = [currentPos[0],currentPos[1]-1]
+	elif dir == 3:	# west
+		nextPos = [currentPos[0]-1,currentPos[1]]
+	elif dir == 4:	# east
+		nextPos = [currentPos[0]+1,currentPos[1]]
+	else:
+		assert False,"nextMove: bad direction"
+	return nextPos
+
+def nextDir(dir):
+	""" returning next point
+	"""
+	if dir == 1:	# north
+		nextDir = 4	# east
+	elif dir == 2:	# south
+		nextDir = 3	# west
+	elif dir == 3:	# west
+		nextDir = 1	# north
+	elif dir == 4:	# east
+		nextDir = 2	# west
+	else:
+		assert False,"nextDir: bad direction"
+	return nextDir
+	
+def dirToText(dir):
+	if dir == 1:	# north
+		print(" north")
+	elif dir == 2:	# south
+		print(" south")
+	elif dir == 3:	# west
+		print(" west")
+	elif dir == 4:	# east
+		print(" east")
+	else:
+		assert False,"dirToText: bad direction"
+	
 # Initialize queues
 inputQueue = []
 outputQueue = []
@@ -315,109 +357,55 @@ for i in range(5000):
 myCPU = CPU()
 myCPU.initCPU()
 
-anchorLoc = [0,0]
+currentLoc = [0,0]
+checkingLoc = [0,0]
 walls = []
-openLocs = []
-openLocs.append(anchorLoc)
 scannedLocs = []
-moveState = 'arrivedInBlock'
-testingState = 'arrivedInBlock'
 destLoc = []
+moveDir = 4		# start out moving west
 
+debug_main = True
 step = 0
-while step < 10:
-	debug_main = True
+lastStep = 100
+myCPU.runCPU()
+progStateVal = myCPU.getProgState()
+while progStateVal != 'progDone' and step < lastStep:
 	step += 1
+	print("\nmain: Getting input")
+	print("currentLoc",currentLoc)
+	print("Moving",end='')
+	dirToText(moveDir)
+	inputQueue.append(moveDir)	
+	print("inputQueue",inputQueue)
 	myCPU.runCPU()
-	progStateVal = myCPU.getProgState()
-	if progStateVal == 'outputReady':
-		robotStatus = outputQueue[0]
-		if debug_main:
-			print("\noutput: outputQueue        :",outputQueue)
-		if robotStatus == 0:	# Robot hit wall
-			if debug_main:
-				print("output: Move hit wall")
-				print("output: testingState =",testingState)
-				print("output: currentLoc = ",currentLoc)
-			if testingState == 'testingNorth':
-				walls.append([currentLoc[0],currentLoc[1]+1])
-			elif testingState == 'testingSouth':
-				walls.append([currentLoc[0],currentLoc[1]-1])
-			elif testingState == 'testingEast':
-				walls.append([currentLoc[0]+1,currentLoc[1]])
-			elif testingState == 'testingWest':
-				walls.append([currentLoc[0]-1,currentLoc[1]])
-			else:
-				print("outputQueue - bad testingState",testingState)
-				assert False,"outputQueue - bad testingState"
-			moveState = 'hitWall'
-			if debug_main:
-				print("output: Robot hit wall at",walls[:len(walls)])
-		elif robotStatus == 1:	# Robot moved
-			if debug_main:
-				print("Robot moved ")
-			if testingState == 'testingNorth':
-				if debug_main:
-					print("Checked North")
-				openLocs.append(currentLoc)
-				currentLoc[1] -= 1
-				testingState = 'testingSouth'
-			elif testingState == 'testingSouth':
-				if debug_main:
-					print("Checked South")
-				openLocs.append([currentLoc[0],currentLoc[1]-1])
-				currentLoc[1] += 1
-				testingState = 'testingEast'
-			elif testingState == 'testingEast':
-				if debug_main:
-					print("Checked East")
-				openLocs.append([currentLoc[0]+1,currentLoc[1]])
-				currentLoc[0] += 1
-				testingState = 'testingWest'
-			elif testingState == 'testingWest':
-				if debug_main:
-					print("Checked West")
-				openLocs.append([currentLoc[0]-1,currentLoc[1]])
-				currentLoc[0] -= 1
-				testingState = 'testingDone'
-			if debug_main:
-				print("Added to openLocs",openLocs)
-			print("Robot moved OK added to openLocs",openLocs)
-		elif robotStatus == 2:	# Robot is at destination
-			if debug_main:
-				print("Robot has arrived at destination",destLoc)
-			destLoc.append(currentLoc)
-			assert False,"Robot has arrived at destination"
+	print("outputQueue",outputQueue)
+	if outputQueue[0] == 0:		# Hit a wall - did not move
+		print("Hit a wall")
+		# Save wall
+		if nextMove(moveDir,currentLoc) not in walls:
+			walls.append(nextMove(moveDir,currentLoc))
 		else:
-			assert False,"Got bogus output"
-		del outputQueue[0]
-	elif progStateVal == 'waitForInput':
-		if debug_main:
-			print("\ninput: progStateVal        :",progStateVal)
-			print("input: testingState        :",testingState)
-			print("input: inputQueue (before) :",inputQueue)
-		currentLoc = anchorLoc
-		if debug_main:
-			print("input: currentLoc          :",currentLoc)
-		if testingState == 'arrivedInBlock':
-			inputQueue.append(1)
-			testingState='testingNorth'
-		elif testingState == 'testingNorth':
-			inputQueue.append(2)
-			testingState='testingSouth'
-		elif testingState == 'testingSouth':
-			inputQueue.append(3)
-			testingState='testingWest'
-		elif testingState == 'testingWest':
-			inputQueue.append(4)
-			testingState='testingEast'
-		elif testingState == 'testingWest':
-			testingState = 'doneInBlock'
-			assert False,"wait on input"
-		if debug_main:
-			print("input: inputQueue (after)  :",inputQueue)
-	elif progStateVal == 'progDone':
-		print("Reached end of IntCode program")
-		break
-	else:
-		assert False,"bad progStateVal"
+			assert False,"back at same spot"
+		print("walls",walls)
+		if currentLoc not in scannedLocs:
+			scannedLocs.append(currentLoc)
+		print("scannedLocs",scannedLocs)
+		# Change girection
+		print("moveDir (before)",end='')
+		dirToText(moveDir)
+		moveDir = nextDir(moveDir)
+		currentLoc = nextMove(moveDir,currentLoc)
+		print("moveDir (after direction change)",end='')
+		dirToText(moveDir)
+	elif outputQueue[0] == 1:	# Move was Ok
+		print("Move was OK")
+		currentLoc = nextMove(moveDir,currentLoc)
+		if currentLoc not in scannedLocs:
+			scannedLocs.append(currentLoc)
+		print("scannedLocs",scannedLocs)
+#		assert False,"Move was OK"
+	elif outputQueue[0] == 2:	# Reached dest
+		assert False,"Reached dest"
+	del outputQueue[0]
+if progStateVal == 'progDone':
+	print("main: Reached end of IntCode program")
