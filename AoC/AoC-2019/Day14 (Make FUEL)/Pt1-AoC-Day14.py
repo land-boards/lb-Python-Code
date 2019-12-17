@@ -5,7 +5,7 @@
 # https://adventofcode.com/2019/day/14
 
 """
-AN SQQ-89/AN SQQ-89/TI20/AAC TDP/
+
 """
 from __future__ import print_function
 
