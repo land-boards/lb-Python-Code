@@ -336,7 +336,7 @@ def getNextDir(currentDir,loc,openBlocks,wallList):
 			return currentDir
 		else:
 			if debug_getNextDir:
-				print("getNextDir: Can try east")
+				print("getNextDir: Was moving north, trying east")
 			return east
 	elif currentDir == east:		# 
 		# is there a block to the south? If not go that way otherwise go same direction
@@ -346,7 +346,7 @@ def getNextDir(currentDir,loc,openBlocks,wallList):
 			return currentDir
 		else:
 			if debug_getNextDir:
-				print("getNextDir: Can try south")
+				print("getNextDir: Was moving east, trying south")
 			return south
 	elif currentDir == south:	# south
 		# is there a block to the west? If not go that way otherwise go same direction
@@ -356,7 +356,7 @@ def getNextDir(currentDir,loc,openBlocks,wallList):
 			return currentDir
 		else:
 			if debug_getNextDir:
-				print("getNextDir: Can try west")
+				print("getNextDir: Was moving sount, trying west")
 			return west
 	elif currentDir == west:	# west
 		# is there a block to the west? If not go that way otherwise go same direction
@@ -366,7 +366,7 @@ def getNextDir(currentDir,loc,openBlocks,wallList):
 			return currentDir
 		else:
 			if debug_getNextDir:
-				print("getNextDir: Can try north")
+				print("getNextDir: Was moving west, trying north")
 			return north
 	
 def dirToText(dir):
@@ -410,11 +410,11 @@ def displayMaze(openBlockLocs,walls):
 	# print("xMax",xMax)
 	# print("yMin",yMin)
 	# print("yMax",yMax)
-	for yVal in range(yMax+2,yMin-2,-1):
+	for yVal in range(yMax+1,yMin-2,-1):
 		for xVal in range(xMin-1,xMax+1):
 			if [xVal,yVal] == [0,0]:
 				print("S",end='')
-			if [xVal,yVal] in openBlockLocs:
+			elif [xVal,yVal] in openBlockLocs:
 				print("o",end='')
 			elif [xVal,yVal] in walls:
 				print("W",end='')
@@ -452,6 +452,10 @@ debug_main = True
 step = 0
 lastStep = 1000
 
+print("init: currentLoc",currentLoc)
+print("init: Moving",end='')
+dirToText(moveDir)
+print("init: Starting up CPU")
 myCPU.runCPU()
 progStateVal = myCPU.getProgState()
 while progStateVal != 'progDone' and step < lastStep:
@@ -465,49 +469,60 @@ while progStateVal != 'progDone' and step < lastStep:
 	if debug_main:
 		print("main: inputQueue",inputQueue)
 	myCPU.runCPU()
+	progStateVal = myCPU.getProgState()
 	if debug_main:
 		print("main: outputQueue",outputQueue)
+		print("main: progStateVal",progStateVal,"\n")
 	if outputQueue[0] == 0:		# Hit a wall - did not move
 		if debug_main:
-			print("main: Hit a wall")
+			print("main: (wall) Hit a wall")
 		# Save wall
 		if nextMove(moveDir,currentLoc) not in walls:
 			walls.append(nextMove(moveDir,currentLoc))
 		if debug_main:
-			print("main: walls",walls)
+			print("main: (wall) walls",walls)
 		if currentLoc not in openBlockLocs:
 			openBlockLocs.append(currentLoc)
 		else:
 			pass
 			if debug_main:
-				print("main: Next move will be to a already visited location")
+				print("main: (wall) Next move will be to a already visited location")
 		if debug_main:
-			print("main: openBlockLocs",openBlockLocs)
+			print("main: (wall) openBlockLocs",openBlockLocs)
 		# Change girection
 		if debug_main:
-			print("main: moveDir (before)",end='')
+			print("main: (wall) moveDir (before)",end='')
 			dirToText(moveDir)
 		moveDir = getNextDir(moveDir,currentLoc,openBlockLocs,walls)
 #		currentLoc = nextMove(moveDir,currentLoc)
 		if debug_main:
-			print("\nmain: moveDir (after direction change)",end='')
+			print("\nmain: (wall) moveDir (after direction change)",end='')
 			dirToText(moveDir)
+		print("main: (wall) done with wall")
 	elif outputQueue[0] == 1:	# Move was Ok
 		if debug_main:
-			print("main: Move was OK")
-			print("main: walls",walls)
+			print("main: (OK) Move was OK")
+			print("main: (OK) walls",walls)
+			print("main: (OK) currentLoc",currentLoc)
+		currentLoc = nextMove(moveDir,currentLoc)
+		if debug_main:
+			print("main: (OK) new currentLoc",currentLoc)
 		if currentLoc not in openBlockLocs:
 			openBlockLocs.append(currentLoc)
+			if debug_main:
+				print("main: (OK) added new block")
 		if debug_main:
-			print("main: openBlockLocs",openBlockLocs)
-		currentLoc = nextMove(moveDir,currentLoc)
+			print("main: (OK) openBlockLocs",openBlockLocs)
 		moveDir = getNextDir(moveDir,currentLoc,openBlockLocs,walls)
-#		assert False,"Move was OK"
+		if debug_main:
+			print("main: (OK) new moveDir",moveDir)
 	elif outputQueue[0] == 2:	# Reached dest
 		assert False,"main: Reached dest"
 	del outputQueue[0]
-	print("main: openBlockLocs",openBlockLocs)
-	print("main: walls",walls)
+	if debug_main:
+		print("main: (loop) currentLoc",currentLoc)
+		print("main: (loop) openBlockLocs",openBlockLocs)
+		print("main: (loop) walls",walls)
 	displayMaze(openBlockLocs,walls)
 	raw_input("main: Press Enter to continue...")
 print("main: Reached end of IntCode program")
