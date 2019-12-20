@@ -363,72 +363,7 @@ def nextMoveForward(moveDir,currentLoc):
 	if debug_nextMoveForward:
 		print("nextMoveForward: newLoc",newLoc)
 	return newLoc
-	
-def getNextDir(currentDir,loc,openBlocks,wallList):
-	""" returning next direction
-	north (1), south (2), west (3), and east (4)
-	"""
-	debug_getNextDir = False
-	if debug_getNextDir:
-		print("\ngetNextDir: current dir",end='')
-		dirToText(currentDir)
-	if debug_getNextDir:
-		print("getNextDir: loc",loc)
-		print("getNextDir: openBlocks",openBlocks)
-		print("getNextDir: wallList",wallList)
-	loopCount = 0
-	while True:
-		if currentDir == north:				# moving north
-			# Have I already gone east? If not go that way otherwise go same direction
-			if ([loc[0]+1,loc[1]] in wallList) and ([loc[0],loc[1]+1] not in openBlocks):
-				return north
-			if ([loc[0]+1,loc[1]] not in wallList) and ([loc[0]+1,loc[1]] not in openBlocks):
-				if debug_getNextDir:
-					print("getNextDir: Blocked to the right, so keep going north")
-				return east
-			else:
-				if debug_getNextDir:
-					print("getNextDir: Was moving north, turning east")
-			currentDir = east
-		if currentDir == east:		# 
-			if ([loc[0],loc[1]-1] in wallList) and ([loc[0]+1,loc[1]] not in openBlocks):
-				return east
-			if ([loc[0],loc[1]-1] not in wallList) and ([loc[0],loc[1]-1] not in openBlocks):
-				if debug_getNextDir:
-					print("getNextDir: Blocked to the right, so keep going east")
-				return south
-			else:
-				if debug_getNextDir:
-					print("getNextDir: Was moving east, turning south")
-			currentDir = south
-		if currentDir == south:	# south
-			# is there a block to the west? If not go that way otherwise go same direction
-			if ([loc[0]-1,loc[1]] in wallList) and ([loc[0],loc[1]-1] not in openBlocks):
-				return south
-			if ([loc[0]-1,loc[1]] not in wallList) and ([loc[0]-1,loc[1]] not in openBlocks):
-				if debug_getNextDir:
-					print("getNextDir: Blocked to the right, so keep going south")
-				return west
-			else:
-				if debug_getNextDir:
-					print("getNextDir: Was moving south, turning west")
-			currentDir = west
-		if currentDir == west:	# west
-			# is there a block to the west? If not go that way otherwise go same direction
-			if ([loc[0],loc[1]+1] in wallList) and ([loc[0]-1,loc[1]] not in openBlocks):
-				return west
-			if ([loc[0],loc[1]+1] not in wallList) and ([loc[0],loc[1]+1] not in openBlocks):
-				if debug_getNextDir:
-					print("getNextDir: Blocked to the right, so keep going west")
-				return north
-			else:
-				if debug_getNextDir:
-					print("getNextDir: Was moving west, turning north")
-				currentDir = north
-		loopCount += 1
-		if loopCount > 2:
-			assert False,"too many times"
-	
+		
 def dirToText(dir):
 	if dir == north:	# north
 		print(" north")
@@ -441,17 +376,13 @@ def dirToText(dir):
 	else:
 		assert False,"dirToText: bad direction"
 	
-def displayMaze(openBlockLocs,walls):
-	"""
+def makeMaze(openBlockLocs,walls):
+	""" Convert lists of open blocks and walls into an array
 	"""
 	xMin = 0
 	xMax = 0
 	yMin = 0
 	yMax = 0
-	os.system('cls')
-	#print("openBlockLocs",openBlockLocs)
-	if openBlockLocs == []:
-		return
 	for point in openBlockLocs:
 		if point[0] > xMax:
 			xMax = point[0]
@@ -470,23 +401,246 @@ def displayMaze(openBlockLocs,walls):
 			yMax = point[1]
 		if point[1] < yMin:
 			yMin = point[1]
-	# print("xMin",xMin)
-	# print("xMax",xMax)
-	# print("yMin",yMin)
-	# print("yMax",yMax)
-	for yVal in range(yMax+1,yMin-2,-1):
-		for xVal in range(xMin-1,xMax+1):
+	mazeArray = []
+	for yVal in range(yMax,yMin-1,-1):
+		row = []
+		for xVal in range(xMin,xMax+1):
 			if [xVal,yVal] == [0,0]:
-				print("S",end='')
+				row.append("S")
+			elif [xVal,yVal] == dest:
+				row.append("D")
 			elif [xVal,yVal] in openBlockLocs:
-				print(" ",end='')
-			elif [xVal,yVal] in walls:
-				print("X",end='')
+				row.append(" ")
 			else:
-				print(".",end='')
-		print("")
+				row.append("X")
+		mazeArray.append(row)
+	return mazeArray
 	
+def dumpMaze(maze):
+	""" Dump the maze
+	"""
+	rowNum = 0
+	for row in maze:
+		for cell in row:
+			print(cell,end='')
+		print("<",rowNum)
+		rowNum += 1
 
+def countWallsAroundCell(pos,maze):
+	"""
+	"""
+	count = 0
+	yPos = pos[0]
+	xPos = pos[1]
+	if maze[yPos-1][xPos-1] == 'X':
+		count += 1
+	if maze[yPos-1][xPos] == 'X':
+		count += 1
+	if maze[yPos-1][xPos+1] == 'X':
+		count += 1
+	if maze[yPos][xPos-1] == 'X':
+		count += 1
+	if maze[yPos][xPos+1] == 'X':
+		count += 1
+	if maze[yPos+1][xPos-1] == 'X':
+		count += 1
+	if maze[yPos+1][xPos] == 'X':
+		count += 1
+	if maze[yPos+1][xPos+1] == 'X':
+		count += 1
+	return count
+
+def findInMaze(findChar,maze):
+	"""
+	"""
+	yCount = 0
+	for row in maze:
+		xCount = 0
+		for col in row:
+			if col == findChar:
+				return [yCount,xCount]
+			xCount += 1
+		yCount += 1
+	return [-1,-1]
+
+def checkDeadEnd(loc,maze):
+	""" Examples of dead ends 
+	
+	XXX
+	X X 
+	
+	XX
+	X
+	XX
+	
+	X X
+	XXX 
+	
+	XX 
+	 X
+	XX
+	
+	"""
+	if countWallsAroundCell(loc,maze) == 7:
+		return True
+	locX = loc[1]
+	locY = loc[0]
+	
+#	XXX
+#	X X 
+	if maze[locY-1][locX-1] == 'X' and maze[locY-1][locX] == 'X' and maze[locY-1][locX+1] == 'X' and maze[locY][locX-1] == 'X' and maze[locY][locX+1] == 'X':
+		return True
+
+#	XX
+#	X
+#	XX
+	if maze[locY-1][locX-1] == 'X' and maze[locY-1][locX] == 'X' and maze[locY][locX-1] == 'X' and maze[locY+1][locX-1] == 'X' and maze[locY+1][locX] == 'X':
+		return True
+
+#	X X
+#	XXX 
+	if maze[locY][locX-1] == 'X' and maze[locY][locX+1] == 'X' and maze[locY+1][locX-1] == 'X' and maze[locY+1][locX] == 'X' and maze[locY+1][locX+1] == 'X':
+		return True
+
+#	XX 
+#	 X
+#	XX
+	if maze[locY-1][locX] == 'X' and maze[locY-1][locX+1] == 'X' and maze[locY][locX+1] == 'X' and maze[locY+1][locX] == 'X' and maze[locY+1][locX+1] == 'X':
+		return True
+
+	return False
+
+def fillDeadEnds(maze):
+	"""
+	"""
+	yCount = 1
+	for row in maze[1:-1]:
+		xCount = 1
+		for col in row[1:-1]:
+			if maze[yCount][xCount] == " ":
+				if checkDeadEnd([yCount,xCount],maze):
+					maze[yCount][xCount] = 'X'
+			xCount += 1
+		yCount += 1
+	return maze
+
+def deadEndsLeft(maze):
+	"""
+	"""
+	yCount = 1
+	for row in maze[1:-1]:
+		xCount = 1
+		for col in row[1:-1]:
+			if maze[yCount][xCount] == " ":
+				if checkDeadEnd([yCount,xCount],maze):
+					return True
+			xCount += 1
+		yCount += 1
+	return False
+	
+def runMaze(currentLoc,currentDir,maze):
+	distanceStartToDest = 0
+	distanceDestToStart = 0
+	reachedDest = False
+	reachedStart = False
+	while reachedStart == False:
+		currentLocAndDir = getNextLocAndDir(currentLoc,currentDir,maze)
+		currentLoc = currentLocAndDir[0]
+		currentDir = currentLocAndDir[1]
+		if not reachedDest:
+			distanceStartToDest += 1
+		else:
+			distanceDestToStart += 1
+		if currentLoc == destLoc:
+			reachedDest = True
+			#assert False,"at dest"
+		if currentLoc == startLoc:
+			reachedStart = True
+	print("distanceStartToDest",distanceStartToDest)
+	print("distanceDestToStart",distanceDestToStart)
+		
+def getNextLocAndDir(currentLoc,currentDir,maze):
+	print("\ngetNextLocAndDir: currentLoc",currentLoc)
+	currentY = currentLoc[0]
+	currentX = currentLoc[1]
+	# print("getNextLocAndDir: currentY",currentY)
+	# print("getNextLocAndDir: currentX",currentX)
+	print("getNextLocAndDir: currentDir = ",end='')
+	dirToText(currentDir)
+	if maze[currentY][currentX] == 'X':
+		assert False,"Ran into a wall"
+	if currentDir == north:
+		if checkAbleToMove(currentLoc,east,maze):
+			newDir = east
+		elif checkAbleToMove(currentLoc,north,maze):
+			newDir = north
+		elif checkAbleToMove(currentLoc,west,maze):
+			newDir = west
+		else:
+			newDir = south
+	elif currentDir == west:
+		if checkAbleToMove(currentLoc,north,maze):
+			newDir = north
+		elif checkAbleToMove(currentLoc,west,maze):
+			newDir = west
+		elif checkAbleToMove(currentLoc,south,maze):
+			newDir = south
+		else:
+			newDir = east
+	elif currentDir == south:
+		if checkAbleToMove(currentLoc,west,maze):
+			newDir = west
+		elif checkAbleToMove(currentLoc,south,maze):
+			newDir = south
+		elif checkAbleToMove(currentLoc,east,maze):
+			newDir = east
+		else:
+			newDir = north
+	elif currentDir == east:
+		if checkAbleToMove(currentLoc,south,maze):
+			newDir = south
+		elif checkAbleToMove(currentLoc,east,maze):
+			newDir = east
+		elif checkAbleToMove(currentLoc,north,maze):
+			newDir = north
+		else:
+			newDir = west
+	if newDir == north:
+		currentY -= 1
+	elif newDir == south:
+		currentY += 1
+	elif newDir == west:
+		currentX -= 1
+	elif newDir == east:
+		currentX += 1
+	newLocation = [currentY,currentX]
+	print("getNextLocAndDir: newLocation",newLocation)
+	return [newLocation,newDir]
+
+def checkAbleToMove(currentLoc,testDir,maze):
+	print("checkAbleToMove: @",currentLoc,"trying",end='')
+	dirToText(testDir)
+	currentY = currentLoc[0]
+	currentX = currentLoc[1]
+	if testDir == north:
+		if maze[currentY-1][currentX] == 'X':
+			print("                 Not able to move north",maze[currentY+1][currentX])
+			return False
+	elif testDir == south:
+		if maze[currentY+1][currentX] == 'X':
+			print("                 Not able to move south",maze[currentY-1][currentX])
+			return False
+	elif testDir == east:
+		if maze[currentY][currentX+1] == 'X':
+			print("                 Not able to move east",maze[currentY][currentX+1])
+			return False
+	elif testDir == west:
+		if maze[currentY][currentX-1] == 'X':
+			print("                 Not able to move west",maze[currentY][currentX-1])
+			return False
+	print("                Able to move ")
+	return True
+	
 # Initialize queues
 inputQueue = []
 outputQueue = []
@@ -515,17 +669,11 @@ dest = [0,0]
 reachedStart = False
 
 debug_main = False
-step = 0
 lastStep = 100000
 
-print("init: currentLoc",currentLoc)
-print("init: Moving",end='')
-dirToText(moveDir)
-print("init: Starting up CPU")
 myCPU.runCPU()
 progStateVal = myCPU.getProgState()
-while progStateVal != 'progDone' and step < lastStep:
-	step += 1
+while progStateVal != 'progDone':
 	if debug_main:
 		print("\nmain: Getting input")
 		print("main: currentLoc",currentLoc)
@@ -591,9 +739,22 @@ while progStateVal != 'progDone' and step < lastStep:
 	#displayMaze(openBlockLocs,walls)
 	progStateVal = myCPU.getProgState()
 	#raw_input("main: Press Enter to continue...")
-displayMaze(openBlockLocs,walls)
-print("main: Reached end of IntCode program")
-#print("main: openBlockLocs",openBlockLocs)
-#print("main: walls",walls)
-print("dest",dest)
+maze = makeMaze(openBlockLocs,walls)
+os.system('cls')
+dumpMaze(maze)
+while deadEndsLeft(maze):
+	#raw_input("main: Press Enter to continue...")
+	maze = fillDeadEnds(maze)
+os.system('cls')
+dumpMaze(maze)
+destLoc = findInMaze("D",maze)
+startLoc = findInMaze("S",maze)
+print("destLoc",destLoc)
+print("startLoc",startLoc)
+
+currentDir = west
+currentLoc = startLoc
+runMaze(currentLoc,currentDir,maze)
+# print("distanceStartToDest",distanceStartToDest)
+# print("distanceDestToStart",distanceDestToStart)
 
