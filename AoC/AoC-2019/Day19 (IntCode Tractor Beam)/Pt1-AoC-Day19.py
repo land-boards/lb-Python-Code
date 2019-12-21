@@ -185,8 +185,8 @@ class CPU:
 				self.writeOpResult(currentOp,3,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
-#				debug_CPUInput = False
-				debug_CPUInput = True
+				debug_CPUInput = False
+#				debug_CPUInput = True
 				if debug_runCPU or debug_CPUInput:
 					print("PC =",self.programCounter,"INP Opcode = ",currentOp,end='')
 				if len(inputQueue) == 0:
@@ -204,8 +204,8 @@ class CPU:
 				self.setProgState('inputWasRead')
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
-#				debug_CPUOutput = False
-				debug_CPUOutput = True
+				debug_CPUOutput = False
+#				debug_CPUOutput = True
 				val1 = self.dealWithOp(currentOp,1)
 				if debug_runCPU or debug_CPUOutput:
 					print("PC =",self.programCounter,"OUT Opcode = ",currentOp,end='')
