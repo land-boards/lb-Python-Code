@@ -99,6 +99,8 @@ class CPU:
 		return retVal
 
 	def initCPU(self):
+		global inputQueue
+		global outputQueue
 		debug_initCPU = False
 		# state transitions are 
 		# 'inputReady' => 'waitingOnInput' => 
@@ -107,6 +109,8 @@ class CPU:
 		self.setProgState('initCPU')
 		self.programCounter = 0
 		self.relativeBaseRegister = 0
+		inputQueue = []
+		outputQueue = []
 		if debug_initCPU:
 			print("Memory Dump :",programMemory)
 		
@@ -157,6 +161,7 @@ class CPU:
 	def runCPU(self):
 #		debug_runCPU = True
 		debug_runCPU = False
+		global programMemory
 		global inputQueue
 		global outputQueue
 		while(1):
@@ -164,19 +169,23 @@ class CPU:
 			#self.getProgState()
 			if currentOp[0] == 1:		# Addition Operator
 				if debug_runCPU:
-					print("PC =",self.programCounter,"ADD")
+					print("PC =",self.programCounter,"ADD Opcode = ",currentOp," ",end='')
 				result = self.dealWithOp(currentOp,1) + self.dealWithOp(currentOp,2)
+				if debug_runCPU:
+					print(self.dealWithOp(currentOp,1),"+",self.dealWithOp(currentOp,2),"=",result)
 				self.writeOp3Result(currentOp,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 2:		# Multiplication Operator
 				if debug_runCPU:
-					print("PC =",self.programCounter,"MUL")
+					print("PC =",self.programCounter,"MUL Opcode = ",currentOp," ",end='')
 				result = self.dealWithOp(currentOp,1) * self.dealWithOp(currentOp,2)
+				if debug_runCPU:
+					print(self.dealWithOp(currentOp,1),"*",self.dealWithOp(currentOp,2),"=",result)
 				self.writeOp3Result(currentOp,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
-#				debug_CPUInput = False
-				debug_CPUInput = True
+				debug_CPUInput = False
+#				debug_CPUInput = True
 				if debug_runCPU or debug_CPUInput:
 					print("PC =",self.programCounter,"INP Opcode = ",currentOp,end='')
 				if len(inputQueue) == 0:
@@ -188,11 +197,13 @@ class CPU:
 				if debug_runCPU or debug_CPUInput:
 					print(" value =",inputQueue[0])
 				del inputQueue[0]
+				if len(inputQueue) != 0:
+					assert False,"Still stuff in output queue"
 				self.setProgState('inputWasRead')
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
-#				debug_CPUOutput = False
-				debug_CPUOutput = True
+				debug_CPUOutput = False
+#				debug_CPUOutput = True
 				val1 = self.dealWithOp(currentOp,1)
 				if debug_runCPU or debug_CPUOutput:
 					print("PC =",self.programCounter,"OUT Opcode = ",currentOp,end='')
@@ -205,16 +216,16 @@ class CPU:
 				if self.dealWithOp(currentOp,1) != 0:
 					self.programCounter = self.dealWithOp(currentOp,2)
 					if debug_runCPU:
-						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch taken")
+						print("PC =",self.programCounter,"JIT Opcode = ",currentOp,"Branch taken")
 				else:
 					self.programCounter = self.programCounter + 3		
 					if debug_runCPU:
-						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch not taken")
+						print("PC =",self.programCounter,"JIT Opcode = ",currentOp,"Branch not taken")
 			elif currentOp[0] == 6:		# Jump if false
 				if self.dealWithOp(currentOp,1) == 0:
 					self.programCounter = self.dealWithOp(currentOp,2)
 					if debug_runCPU:
-						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch taken")
+						print("PC =",self.programCounter,"JIT Opcode = ",currentOp,"Branch taken")
 				else:
 					self.programCounter = self.programCounter + 3		
 					if debug_runCPU:
@@ -225,11 +236,11 @@ class CPU:
 				if valPair[0] < valPair[1]:
 					result = 1
 					if debug_runCPU:
-						print("PC =",self.programCounter,"ELT is",valPair[0],"less than =",valPair[1],"True")
+						print("PC =",self.programCounter,"ELT Opcode = ",currentOp,valPair[0],"less than =",valPair[1],"True")
 				else:
 					result = 0
 					if debug_runCPU:
-						print("PC =",self.programCounter,"ELT is",valPair[0],"less than =",valPair[1],"False")
+						print("PC =",self.programCounter,"ELT Opcode = ",currentOp,valPair[0],"less than =",valPair[1],"False")
 				self.writeOp3Result(currentOp,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 8:		# Evaluate if equal
@@ -247,8 +258,10 @@ class CPU:
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 9:		# Sets relative base register value
 				if debug_runCPU:
-					print("PC =",self.programCounter,"SBR ",end='')
+					print("PC =",self.programCounter,"SBR Opcode = ",currentOp," ",end='')
 				self.relativeBaseRegister += self.dealWithOp(currentOp,1)
+				if debug_runCPU:
+					print("relativeBaseRegister =",self.relativeBaseRegister)
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 99:
 				if debug_runCPU:
@@ -263,8 +276,12 @@ class CPU:
 
 programMemory = []
 
-def loadProgramMemory():
+def runToEnd(xVal,yVal):
+	""" runToEnd(xVal,yVal)
+	"""
 	global programMemory
+	global inputQueue
+	global outputQueue
 	# Load program memory from file
 	progName = "input.txt"
 	#print("Input File Name :",progName)
@@ -272,37 +289,20 @@ def loadProgramMemory():
 		inLine = filehandle.readline()
 		programMemory = map(int, inLine.split(','))
 	lenOfProgram=len(programMemory)
-	for i in range(1000):
+	for i in range(200):
 		programMemory.append(0)
-
-def runToEnd(xVal,yVal):
-	loadProgramMemory()
 	myCPU = CPU()
 	myCPU.initCPU()
-	inputQueue = []
 	myCPU.runCPU()
-	progStateVal = myCPU.getProgState()
-	print("\nrunToEnd: progStateVal after starting CPU",progStateVal)
 	inputQueue.append(xVal)
-	progStateVal = myCPU.getProgState()
-	print("runToEnd: progStateVal after first input",progStateVal)
+	myCPU.runCPU()
 	inputQueue.append(yVal)
 	myCPU.runCPU()
-	progStateVal = myCPU.getProgState()
-	print("runToEnd: progStateVal after running",progStateVal)
-	print("outputQueue",outputQueue)
 	retVal = outputQueue[0]
 	del outputQueue[0]
 	myCPU.runCPU()
-	progStateVal = myCPU.getProgState()
-	print("runToEnd: progStateVal after output",progStateVal)
+	#exit()
 	return retVal
-
-# Initialize queues
-inputQueue = []
-outputQueue = []
-
-# start up the CPU
 
 debug_main = True
 #debug_main = False
@@ -314,8 +314,6 @@ for yVal in range(0,50):
 	for xVal in range(0,50):
 		# if debug_main:
 			# print("main: Providing input val",xVal,yVal)
-		inputQueue.append(xVal)
-		inputQueue.append(yVal)
 		inTractorBeamCount += runToEnd(xVal,yVal)
 		
 print("inTractorBeamCount",inTractorBeamCount)
