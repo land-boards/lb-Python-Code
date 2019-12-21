@@ -11,34 +11,55 @@ import sys
 import time
 
 """
---- Day 19: Tractor Beam ---
-Unsure of the state of Santa's ship, you borrowed the tractor beam technology from Triton. Time to test it out.
+--- Part Two ---
+You aren't sure how large Santa's ship is. You aren't even sure if you'll need to use this thing on Santa's ship, but it doesn't hurt to be prepared. You figure Santa's ship might fit in a 100x100 square.
 
-When you're safely away from anything else, you activate the tractor beam, but nothing happens. It's hard to tell whether it's working if there's nothing to use it on. Fortunately, your ship's drone system can be configured to deploy a drone to specific coordinates and then check whether it's being pulled. There's even an Intcode program (your puzzle input) that gives you access to the drone system.
+The beam gets wider as it travels away from the emitter; you'll need to be a minimum distance away to fit a square of that size into the beam fully. (Don't rotate the square; it should be aligned to the same axes as the drone grid.)
 
-The program uses two input instructions to request the X and Y position to which the drone should be deployed. Negative numbers are invalid and will confuse the drone; all numbers should be zero or positive.
+For example, suppose you have the following tractor beam readings:
 
-Then, the program will output whether the drone is stationary (0) or being pulled by something (1). For example, the coordinate X=0, Y=0 is directly in front of the tractor beam emitter, so the drone control program will always report 1 at that location.
+#.......................................
+.#......................................
+..##....................................
+...###..................................
+....###.................................
+.....####...............................
+......#####.............................
+......######............................
+.......#######..........................
+........########........................
+.........#########......................
+..........#########.....................
+...........##########...................
+...........############.................
+............############................
+.............#############..............
+..............##############............
+...............###############..........
+................###############.........
+................#################.......
+.................########OOOOOOOOOO.....
+..................#######OOOOOOOOOO#....
+...................######OOOOOOOOOO###..
+....................#####OOOOOOOOOO#####
+.....................####OOOOOOOOOO#####
+.....................####OOOOOOOOOO#####
+......................###OOOOOOOOOO#####
+.......................##OOOOOOOOOO#####
+........................#OOOOOOOOOO#####
+.........................OOOOOOOOOO#####
+..........................##############
+..........................##############
+...........................#############
+............................############
+.............................###########
+In this example, the 10x10 square closest to the emitter that fits entirely within the tractor beam has been marked O. Within it, the point closest to the emitter (the only highlighted O) is at X=25, Y=20.
 
-To better understand the tractor beam, it is important to get a good picture of the beam itself. For example, suppose you scan the 10x10 grid of points closest to the emitter:
+Find the 100x100 square closest to the emitter that fits entirely within the tractor beam; within that square, find the point closest to the emitter. What value do you get if you take that point's X coordinate, multiply it by 10000, then add the point's Y coordinate? (In the example above, this would be 250020.)
 
-       X
-  0->      9
- 0#.........
- |.#........
- v..##......
-  ...###....
-  ....###...
-Y .....####.
-  ......####
-  ......####
-  .......###
- 9........##
-In this example, the number of points affected by the tractor beam in the 10x10 area closest to the emitter is 27.
+Your puzzle answer was 9290812.
 
-However, you'll need to scan a larger area to understand the shape of the beam. How many points are affected by the tractor beam in the 50x50 area closest to the emitter? (For each of X and Y, this will be 0 through 49.)
-
-1250 is too high
+Both parts of this puzzle are complete! They provide two gold stars: **
 
 """
 
@@ -332,11 +353,87 @@ debug_main = True
 
 inTractorBeamCount = 0
 
-for yVal in range(0,50):
-	rowVal = []
-	for xVal in range(0,50):
+# print("012345678901234567890123456789012345678901234567890123456789012345678901234")
+# for yVal in range(45,50):
+	# rowVal = []
+	# for xVal in range(0,50):
 		# if debug_main:
 			# print("main: Providing input val",xVal,yVal)
-		inTractorBeamCount += runToEnd(xVal,yVal)
+		# val = runToEnd(xVal,yVal)
+		# inTractorBeamCount += val
+		# if val == 1:
+			# print("o",end='')
+		# else:
+			# print(".",end='')
+	# print(" < ",yVal)
 		
-print("inTractorBeamCount",inTractorBeamCount)
+# print("inTractorBeamCount",inTractorBeamCount)
+
+yVal = 812
+leftX1 = 9999
+rightX1 = 0
+leftCount = (1017 * yVal) / 1000
+rightCount = (1270 * yVal) / 1000
+print("012345678901234567890123456789012345678901234567890123456789012345678901234")
+for xVal in range(leftCount,leftCount+5):
+	# if debug_main:
+		# print("main: Providing input val",xVal,yVal)
+	val = runToEnd(xVal,yVal)
+	if val == 1:
+		print("o",end='')
+		if xVal < leftX1:
+			leftX1 = xVal
+	else:
+		print(".",end='')
+print(" < ",yVal)
+
+for xVal in range(rightCount-5,rightCount+2):
+	# if debug_main:
+		# print("main: Providing input val",xVal,yVal)
+	val = runToEnd(xVal,yVal)
+	if val == 1:
+		print("o",end='')
+		if xVal > rightX1:
+			rightX1 = xVal
+	else:
+		print(".",end='')
+print(" < ",yVal)
+
+print("leftX1",leftX1,"yVal",yVal)
+print("rightX1",rightX1,"yVal",yVal)
+print("delta",rightX1-leftX1)
+
+yVal2 = yVal + 99
+leftX2 = 9999
+rightX2 = 0
+leftCount = (1017 * yVal2) / 1000
+rightCount = (1270 * yVal2) / 1000
+print("012345678901234567890123456789012345678901234567890123456789012345678901234")
+for xVal in range(leftCount,leftCount+5):
+	# if debug_main:
+		# print("main: Providing input val",xVal,yVal2)
+	val = runToEnd(xVal,yVal2)
+	if val == 1:
+		print("o",end='')
+		if xVal < leftX2:
+			leftX2 = xVal
+	else:
+		print(".",end='')
+print(" < ",yVal2)
+
+for xVal in range(rightCount-5,rightCount):
+	# if debug_main:
+		# print("main: Providing input val",xVal,yVal2)
+	val = runToEnd(xVal,yVal2)
+	if val == 1:
+		print("o",end='')
+		if xVal > rightX2:
+			rightX2 = xVal
+	else:
+		print(".",end='')
+print(" < ",yVal2)
+
+print("leftX2",leftX2,"yVal2",yVal2)
+print("rightX2",rightX2,"yVal2",yVal2)
+print("delta",rightX1-leftX2+1)
+print("result",10000*leftX2+yVal)
