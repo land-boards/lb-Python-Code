@@ -116,7 +116,6 @@ class CPU:
 		
 	def evalOpPair(self, currentOp):
 		debug_BranchEval = False
-		global programMemory
 		if debug_BranchEval:
 			print("         evalOpPair: currentOp =",currentOp)
 		val1 = self.dealWithOp(currentOp,1)
@@ -124,39 +123,41 @@ class CPU:
 		return[val1,val2]
 	
 	def dealWithOp(self,currentOp,offset):
+		global programMemory
+		global programCounter
 		debug_dealWithOp = False
 		if currentOp[offset] == 0:	# position mode
-			val1 = programMemory[programMemory[self.programCounter+offset]]
+			val = programMemory[programMemory[self.programCounter+offset]]
 			if debug_dealWithOp:
-				print("         dealWithOp: Position Mode Parm",offset,"pos :",self.programCounter+offset,"value =",val1)
+				print("         dealWithOp: Position Mode Parm",offset,"pos :",self.programCounter+offset,"value =",val)
 		elif currentOp[offset] == 1:	# immediate mode
-			val1 = programMemory[self.programCounter+offset]
+			val = programMemory[self.programCounter+offset]
 			if debug_dealWithOp:
-				print("         dealWithOp: Immediate Mode parm",offset,": value =",val1)
+				print("         dealWithOp: Immediate Mode parm",offset,": value =",val)
 		elif currentOp[offset] == 2:	# relative mode
-			val1 = programMemory[programMemory[self.programCounter+offset] + self.relativeBaseRegister]
+			val = programMemory[programMemory[self.programCounter+offset] + self.relativeBaseRegister]
 			if debug_dealWithOp:
-				print("         dealWithOp: Relative Mode parm",offset,": value =",val1)
+				print("         dealWithOp: Relative Mode parm",offset,": value =",val)
 		else:
 			assert False,"dealWithOp: WTF-dealWithOp"
-		return val1
+		return val
 	
-	def writeOp3Result(self,opcode,result):
+	def writeOpResult(self,opcode,opOffset,val):
 		global programMemory
 		global programCounter
 		debug_writeEqLtResult = False
-		if opcode[3] == 0:
-			programMemory[programMemory[self.programCounter+3]] = result
+		if opcode[opOffset] == 0:
+			programMemory[programMemory[self.programCounter+opOffset]] = val
 			if debug_writeEqLtResult:
-				print("         output position mode comparison result =",result)
-		elif opcode[3] == 1:
-			programMemory[self.programCounter+3] = result
+				print("         output position mode comparison val =",val)
+		elif opcode[opOffset] == 1:
+			programMemory[self.programCounter+opOffset] = val
 			if debug_writeEqLtResult:
-				print("         output immediate mode comparison result =",result,)
-		elif opcode[3] == 2:
-			programMemory[programMemory[self.programCounter+3] + self.relativeBaseRegister] = result
+				print("         output immediate mode comparison val =",val,)
+		elif opcode[opOffset] == 2:
+			programMemory[programMemory[self.programCounter+opOffset] + self.relativeBaseRegister] = val
 			if debug_writeEqLtResult:
-				print("         output relative mode comparison result =",result,)
+				print("         output relative mode comparison val =",val,)
 	
 	def runCPU(self):
 #		debug_runCPU = True
@@ -173,7 +174,7 @@ class CPU:
 				result = self.dealWithOp(currentOp,1) + self.dealWithOp(currentOp,2)
 				if debug_runCPU:
 					print(self.dealWithOp(currentOp,1),"+",self.dealWithOp(currentOp,2),"=",result)
-				self.writeOp3Result(currentOp,result)
+				self.writeOpResult(currentOp,3,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 2:		# Multiplication Operator
 				if debug_runCPU:
@@ -181,11 +182,11 @@ class CPU:
 				result = self.dealWithOp(currentOp,1) * self.dealWithOp(currentOp,2)
 				if debug_runCPU:
 					print(self.dealWithOp(currentOp,1),"*",self.dealWithOp(currentOp,2),"=",result)
-				self.writeOp3Result(currentOp,result)
+				self.writeOpResult(currentOp,3,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 3:		# Input Operator
-				debug_CPUInput = False
-#				debug_CPUInput = True
+#				debug_CPUInput = False
+				debug_CPUInput = True
 				if debug_runCPU or debug_CPUInput:
 					print("PC =",self.programCounter,"INP Opcode = ",currentOp,end='')
 				if len(inputQueue) == 0:
@@ -193,17 +194,18 @@ class CPU:
 						print(" - Returning to main for input value")
 					self.setProgState('waitForInput')
 					return
-				programMemory[programMemory[self.programCounter+1]] = inputQueue[0]
 				if debug_runCPU or debug_CPUInput:
 					print(" value =",inputQueue[0])
-				del inputQueue[0]
+				result = inputQueue[0]
+				self.writeOpResult(currentOp,1,result)
+				del inputQueue[0]	 # Empty the input queue
 				if len(inputQueue) != 0:
 					assert False,"Still stuff in output queue"
 				self.setProgState('inputWasRead')
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
-				debug_CPUOutput = False
-#				debug_CPUOutput = True
+#				debug_CPUOutput = False
+				debug_CPUOutput = True
 				val1 = self.dealWithOp(currentOp,1)
 				if debug_runCPU or debug_CPUOutput:
 					print("PC =",self.programCounter,"OUT Opcode = ",currentOp,end='')
@@ -241,7 +243,7 @@ class CPU:
 					result = 0
 					if debug_runCPU:
 						print("PC =",self.programCounter,"ELT Opcode = ",currentOp,valPair[0],"less than =",valPair[1],"False")
-				self.writeOp3Result(currentOp,result)
+				self.writeOpResult(currentOp,3,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 8:		# Evaluate if equal
 				valPair = self.evalOpPair(currentOp)
@@ -254,7 +256,7 @@ class CPU:
 					result = 0
 					if debug_runCPU:
 						print("PC =",self.programCounter,"EEQ does",valPair[0],"equal =",valPair[1],"False")
-				self.writeOp3Result(currentOp,result)
+				self.writeOpResult(currentOp,3,result)
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 9:		# Sets relative base register value
 				if debug_runCPU:
@@ -278,30 +280,51 @@ programMemory = []
 
 def runToEnd(xVal,yVal):
 	""" runToEnd(xVal,yVal)
+	Returns the output from the CPU
 	"""
 	global programMemory
 	global inputQueue
 	global outputQueue
+	debug_runToEnd = False
+#	debug_runToEnd = False
 	# Load program memory from file
 	progName = "input.txt"
-	#print("Input File Name :",progName)
+	if debug_runToEnd:
+		print("Input File Name :",progName)
 	with open(progName, 'r') as filehandle:  
 		inLine = filehandle.readline()
 		programMemory = map(int, inLine.split(','))
-	lenOfProgram=len(programMemory)
-	for i in range(200):
+	# pad out past end
+	for i in range(100):
 		programMemory.append(0)
+	if debug_runToEnd:
+		print(programMemory)
 	myCPU = CPU()
 	myCPU.initCPU()
+	if debug_runToEnd:
+		print("progState :",myCPU.getProgState())
 	myCPU.runCPU()
+	if debug_runToEnd:
+		print("progState :",myCPU.getProgState())
 	inputQueue.append(xVal)
+	if debug_runToEnd:
+		print("inputQueue",inputQueue)
 	myCPU.runCPU()
+	if debug_runToEnd:
+		print("progState :",myCPU.getProgState())
 	inputQueue.append(yVal)
+	if debug_runToEnd:
+		print("inputQueue",inputQueue)
 	myCPU.runCPU()
+	if debug_runToEnd:
+		print("progState :",myCPU.getProgState())
+	if debug_runToEnd:
+		print("outputQueue",outputQueue)
 	retVal = outputQueue[0]
 	del outputQueue[0]
 	myCPU.runCPU()
-	#exit()
+	if debug_runToEnd:
+		print("progState :",myCPU.getProgState())
 	return retVal
 
 debug_main = True
