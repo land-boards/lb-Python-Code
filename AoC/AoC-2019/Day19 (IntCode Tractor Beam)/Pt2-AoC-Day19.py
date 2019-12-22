@@ -1,7 +1,7 @@
 # Pt2-AoCDay19.py
 # 2019 Advent of Code
 # Day 19
-# Part 1
+# Part 
 # https://adventofcode.com/2019/day/19
 
 from __future__ import print_function

@@ -310,6 +310,97 @@ def loadIntCodeProgram():
 	if debug_loadIntCodeProgram:
 		print(programMemory)
 
+def scanLine(horizLine):
+	""" Return a list of points at the end of lines
+	Ex:
+	[46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 46, 46, 46, 46, 46, 46, 46, 46, 46, 35, 35, 35, 35, 35, 35, 35, 46, 46, 46, 46, 46, 46]
+	012345678901234567890123456789012345678901234
+	..........#############.........#######...... <  24
+	returns [10,22,32,38]
+	"""
+	scanState = 'startScan'
+	lineOffset = 0
+	leftHashMark = -1
+	linePoints = []
+	while lineOffset < len(horizLine):
+		if scanState == 'startScan':
+			if horizLine[0] == 35:			# Hash
+				leftHashMark = 0
+				scanState = 'edgeHashString'
+			elif horizLine[0] == 46:		# Dot
+				scanState = 'inDots'
+		elif scanState == 'edgeHashString':
+			if horizLine[lineOffset] == 35:	# Hash
+				scanState = 'inHashString'
+				linePoints.append(lineOffset-1)
+			elif horizLine[lineOffset] == 46:		# Dot
+				scanState = 'inDots'
+		elif scanState == 'inHashString':
+			if horizLine[lineOffset] == 46:
+				scanState = 'inDots'
+				linePoints.append(lineOffset-1)
+		elif scanState == 'inDots':
+			if horizLine[lineOffset] == 35:
+				scanState = 'edgeHashString'
+				leftHashMark = lineOffset
+		lineOffset += 1
+	if scanState == 'inHashString':
+		linePoints.append(lineOffset-1)
+	return linePoints
+
+def getOtherEndOfHorizLine(currentPoint,pairsList):
+	#print("getOtherEndOfHorizLine: currentPoint",currentPoint)
+	for pair in pairsList:
+		#print("getOtherEndOfHorizLine: checking pair",pair)
+		if pair[0] == currentPoint[0] and pair[1] == currentPoint[1]:
+			return [pair[2],pair[3]]
+		if pair[2] == currentPoint[0] and pair[3] == currentPoint[1]:
+			return [pair[0],pair[1]]
+	return[]
+		
+def getOtherEndOfVertLine(currentPoint,pairsList):
+	#print("getOtherEndOfVertLine: currentPoint",currentPoint)
+	for pair in pairsList:
+		#print("getOtherEndOfVertLine: checking pair",pair)
+		if pair[0] == currentPoint[0] and pair[1] == currentPoint[1]:
+			return [pair[2],pair[3]]
+		if pair[2] == currentPoint[0] and pair[3] == currentPoint[1]:
+			return [pair[0],pair[1]]
+	return[]
+
+def getNextDir(dir,point1,point2):
+	print("getNextDir: dir",str(unichr(dir)),"point1",point1,"to point2",point2,end='')
+	if dir == down:
+		if point1[0] > point2[0]:	# OK
+			turnDir = left
+			absDir = left
+		else:
+			turnDir = right
+			absDir = right
+	elif dir == up:
+		if point1[0] < point2[0]:
+			turnDir = left
+			absDir = right
+		else:
+			turnDir = right
+			absDir = right
+	elif dir == left:
+		if point1[1] < point2[1]:
+			turnDir = left
+			absDir = up
+		else:						# OK
+			turnDir = right
+			absDir = down
+	elif dir == right:
+		if point1[0] > point2[0]:
+			turnDir = left
+			absDir = down
+		else:
+			turnDir = right
+			absDir = up
+	print(" turnDir",str(unichr(turnDir)),"absDir",str(unichr(absDir)))
+	return [absDir,turnDir]
+	
 loadIntCodeProgram()
 myCPU = CPU()
 myCPU.initCPU()
@@ -317,8 +408,18 @@ myCPU.initCPU()
 debug_main = True
 #debug_main = False
 
+down = ord('^')
+left = ord('<')
+right = ord('>')
+up = ord('v')
+
+startPoint = []
 inList = []
 inRow = []
+rowNum = 0
+colNum = 0
+print("000000000011111111112222222222333333333344444")
+print("012345678901234567890123456789012345678901234")
 while myCPU.getProgState() != 'progDone':
 	#print("progState",myCPU.getProgState())
 	myCPU.runCPU()
@@ -326,28 +427,119 @@ while myCPU.getProgState() != 'progDone':
 	if myCPU.getProgState() == 'outputReady':
 		intOut = outputQueue[0]
 		retVal = (str(unichr(intOut)))
-		print(retVal,end='')
-		del outputQueue[0]
 		if intOut == 10:	# enter
 			if inRow != []:
 				inList.append(inRow)
 			inRow = []
-		else:				# crosshatch
+			print(" < ",rowNum)
+			rowNum += 1
+			colNum = 0
+		elif intOut == 35 or intOut == 46:	# crosshatch or dot
 			inRow.append(intOut)
+			print(retVal,end='')
+			colNum += 1
+		else:	# start point has to be here
+			inRow.append(35)
+			print(retVal,end='')
+			startSymbol = intOut
+			startPoint = [colNum,rowNum]
+			colNum += 1
+		del outputQueue[0]
 
-#print(inList)
+print("startSymbol",startSymbol)
+print("startPoint",startPoint)
+#print(inList[24])
+# scan = scanLine(inList[1])
+# print(scan)
 
-locs = []
-for yVal in range(1,len(inList) - 2):
-	for xVal in range(1,len(inList[0])-2):
-		#print("x,y",xVal,yVal)
-		if inList[yVal][xVal] == 35:
-			if inList[yVal-1][xVal] == 35 and inList[yVal+1][xVal] == 35 and inList[yVal][xVal-1] == 35 and inList[yVal][xVal+1] == 35:
-				locs.append([xVal,yVal])
-#assert False,"Hey"
-print(locs)
-sum = 0
-for loc in locs:
-	product = loc[0] * loc[1]
-	sum += product
-print("sum",sum)
+# Find endpoints by scanning each line horizontally
+pointsList = []
+for row in range(0,len(inList)):
+	lineStarts = scanLine(inList[row])
+	for point in lineStarts:
+		thePoint = [point,row]
+		pointsList.append(thePoint)
+#print("pointsList",pointsList)
+
+# create horizontal line segments list by sorting the x values
+# pointsList [[36, 0], [44, 0], [24, 4], [30, 4], [32, 6], [44, 6], [36, 8], [42, 8], [24, 12], [32, 12], [30, 16], [36, 16], [34, 20], [42, 20], [12, 22], [20, 22], [10, 24], [22, 24], [32, 24], [38, 24], [4, 26], [8, 26], [0, 28], [12, 28], [26, 28], [30, 28], [34, 28], [38, 28], [4, 30], [10, 30], [20, 30], [32, 30], [22, 32], [30, 32], [0, 34], [8, 34], [26, 34], [32, 34], [30, 38], [38, 38], [32, 46], [38, 46]]
+horizPairsList = []
+for yVal in range(0,len(inList)):
+	horizLinePointsList = []
+	for point in pointsList:
+		if point[1] == yVal:
+			horizLinePointsList.append(point[0])
+	if horizLinePointsList != []:
+		horizLinePointsList.sort()
+		#print("horizLinePointsList, y",yVal,"xList",horizLinePointsList)
+		for pointIndex in range(0,len(horizLinePointsList),2):
+			singlePair = []
+			singlePair.append(horizLinePointsList[pointIndex])
+			singlePair.append(yVal)
+			singlePair.append(horizLinePointsList[pointIndex+1])
+			singlePair.append(yVal)
+			horizPairsList.append(singlePair)
+#print("horizPairsList",horizPairsList)
+# print("Horizontal Line Segments List (x1,y1,x2,y2)")
+# for line in horizPairsList:
+	# print(line,abs(line[0]-line[2]))
+
+# create a list of vertical lines
+#print("Vertical calculations")
+vertPairsList = []
+for xVal in range(0,len(inList[0])):
+	vertLinePointsList = []
+	for point in pointsList:
+		if point[0] == xVal:
+			vertLinePointsList.append(point[1])
+	if vertLinePointsList != []:
+		vertLinePointsList.sort()
+		#print("xVal",xVal,"vertLinePointsList",vertLinePointsList)
+		for pointIndex in range(0,2*(len(vertLinePointsList)/2),2):
+			singlePair = []
+			singlePair.append(xVal)
+			singlePair.append(vertLinePointsList[pointIndex])
+			singlePair.append(xVal)
+			singlePair.append(vertLinePointsList[pointIndex+1])
+			#print("singlePair",singlePair)
+			vertPairsList.append(singlePair)
+#print("vertPairsList",vertPairsList)
+# print("Vertical Line Segments List (x1,y1,x2,y2)")
+# for line in vertPairsList:
+	# print(line,abs(line[1]-line[3]))
+
+# create chained list of lines
+chainList = []
+currentPoint = startPoint
+chainList.append(currentPoint)
+#print("currentPoint (before)",currentPoint)
+dir = 'horiz'
+while currentPoint != []:
+	currentPoint = getOtherEndOfHorizLine(currentPoint,horizPairsList)
+	if currentPoint != []:
+		chainList.append(currentPoint)
+		#print("currentPoint (after horiz)",currentPoint)
+		currentPoint = getOtherEndOfVertLine(currentPoint,vertPairsList)
+		if currentPoint != []:
+			chainList.append(currentPoint)
+		#print("currentPoint (after Vert)",currentPoint)
+print("chainList",chainList)
+
+# make directions list
+currentLoc = chainList[0]
+print("currentLoc",currentLoc)
+currentDir = startSymbol
+print("startSymbol",str(unichr(startSymbol)))
+
+for point in range(0,len(chainList)-1):
+	dist = abs(chainList[point][0] - chainList[point+1][0]) + abs(chainList[point][1] - chainList[point+1][1])
+	# currentDir returns [absDir,turnDir]
+	dirVect = getNextDir(currentDir,chainList[point],chainList[point+1])
+	currentDir = dirVect[0]
+	turnDir = dirVect[1]
+	#print("point pairs",chainList[point],chainList[point+1],str(unichr(turnDir)),"dist",dist)
+	if turnDir == left:
+		print("L",end='')
+	else:
+		print("R",end='')
+	print(dist,",",end='')
