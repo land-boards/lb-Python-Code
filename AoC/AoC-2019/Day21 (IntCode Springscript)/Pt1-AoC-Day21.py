@@ -372,6 +372,12 @@ myCPU.initCPU()
 debug_main = True
 #debug_main = False
 
+springScriptProgram = []
+lineOfSprintScriptProgram = 'NOT A J'
+lineCountOfSpringScriptProgram = 0
+offsetIntoLineOfSpringScriptProgram = 0
+loadProgram = False
+
 print("Running Springscript Program")
 while True:
 	myCPU.runCPU()
