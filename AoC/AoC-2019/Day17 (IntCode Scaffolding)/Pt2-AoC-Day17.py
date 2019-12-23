@@ -573,22 +573,27 @@ print("")
 # C = L4,L4,L6,
 # A = L6,R12,L6,L8,L8
 
-movements = ['A', 'A', 'B', 'C', 'B', 'A', 'C', 'B', 'C', 'A']
-directionA = ['L','6','R','12','L','6','L','8','L','8']
-directionB = ['L','6','R','12','R','8','L','8']
-directionC = ['L','4','L','4','L','6']
+movements = ['A',',','A',',','B',',','C',',','B',',','A',',','C',',','B',',','C',',','A',10,'L',',','6',',','R',',','12',',','L',',','6',',','L',',','8',',','L',',','8',10,'L',',','6',',','R',',','12',',','R',',','8',',','L',',','8',10,'L',',','4',',','L',',','4',',','L',',','6',10]
 
 loadIntCodeProgram()
 programMemory[0] = 2
 myCPU = CPU()
 myCPU.initCPU()
+outOffset = 0
 
 while True:
 	myCPU.runCPU()
 	state = myCPU.getProgState()
 	#print(state)
 	if state == 'outputReady':
-		print(str(unichr(outputQueue[0])),end='')
+		try:
+			print(str(unichr(outputQueue[0])),end='')
+		except:
+			print(outputQueue[0])
 		del outputQueue[0]
+	elif state == 'waitForInput':
+		inputQueue.append(movements[outOffset])
+		outOffset += 1
 	else:
+		print(state)
 		assert False,"ended"
