@@ -51,6 +51,9 @@ The bottom-right intersection's alignment parameter is 40.
 To calibrate the cameras, you need the sum of the alignment parameters. In the above example, this is 76.
 
 Run your ASCII program. What is the sum of the alignment parameters for the scaffold intersections?
+
+Your puzzle answer was 929045.
+
 """
 
 debugAll = False
@@ -573,7 +576,8 @@ print("")
 # C = L4,L4,L6,
 # A = L6,R12,L6,L8,L8
 
-movements = ['A',',','A',',','B',',','C',',','B',',','A',',','C',',','B',',','C',',','A',10,'L',',','6',',','R',',','12',',','L',',','6',',','L',',','8',',','L',',','8',10,'L',',','6',',','R',',','12',',','R',',','8',',','L',',','8',10,'L',',','4',',','L',',','4',',','L',',','6',10]
+
+movements = ['A',',','A',',','B',',','C',',','B',',','A',',','C',',','B',',','C',',','A',10,'L',',','6',',','R',',','1','2',',','L',',','6',',','L',',','8',',','L',',','8',10,'L',',','6',',','R',',','1','2',',','R',',','8',',','L',',','8',10,'L',',','4',',','L',',','4',',','L',',','6',10,'N',10]
 
 loadIntCodeProgram()
 programMemory[0] = 2
@@ -598,20 +602,17 @@ while True:
 			if movements[outOffset] == 10:
 				inputQueue.append(movements[outOffset])
 				print("out CR")
-			elif movements[outOffset] >= 'A' and movements[outOffset] < 'Z':
-				inputQueue.append(ord(movements[outOffset]))
-				#print("out char",movements[outOffset])
-				print(movements[outOffset])
 			elif movements[outOffset] == ',':
 				inputQueue.append(ord(movements[outOffset]))
 				print(movements[outOffset])
-				#print("out char",movements[outOffset])
+				print("out char",movements[outOffset])
 			else:
-				inputQueue.append(movements[outOffset])
+				inputQueue.append(ord(movements[outOffset]))
+				print("out char",movements[outOffset])
 			outOffset += 1
 		else:
 			print("Out of input buffer")
-		#inputQueue.append('Y')
+			inputQueue.append('Y')
 	elif state == 'progDone':
 		break
 	else:
