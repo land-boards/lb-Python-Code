@@ -377,6 +377,10 @@ lineOfSprintScriptProgram = 'NOT A J'
 lineCountOfSpringScriptProgram = 0
 offsetIntoLineOfSpringScriptProgram = 0
 loadProgram = False
+lineCountOfSpringScriptProgram = 'NOT D J'
+springScriptProgram.append(lineCountOfSpringScriptProgram)
+lineCountOfSpringScriptProgram = 'WALK'
+springScriptProgram.append(lineCountOfSpringScriptProgram)
 
 print("Running Springscript Program")
 while True:
