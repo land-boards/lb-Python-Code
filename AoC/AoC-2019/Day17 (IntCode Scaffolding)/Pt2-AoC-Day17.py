@@ -210,8 +210,8 @@ class CPU:
 				result = inputQueue[0]
 				self.writeOpResult(currentOp,1,result)
 				del inputQueue[0]	 # Empty the input queue
-				if len(inputQueue) != 0:
-					assert False,"Still stuff in output queue"
+				# if len(inputQueue) != 0:
+					# assert False,"Still stuff in input queue"
 				self.setProgState('inputWasRead')
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
@@ -591,9 +591,16 @@ while True:
 		except:
 			print(outputQueue[0])
 		del outputQueue[0]
+		myCPU.setProgState('outputDone')
 	elif state == 'waitForInput':
-		inputQueue.append(movements[outOffset])
-		outOffset += 1
+		if outOffset < len(movements):
+			inputQueue.append(movements[outOffset])
+			outOffset += 1
+		else:
+			print("Out of input buffer")
+		inputQueue.append('Y')
+	elif state == 'progDone':
+		break
 	else:
 		print(state)
 		assert False,"ended"
