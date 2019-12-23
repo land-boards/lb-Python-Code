@@ -600,10 +600,12 @@ while True:
 				print("out CR")
 			elif movements[outOffset] >= 'A' and movements[outOffset] < 'Z':
 				inputQueue.append(ord(movements[outOffset]))
-				print("out char",movements[outOffset])
+				#print("out char",movements[outOffset])
+				print(movements[outOffset])
 			elif movements[outOffset] == ',':
 				inputQueue.append(ord(movements[outOffset]))
-				print("out char",movements[outOffset])
+				print(movements[outOffset])
+				#print("out char",movements[outOffset])
 			else:
 				inputQueue.append(movements[outOffset])
 			outOffset += 1
