@@ -108,10 +108,29 @@ class CPU:
 	Takes input value
 	Returns the output value
 	"""
-	progState = ''
-	programCounter = 0
-	relativeBaseRegister = 0
 	
+	def __init__(self):
+		global inputQueue
+		global outputQueue
+		progState = ''
+		programCounter = 0
+		relativeBaseRegister = 0
+		programMemory = []
+
+		debug_initCPU = False
+		# state transitions are 
+		# 'inputReady' => 'waitingOnInput' => 
+		# 'inputReady' => 'waitingOnInput' => 
+		# 'progDone'
+		self.setProgState('initCPU')
+		self.programCounter = 0
+		self.relativeBaseRegister = 0
+		inputQueue = []
+		outputQueue = []
+		self.loadIntCodeProgram()
+		if debug_initCPU:
+			print("Memory Dump :",self.programMemory)
+		
 	def getProgState(self):
 		#print("getProgState: progState =",self.progState)
 		return self.progState
@@ -156,22 +175,6 @@ class CPU:
 		retVal=[opcode,parm1,parm2,parm3]
 		return retVal
 
-	def initCPU(self):
-		global inputQueue
-		global outputQueue
-		debug_initCPU = False
-		# state transitions are 
-		# 'inputReady' => 'waitingOnInput' => 
-		# 'inputReady' => 'waitingOnInput' => 
-		# 'progDone'
-		self.setProgState('initCPU')
-		self.programCounter = 0
-		self.relativeBaseRegister = 0
-		inputQueue = []
-		outputQueue = []
-		if debug_initCPU:
-			print("Memory Dump :",programMemory)
-		
 	def evalOpPair(self, currentOp):
 		debug_BranchEval = False
 		if debug_BranchEval:
@@ -181,19 +184,19 @@ class CPU:
 		return[val1,val2]
 	
 	def dealWithOp(self,currentOp,offset):
-		global programMemory
+		#global programMemory
 		global programCounter
 		debug_dealWithOp = False
 		if currentOp[offset] == 0:	# position mode
-			val = programMemory[programMemory[self.programCounter+offset]]
+			val = self.programMemory[self.programMemory[self.programCounter+offset]]
 			if debug_dealWithOp:
 				print("         dealWithOp: Position Mode Parm",offset,"pos :",self.programCounter+offset,"value =",val)
 		elif currentOp[offset] == 1:	# immediate mode
-			val = programMemory[self.programCounter+offset]
+			val = self.programMemory[self.programCounter+offset]
 			if debug_dealWithOp:
 				print("         dealWithOp: Immediate Mode parm",offset,": value =",val)
 		elif currentOp[offset] == 2:	# relative mode
-			val = programMemory[programMemory[self.programCounter+offset] + self.relativeBaseRegister]
+			val = self.programMemory[self.programMemory[self.programCounter+offset] + self.relativeBaseRegister]
 			if debug_dealWithOp:
 				print("         dealWithOp: Relative Mode parm",offset,": value =",val)
 		else:
@@ -201,30 +204,30 @@ class CPU:
 		return val
 	
 	def writeOpResult(self,opcode,opOffset,val):
-		global programMemory
+		#global programMemory
 		global programCounter
 		debug_writeEqLtResult = False
 		if opcode[opOffset] == 0:
-			programMemory[programMemory[self.programCounter+opOffset]] = val
+			self.programMemory[self.programMemory[self.programCounter+opOffset]] = val
 			if debug_writeEqLtResult:
 				print("         output position mode comparison val =",val)
 		elif opcode[opOffset] == 1:
-			programMemory[self.programCounter+opOffset] = val
+			self.programMemory[self.programCounter+opOffset] = val
 			if debug_writeEqLtResult:
 				print("         output immediate mode comparison val =",val,)
 		elif opcode[opOffset] == 2:
-			programMemory[programMemory[self.programCounter+opOffset] + self.relativeBaseRegister] = val
+			self.programMemory[self.programMemory[self.programCounter+opOffset] + self.relativeBaseRegister] = val
 			if debug_writeEqLtResult:
 				print("         output relative mode comparison val =",val,)
 	
 	def runCPU(self):
 #		debug_runCPU = True
 		debug_runCPU = False
-		global programMemory
+		#global programMemory
 		global inputQueue
 		global outputQueue
 		while(1):
-			currentOp = self.extractFieldsFromInstruction(programMemory[self.programCounter])
+			currentOp = self.extractFieldsFromInstruction(self.programMemory[self.programCounter])
 			#self.getProgState()
 			if currentOp[0] == 1:		# Addition Operator
 				if debug_runCPU:
@@ -292,7 +295,7 @@ class CPU:
 						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch not taken")
 			elif currentOp[0] == 7:		# Evaluate if less-than
 				valPair = self.evalOpPair(currentOp)
-				pos = programMemory[self.programCounter+3]
+				pos = self.programMemory[self.programCounter+3]
 				if valPair[0] < valPair[1]:
 					result = 1
 					if debug_runCPU:
@@ -305,7 +308,7 @@ class CPU:
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 8:		# Evaluate if equal
 				valPair = self.evalOpPair(currentOp)
-				pos = programMemory[self.programCounter+3]
+				pos = self.programMemory[self.programCounter+3]
 				if valPair[0] == valPair[1]:
 					result = 1
 					if debug_runCPU:
@@ -334,28 +337,26 @@ class CPU:
 				exit()
 		assert False,"Unexpected exit of the CPU"
 
-programMemory = []
-
-def loadIntCodeProgram():
-	""" 
-	"""
-	global programMemory
-	global inputQueue
-	global outputQueue
-#	debug_loadIntCodeProgram = True
-	debug_loadIntCodeProgram = False
-	# Load program memory from file
-	progName = "input.txt"
-	if debug_loadIntCodeProgram:
-		print("Input File Name :",progName)
-	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		programMemory = map(int, inLine.split(','))
-	# pad out past end
-	for i in range(10000):
-		programMemory.append(0)
-	if debug_loadIntCodeProgram:
-		print(programMemory)
+	def loadIntCodeProgram(self):
+		""" 
+		"""
+		#global programMemory
+		global inputQueue
+		global outputQueue
+	#	debug_loadIntCodeProgram = True
+		debug_loadIntCodeProgram = False
+		# Load program memory from file
+		progName = "input.txt"
+		if debug_loadIntCodeProgram:
+			print("Input File Name :",progName)
+		with open(progName, 'r') as filehandle:  
+			inLine = filehandle.readline()
+			self.programMemory = map(int, inLine.split(','))
+		# pad out past end
+		for i in range(10000):
+			self.programMemory.append(0)
+		if debug_loadIntCodeProgram:
+			print(self.programMemory)
 
 T_Register = False
 J_Register = False
@@ -365,9 +366,7 @@ TileB_Value = False
 TileC_Value = False
 TileD_Value = False
 
-loadIntCodeProgram()
 myCPU = CPU()
-myCPU.initCPU()
 
 debug_main = True
 #debug_main = False
