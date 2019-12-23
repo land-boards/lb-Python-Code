@@ -369,7 +369,7 @@ def getOtherEndOfVertLine(currentPoint,pairsList):
 	return[]
 
 def getNextDir(dir,point1,point2):
-	print("getNextDir: dir",str(unichr(dir)),"point1",point1,"to point2",point2,end='')
+	#print("getNextDir: dir",str(unichr(dir)),"point1",point1,"to point2",point2,end='')
 	if dir == down:
 		if point1[0] > point2[0]:	# OK
 			turnDir = left
@@ -383,7 +383,7 @@ def getNextDir(dir,point1,point2):
 			absDir = right
 		else:
 			turnDir = right
-			absDir = right
+			absDir = left
 	elif dir == left:
 		if point1[1] < point2[1]:
 			turnDir = left
@@ -392,13 +392,13 @@ def getNextDir(dir,point1,point2):
 			turnDir = right
 			absDir = down
 	elif dir == right:
-		if point1[0] > point2[0]:
-			turnDir = left
-			absDir = down
-		else:
+		if point1[1] < point2[1]:
 			turnDir = right
 			absDir = up
-	print(" turnDir",str(unichr(turnDir)),"absDir",str(unichr(absDir)))
+		else:
+			turnDir = left
+			absDir = down
+	#print(" turnDir",str(unichr(turnDir)),"absDir",str(unichr(absDir)),end='')
 	return [absDir,turnDir]
 	
 loadIntCodeProgram()
@@ -531,15 +531,64 @@ print("currentLoc",currentLoc)
 currentDir = startSymbol
 print("startSymbol",str(unichr(startSymbol)))
 
+dirPair = []
+dirList = []
 for point in range(0,len(chainList)-1):
 	dist = abs(chainList[point][0] - chainList[point+1][0]) + abs(chainList[point][1] - chainList[point+1][1])
 	# currentDir returns [absDir,turnDir]
 	dirVect = getNextDir(currentDir,chainList[point],chainList[point+1])
 	currentDir = dirVect[0]
 	turnDir = dirVect[1]
-	#print("point pairs",chainList[point],chainList[point+1],str(unichr(turnDir)),"dist",dist)
+	# print("point pairs",chainList[point],chainList[point+1],str(unichr(turnDir)),"dist",dist,end='')
+	dirPair = []
 	if turnDir == left:
-		print("L",end='')
+		#print(" - L",end='')
+		dirPair.append('L')
+		dirPair.append(dist)
 	else:
-		print("R",end='')
-	print(dist,",",end='')
+		#print(" - R",end='')
+		dirPair.append('R')
+		dirPair.append(dist)
+	#print(dist)
+	dirList.append(dirPair)
+#print("")
+#print(dirList)
+
+for row in dirList:
+	print(row[0],end='')
+	print(row[1],end='')
+	print(",",end='')
+print("")
+
+# (['A', 'A', 'B', 'C', 'B', 'A', 'C', 'B', 'C', 'A'], ('L', '6', 'R', '12', 'L', '6', 'L', '8', 'L', '8'), ('L', '6', 'R', '12', 'R', '8', 'L', '8'), ('L', '4', 'L', '4', 'L', '6'))
+
+# A = L6,R12,L6,L8,L8,
+# A = L6,R12,L6,L8,L8,
+# B = L6,R12,R8,L8,
+# C = L4,L4,L6,
+# B = L6,R12,R8,L8,
+# A = L6,R12,L6,L8,L8,
+# C = L4,L4,L6,
+# B = L6,R12,R8,L8,
+# C = L4,L4,L6,
+# A = L6,R12,L6,L8,L8
+
+movements = ['A', 'A', 'B', 'C', 'B', 'A', 'C', 'B', 'C', 'A']
+directionA = ['L','6','R','12','L','6','L','8','L','8']
+directionB = ['L','6','R','12','R','8','L','8']
+directionC = ['L','4','L','4','L','6']
+
+loadIntCodeProgram()
+programMemory[0] = 2
+myCPU = CPU()
+myCPU.initCPU()
+
+while True:
+	myCPU.runCPU()
+	state = myCPU.getProgState()
+	#print(state)
+	if state == 'outputReady':
+		print(str(unichr(outputQueue[0])),end='')
+		del outputQueue[0]
+	else:
+		assert False,"ended"
