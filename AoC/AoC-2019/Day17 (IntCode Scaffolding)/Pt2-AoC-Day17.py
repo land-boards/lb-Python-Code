@@ -67,6 +67,7 @@ class CPU:
 	progState = ''
 	programCounter = 0
 	relativeBaseRegister = 0
+	programMemory = []
 	
 	def getProgState(self):
 		#print("getProgState: progState =",self.progState)
@@ -125,8 +126,9 @@ class CPU:
 		self.relativeBaseRegister = 0
 		inputQueue = []
 		outputQueue = []
+		self.loadIntCodeProgram()
 		if debug_initCPU:
-			print("Memory Dump :",programMemory)
+			print("Memory Dump :",self.programMemory)
 		
 	def evalOpPair(self, currentOp):
 		debug_BranchEval = False
@@ -137,19 +139,19 @@ class CPU:
 		return[val1,val2]
 	
 	def dealWithOp(self,currentOp,offset):
-		global programMemory
+		#global programMemory
 		global programCounter
 		debug_dealWithOp = False
 		if currentOp[offset] == 0:	# position mode
-			val = programMemory[programMemory[self.programCounter+offset]]
+			val = self.programMemory[self.programMemory[self.programCounter+offset]]
 			if debug_dealWithOp:
 				print("         dealWithOp: Position Mode Parm",offset,"pos :",self.programCounter+offset,"value =",val)
 		elif currentOp[offset] == 1:	# immediate mode
-			val = programMemory[self.programCounter+offset]
+			val = self.programMemory[self.programCounter+offset]
 			if debug_dealWithOp:
 				print("         dealWithOp: Immediate Mode parm",offset,": value =",val)
 		elif currentOp[offset] == 2:	# relative mode
-			val = programMemory[programMemory[self.programCounter+offset] + self.relativeBaseRegister]
+			val = self.programMemory[self.programMemory[self.programCounter+offset] + self.relativeBaseRegister]
 			if debug_dealWithOp:
 				print("         dealWithOp: Relative Mode parm",offset,": value =",val)
 		else:
@@ -157,30 +159,30 @@ class CPU:
 		return val
 	
 	def writeOpResult(self,opcode,opOffset,val):
-		global programMemory
+		#global programMemory
 		global programCounter
 		debug_writeEqLtResult = False
 		if opcode[opOffset] == 0:
-			programMemory[programMemory[self.programCounter+opOffset]] = val
+			self.programMemory[self.programMemory[self.programCounter+opOffset]] = val
 			if debug_writeEqLtResult:
 				print("         output position mode comparison val =",val)
 		elif opcode[opOffset] == 1:
-			programMemory[self.programCounter+opOffset] = val
+			self.programMemory[self.programCounter+opOffset] = val
 			if debug_writeEqLtResult:
 				print("         output immediate mode comparison val =",val,)
 		elif opcode[opOffset] == 2:
-			programMemory[programMemory[self.programCounter+opOffset] + self.relativeBaseRegister] = val
+			self.programMemory[self.programMemory[self.programCounter+opOffset] + self.relativeBaseRegister] = val
 			if debug_writeEqLtResult:
 				print("         output relative mode comparison val =",val,)
 	
 	def runCPU(self):
 #		debug_runCPU = True
 		debug_runCPU = False
-		global programMemory
+		#global programMemory
 		global inputQueue
 		global outputQueue
 		while(1):
-			currentOp = self.extractFieldsFromInstruction(programMemory[self.programCounter])
+			currentOp = self.extractFieldsFromInstruction(self.programMemory[self.programCounter])
 			#self.getProgState()
 			if currentOp[0] == 1:		# Addition Operator
 				if debug_runCPU:
@@ -248,7 +250,7 @@ class CPU:
 						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch not taken")
 			elif currentOp[0] == 7:		# Evaluate if less-than
 				valPair = self.evalOpPair(currentOp)
-				pos = programMemory[self.programCounter+3]
+				pos = self.programMemory[self.programCounter+3]
 				if valPair[0] < valPair[1]:
 					result = 1
 					if debug_runCPU:
@@ -261,7 +263,7 @@ class CPU:
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 8:		# Evaluate if equal
 				valPair = self.evalOpPair(currentOp)
-				pos = programMemory[self.programCounter+3]
+				pos = self.programMemory[self.programCounter+3]
 				if valPair[0] == valPair[1]:
 					result = 1
 					if debug_runCPU:
@@ -290,28 +292,26 @@ class CPU:
 				exit()
 		assert False,"Unexpected exit of the CPU"
 
-programMemory = []
-
-def loadIntCodeProgram():
-	""" 
-	"""
-	global programMemory
-	global inputQueue
-	global outputQueue
-#	debug_loadIntCodeProgram = True
-	debug_loadIntCodeProgram = False
-	# Load program memory from file
-	progName = "input.txt"
-	if debug_loadIntCodeProgram:
-		print("Input File Name :",progName)
-	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		programMemory = map(int, inLine.split(','))
-	# pad out past end
-	for i in range(10000):
-		programMemory.append(0)
-	if debug_loadIntCodeProgram:
-		print(programMemory)
+	def loadIntCodeProgram(self):
+		""" 
+		"""
+		#global programMemory
+		global inputQueue
+		global outputQueue
+	#	debug_loadIntCodeProgram = True
+		debug_loadIntCodeProgram = False
+		# Load program memory from file
+		progName = "input.txt"
+		if debug_loadIntCodeProgram:
+			print("Input File Name :",progName)
+		with open(progName, 'r') as filehandle:  
+			inLine = filehandle.readline()
+			self.programMemory = map(int, inLine.split(','))
+		# pad out past end
+		for i in range(10000):
+			self.programMemory.append(0)
+		if debug_loadIntCodeProgram:
+			print(self.programMemory)
 
 def scanLine(horizLine):
 	""" Return a list of points at the end of lines
@@ -404,7 +404,7 @@ def getNextDir(dir,point1,point2):
 	#print(" turnDir",str(unichr(turnDir)),"absDir",str(unichr(absDir)),end='')
 	return [absDir,turnDir]
 	
-loadIntCodeProgram()
+#loadIntCodeProgram()
 myCPU = CPU()
 myCPU.initCPU()
 
@@ -451,9 +451,6 @@ while myCPU.getProgState() != 'progDone':
 
 print("startSymbol",startSymbol)
 print("startPoint",startPoint)
-#print(inList[24])
-# scan = scanLine(inList[1])
-# print(scan)
 
 # Find endpoints by scanning each line horizontally
 pointsList = []
@@ -462,7 +459,6 @@ for row in range(0,len(inList)):
 	for point in lineStarts:
 		thePoint = [point,row]
 		pointsList.append(thePoint)
-#print("pointsList",pointsList)
 
 # create horizontal line segments list by sorting the x values
 # pointsList [[36, 0], [44, 0], [24, 4], [30, 4], [32, 6], [44, 6], [36, 8], [42, 8], [24, 12], [32, 12], [30, 16], [36, 16], [34, 20], [42, 20], [12, 22], [20, 22], [10, 24], [22, 24], [32, 24], [38, 24], [4, 26], [8, 26], [0, 28], [12, 28], [26, 28], [30, 28], [34, 28], [38, 28], [4, 30], [10, 30], [20, 30], [32, 30], [22, 32], [30, 32], [0, 34], [8, 34], [26, 34], [32, 34], [30, 38], [38, 38], [32, 46], [38, 46]]
@@ -497,7 +493,6 @@ for xVal in range(0,len(inList[0])):
 			vertLinePointsList.append(point[1])
 	if vertLinePointsList != []:
 		vertLinePointsList.sort()
-		#print("xVal",xVal,"vertLinePointsList",vertLinePointsList)
 		for pointIndex in range(0,2*(len(vertLinePointsList)/2),2):
 			singlePair = []
 			singlePair.append(xVal)
@@ -506,16 +501,11 @@ for xVal in range(0,len(inList[0])):
 			singlePair.append(vertLinePointsList[pointIndex+1])
 			#print("singlePair",singlePair)
 			vertPairsList.append(singlePair)
-#print("vertPairsList",vertPairsList)
-# print("Vertical Line Segments List (x1,y1,x2,y2)")
-# for line in vertPairsList:
-	# print(line,abs(line[1]-line[3]))
 
 # create chained list of lines
 chainList = []
 currentPoint = startPoint
 chainList.append(currentPoint)
-#print("currentPoint (before)",currentPoint)
 dir = 'horiz'
 while currentPoint != []:
 	currentPoint = getOtherEndOfHorizLine(currentPoint,horizPairsList)
@@ -526,7 +516,6 @@ while currentPoint != []:
 		if currentPoint != []:
 			chainList.append(currentPoint)
 		#print("currentPoint (after Vert)",currentPoint)
-print("chainList",chainList)
 
 # make directions list
 currentLoc = chainList[0]
@@ -542,27 +531,26 @@ for point in range(0,len(chainList)-1):
 	dirVect = getNextDir(currentDir,chainList[point],chainList[point+1])
 	currentDir = dirVect[0]
 	turnDir = dirVect[1]
-	# print("point pairs",chainList[point],chainList[point+1],str(unichr(turnDir)),"dist",dist,end='')
 	dirPair = []
 	if turnDir == left:
-		#print(" - L",end='')
 		dirPair.append('L')
 		dirPair.append(dist)
 	else:
-		#print(" - R",end='')
 		dirPair.append('R')
 		dirPair.append(dist)
-	#print(dist)
 	dirList.append(dirPair)
-#print("")
-#print(dirList)
 
+print("Directions List - ",end='')
 for row in dirList:
 	print(row[0],end='')
 	print(row[1],end='')
 	print(",",end='')
 print("")
 
+# Output list was 
+# Directions List - L6,R12,L6,L8,L8,L6,R12,L6,L8,L8,L6,R12,R8,L8,L4,L4,L6,L6,R12,R8,L8,L6,R12,L6,L8,L8,L4,L4,L6,L6,R12,R8,L8,L4,L4,L6,L6,R12,L6,L8,L8
+
+# Cheated the next step by getting the answer from someone else who did the packing
 # (['A', 'A', 'B', 'C', 'B', 'A', 'C', 'B', 'C', 'A'], ('L', '6', 'R', '12', 'L', '6', 'L', '8', 'L', '8'), ('L', '6', 'R', '12', 'R', '8', 'L', '8'), ('L', '4', 'L', '4', 'L', '6'))
 
 # A = L6,R12,L6,L8,L8,
@@ -579,10 +567,10 @@ print("")
 
 movements = ['A',',','A',',','B',',','C',',','B',',','A',',','C',',','B',',','C',',','A',10,'L',',','6',',','R',',','1','2',',','L',',','6',',','L',',','8',',','L',',','8',10,'L',',','6',',','R',',','1','2',',','R',',','8',',','L',',','8',10,'L',',','4',',','L',',','4',',','L',',','6',10,'N',10]
 
-loadIntCodeProgram()
-programMemory[0] = 2
+#loadIntCodeProgram()
 myCPU = CPU()
 myCPU.initCPU()
+myCPU.programMemory[0] = 2
 outOffset = 0
 printQueue = ''
 
@@ -592,15 +580,16 @@ while True:
 	state = myCPU.getProgState()
 	#print(state)
 	if state == 'outputReady':
-		if outputQueue[0] == 10:
-			print(printQueue)
-			printQueue = ''
-		else:
-			try:
-				printQueue += str(unichr(outputQueue[0]))
-			except:
-				print(outputQueue[0])
-		del outputQueue[0]
+		while len(outputQueue) > 0:		# All for output queues
+			if outputQueue[0] == 10:
+				print(printQueue)
+				printQueue = ''
+			else:
+				try:
+					printQueue += str(unichr(outputQueue[0]))
+				except:
+					print("Result :",outputQueue[0])
+			del outputQueue[0]
 		myCPU.setProgState('outputDone')
 	elif state == 'waitForInput':
 		if outOffset < len(movements):
@@ -619,6 +608,7 @@ while True:
 			print("Out of input buffer")
 			inputQueue.append('Y')
 	elif state == 'progDone':
+		print("Program terminated normally")
 		break
 	else:
 		print(state)
