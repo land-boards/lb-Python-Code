@@ -594,11 +594,14 @@ while True:
 		myCPU.setProgState('outputDone')
 	elif state == 'waitForInput':
 		if outOffset < len(movements):
-			inputQueue.append(movements[outOffset])
+			if movements[outOffset] == 10:
+				inputQueue.append(movements[outOffset])
+			else:
+				inputQueue.append(ord(movements[outOffset]))
 			outOffset += 1
 		else:
 			print("Out of input buffer")
-		inputQueue.append('Y')
+		#inputQueue.append('Y')
 	elif state == 'progDone':
 		break
 	else:
