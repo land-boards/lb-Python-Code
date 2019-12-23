@@ -132,18 +132,22 @@ class CPU:
 			print("Memory Dump :",self.programMemory)
 		
 	def getProgState(self):
+		""" Returns the value of the program state variable
+		"""
 		#print("getProgState: progState =",self.progState)
 		return self.progState
 	
 	def setProgState(self,state):
+		""" Sets the value of the program state variable
+		"""
 		debug_setProgState = False
 		self.progState = state
 		if debug_setProgState:
 			print("setProgState: progState =",self.progState)
 			
 	def intTo5DigitString(self, instruction):
-		"""Takes a variable length string and packs the front with zeros to make it
-		5 digits long.
+		"""Takes a variable length string and packs the front with zeros 
+		to make it 5 digits long.
 		"""
 		instrString=str(instruction)
 		if len(instrString) == 1:
@@ -159,11 +163,11 @@ class CPU:
 
 	def extractFieldsFromInstruction(self, instruction):
 		""" Take the Instruction and turn into opcode fields
-		ABCDE
+		ABCD
 		A = mode of 3rd parm
 		B = mode of 2nd parm
 		C = mode of 1st parm
-		DE = opcode
+		D = opcode
 		
 		:returns: [opcode,parm1,parm2,parm3]
 		"""
@@ -176,6 +180,9 @@ class CPU:
 		return retVal
 
 	def evalOpPair(self, currentOp):
+		""" Evaluages the two values for instruction like ADD, MUL
+		Returns the two values as a list pair
+		"""
 		debug_BranchEval = False
 		if debug_BranchEval:
 			print("         evalOpPair: currentOp =",currentOp)
@@ -184,6 +191,9 @@ class CPU:
 		return[val1,val2]
 	
 	def dealWithOp(self,currentOp,offset):
+		""" Single place to interpret opcodes which read program memory
+		Input the opcode field and the offset to the correct opcode field
+		"""
 		#global programMemory
 		global programCounter
 		debug_dealWithOp = False
