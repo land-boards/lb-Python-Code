@@ -584,16 +584,22 @@ programMemory[0] = 2
 myCPU = CPU()
 myCPU.initCPU()
 outOffset = 0
+printQueue = ''
 
+print("Running Droid")
 while True:
 	myCPU.runCPU()
 	state = myCPU.getProgState()
 	#print(state)
 	if state == 'outputReady':
-		try:
-			print(str(unichr(outputQueue[0])),end='')
-		except:
-			print(outputQueue[0])
+		if outputQueue[0] == 10:
+			print(printQueue)
+			printQueue = ''
+		else:
+			try:
+				printQueue += str(unichr(outputQueue[0]))
+			except:
+				print(outputQueue[0])
 		del outputQueue[0]
 		myCPU.setProgState('outputDone')
 	elif state == 'waitForInput':
