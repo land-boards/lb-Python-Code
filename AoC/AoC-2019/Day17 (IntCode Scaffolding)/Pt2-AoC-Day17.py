@@ -601,14 +601,13 @@ while True:
 			#print("sending out",movements[outOffset])
 			if movements[outOffset] == 10:
 				inputQueue.append(movements[outOffset])
-				print("out CR")
+				print(" ")
 			elif movements[outOffset] == ',':
 				inputQueue.append(ord(movements[outOffset]))
-				print(movements[outOffset])
-				print("out char",movements[outOffset])
+				print(',',end='')
 			else:
 				inputQueue.append(ord(movements[outOffset]))
-				print("out char",movements[outOffset])
+				print(movements[outOffset],end='')
 			outOffset += 1
 		else:
 			print("Out of input buffer")
