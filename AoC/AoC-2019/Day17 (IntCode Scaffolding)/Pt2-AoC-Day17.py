@@ -584,7 +584,7 @@ outOffset = 0
 while True:
 	myCPU.runCPU()
 	state = myCPU.getProgState()
-	#print(state)
+	print(state)
 	if state == 'outputReady':
 		try:
 			print(str(unichr(outputQueue[0])),end='')
@@ -594,18 +594,18 @@ while True:
 		myCPU.setProgState('outputDone')
 	elif state == 'waitForInput':
 		if outOffset < len(movements):
-			#print("sending out",movements[outOffset])
+			print("sending out",movements[outOffset])
 			if movements[outOffset] == 10:
 				inputQueue.append(movements[outOffset])
-				#print("out cr")
+				print("out cr")
 			elif movements[outOffset] >= 'A' and movements[outOffset] < 'Z':
 				inputQueue.append(ord(movements[outOffset]))
-				#print("out char",movements[outOffset])
+				print("out char",movements[outOffset])
 			elif movements[outOffset] == ',':
 				inputQueue.append(ord(movements[outOffset]))
-				#print("out char",movements[outOffset])
+				print("out char",movements[outOffset])
 			else:
-				inputQueue.append(type(int(movements[outOffset])))
+				inputQueue.append(movements[outOffset])
 			outOffset += 1
 		else:
 			print("Out of input buffer")
