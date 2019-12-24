@@ -1,19 +1,19 @@
-# PtX-AoCDayYY.py
+# Pt2-AoCDay13.py
 # 2019 Advent of Code
-# Day YY
-# Part X
-# https://adventofcode.com/2019/day/YY
+# Day 13
+# Part 2
+# https://adventofcode.com/2019/day/13
 
-from __future__ import print_function
+#from __future__ import print_function
 
 import os
 import sys
 import time
 
 """
-	IntCode skeleton
-
 """
+
+debugAll = False
 
 class CPU:
 	""" CPU class
@@ -38,13 +38,16 @@ class CPU:
 		""" 
 		"""
 		debug_loadIntCodeProgram = False
-		progName = "input.txt"
+		progName = "D13input.txt"
 		if debug_loadIntCodeProgram:
 			print("Input File Name :",progName)
 		with open(progName, 'r') as filehandle:  
 			inLine = filehandle.readline()
-			self.programMemory = map(int, inLine.split(','))
-		for i in range(10000):
+			lineListChars = inLine.split(',')
+			for charz in lineListChars:
+				self.programMemory.append(int(charz))
+		self.programMemory[0] = 2
+		for i in range(1000):
 			self.programMemory.append(0)
 		if debug_loadIntCodeProgram:
 			print(self.programMemory)
@@ -150,7 +153,7 @@ class CPU:
 			currentOp = self.extractFieldsFromInstruction(self.programMemory[self.programCounter])
 			if currentOp[0] == 1:		# Addition Operator
 				if debug_runCPU:
-					print("PC =",self.programCounter,"ADD Opcode = ",currentOp," ",end='')
+					print("PC =",self.programCounter,"ADD Opcode = ",currentOp," ")
 				result = self.dealWithOp(currentOp,1) + self.dealWithOp(currentOp,2)
 				if debug_runCPU:
 					print(self.dealWithOp(currentOp,1),"+",self.dealWithOp(currentOp,2),"=",result)
@@ -158,7 +161,7 @@ class CPU:
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 2:		# Multiplication Operator
 				if debug_runCPU:
-					print("PC =",self.programCounter,"MUL Opcode = ",currentOp," ",end='')
+					print("PC =",self.programCounter,"MUL Opcode = ",currentOp," ")
 				result = self.dealWithOp(currentOp,1) * self.dealWithOp(currentOp,2)
 				if debug_runCPU:
 					print(self.dealWithOp(currentOp,1),"*",self.dealWithOp(currentOp,2),"=",result)
@@ -168,7 +171,7 @@ class CPU:
 				debug_CPUInput = False
 #				debug_CPUInput = True
 				if debug_runCPU or debug_CPUInput:
-					print("PC =",self.programCounter,"INP Opcode = ",currentOp,end='')
+					print("PC =",self.programCounter,"INP Opcode = ",currentOp)
 				if len(self.inputQueue) == 0:
 					if debug_runCPU or debug_CPUInput:
 						print(" - Returning to main for input value")
@@ -186,12 +189,14 @@ class CPU:
 #				debug_CPUOutput = True
 				val1 = self.dealWithOp(currentOp,1)
 				if debug_runCPU or debug_CPUOutput:
-					print("PC =",self.programCounter,"OUT Opcode = ",currentOp,end='')
+					print("PC =",self.programCounter,"OUT Opcode = ",currentOp)
 					print(" value =",val1)
 				self.outputQueue.append(val1)
 				self.programCounter = self.programCounter + 2
 				self.setProgState('outputReady')
-				return
+				if len(self.outputQueue) == 3:
+					self.setProgState('outputReady')
+					return
 			elif currentOp[0] == 5:		# Jump if true
 				if self.dealWithOp(currentOp,1) != 0:
 					self.programCounter = self.dealWithOp(currentOp,2)
@@ -238,7 +243,7 @@ class CPU:
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 9:		# Sets relative base register value
 				if debug_runCPU:
-					print("PC =",self.programCounter,"SBR Opcode = ",currentOp," ",end='')
+					print("PC =",self.programCounter,"SBR Opcode = ",currentOp," ")
 				self.relativeBaseRegister += self.dealWithOp(currentOp,1)
 				if debug_runCPU:
 					print("self.relativeBaseRegister =",self.relativeBaseRegister)
@@ -254,10 +259,83 @@ class CPU:
 				exit()
 		assert False,"Unexpected exit of the CPU"
 
-debugAll = False
+screenBuffer = []
 
+def createEmptyScreen():
+	for val in range(0,26*42):
+		screenBuffer.append(0)
+
+def displayScreen():
+	#os.system('cls')
+	for yVal in range(0,26):
+		for xVal in range(0,42):
+			spot = screenBuffer[(yVal*42)+xVal]
+			if spot == 0:	# empty
+				print(" "),
+			elif spot == 1:	# wall
+				print("W"),
+			elif spot == 2:	# block
+				print("B"),
+			elif spot == 3:	# paddle
+				print("="),
+			elif spot == 4:	# ball
+				print("o"),
+			else:
+				print("displayScreen: spot =",spot)
+				assert False,"displayScreen: broke"
+		print(" ")
+
+def setPoint(x,y,value):
+#	return
+	screenBuffer[x+y*42] = value
+
+# start up the CPU
 myCPU = CPU()
 
-debug_main = True
-#debug_main = False
+step = 0
+finalStep = 100
 
+createEmptyScreen()
+displayScreen()
+
+# Run the CPU until program terminates
+paddleLocX = 0
+ballLocX = 0
+score = 0
+while True:
+	debug_main = True
+	myCPU.runCPU()
+	progStateVal = myCPU.getProgState()
+	if progStateVal == 'outputReady':
+		if myCPU.outputQueue[2] == 4:	# ball
+			ballLocX = myCPU.outputQueue[0]
+		if myCPU.outputQueue[2] == 3:	# paddle
+			paddleLocX = myCPU.outputQueue[0]
+		if (myCPU.outputQueue[0] == -1) and (myCPU.outputQueue[1] == 0):
+			score = myCPU.outputQueue[2]
+			os.system('cls')		
+			displayScreen()
+#			time.sleep(0.001)
+			print('score',score)
+		else:
+			setPoint(myCPU.outputQueue[0],myCPU.outputQueue[1],myCPU.outputQueue[2])
+#			if (outputQueue[0] == 0) and (outputQueue[1] == 0):
+#				displayScreen()
+#				time.sleep(1)
+		del myCPU.outputQueue[2]
+		del myCPU.outputQueue[1]
+		del myCPU.outputQueue[0]
+	elif progStateVal == 'waitForInput':
+		if paddleLocX < ballLocX:
+			myCPU.inputQueue.append(1)
+		elif paddleLocX > ballLocX:
+			myCPU.inputQueue.append(-1)
+		else:
+			myCPU.inputQueue.append(0)
+	elif progStateVal == 'progDone':
+		print("Reached end of program")
+		break
+	else:
+		assert False,"probably input"
+	step += 1
+print("Score",score)
