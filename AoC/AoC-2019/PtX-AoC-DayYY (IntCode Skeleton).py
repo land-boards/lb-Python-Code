@@ -1,8 +1,8 @@
-# Pt1-AoCDay21.py
+# PtX-AoCDayYY.py
 # 2019 Advent of Code
-# Day 21
-# Part 1
-# https://adventofcode.com/2019/day/21
+# Day YY
+# Part X
+# https://adventofcode.com/2019/day/YY
 
 from __future__ import print_function
 
@@ -11,97 +11,9 @@ import sys
 import time
 
 """
-
---- Day 21: Springdroid Adventure ---
-
-You lift off from Pluto and start flying in the direction of Santa.
-
-While experimenting further with the tractor beam, you accidentally pull an asteroid directly into your ship! It deals significant damage to your hull and causes your ship to begin tumbling violently.
-
-You can send a droid out to investigate, but the tumbling is causing enough artificial gravity that one wrong step could send the droid through a hole in the hull and flying out into space.
-
-The clear choice for this mission is a droid that can jump over the holes in the hull - a springdroid.
-
-You can use an Intcode program (your puzzle input) running on an ASCII-capable computer to program the springdroid. However, springdroids don't run Intcode; instead, they run a simplified assembly language called springscript.
-
-While a springdroid is certainly capable of navigating the artificial gravity and giant holes, it has one downside: it can only remember at most 15 springscript instructions.
-
-The springdroid will move forward automatically, constantly thinking about whether to jump. The springscript program defines the logic for this decision.
-
-Springscript programs only use Boolean values, not numbers or strings. Two registers are available: T, the temporary value register, and J, the jump register. If the jump register is true at the end of the springscript program, the springdroid will try to jump. Both of these registers start with the value false.
-
-Springdroids have a sensor that can detect whether there is ground at various distances in the direction it is facing; these values are provided in read-only registers. Your springdroid can detect ground at four distances: one tile away (A), two tiles away (B), three tiles away (C), and four tiles away (D). If there is ground at the given distance, the register will be true; if there is a hole, the register will be false.
-
-There are only three instructions available in springscript:
-
-    AND X Y sets Y to true if both X and Y are true; otherwise, it sets Y to false.
-    OR X Y sets Y to true if at least one of X or Y is true; otherwise, it sets Y to false.
-    NOT X Y sets Y to true if X is false; otherwise, it sets Y to false.
-
-In all three instructions, the second argument (Y) needs to be a writable register (either T or J). The first argument (X) can be any register (including A, B, C, or D).
-
-For example, the one-instruction program NOT A J means "if the tile immediately in front of me is not ground, jump".
-
-Or, here is a program that jumps if a three-tile-wide hole (with ground on the other side of the hole) is detected:
-
-NOT A J
-NOT B T
-AND T J
-NOT C T
-AND T J
-AND D J
-
-The Intcode program expects ASCII inputs and outputs. It will begin by displaying a prompt; then, input the desired instructions one per line. End each line with a newline (ASCII code 10). When you have finished entering your program, provide the command WALK followed by a newline to instruct the springdroid to begin surveying the hull.
-
-If the springdroid falls into space, an ASCII rendering of the last moments of its life will be produced. In these, @ is the springdroid, # is hull, and . is empty space. For example, suppose you program the springdroid like this:
-
-NOT D J
-WALK
-
-This one-instruction program sets J to true if and only if there is no ground four tiles away. In other words, it attempts to jump into any hole it finds:
-
-.................
-.................
-@................
-#####.###########
-
-.................
-.................
-.@...............
-#####.###########
-
-.................
-..@..............
-.................
-#####.###########
-
-...@.............
-.................
-.................
-#####.###########
-
-.................
-....@............
-.................
-#####.###########
-
-.................
-.................
-.....@...........
-#####.###########
-
-.................
-.................
-.................
-#####@###########
-
-However, if the springdroid successfully makes it across, it will use an output instruction to indicate the amount of damage to the hull as a single giant integer outside the normal ASCII range.
-
-Program the springdroid with logic that allows it to survey the hull without falling into space. What amount of hull damage does it report?
+	IntCode skeleton
 
 """
-
-debugAll = False
 
 class CPU:
 	""" CPU class
@@ -109,23 +21,46 @@ class CPU:
 	Takes input value
 	Returns the output value
 	"""
-	progState = ''
-	programCounter = 0
-	relativeBaseRegister = 0
 	
+	def __init__(self):
+		# self.inputQueue = []
+		# self.outputQueue = []
+		# self.progState = ''
+		# self.programCounter = 0
+		# self.relativeBaseRegister = 0
+		self.programMemory = []
+
+		debug_initCPU = False
+		# state transitions are 
+		# 'inputReady' => 'waitingOnInput' => 
+		# 'inputReady' => 'waitingOnInput' => 
+		# 'progDone'
+		self.setProgState('initCPU')
+		self.programCounter = 0
+		self.relativeBaseRegister = 0
+		self.inputQueue = []
+		self.outputQueue = []
+		self.loadIntCodeProgram()
+		if debug_initCPU:
+			print("Memory Dump :",self.programMemory)
+		
 	def getProgState(self):
-		#print("getProgState: progState =",self.progState)
+		""" Returns the value of the program state variable
+		"""
+		#print("getProgState: self.progState =",self.progState)
 		return self.progState
 	
 	def setProgState(self,state):
+		""" Sets the value of the program state variable
+		"""
 		debug_setProgState = False
 		self.progState = state
 		if debug_setProgState:
-			print("setProgState: progState =",self.progState)
+			print("setProgState: self.progState =",self.progState)
 			
 	def intTo5DigitString(self, instruction):
-		"""Takes a variable length string and packs the front with zeros to make it
-		5 digits long.
+		"""Takes a variable length string and packs the front with zeros 
+		to make it 5 digits long.
 		"""
 		instrString=str(instruction)
 		if len(instrString) == 1:
@@ -141,11 +76,11 @@ class CPU:
 
 	def extractFieldsFromInstruction(self, instruction):
 		""" Take the Instruction and turn into opcode fields
-		ABCDE
+		ABCD
 		A = mode of 3rd parm
 		B = mode of 2nd parm
 		C = mode of 1st parm
-		DE = opcode
+		D = opcode
 		
 		:returns: [opcode,parm1,parm2,parm3]
 		"""
@@ -157,23 +92,10 @@ class CPU:
 		retVal=[opcode,parm1,parm2,parm3]
 		return retVal
 
-	def initCPU(self):
-		global inputQueue
-		global outputQueue
-		debug_initCPU = False
-		# state transitions are 
-		# 'inputReady' => 'waitingOnInput' => 
-		# 'inputReady' => 'waitingOnInput' => 
-		# 'progDone'
-		self.setProgState('initCPU')
-		self.programCounter = 0
-		self.relativeBaseRegister = 0
-		inputQueue = []
-		outputQueue = []
-		if debug_initCPU:
-			print("Memory Dump :",programMemory)
-		
 	def evalOpPair(self, currentOp):
+		""" Evaluages the two values for instruction like ADD, MUL
+		Returns the two values as a list pair
+		"""
 		debug_BranchEval = False
 		if debug_BranchEval:
 			print("         evalOpPair: currentOp =",currentOp)
@@ -182,19 +104,22 @@ class CPU:
 		return[val1,val2]
 	
 	def dealWithOp(self,currentOp,offset):
-		global programMemory
-		global programCounter
+		""" Single place to interpret opcodes which read program memory
+		Input the opcode field and the offset to the correct opcode field
+		"""
+		#global self.programMemory
+		#global self.programCounter
 		debug_dealWithOp = False
 		if currentOp[offset] == 0:	# position mode
-			val = programMemory[programMemory[self.programCounter+offset]]
+			val = self.programMemory[self.programMemory[self.programCounter+offset]]
 			if debug_dealWithOp:
 				print("         dealWithOp: Position Mode Parm",offset,"pos :",self.programCounter+offset,"value =",val)
 		elif currentOp[offset] == 1:	# immediate mode
-			val = programMemory[self.programCounter+offset]
+			val = self.programMemory[self.programCounter+offset]
 			if debug_dealWithOp:
 				print("         dealWithOp: Immediate Mode parm",offset,": value =",val)
 		elif currentOp[offset] == 2:	# relative mode
-			val = programMemory[programMemory[self.programCounter+offset] + self.relativeBaseRegister]
+			val = self.programMemory[self.programMemory[self.programCounter+offset] + self.relativeBaseRegister]
 			if debug_dealWithOp:
 				print("         dealWithOp: Relative Mode parm",offset,": value =",val)
 		else:
@@ -202,30 +127,30 @@ class CPU:
 		return val
 	
 	def writeOpResult(self,opcode,opOffset,val):
-		global programMemory
-		global programCounter
+		#global self.programMemory
+		#global self.programCounter
 		debug_writeEqLtResult = False
 		if opcode[opOffset] == 0:
-			programMemory[programMemory[self.programCounter+opOffset]] = val
+			self.programMemory[self.programMemory[self.programCounter+opOffset]] = val
 			if debug_writeEqLtResult:
 				print("         output position mode comparison val =",val)
 		elif opcode[opOffset] == 1:
-			programMemory[self.programCounter+opOffset] = val
+			self.programMemory[self.programCounter+opOffset] = val
 			if debug_writeEqLtResult:
 				print("         output immediate mode comparison val =",val,)
 		elif opcode[opOffset] == 2:
-			programMemory[programMemory[self.programCounter+opOffset] + self.relativeBaseRegister] = val
+			self.programMemory[self.programMemory[self.programCounter+opOffset] + self.relativeBaseRegister] = val
 			if debug_writeEqLtResult:
 				print("         output relative mode comparison val =",val,)
 	
 	def runCPU(self):
 #		debug_runCPU = True
 		debug_runCPU = False
-		global programMemory
-		global inputQueue
-		global outputQueue
+		#global self.programMemory
+		#global self.inputQueue
+		#global self.outputQueue
 		while(1):
-			currentOp = self.extractFieldsFromInstruction(programMemory[self.programCounter])
+			currentOp = self.extractFieldsFromInstruction(self.programMemory[self.programCounter])
 			#self.getProgState()
 			if currentOp[0] == 1:		# Addition Operator
 				if debug_runCPU:
@@ -248,17 +173,17 @@ class CPU:
 #				debug_CPUInput = True
 				if debug_runCPU or debug_CPUInput:
 					print("PC =",self.programCounter,"INP Opcode = ",currentOp,end='')
-				if len(inputQueue) == 0:
+				if len(self.inputQueue) == 0:
 					if debug_runCPU or debug_CPUInput:
 						print(" - Returning to main for input value")
 					self.setProgState('waitForInput')
 					return
 				if debug_runCPU or debug_CPUInput:
-					print(" value =",inputQueue[0])
-				result = inputQueue[0]
+					print(" value =",self.inputQueue[0])
+				result = self.inputQueue[0]
 				self.writeOpResult(currentOp,1,result)
-				del inputQueue[0]	 # Empty the input queue
-				# if len(inputQueue) != 0:
+				del self.inputQueue[0]	 # Empty the input queue
+				# if len(self.inputQueue) != 0:
 					# assert False,"Still stuff in input queue"
 				self.setProgState('inputWasRead')
 				self.programCounter = self.programCounter + 2
@@ -269,7 +194,7 @@ class CPU:
 				if debug_runCPU or debug_CPUOutput:
 					print("PC =",self.programCounter,"OUT Opcode = ",currentOp,end='')
 					print(" value =",val1)
-				outputQueue.append(val1)
+				self.outputQueue.append(val1)
 				self.programCounter = self.programCounter + 2
 				self.setProgState('outputReady')
 				return
@@ -293,7 +218,7 @@ class CPU:
 						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch not taken")
 			elif currentOp[0] == 7:		# Evaluate if less-than
 				valPair = self.evalOpPair(currentOp)
-				pos = programMemory[self.programCounter+3]
+				pos = self.programMemory[self.programCounter+3]
 				if valPair[0] < valPair[1]:
 					result = 1
 					if debug_runCPU:
@@ -306,7 +231,7 @@ class CPU:
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 8:		# Evaluate if equal
 				valPair = self.evalOpPair(currentOp)
-				pos = programMemory[self.programCounter+3]
+				pos = self.programMemory[self.programCounter+3]
 				if valPair[0] == valPair[1]:
 					result = 1
 					if debug_runCPU:
@@ -322,7 +247,7 @@ class CPU:
 					print("PC =",self.programCounter,"SBR Opcode = ",currentOp," ",end='')
 				self.relativeBaseRegister += self.dealWithOp(currentOp,1)
 				if debug_runCPU:
-					print("relativeBaseRegister =",self.relativeBaseRegister)
+					print("self.relativeBaseRegister =",self.relativeBaseRegister)
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 99:
 				if debug_runCPU:
@@ -335,33 +260,30 @@ class CPU:
 				exit()
 		assert False,"Unexpected exit of the CPU"
 
-programMemory = []
+	def loadIntCodeProgram(self):
+		""" 
+		"""
+		#global self.programMemory
+		#global self.inputQueue
+		#global self.outputQueue
+	#	debug_loadIntCodeProgram = True
+		debug_loadIntCodeProgram = False
+		# Load program memory from file
+		progName = "input.txt"
+		if debug_loadIntCodeProgram:
+			print("Input File Name :",progName)
+		with open(progName, 'r') as filehandle:  
+			inLine = filehandle.readline()
+			self.programMemory = map(int, inLine.split(','))
+		# pad out past end
+		for i in range(10000):
+			self.programMemory.append(0)
+		if debug_loadIntCodeProgram:
+			print(self.programMemory)
 
-def loadIntCodeProgram():
-	""" 
-	"""
-	global programMemory
-	global inputQueue
-	global outputQueue
-#	debug_loadIntCodeProgram = True
-	debug_loadIntCodeProgram = False
-	# Load program memory from file
-	progName = "input.txt"
-	if debug_loadIntCodeProgram:
-		print("Input File Name :",progName)
-	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		programMemory = map(int, inLine.split(','))
-	# pad out past end
-	for i in range(10000):
-		programMemory.append(0)
-	if debug_loadIntCodeProgram:
-		print(programMemory)
+debugAll = False
 
-
-loadIntCodeProgram()
 myCPU = CPU()
-myCPU.initCPU()
 
 debug_main = True
 #debug_main = False

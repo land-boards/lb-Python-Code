@@ -110,12 +110,12 @@ class CPU:
 	"""
 	
 	def __init__(self):
-		global inputQueue
-		global outputQueue
-		progState = ''
-		programCounter = 0
-		relativeBaseRegister = 0
-		programMemory = []
+		# self.inputQueue = []
+		# self.outputQueue = []
+		# self.progState = ''
+		# self.programCounter = 0
+		# self.relativeBaseRegister = 0
+		self.programMemory = []
 
 		debug_initCPU = False
 		# state transitions are 
@@ -125,8 +125,8 @@ class CPU:
 		self.setProgState('initCPU')
 		self.programCounter = 0
 		self.relativeBaseRegister = 0
-		inputQueue = []
-		outputQueue = []
+		self.inputQueue = []
+		self.outputQueue = []
 		self.loadIntCodeProgram()
 		if debug_initCPU:
 			print("Memory Dump :",self.programMemory)
@@ -134,7 +134,7 @@ class CPU:
 	def getProgState(self):
 		""" Returns the value of the program state variable
 		"""
-		#print("getProgState: progState =",self.progState)
+		#print("getProgState: self.progState =",self.progState)
 		return self.progState
 	
 	def setProgState(self,state):
@@ -143,7 +143,7 @@ class CPU:
 		debug_setProgState = False
 		self.progState = state
 		if debug_setProgState:
-			print("setProgState: progState =",self.progState)
+			print("setProgState: self.progState =",self.progState)
 			
 	def intTo5DigitString(self, instruction):
 		"""Takes a variable length string and packs the front with zeros 
@@ -194,8 +194,8 @@ class CPU:
 		""" Single place to interpret opcodes which read program memory
 		Input the opcode field and the offset to the correct opcode field
 		"""
-		#global programMemory
-		global programCounter
+		#global self.programMemory
+		#global self.programCounter
 		debug_dealWithOp = False
 		if currentOp[offset] == 0:	# position mode
 			val = self.programMemory[self.programMemory[self.programCounter+offset]]
@@ -214,8 +214,8 @@ class CPU:
 		return val
 	
 	def writeOpResult(self,opcode,opOffset,val):
-		#global programMemory
-		global programCounter
+		#global self.programMemory
+		#global self.programCounter
 		debug_writeEqLtResult = False
 		if opcode[opOffset] == 0:
 			self.programMemory[self.programMemory[self.programCounter+opOffset]] = val
@@ -233,9 +233,9 @@ class CPU:
 	def runCPU(self):
 #		debug_runCPU = True
 		debug_runCPU = False
-		#global programMemory
-		global inputQueue
-		global outputQueue
+		#global self.programMemory
+		#global self.inputQueue
+		#global self.outputQueue
 		while(1):
 			currentOp = self.extractFieldsFromInstruction(self.programMemory[self.programCounter])
 			#self.getProgState()
@@ -260,17 +260,17 @@ class CPU:
 #				debug_CPUInput = True
 				if debug_runCPU or debug_CPUInput:
 					print("PC =",self.programCounter,"INP Opcode = ",currentOp,end='')
-				if len(inputQueue) == 0:
+				if len(self.inputQueue) == 0:
 					if debug_runCPU or debug_CPUInput:
 						print(" - Returning to main for input value")
 					self.setProgState('waitForInput')
 					return
 				if debug_runCPU or debug_CPUInput:
-					print(" value =",inputQueue[0])
-				result = inputQueue[0]
+					print(" value =",self.inputQueue[0])
+				result = self.inputQueue[0]
 				self.writeOpResult(currentOp,1,result)
-				del inputQueue[0]	 # Empty the input queue
-				# if len(inputQueue) != 0:
+				del self.inputQueue[0]	 # Empty the input queue
+				# if len(self.inputQueue) != 0:
 					# assert False,"Still stuff in input queue"
 				self.setProgState('inputWasRead')
 				self.programCounter = self.programCounter + 2
@@ -281,7 +281,7 @@ class CPU:
 				if debug_runCPU or debug_CPUOutput:
 					print("PC =",self.programCounter,"OUT Opcode = ",currentOp,end='')
 					print(" value =",val1)
-				outputQueue.append(val1)
+				self.outputQueue.append(val1)
 				self.programCounter = self.programCounter + 2
 				self.setProgState('outputReady')
 				return
@@ -334,7 +334,7 @@ class CPU:
 					print("PC =",self.programCounter,"SBR Opcode = ",currentOp," ",end='')
 				self.relativeBaseRegister += self.dealWithOp(currentOp,1)
 				if debug_runCPU:
-					print("relativeBaseRegister =",self.relativeBaseRegister)
+					print("self.relativeBaseRegister =",self.relativeBaseRegister)
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 99:
 				if debug_runCPU:
@@ -350,9 +350,9 @@ class CPU:
 	def loadIntCodeProgram(self):
 		""" 
 		"""
-		#global programMemory
-		global inputQueue
-		global outputQueue
+		#global self.programMemory
+		#global self.inputQueue
+		#global self.outputQueue
 	#	debug_loadIntCodeProgram = True
 		debug_loadIntCodeProgram = False
 		# Load program memory from file
@@ -397,8 +397,8 @@ while True:
 	state = myCPU.getProgState()
 	#print(state)
 	if state == 'outputReady':
-		print(str(unichr(outputQueue[0])),end='')
-		del outputQueue[0]
+		print(str(unichr(myCPU.outputQueue[0])),end='')
+		del myCPU.outputQueue[0]
 	elif state == 'waitForInput':
 		print("")
 		assert False,"Waiting for input"
