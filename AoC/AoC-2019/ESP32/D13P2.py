@@ -44,11 +44,14 @@ class CPU:
 		with open(progName, 'r') as filehandle:  
 			inLine = filehandle.readline()
 			lineListChars = inLine.split(',')
+			print(len(lineListChars))
+			#time.sleep(5)
 			for charz in lineListChars:
 				self.programMemory.append(int(charz))
 		self.programMemory[0] = 2
 		for i in range(1000):
 			self.programMemory.append(0)
+		# assert False,"top"
 		if debug_loadIntCodeProgram:
 			print(self.programMemory)
 
@@ -319,8 +322,8 @@ while True:
 			print('score',score)
 		else:
 			setPoint(myCPU.outputQueue[0],myCPU.outputQueue[1],myCPU.outputQueue[2])
-#			if (outputQueue[0] == 0) and (outputQueue[1] == 0):
-#				displayScreen()
+			if (myCPU.outputQueue[0] == 0) and (myCPU.outputQueue[1] == 0):
+				displayScreen()
 #				time.sleep(1)
 		del myCPU.outputQueue[2]
 		del myCPU.outputQueue[1]
