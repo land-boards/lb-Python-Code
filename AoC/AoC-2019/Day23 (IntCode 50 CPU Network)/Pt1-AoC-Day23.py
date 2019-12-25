@@ -191,8 +191,8 @@ class CPU:
 				self.setProgState('inputWasRead')
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
-#				debug_CPUOutput = False
-				debug_CPUOutput = True
+				debug_CPUOutput = False
+#				debug_CPUOutput = True
 				val1 = self.dealWithOp(currentOp,1)
 				if debug_runCPU or debug_CPUOutput:
 					print("PC =",self.programCounter,"OUT Opcode = ",currentOp,end='')
@@ -268,8 +268,8 @@ class CPU:
 
 debugAll = False
 
-debug_main = True
-#debug_main = False
+#debug_main = True
+debug_main = False
 
 # Spawn 50 CPUs
 CPUs = []
@@ -293,12 +293,15 @@ while True in cpuRunning:
 			if debug_main:
 				print("len of outputQueue =",len(CPUs[cpuNumber].outputQueue))
 			cpuNum = CPUs[cpuNumber].outputQueue[0]
-			xVal = CPUs[cpuNumber].outputQueue[1]
-			yVal = CPUs[cpuNumber].outputQueue[2]
-			CPUs[cpuNum].inputQueue.append(xVal)
-			CPUs[cpuNum].inputQueue.append(yVal)
-			del CPUs[cpuNumber].outputQueue[2]
-			del CPUs[cpuNumber].outputQueue[1]
-			del CPUs[cpuNumber].outputQueue[0]
-			#assert False,"got outputQueue"
-		
+			if cpuNum < 255:
+				xVal = CPUs[cpuNumber].outputQueue[1]
+				yVal = CPUs[cpuNumber].outputQueue[2]
+				CPUs[cpuNum].inputQueue.append(xVal)
+				CPUs[cpuNum].inputQueue.append(yVal)
+				del CPUs[cpuNumber].outputQueue[2]
+				del CPUs[cpuNumber].outputQueue[1]
+				del CPUs[cpuNumber].outputQueue[0]
+			else:
+				print("yValue to node 255 is",CPUs[cpuNumber].outputQueue[2])
+				exit()
+				
