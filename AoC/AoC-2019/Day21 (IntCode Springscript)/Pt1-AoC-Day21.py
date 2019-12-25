@@ -97,6 +97,7 @@ import time
 	However, if the springdroid successfully makes it across, it will use an output instruction to indicate the amount of damage to the hull as a single giant integer outside the normal ASCII range.
 
 	Program the springdroid with logic that allows it to survey the hull without falling into space. What amount of hull damage does it report?
+	Your puzzle answer was 19359316.
 
 """
 
@@ -110,18 +111,8 @@ class CPU:
 	"""
 	
 	def __init__(self):
-		# self.inputQueue = []
-		# self.outputQueue = []
-		# self.progState = ''
-		# self.programCounter = 0
-		# self.relativeBaseRegister = 0
 		self.programMemory = []
-
 		debug_initCPU = False
-		# state transitions are 
-		# 'inputReady' => 'waitingOnInput' => 
-		# 'inputReady' => 'waitingOnInput' => 
-		# 'progDone'
 		self.setProgState('initCPU')
 		self.programCounter = 0
 		self.relativeBaseRegister = 0
@@ -233,9 +224,6 @@ class CPU:
 	def runCPU(self):
 #		debug_runCPU = True
 		debug_runCPU = False
-		#global self.programMemory
-		#global self.inputQueue
-		#global self.outputQueue
 		while(1):
 			currentOp = self.extractFieldsFromInstruction(self.programMemory[self.programCounter])
 			#self.getProgState()
@@ -381,24 +369,37 @@ myCPU = CPU()
 debug_main = True
 #debug_main = False
 
-springScriptProgram = []
-lineOfSprintScriptProgram = 'NOT A J'
-lineCountOfSpringScriptProgram = 0
-offsetIntoLineOfSpringScriptProgram = 0
-loadProgram = False
-lineCountOfSpringScriptProgram = 'NOT D J'
-springScriptProgram.append(lineCountOfSpringScriptProgram)
-lineCountOfSpringScriptProgram = 'WALK'
-springScriptProgram.append(lineCountOfSpringScriptProgram)
+def uploadSpringScriptProgram(myCPU,springScriptProgram):
+	for line in springScriptProgram:
+		for charOut in line:
+			myCPU.inputQueue.append(ord(charOut))
+		myCPU.inputQueue.append(10)
+	#print("uploadSpringScriptProgram: myCPU.inputQueue",myCPU.inputQueue)
 
+springScriptProgram = []
+springScriptProgram.append('OR A T')	# T = A
+springScriptProgram.append('NOT C J')	# J = NOT C
+springScriptProgram.append('AND C T')	# T = A AND NOT C
+springScriptProgram.append('NOT T J')	# 
+springScriptProgram.append('AND D J')	# 
+springScriptProgram.append('WALK')		# 
+
+programLoaded = False
+progRunning = True
 print("Running Springscript Program")
-while True:
+while progRunning:
 	myCPU.runCPU()
 	state = myCPU.getProgState()
 	#print(state)
 	if state == 'outputReady':
-		print(str(unichr(myCPU.outputQueue[0])),end='')
+		try:
+			print(str(unichr(myCPU.outputQueue[0])),end='')
+		except:
+			print(myCPU.outputQueue[0])
 		del myCPU.outputQueue[0]
-	elif state == 'waitForInput':
-		print("")
-		assert False,"Waiting for input"
+	elif state == 'waitForInput' and not programLoaded:
+		uploadSpringScriptProgram(myCPU,springScriptProgram)
+		programLoaded = True
+	elif state == 'progDone':
+		print("Program done")
+		progRunning = False
