@@ -21,7 +21,9 @@ import time
 	Once the network is idle, the NAT sends only the last packet it received to address 0; this will cause the computers on the network to resume activity. In this way, the NAT can throttle power consumption of the network when the ship needs power in other areas.
 
 	Monitor packets released to the computer at address 0 by the NAT. What is the first Y value delivered by the NAT to the computer at address 0 twice in a row?
-
+	
+	22391331247377 is too high.
+	
 """
 
 class CPU:
@@ -278,7 +280,7 @@ class CPU:
 def allInputQueuesEmpty():
 	allQueuesEmpty = True
 	for cpuNumber in xrange(50):
-		if CPUs[cpuNumber].getInputQueueLength >= 2:
+		if CPUs[cpuNumber].getInputQueueLength() >= 2:
 			return False
 	return True
 
@@ -292,12 +294,30 @@ lastPacketValue = [-1,-1]
 CPUs = []
 cpuRunning = []
 packetVals = []
+xVal = -1
+yVal = -1
+natX = -1
+natY = -1
+gotNATPacket = False
 for cpuNumber in xrange(50):
 	CPUs.append(CPU())
 	# Feed the CPU its node number
 	CPUs[cpuNumber].inputQueue.append(cpuNumber)
 	cpuRunning.append(True)
 while True in cpuRunning:
+	if allInputQueuesEmpty() and gotNATPacket:
+		if debug_main:
+			print("Got NAT packet and all queues are empty")
+		CPUs[0].inputQueue.append(natX)
+		CPUs[0].inputQueue.append(natY)
+		lastPacketValue = [xVal,yVal]
+		if lastPacketValue in packetVals:
+			# print("packetVals",packetVals)
+			# print("last packet value to NAT was",lastPacketValue)
+			print("The first repeated Y value to NAT was",lastPacketValue[1])
+			exit()
+		packetVals.append(lastPacketValue)
+#		gotNATPacket = False
 	for cpuNumber in range(50):
 		CPUs[cpuNumber].runCPU()
 		state = CPUs[cpuNumber].getProgState()
@@ -319,18 +339,13 @@ while True in cpuRunning:
 				del CPUs[cpuNumber].outputQueue[2]
 				del CPUs[cpuNumber].outputQueue[1]
 				del CPUs[cpuNumber].outputQueue[0]
-			else:
-				print("packetVals",packetVals)
-				packetVals = [xVal,yVal]
-				if lastPacketValue in packetVals:
-					print("yValue to NAT was",yVal)
-					exit()
-				else:
-					packetVals.append(lastPacketValue)
-			if allInputQueuesEmpty:
-				print("All input queues are now empty")
-				CPUs[0].inputQueue.append(packetVals[0])
-				CPUs[0].inputQueue.append(packetVals[1])				
-				print("yValue to node 255 is",packetVals[1])
-				#exit()
-				
+			elif cpuNum == 255:
+				# print("Got a packet for the NAT")
+				# print("xVal",xVal)
+				# print("yVal",yVal)
+				natX = xVal
+				natY = yVal
+				del CPUs[cpuNumber].outputQueue[2]
+				del CPUs[cpuNumber].outputQueue[1]
+				del CPUs[cpuNumber].outputQueue[0]
+				gotNATPacket = True
