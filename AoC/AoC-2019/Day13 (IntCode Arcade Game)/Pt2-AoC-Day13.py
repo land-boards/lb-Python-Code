@@ -337,5 +337,7 @@ while True:
 		break
 	else:
 		assert False,"probably input"
+	os.system('cls')		
+	displayScreen()
 	step += 1
 print("Score",score)

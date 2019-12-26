@@ -72,9 +72,7 @@ bullets = []
 run = True
 while run:
 	clock.tick(27)
-	
-	#pygame.time.delay(27)
-	
+		
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
