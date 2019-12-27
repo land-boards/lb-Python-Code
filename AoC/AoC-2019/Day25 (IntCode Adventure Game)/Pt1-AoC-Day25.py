@@ -87,21 +87,39 @@ Two or more
 - antenna (too light alone)
 - semiconductor (too light alone)
 
-11000	hypercube + whirled peas                            		(too light)
-11100	hypercube + whirled peas + mouse                    		(too light)
-11110	hypercube + whirled peas + mouse + antenna          		(too heavy)
-11101	hypercube + whirled peas + mouse           + semiconductor	(too light)
+00001                                                semiconductor	(too light)
+00010	                                   antenna                 	(too light)
+00011	                                   antenna + semiconductor 	(too light)
+00100                              mouse                           	(too light)
+00101                              mouse             semiconductor 	(too heavy)
+00110                              mouse + antenna                	(too heavy)
+00111	                           mouse + antenna + semiconductor 	(too heavy)
+01000	            whirled peas                                 	(too light)
+01001               whirled peas                   + semiconductor	(too heavy)
+01010               whirled peas         + antenna                  (too heavy)
+01011	            whirled peas         + antenna + semiconductor	(too heavy)
 01100	            whirled peas + mouse 							(too light)
+01101               whirled peas + mouse 		   + semiconductor	(too heavy)
 01110	            whirled peas + mouse + antenna 					(too light)
 01111	            whirled peas + mouse + antenna + semiconductor	(too heavy)
-00111	                                   antenna + semiconductor 	(too light)
-01011	            whirled peas         + antenna + semiconductor	(too heavy)
 01101	            whirled peas + mouse           + semiconductor	(too light)
+10000	hypercube                                                   (too light)
+10001	hypercube                                  + semiconductor	(too light)
+10011	hypercube                        + antenna + semiconductor	(too light)
+10100	hypercube                + mouse + antenna  + semiconductor	<<<<<<<<<<
+11000	hypercube + whirled peas                            		(too light)
+11001	hypercube + whirled peas                   + semiconductor	(too 
+11100	hypercube + whirled peas + mouse                    		(too light)
+11101	hypercube + whirled peas + mouse           + semiconductor	(too light)
+11110	hypercube + whirled peas + mouse + antenna          		(too heavy)
 
 
 take
 drop
 
+A loud, robotic voice says "Analysis complete! You may proceed." and you enter the cockpit.
+Santa notices your small droid, looks puzzled for a moment, realizes what has happened, and radios your ship directly.
+"Oh, hello! You should be able to get in by typing 20483 on the keypad at the main airlock.
 
 """
 
