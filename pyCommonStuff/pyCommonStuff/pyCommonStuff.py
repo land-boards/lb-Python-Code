@@ -2,6 +2,19 @@
 """
 
 #################################################################################
+# List comprehension
+# If you used to do it like this:
+
+new_list = []
+for i in old_list:
+    if filter(i):
+        new_list.append(expressions(i))
+
+#You can obtain the same thing using list comprehension:
+
+new_list = [expression(i) for i in old_list if filter(i)]
+
+#################################################################################
 # Time for a python file to execute
 
 time python prog.py
