@@ -162,10 +162,9 @@ def extractFieldsFromInstruction(instruction):
 	return retVal
 
 inputVal = 1
-# open file and read the content into an accumulated sum
+# open file and read the program memory
 with open('input.txt', 'r') as filehandle:  
-	inLine = filehandle.readline()
-	numbers = map(int, inLine.split(','))
+	numbers = [int(charX) for charX in filehandle.readline().split(',')]
 	print(numbers)
 processList(numbers)
 exit()
