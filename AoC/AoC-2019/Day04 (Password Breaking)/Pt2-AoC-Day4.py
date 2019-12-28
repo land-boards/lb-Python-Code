@@ -57,9 +57,7 @@ def makeListFromInt(val):
 	""" Turn an integer into a list of digits
 	"""
 	digitString=str(val)
-	resultList = []
-	for charVal in digitString:
-		resultList.append(charVal)
+	resultList = [charVal for charVal in digitString]
 	return resultList
 
 def hasAscendingChars(digitString):
@@ -100,7 +98,7 @@ while (val < endVal):
 	if hasAscendingChars(myList):
 		pairCount = countPairs(myList)
 		if pairCount != 0:
-			print("First pass possible value :",val)
+			#print("First pass possible value :",val)
 			passwordsCount = passwordsCount + 1
 	val = val + 1
 print("Count :",passwordsCount)
