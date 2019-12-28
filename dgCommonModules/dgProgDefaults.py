@@ -41,8 +41,8 @@ import string
 import csv
 import os
 
-import pygtk
-pygtk.require('2.0')
+# import pygtk
+# pygtk.require('2.0')
 
 # global program options
 
