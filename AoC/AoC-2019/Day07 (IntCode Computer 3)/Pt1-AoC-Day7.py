@@ -2,6 +2,9 @@
 # 2019 Advent of Code
 # Day 7
 # Part 1
+# https://adventofcode.com/2019/day/7
+
+from __future__ import print_function
 
 """
 --- Day 7: Amplification Circuit ---
@@ -44,7 +47,6 @@ Max thruster signal 65210 (from phase setting sequence 1,0,4,3,2):
 1002,33,7,33,1,33,31,31,1,32,31,31,4,31,99,0,0,0
 Try every combination of phase settings on the amplifiers. What is the highest signal that can be sent to the thrusters?
 """
-from __future__ import print_function
 
 def testCPUOps(object):
 	""" Code to test the new opcodes and make sure they work as expected
@@ -141,7 +143,6 @@ def testCPUOps(object):
 def genTestVecs():
 	vecsList = []
 	for dig0 in range(0,5):
-		print("dig0",dig0)
 		for dig1 in range(0,5):
 			if dig1!= dig0:
 				for dig2 in range(0,5):
@@ -353,64 +354,42 @@ class CPU:
 
 debugMessage = False
 
-#myTestCPU = CPU()
-#testCPUOps(myTestCPU)
-
-#debugMessage = True
-
 progName = "input.txt"
 testVectors = genTestVecs()
 phaseSettings = [1,0,4,3,2]
 
 maxVal = 0
 for phaseSettings in testVectors:
-#	print("phaseSettings",phaseSettings)
 	AmpCPUA = CPU()
-#	print("Amplifier A = ",end='')
 	inputValsA = [phaseSettings[0],0]
-	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program = map(int, inLine.split(','))
+	with open(progName, 'r') as filehandle:
+		program = [int(inLine) for inLine in filehandle.readline().split(',')]
 	resultA = AmpCPUA.runCPU(program,inputValsA)
-	print("AmpA",resultA)
 
 	AmpCPUB = CPU()
-#	print("Amplifier B = ",end='')
 	inputValsB = [phaseSettings[1],resultA]
 	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program = map(int, inLine.split(','))
+		program = [int(inLine) for inLine in filehandle.readline().split(',')]
 	resultB = AmpCPUB.runCPU(program,inputValsB)
-	print("AmpB",resultB)
 
 	AmpCPUC = CPU()
-#	print("Amplifier C = ",end='')
 	inputValsC = [phaseSettings[2],resultB]
 	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program = map(int, inLine.split(','))
+		program = [int(inLine) for inLine in filehandle.readline().split(',')]
 	resultC = AmpCPUC.runCPU(program,inputValsC)
-	print("AmpC",resultC)
 
 	AmpCPUD = CPU()
-#	print("Amplifier D = ",end='')
 	inputValsD = [phaseSettings[3],resultC]
 	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program = map(int, inLine.split(','))
+		program = [int(inLine) for inLine in filehandle.readline().split(',')]
 	resultD = AmpCPUD.runCPU(program,inputValsD)
-	print("AmpD",resultD)
 
 	AmpCPUE = CPU()
-#	print("Amplifier E = ",end='')
 	inputValsE = [phaseSettings[4],resultD]
 	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program = map(int, inLine.split(','))
+		program = [int(inLine) for inLine in filehandle.readline().split(',')]
 	resultE = AmpCPUE.runCPU(program,inputValsE)
-	print("AmpE",resultE)
 	if resultE > maxVal:
 		maxVal = resultE
 
 print("Output Result",maxVal)
-exit()

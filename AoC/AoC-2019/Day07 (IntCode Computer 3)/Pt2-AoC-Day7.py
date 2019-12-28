@@ -2,6 +2,7 @@
 # 2019 Advent of Code
 # Day 7
 # Part 2
+# https://adventofcode.com/2019/day/7
 
 from __future__ import print_function
 
@@ -399,9 +400,6 @@ def genTestVecs(startPh, endPh):
 
 debugMessage = False
 
-#myTestCPU = CPU()
-#testCPUOps(myTestCPU)
-
 debugMessage = False
 
 progName = "input.txt"
@@ -409,9 +407,7 @@ progName = "input.txt"
 startPhase = 5
 endPhase = 9
 testVectors = genTestVecs(startPhase,endPhase)
-#print(testVectors)
 
-#testVectors=[[9,7,8,5,6]]
 onePass = False
 
 maxVal = 0
@@ -437,20 +433,15 @@ for phaseSettings in testVectors:
 	#print("Phase settings :",phaseSettings,"= ",end='')
 	progRunning = True
 	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program1 = map(int, inLine.split(','))
+		program1 = [int(inLine) for inLine in filehandle.readline().split(',')]
 	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program2 = map(int, inLine.split(','))
+		program2 = [int(inLine) for inLine in filehandle.readline().split(',')]
 	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program3 = map(int, inLine.split(','))
+		program3 = [int(inLine) for inLine in filehandle.readline().split(',')]
 	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program4 = map(int, inLine.split(','))
+		program4 = [int(inLine) for inLine in filehandle.readline().split(',')]
 	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		program5 = map(int, inLine.split(','))
+		program5 = [int(inLine) for inLine in filehandle.readline().split(',')]
 	if debugMessage:
 		print("Program code:",program1)
 
@@ -500,4 +491,3 @@ for phaseSettings in testVectors:
 		biggest = maxVal
 	
 print("Result",biggest)
-exit()
