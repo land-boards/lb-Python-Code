@@ -2,6 +2,7 @@
 # 2019 Advent of Code
 # Day 10
 # Part 1
+# https://adventofcode.com/2019/day/10
 
 from __future__ import print_function
 import numpy
@@ -129,7 +130,7 @@ def readInFile(inFileName):
 				asteroidLocations.append([column,row])
 	return(asteroidLocations)
 
-inFileName = "input.txt"
+inFileName = "AOC2019D10input.txt"
 asteroidLocations = readInFile(inFileName)
 print("Asteroid count  =",len(asteroidLocations))
 print("Asteroid Locations at at: ",asteroidLocations)

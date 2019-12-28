@@ -318,7 +318,7 @@ class CPU:
 myCPU = CPU()
 myCPU.initCPU()
 
-progName = "input.txt"
+progName = "AOC2019D09input.txt"
 print("Input File Name :",progName)
 
 programMemory = []

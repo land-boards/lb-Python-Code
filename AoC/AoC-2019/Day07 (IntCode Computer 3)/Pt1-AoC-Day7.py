@@ -354,7 +354,7 @@ class CPU:
 
 debugMessage = False
 
-progName = "input.txt"
+progName = "AOC2019D07input.txt"
 testVectors = genTestVecs()
 phaseSettings = [1,0,4,3,2]
 

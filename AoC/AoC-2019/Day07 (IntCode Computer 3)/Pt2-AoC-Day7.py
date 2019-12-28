@@ -402,7 +402,7 @@ debugMessage = False
 
 debugMessage = False
 
-progName = "input.txt"
+progName = "AOC2019D07input.txt"
 
 startPhase = 5
 endPhase = 9

@@ -88,7 +88,7 @@ def processList(newNodeNames,nodesList):
 
 inputVal = 1
 # open file and read the content into a list
-inList = [line.rstrip('\n') for line in open('input.txt')]
+inList = [line.rstrip('\n') for line in open('AOC2019D06input.txt')]
 
 print('Reading in file',time.strftime('%X %x %Z'))
 #nodesList = []

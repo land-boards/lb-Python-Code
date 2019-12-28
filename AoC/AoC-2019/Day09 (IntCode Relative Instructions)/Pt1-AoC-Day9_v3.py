@@ -46,6 +46,7 @@ Once your Intcode computer is fully functional, the BOOST program should report 
 
 
 """
+
 class CPU:
 	""" CPU class
 	Runs the program on the CPU 
@@ -75,7 +76,7 @@ class CPU:
 		""" 
 		"""
 		debug_loadIntCodeProgram = False
-		progName = "input.txt"
+		progName = "AOC2019D09input.txt"
 		if debug_loadIntCodeProgram:
 			print("Input File Name :",progName)
 		with open(progName, 'r') as filehandle:  

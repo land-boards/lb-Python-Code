@@ -91,7 +91,7 @@ def processList(newNodeNames,nodesList):
 
 inputVal = 1
 # open file and read the content into a list
-inList = [line.rstrip('\n') for line in open('input.txt')]
+inList = [line.rstrip('\n') for line in open('AOC2019D06input.txt')]
 nodesList = [pair.split(')') for pair in inList]
 nodeNames = []
 for nodePairs in nodesList:

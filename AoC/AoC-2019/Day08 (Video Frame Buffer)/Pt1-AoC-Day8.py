@@ -2,6 +2,7 @@
 # 2019 Advent of Code
 # Day 8
 # Part 1
+# https://adventofcode.com/2019/day/8
 
 """
 --- Day 8: Space Image Format ---

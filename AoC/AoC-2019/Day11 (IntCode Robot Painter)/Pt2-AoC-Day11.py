@@ -406,12 +406,11 @@ colorsOnPath = []
 firstHit = True
 
 # Load program memory from file
-progName = "input.txt"
+progName = "AOC2019D11input.txt"
 print("Input File Name :",progName)
 programMemory = []
 with open(progName, 'r') as filehandle:  
-	inLine = filehandle.readline()
-	programMemory = map(int, inLine.split(','))
+	programMemory = [int(charz) for charz in filehandle.readline().split(',')]
 lenOfProgram=len(programMemory)
 print("lenOfProgram",lenOfProgram)
 for i in range(5000):

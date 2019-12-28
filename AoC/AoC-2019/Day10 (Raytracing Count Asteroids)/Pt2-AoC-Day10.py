@@ -2,6 +2,7 @@
 # 2019 Advent of Code
 # Day 10
 # Part 1
+# https://adventofcode.com/2019/day/10
 
 from __future__ import print_function
 import numpy
@@ -99,7 +100,7 @@ def readInFile(inFileName):
 	return(asteroidLocations)
 
 #inFileName = "TestCase2_1.txt"
-inFileName = "input.txt"#
+inFileName = "AOC2019D10input.txt"#
 #inFileName = "TrivialTestCase.txt"
 print("Input data :",inFileName)
 asteroidLocations = readInFile(inFileName)
@@ -153,6 +154,7 @@ asteroidXYAngleDist = buildAnglesTable(bestLocation,asteroidLocations)
 sortedAngleTable = sorted(stuffAngleTable(asteroidXYAngleDist))
 #print("sortedAngleTable",sortedAngleTable)
 asteroidNum = 1
+asteroid200 = []
 for angle in sortedAngleTable:
 	print("asteroide Number",asteroidNum,"check for anglesFromBase",angle," ",end="")
 	for asteroid in asteroidXYAngleDist:
@@ -160,8 +162,12 @@ for angle in sortedAngleTable:
 		if asteroid[0:2] != bestLocation:
 			if asteroid[2] == angle:
 				print("asteroid",asteroid)
+				if asteroidNum == 200:
+					asteroid200 = asteroid
 	asteroidNum = asteroidNum + 1
 # print("200th angle",sortedAngleTable[199])
 # for asteroid in asteroidXYAngleDist:
 	# if asteroid[2] == sortedAngleTable[199]:
 		# print(asteroid)
+print("asteroid 200",asteroid200)
+print("asteroid200",asteroid200[0]," ",asteroid200[1])

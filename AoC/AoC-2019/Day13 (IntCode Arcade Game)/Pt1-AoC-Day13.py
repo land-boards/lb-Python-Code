@@ -348,7 +348,7 @@ pointsOnPath = []
 colorsOnPath = []
 
 # Load program memory from file
-progName = "input.txt"
+progName = "AOC2019D13input.txt"
 print("Input File Name :",progName)
 programMemory = []
 with open(progName, 'r') as filehandle:  
