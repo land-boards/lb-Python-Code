@@ -227,40 +227,26 @@ def findIntersectionOnLine(lineEndPoints, currentIntersection):
 def distToIntersects(linesList,intersList):
 	"""
 	"""
-	print("*** distToIntersects: Going through first chain of wires")
 	distancesList1 = []
 	for intersPoint in intersList:
 		nodeAccumDist1 = 0
 		distanceToNode = 0;
 		for lineEndPoints in linesList[0]:
-			#print("distToIntersects: lineEndPoints",lineEndPoints)
-			#print("distToIntersects: Checking for intersection with point",intersPoint)
 			checkIfPointOnLine = findIntersectionOnLine(lineEndPoints, intersPoint)
 			if checkIfPointOnLine!=[0,0]:
 				distanceToNode = nodeAccumDist1 + manhattanDistanceBetweenPins([lineEndPoints[0],lineEndPoints[1],checkIfPointOnLine[0],checkIfPointOnLine[1]])
-				print("*** distToIntersects: Found intersection",intersPoint,"at distance :",distanceToNode)
 				distancesList1.append(distanceToNode)
-			#else:
-				#print("distToIntersects: Line doesn't have an intersection - length : ",manhattanDistanceBetweenPins(lineEndPoints))
 			nodeAccumDist1 = nodeAccumDist1 + manhattanDistanceBetweenPins(lineEndPoints)
-			#print("distToIntersects: Accumulated line 1 distance : ",nodeAccumDist1)
-	print("*** distToIntersects: Going through second chain of wires")
 	distancesList2 = []
 	for intersPoint in intersList:
 		nodeAccumDist2 = 0
 		distanceToNode = 0;
 		for lineEndPoints in linesList[1]:
-			#print("distToIntersects: lineEndPoints",lineEndPoints)
-			#print("distToIntersects: Checking for intersection with point",intersPoint)
 			checkIfPointOnLine = findIntersectionOnLine(lineEndPoints, intersPoint)
 			if checkIfPointOnLine!=[0,0]:
 				distanceToNode = nodeAccumDist2 + manhattanDistanceBetweenPins([lineEndPoints[0],lineEndPoints[1],checkIfPointOnLine[0],checkIfPointOnLine[1]])
-				print("*** distToIntersects: Found intersection",intersPoint,"at distance :",distanceToNode)
 				distancesList2.append(distanceToNode)
-			#else:
-				#print("distToIntersects: Line doesn't have an intersection - length : ",manhattanDistanceBetweenPins(lineEndPoints))
 			nodeAccumDist2 = nodeAccumDist2 + manhattanDistanceBetweenPins(lineEndPoints)
-			#print("distToIntersects: Accumulated line 2 distance : ",nodeAccumDist2)
 	listOffset = 0
 	distMin=999999
 	while(listOffset < len(distancesList1)):
@@ -273,15 +259,9 @@ def distToIntersects(linesList,intersList):
 				
 circuits = []
 inFileName="input.txt"
-print("Input File Name :",inFileName)
 with open(inFileName, 'r') as filehandle:
-	lines = filehandle.readlines()
-	#print(lines)
-	for line in lines:
-		#print(line)
-		theLine = line.split(',')
-		circuits.append(theLine)
-	#print(circuits)
+	circuits = [line.split(',') for line in filehandle.readlines()]
+
 # Make list of lines that are of regular direction
 sortedLinesList = makeLinesList(circuits)
 #print("Sorted lines list",sortedLinesList)
@@ -289,5 +269,5 @@ intersList = findIntersections(sortedLinesList)
 # Make list of lines that have ends touching
 #print("Intersection list",intersList)
 chainedLinesList = makechainedLinesList(circuits)
-print("Chained lines list",chainedLinesList)
+#print("Chained lines list",chainedLinesList)
 distToIntersects(chainedLinesList,intersList)

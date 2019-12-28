@@ -131,6 +131,7 @@ def findIntersections(nets):
 			intersectPair = checkIntersect(wire1,wire2)
 			if (intersectPair != [0,0]):
 				intersectList.append(intersectPair)
+		# intersectList = [checkIntersect(wire1,wire2) for wire2 in net2 if (checkIntersect(wire1,wire2) != [0,0])]
 	return intersectList
 
 def findManhattanDistances(intersections):
@@ -143,7 +144,7 @@ def findManhattanDistances(intersections):
 circuits = []
 inFileName="input.txt"
 with open(inFileName, 'r') as filehandle:
-	circuits = [line.split(',') for line in filehandle.readlines() if True]
+	circuits = [line.split(',') for line in filehandle.readlines()]
 linesList = makeLinesList(circuits)
 intersList = findIntersections(linesList)
 manDistList = findManhattanDistances(intersList)
