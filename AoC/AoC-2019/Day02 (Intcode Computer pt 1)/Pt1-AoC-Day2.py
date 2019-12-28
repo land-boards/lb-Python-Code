@@ -60,35 +60,29 @@ Once you have a working computer, the first step is to restore the gravity assis
 from __future__ import print_function
 
 def processList(listOfNumbers):
-	print("Length of list is :",len(listOfNumbers))
 	opCodeOffset = 0
 	while 1:
 		if listOfNumbers[opCodeOffset] == 99:
-			print("end")
-			print("list of numbers : ",listOfNumbers)
+			print("Result",listOfNumbers[0])
 			exit()
 		elif listOfNumbers[opCodeOffset] == 1:
 			pos1 = listOfNumbers[opCodeOffset+1]
 			pos2 = listOfNumbers[opCodeOffset+2]
 			posOut = listOfNumbers[opCodeOffset+3]
 			listOfNumbers[posOut] = listOfNumbers[pos1] + listOfNumbers[pos2]
-			print("Add result :",listOfNumbers[posOut])
 			opCodeOffset = opCodeOffset + 4
 		elif listOfNumbers[opCodeOffset] == 2:
 			pos1 = listOfNumbers[opCodeOffset+1]
 			pos2 = listOfNumbers[opCodeOffset+2]
 			posOut = listOfNumbers[opCodeOffset+3]
 			listOfNumbers[posOut] = listOfNumbers[pos1] * listOfNumbers[pos2]
-			print("Multiply result :",listOfNumbers[posOut])
 			opCodeOffset = opCodeOffset + 4
 		else:
 			print("error")
 
 # open file and read the content into an accumulated sum
 with open('input.txt', 'r') as filehandle:  
-	inLine = filehandle.readline()
 	numbers = [int(charz) for charz in filehandle.readline().split(',') if True]
-	numbers[1] = 82
-	numbers[2]= 50
-	print(numbers)
+	numbers[1] = 12
+	numbers[2]= 2
 processList(numbers)

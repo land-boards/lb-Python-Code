@@ -60,7 +60,7 @@ result = 0
 numElements = 0
 with open('input.txt', 'r') as filehandle:
 	inLine = filehandle.readline()
-	numElements = [int(charz) for charz in filehandle.readline().split(',') if True]
+	numElements = [charz for charz in filehandle.readline().split(',') if True]
 	numElements = len(numbers)
 	print("Element Count :",numElements)
 	numElements = numElements - 1
