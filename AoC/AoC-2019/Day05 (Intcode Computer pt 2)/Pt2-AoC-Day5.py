@@ -2,6 +2,7 @@
 # 2019 Advent of Code
 # Day 5
 # Part 2
+# https://adventofcode.com/2019/day/5
 
 """
 --- Day 5: Sunny with a Chance of Asteroids ---
@@ -48,6 +49,7 @@ This time, when the TEST diagnostic program runs its input instruction to get th
 What is the diagnostic code for system ID 5?
 
 """
+
 from __future__ import print_function
 
 def mathOperation(programCounter,currentOp,listOfNumbers):
@@ -114,7 +116,6 @@ def branchEval(programCounter,currentOp,listOfNumbers):
 			print("branchEval: Unexpected currentOp[2]",currentOp[2])
 	return[val1,val2]
 	
-
 def processList(listOfNumbers):
 	#print("Length of list is :",len(listOfNumbers))
 	programCounter = 0
@@ -328,16 +329,6 @@ if processList(numbers) == 0:
 else:
 	print("Failed")
 	exit()
-	
-
-	
-# print("Test case XXA - ",end='')
-# numbers=[3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99]
-# inputVal = 0
-# if processList(numbers) == 0:
-	# print("Passed")
-# else:
-	# print("Failed")
 
 debugMessage = True
 
@@ -345,8 +336,6 @@ print("\n*** Real data")
 inputVal = 5
 #open file and read the content into an accumulated sum
 with open('input.txt', 'r') as filehandle:  
-	inLine = filehandle.readline()
-	numbers = map(int, inLine.split(','))
-#	print(numbers)
+	numbers = [int(charX) for charX in inLine]
 print(processList(numbers))
 exit()
