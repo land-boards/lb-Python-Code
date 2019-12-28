@@ -335,6 +335,6 @@ debugMessage = True
 print("\n*** Real data")
 inputVal = 5
 # open file and read the program memory
-with open('input.txt', 'r') as filehandle:  
+with open('AOC2019D05input.txt', 'r') as filehandle:  
 	numbers = [int(charX) for charX in filehandle.readline().split(',')]
 print(processList(numbers))

@@ -81,7 +81,7 @@ def processList(listOfNumbers):
 			print("error")
 
 # open file and read the content into an accumulated sum
-with open('input.txt', 'r') as filehandle:  
+with open('AOC2019D02input.txt', 'r') as filehandle:  
 	numbers = [int(charz) for charz in filehandle.readline().split(',') if True]
 	numbers[1] = 12
 	numbers[2]= 2

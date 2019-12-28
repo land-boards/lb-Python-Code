@@ -19,12 +19,9 @@ What is the sum of the fuel requirements for all of the modules on your spacecra
 from __future__ import print_function
 
 def calcFuel(mass):
-	print("Mass input : ",mass)
 	extraFuel = int(mass/3)-2
 	accumFuel = 0
-	print("Initial Fuel : ",accumFuel)
 	while (extraFuel > 0):
-		print("Extra Fuel : ",extraFuel)
 		accumFuel += extraFuel
 		extraFuel = int(extraFuel/3)-2
 	return accumFuel
@@ -32,9 +29,8 @@ def calcFuel(mass):
 accum = 0	# Accumulated sum
 
 # open file and read the content into an accumulated sum
-with open('input.txt', 'r') as filehandle:  
+with open('AOC2019D01input.txt', 'r') as filehandle:  
 	for lineIn in filehandle:
 		calculFuel = calcFuel(int(lineIn.strip()))
-		print('calc fuel',calculFuel)
 		accum += calculFuel
 print('sum =',accum)

@@ -53,7 +53,7 @@ noun = 1
 verb = 1
 result = 0
 numElements = 0
-with open('input.txt', 'r') as filehandle:
+with open('AOC2019D02input.txt', 'r') as filehandle:
 	numbers = [charz for charz in filehandle.readline().split(',') if True]
 	numElements = len(numbers)
 	print("Element Count :",numElements)
@@ -63,7 +63,7 @@ while (result <= 19690720):
 	while (noun < numElements):
 		verb = 1
 		while(verb < numElements):
-			with open('input.txt', 'r') as filehandle:
+			with open('AOC2019D02input.txt', 'r') as filehandle:
 				inLine = filehandle.readline()
 				numbers = map(int, inLine.split(','))
 				numbers[1] = noun

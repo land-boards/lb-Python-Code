@@ -2,6 +2,8 @@
 # 2019 Advent of Code
 # Day 3
 # Part 2
+# https://adventofcode.com/2019/day/3
+
 """
 --- Part Two ---
 
@@ -258,7 +260,7 @@ def distToIntersects(linesList,intersList):
 #########################################################################
 				
 circuits = []
-inFileName="input.txt"
+inFileName="AOC2019D03input.txt"
 with open(inFileName, 'r') as filehandle:
 	circuits = [line.split(',') for line in filehandle.readlines()]
 

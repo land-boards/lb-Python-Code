@@ -31,10 +31,8 @@ from __future__ import print_function
 accum = 0	# Accumulated sum
 
 # open file and read the content into an accumulated sum
-with open('input.txt', 'r') as filehandle:  
+with open('AOC2019D01input.txt', 'r') as filehandle:  
 	for lineIn in filehandle:
 		currentPlace = int(int(lineIn.strip()) / 3)-2
-		print (lineIn)
-		print (currentPlace)
 		accum += currentPlace
 print('sum =',accum)
