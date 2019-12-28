@@ -89,11 +89,11 @@ def makeLinesList(listOfCircuits):
 def orderPoints(points):
 	if points[1] < points[3]:
 		return(points)
-	if points[0] < points[2]:
+	elif points[0] < points[2]:
 		return(points)
-	if points[0] > points[2]:
+	elif points[0] > points[2]:
 		return([points[2],points[3],points[0],points[1]])
-	if points[1] > points[3]:
+	elif points[1] > points[3]:
 		return([points[2],points[3],points[0],points[1]])
 	else:
 		assert False,"Error points were not resortable"
@@ -131,7 +131,6 @@ def findIntersections(nets):
 			intersectPair = checkIntersect(wire1,wire2)
 			if (intersectPair != [0,0]):
 				intersectList.append(intersectPair)
-				#print("Intersecting lines : ",wire1,wire2,intersectPair)
 	return intersectList
 
 def findManhattanDistances(intersections):
@@ -144,17 +143,13 @@ def findManhattanDistances(intersections):
 circuits = []
 inFileName="input.txt"
 with open(inFileName, 'r') as filehandle:
-	lines = filehandle.readlines()
-	for line in lines:
-		theLine = line.split(',')
-		circuits.append(theLine)
-	#theLine = [charz for charz in filehandle.readline().split(',') if True]
+	circuits = [line.split(',') for line in filehandle.readlines() if True]
 linesList = makeLinesList(circuits)
 intersList = findIntersections(linesList)
 manDistList = findManhattanDistances(intersList)
-lowDistance = 999999
+lowestDistance = 999999
 for distance in manDistList:
 	if distance > 0:
-		if distance < lowDistance:
-			lowDistance = distance
-print("lowest distance", lowDistance)
+		if distance < lowestDistance:
+			lowestDistance = distance
+print("Lowest distance", lowestDistance)
