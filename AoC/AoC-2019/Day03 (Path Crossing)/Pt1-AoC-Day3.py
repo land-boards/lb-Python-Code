@@ -51,8 +51,6 @@ What is the Manhattan distance from the central port to the closest intersection
 from __future__ import print_function
 
 def makeLinesList(listOfCircuits):
-	#print("Number of circuits :",len(listOfCircuits))
-	print("List of circuits :",listOfCircuits)
 	lines = []
 	for circuit in listOfCircuits:
 		startX = 0
@@ -61,9 +59,7 @@ def makeLinesList(listOfCircuits):
 		endY = 0
 		circuitLines = []
 		for point in circuit:
-			#print("\npoint:",point)
 			delta = int(point[1:])
-			#print(delta)
 			if point[0] == 'R':
 				endX=startX+delta
 				endY=startY
@@ -88,7 +84,6 @@ def makeLinesList(listOfCircuits):
 			startX = endX
 			startY = endY
 		lines.append(circuitLines)
-	print("lines",lines)
 	return(lines)
 
 def orderPoints(points):
@@ -101,12 +96,11 @@ def orderPoints(points):
 	if points[1] > points[3]:
 		return([points[2],points[3],points[0],points[1]])
 	else:
-		print("Error points were not resortable")
+		assert False,"Error points were not resortable"
 
 def checkIntersect(wire1,wire2):
 	newWire1 = orderPoints(wire1)
 	newWire2 = orderPoints(wire2)
-	#print("Checking wire pair",newWire1,newWire2)
 	xs1 = newWire1[0]
 	ys1 = newWire1[1]
 	xe1 = newWire1[2]
@@ -125,23 +119,19 @@ def checkIntersect(wire1,wire2):
 			yIntersect = ys1
 		if ys2==ye2:
 			yIntersect = ys2
-		#print("Wires intersect at : ", xIntersect, yIntersect)
 		return([xIntersect,yIntersect])
 	return([0,0])
 	
 def findIntersections(nets):
 	net1 = nets[0]
 	net2 = nets[1]
-	#print("Net1:",net1)
-	#print("Net2:",net2)
 	intersectList = []
 	for wire1 in net1:
 		for wire2 in net2:
 			intersectPair = checkIntersect(wire1,wire2)
 			if (intersectPair != [0,0]):
 				intersectList.append(intersectPair)
-				print("Intersecting lines : ",wire1,wire2,intersectPair)
-	#print("intersections are at : ",intersectList)
+				#print("Intersecting lines : ",wire1,wire2,intersectPair)
 	return intersectList
 
 def findManhattanDistances(intersections):
@@ -153,20 +143,15 @@ def findManhattanDistances(intersections):
 # open file and read the content into an accumulated sum
 circuits = []
 inFileName="input.txt"
-print("Input File Name :",inFileName)
 with open(inFileName, 'r') as filehandle:
 	lines = filehandle.readlines()
-	#print(lines)
 	for line in lines:
-		#print(line)
 		theLine = line.split(',')
 		circuits.append(theLine)
-	#print(circuits)
+	#theLine = [charz for charz in filehandle.readline().split(',') if True]
 linesList = makeLinesList(circuits)
-#print(linesList)
 intersList = findIntersections(linesList)
 manDistList = findManhattanDistances(intersList)
-print("manhattan distances : ",manDistList)
 lowDistance = 999999
 for distance in manDistList:
 	if distance > 0:
