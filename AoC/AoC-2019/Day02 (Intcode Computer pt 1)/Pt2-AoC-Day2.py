@@ -29,26 +29,21 @@ Find the input noun and verb that cause the program to produce the output 196907
 from __future__ import print_function
 
 def processList(listOfNumbers):
-#	print("Length of list is :",len(listOfNumbers))
 	opCodeOffset = 0
 	while 1:
 		if listOfNumbers[opCodeOffset] == 99:
-#			print("end")
-#			print("list of numbers : ",listOfNumbers)
 			return(listOfNumbers[0])
 		elif listOfNumbers[opCodeOffset] == 1:
 			pos1 = listOfNumbers[opCodeOffset+1]
 			pos2 = listOfNumbers[opCodeOffset+2]
 			posOut = listOfNumbers[opCodeOffset+3]
 			listOfNumbers[posOut] = listOfNumbers[pos1] + listOfNumbers[pos2]
-#			print("Add result :",listOfNumbers[posOut])
 			opCodeOffset = opCodeOffset + 4
 		elif listOfNumbers[opCodeOffset] == 2:
 			pos1 = listOfNumbers[opCodeOffset+1]
 			pos2 = listOfNumbers[opCodeOffset+2]
 			posOut = listOfNumbers[opCodeOffset+3]
 			listOfNumbers[posOut] = listOfNumbers[pos1] * listOfNumbers[pos2]
-#			print("Multiply result :",listOfNumbers[posOut])
 			opCodeOffset = opCodeOffset + 4
 		else:
 			print("error")
@@ -59,8 +54,7 @@ verb = 1
 result = 0
 numElements = 0
 with open('input.txt', 'r') as filehandle:
-	inLine = filehandle.readline()
-	numElements = [charz for charz in filehandle.readline().split(',') if True]
+	numbers = [charz for charz in filehandle.readline().split(',') if True]
 	numElements = len(numbers)
 	print("Element Count :",numElements)
 	numElements = numElements - 1
@@ -74,14 +68,13 @@ while (result <= 19690720):
 				numbers = map(int, inLine.split(','))
 				numbers[1] = noun
 				numbers[2]= verb
-#				print(numbers)
 			result = processList(numbers)
 			if (result == 19690720):
 				print("result :",result)
 				print("Noun :",noun)
 				print("Verb :",verb)
 				product = (100 * noun) + verb
-				print("Product :",product)
+				print("Result :",product)
 				exit()
 			verb = verb + 1
 		noun = noun + 1
