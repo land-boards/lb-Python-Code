@@ -87,7 +87,7 @@ def processList(listOfNumbers):
 # open file and read the content into an accumulated sum
 with open('input.txt', 'r') as filehandle:  
 	inLine = filehandle.readline()
-	numbers = map(int, inLine.split(','))
+	numbers = [int(charz) for charz in filehandle.readline().split(',') if True]
 	numbers[1] = 82
 	numbers[2]= 50
 	print(numbers)

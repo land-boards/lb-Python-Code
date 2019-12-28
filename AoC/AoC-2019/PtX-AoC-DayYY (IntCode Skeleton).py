@@ -43,7 +43,7 @@ class CPU:
 			print("Input File Name :",progName)
 		with open(progName, 'r') as filehandle:  
 			inLine = filehandle.readline()
-			self.programMemory = map(int, inLine.split(','))
+			self.programMemory = [int(charz) for charz in filehandle.readline().split(',') if True]
 		for i in range(10000):
 			self.programMemory.append(0)
 		if debug_loadIntCodeProgram:
