@@ -2,6 +2,7 @@
 # 2019 Advent of Code
 # Day 6
 # Part 1
+# https://adventofcode.com/2019/day/6
 
 """
 --- Day 6: Universal Orbit Map ---
@@ -59,6 +60,8 @@ Your puzzle answer was 387356.
 """
 from __future__ import print_function
 
+import time
+
 def findParent(node,nodeList):
 	for nodePair in nodeList:
 		if nodePair[1] == node:
@@ -87,11 +90,9 @@ inputVal = 1
 # open file and read the content into a list
 inList = [line.rstrip('\n') for line in open('input.txt')]
 
-nodesList = []
-for pair in inList:
-	nodePair = pair.split(')')
-	nodesList.append(nodePair)
-print(nodesList)
+print('Reading in file',time.strftime('%X %x %Z'))
+#nodesList = []
+nodesList = [pair.split(')') for pair in inList]
 nodeNames = []
 for nodePairs in nodesList:
 	if nodePairs[0] not in nodeNames:
@@ -100,12 +101,6 @@ for nodePairs in nodesList:
 		nodeNames.append(nodePairs[1])
 print("Node Count",len(nodeNames))
 # Make a list without 'COM'
-newNodeNames = []
-for node in nodeNames:
-	if node != 'COM':
-		newNodeNames.append(node)
-# for node in newNodeNames:
-	# print(node,end=' ')
-# print()
+newNodeNames = [node for node in nodeNames if node != 'COM']
 processList(newNodeNames,nodesList)
-
+print('Completed processing',time.strftime('%X %x %Z'))

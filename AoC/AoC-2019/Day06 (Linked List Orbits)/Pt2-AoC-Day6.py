@@ -1,7 +1,8 @@
-# Pt1-AoCDay6.py
+# Pt2-AoCDay6.py
 # 2019 Advent of Code
 # Day 6
-# Part 1
+# Part 2
+# https://adventofcode.com/2019/day/6
 
 """
 --- Part Two ---
@@ -57,22 +58,18 @@ from __future__ import print_function
 def findParent(node,nodeList):
 	for nodePair in nodeList:
 		if nodePair[1] == node:
-			#print("Parent of",node,"is",nodePair[0])
 			return nodePair[0]
 
 def countStepsToPoint(goalNode,node,nodeList):
-	print("countStepsToCom: Current node :",node)
 	parent = ''
 	pathsCount = 0
 	while(parent != goalNode):
 		parent = findParent(node,nodeList)
 		node = parent
 		pathsCount = pathsCount + 1
-	print("took",pathsCount,"steps")
 	return(pathsCount)
 
 def pathToCom(node,nodeList):
-	#print("pathToCom: Current node :",node)
 	parent = ''
 	thePath = []
 	while(parent != 'COM'):
@@ -83,13 +80,10 @@ def pathToCom(node,nodeList):
 
 def processList(newNodeNames,nodesList):
 	myPathToCom = pathToCom('YOU',nodesList)
-	print("My path to com",myPathToCom)
 	santaPathToCom = pathToCom('SAN',nodesList)
-	print("Santa's path to com",santaPathToCom)
 	for node in myPathToCom:
 		if node in santaPathToCom:
 			goalNode = node
-			print("First common point",node)
 			break
 	myDistanceToCommon = countStepsToPoint(goalNode,'YOU',nodesList)
 	santaDistanceToCommon = countStepsToPoint(goalNode,'SAN',nodesList)
@@ -98,25 +92,13 @@ def processList(newNodeNames,nodesList):
 inputVal = 1
 # open file and read the content into a list
 inList = [line.rstrip('\n') for line in open('input.txt')]
-
-nodesList = []
-for pair in inList:
-	nodePair = pair.split(')')
-	nodesList.append(nodePair)
-#print(nodesList)
+nodesList = [pair.split(')') for pair in inList]
 nodeNames = []
 for nodePairs in nodesList:
 	if nodePairs[0] not in nodeNames:
 		nodeNames.append(nodePairs[0])
 	if nodePairs[1] not in nodeNames:
 		nodeNames.append(nodePairs[1])
-print("Node Count",len(nodeNames))
 # Make a list without 'COM'
-newNodeNames = []
-for node in nodeNames:
-	if node != 'COM':
-		newNodeNames.append(node)
-# for node in newNodeNames:
-	# print(node,end=' ')
-# print()
+newNodeNames = [node for node in nodeNames if node != 'COM']
 processList(newNodeNames,nodesList)
