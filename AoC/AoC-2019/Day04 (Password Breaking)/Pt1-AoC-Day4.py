@@ -1,7 +1,9 @@
-# Pt2-AoCDay3.py
+# Pt2-AoCDay4.py
 # 2019 Advent of Code
-# Day 3
+# Day 4
 # Part 1
+# https://adventofcode.com/2019/day/4
+
 """
 --- Day 4: Secure Container ---
 You arrive at the Venus fuel depot only to discover it's protected by a password. The Elves had written the password on a sticky note, but someone threw it out.
@@ -75,7 +77,7 @@ passwordsCount = 0
 val = startVal
 while (val < endVal):
 	if checkPassword(val):
-		print("pass value",val)
+		#print("pass value",val)
 		passwordsCount = passwordsCount + 1
 	val = val + 1
 print("Count :",passwordsCount)
