@@ -16,7 +16,7 @@ At first, a module of mass 1969 requires 654 fuel. Then, this fuel requires 216 
 The fuel required by a module of mass 100756 and its fuel is: 33583 + 11192 + 3728 + 1240 + 411 + 135 + 43 + 12 + 2 = 50346.
 What is the sum of the fuel requirements for all of the modules on your spacecraft when also taking into account the mass of the added fuel? (Calculate the fuel requirements for each module separately, then add them all up at the end.)Your puzzle answer was 5043026.
 """
-from __future__ import print_function
+#from __future__ import print_function
 
 def calcFuel(mass):
 	extraFuel = int(mass/3)-2

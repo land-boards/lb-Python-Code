@@ -26,7 +26,7 @@ Find the input noun and verb that cause the program to produce the output 196907
 
 
 """
-from __future__ import print_function
+#from __future__ import print_function
 
 def processList(listOfNumbers):
 	opCodeOffset = 0
@@ -65,7 +65,7 @@ while (result <= 19690720):
 		while(verb < numElements):
 			with open('AOC2019D02input.txt', 'r') as filehandle:
 				inLine = filehandle.readline()
-				numbers = map(int, inLine.split(','))
+				numbers = [int(charz) for charz in inLine.split(',')]
 				numbers[1] = noun
 				numbers[2]= verb
 			result = processList(numbers)

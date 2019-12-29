@@ -57,14 +57,14 @@ Here are the initial and final states of a few more small programs:
 Once you have a working computer, the first step is to restore the gravity assist program (your puzzle input) to the "1202 program alarm" state it had just before the last computer caught fire. To do this, before running the program, replace position 1 with the value 12 and replace position 2 with the value 2. What value is left at position 0 after the program halts?
 
 """
-from __future__ import print_function
+#from __future__ import print_function
 
 def processList(listOfNumbers):
 	opCodeOffset = 0
 	while 1:
 		if listOfNumbers[opCodeOffset] == 99:
 			print("Result",listOfNumbers[0])
-			exit()
+			return
 		elif listOfNumbers[opCodeOffset] == 1:
 			pos1 = listOfNumbers[opCodeOffset+1]
 			pos2 = listOfNumbers[opCodeOffset+2]

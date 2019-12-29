@@ -26,7 +26,7 @@ The Fuel Counter-Upper needs to know the total fuel requirement. To find it, ind
 What is the sum of the fuel requirements for all of the modules on your spacecraft?
 Your puzzle answer was 3364329.
 """
-from __future__ import print_function
+#from __future__ import print_function
 
 accum = 0	# Accumulated sum
 
