@@ -102,7 +102,7 @@ class CPU:
 		return retVal
 
 	def evaluatePairOfOpcodes(self, currentOp):
-		""" Evaluages the two values for instruction like ADD, MUL
+		""" Evaluates the two opcode fields for instruction like ADD, MUL
 		Returns the two values as a list pair
 		
 		:returns: list of the values of the two opcodes
