@@ -1,8 +1,8 @@
-# Pt1-AoCDay25.py
+# Pt1-AoCDay23.py
 # 2019 Advent of Code
-# Day 25
+# Day 23
 # Part 1
-# https://adventofcode.com/2019/day/25
+# https://adventofcode.com/2019/day/23
 
 from __future__ import print_function
 
@@ -11,115 +11,24 @@ import sys
 import time
 
 """
-	--- Part Two ---
-	Packets sent to address 255 are handled by a device called a NAT (Not Always Transmitting). The NAT is responsible for managing power consumption of the network by blocking certain packets and watching for idle periods in the computers.
+	--- Day 23: Category Six ---
+	The droids have finished repairing as much of the ship as they can. Their report indicates that this was a Category 6 disaster - not because it was that bad, but because it destroyed the stockpile of Category 6 network cables as well as most of the ship's network infrastructure.
 
-	If a packet would be sent to address 255, the NAT receives it instead. The NAT remembers only the last packet it receives; that is, the data in each packet it receives overwrites the NAT's packet memory with the new packet's X and Y values.
+	You'll need to rebuild the network from scratch.
 
-	The NAT also monitors all computers on the network. If all computers have empty incoming packet queues and are continuously trying to receive packets without sending packets, the network is considered idle.
+	The computers on the network are standard Intcode computers that communicate by sending packets to each other. There are 50 of them in total, each running a copy of the same Network Interface Controller (NIC) software (your puzzle input). The computers have network addresses 0 through 49; when each computer boots up, it will request its network address via a single input instruction. Be sure to give each computer a unique network address.
 
-	Once the network is idle, the NAT sends only the last packet it received to address 0; this will cause the computers on the network to resume activity. In this way, the NAT can throttle power consumption of the network when the ship needs power in other areas.
+	Once a computer has received its network address, it will begin doing work and communicating over the network by sending and receiving packets. All packets contain two values named X and Y. Packets sent to a computer are queued by the recipient and read in the order they are received.
 
-	Monitor packets released to the computer at address 0 by the NAT. What is the first Y value delivered by the NAT to the computer at address 0 twice in a row?
-	
-	22391331247377 is too high.
-	
-	Graph http://webgraphviz.com
-digraph finite_state_machine {
-	rankdir=LR;
-	size="8,8"
-	node [shape = circle];
-	HULL_BREACH -> REINDEER_STABLES [ label = "east" ];
-	HULL_BREACH -> SCIENCE_LAB_polymer_work [ label = "west" ];
-	HULL_BREACH -> OBSERVATORY_mouse [ label = "south" ];
-	OBSERVATORY_mouse -> HULL_BREACH [ label = "north" ];
-	OBSERVATORY_mouse -> ENGINEERING_shell [ label = "east" ];
-	OBSERVATORY_mouse -> SICK_BAY_whirled_pease [ label = "west" ];
-	SICK_BAY_whirled_pease -> OBSERVATORY_mouse [ label = "east" ];
-	ENGINEERING_shell -> OBSERVATORY_mouse [ label = "west" ];
-	SCIENCE_LAB_polymer_work -> HULL_BREACH [ label = "east" ];
-	SCIENCE_LAB_polymer_work -> HOT_CHOC_FTN_molten_lava [ label = "north" ];
-	SCIENCE_LAB_polymer_work -> HOLODECK_antenna [ label = "west" ];
-	HOLODECK_antenna -> SCIENCE_LAB_polymer_work [ label = "east" ];
-	HOLODECK_antenna -> KITCHEN_cat6 [ label = "south" ];
-	HOLODECK_antenna -> WARP_DR_PHOTONS [ label = "west" ];
-	WARP_DR_photons -> HOLODECK_antenna [ label = "east" ];
-	HOLODECK_antenna -> WARP_DR_photons [ label = "west" ];
-	WARP_DR_photons -> NAVIGATION_escape_pod [ label = "south" ];
-	NAVIGATION_escape_pod -> WARP_DR_photons [ label = "north" ];
-	NAVIGATION_escape_pod -> SECURITY_CKPT [ label = "south" ];
-	SECURITY_CKPT -> NAVIGATION_escape_pod [ label = "north" ];
-	KITCHEN_cat6 -> HOLODECK_antenna [ label = "north" ];
-	SECURITY_CKPT -> PRESS_SENS_FLR [ label = "south" ];
-	PRESS_SENS_FLR -> SECURITY_CKPT [ label = "ejected_north" ];
-	HOT_CHOC_FTN_molten_lava -> SCIENCE_LAB_polymer_work [ label = "south" ];
-	HOT_CHOC_FTN_molten_lava -> GIFT_WRAP_CTR_inf_loop [ label = "north" ];
-	HOT_CHOC_FTN_molten_lava -> PASSAGES [ label = "west" ];
-	PASSAGES -> HOT_CHOC_FTN_molten_lava [ label = "east" ];
-	PASSAGES -> CORRIDOR [ label = "north" ];
-	PASSAGES -> CREW_QRTS_hypercube [ label = "south" ];
-	CREW_QRTS_hypercube -> PASSAGES [ label = "north" ];
-	CORRIDOR -> PASSAGES [ label = "south" ];
-	GIFT_WRAP_CTR_inf_loop -> HOT_CHOC_FTN_molten_lava [ label = "south" ];
-	GIFT_WRAP_CTR_inf_loop -> HALLWAY_semicond [ label = "west" ];
-	HALLWAY_semicond -> GIFT_WRAP_CTR_inf_loop [ label = "east" ];
-	REINDEER_STABLES -> HULL_BREACH [ label = "west" ];
-	REINDEER_STABLES -> STORAGE_emag [ label = "south" ];
-	STORAGE_emag -> REINDEER_STABLES [ label = "morth" ];
-	STORAGE_emag -> ARCADE_hologram [ label = "south" ];
-	ARCADE_hologram -> STORAGE_emag [ label = "north" ];
-}
-Items here:
-- hypercube (too light alone)
-- shell (too heavy alone)
-- whirled peas (too light alone)
-- spool of cat6  (too heavy alone)
-- mouse (too light alone)
-- antenna (too light alone)
-- hologram  (too heavy alone)
-- semiconductor (too light alone)
+	To send a packet to another computer, the NIC will use three output instructions that provide the destination address of the packet followed by its X and Y values. For example, three output instructions that provide the values 10, 20, 30 would send a packet with X=20 and Y=30 to the computer with address 10.
 
-Two or more
+	To receive a packet from another computer, the NIC will use an input instruction. If the incoming packet queue is empty, provide -1. Otherwise, provide the X value of the next packet; the computer will then use a second input instruction to receive the Y value for the same packet. Once both values of the packet are read in this way, the packet is removed from the queue.
 
-- hypercube (too light alone)
-- whirled peas (too light alone)
-- mouse (too light alone)
-- antenna (too light alone)
-- semiconductor (too light alone)
+	Note that these input and output instructions never block. Specifically, output instructions do not wait for the sent packet to be received - the computer might send multiple packets before receiving any. Similarly, input instructions do not wait for a packet to arrive - if no packet is waiting, input instructions should receive -1.
 
-00001                                                semiconductor	(too light)
-00010	                                   antenna                 	(too light)
-00011	                                   antenna + semiconductor 	(too light)
-00100                              mouse                           	(too light)
-00101                              mouse             semiconductor 	(too heavy)
-00110                              mouse + antenna                	(too heavy)
-00111	                           mouse + antenna + semiconductor 	(too heavy)
-01000	            whirled peas                                 	(too light)
-01001               whirled peas                   + semiconductor	(too heavy)
-01010               whirled peas         + antenna                  (too heavy)
-01011	            whirled peas         + antenna + semiconductor	(too heavy)
-01100	            whirled peas + mouse 							(too light)
-01101               whirled peas + mouse 		   + semiconductor	(too heavy)
-01110	            whirled peas + mouse + antenna 					(too light)
-01111	            whirled peas + mouse + antenna + semiconductor	(too heavy)
-01101	            whirled peas + mouse           + semiconductor	(too light)
-10000	hypercube                                                   (too light)
-10001	hypercube                                  + semiconductor	(too light)
-10011	hypercube                        + antenna + semiconductor	(too light)
-10100	hypercube                + mouse + antenna  + semiconductor	<<<<<<<<<<
-11000	hypercube + whirled peas                            		(too light)
-11001	hypercube + whirled peas                   + semiconductor	(too 
-11100	hypercube + whirled peas + mouse                    		(too light)
-11101	hypercube + whirled peas + mouse           + semiconductor	(too light)
-11110	hypercube + whirled peas + mouse + antenna          		(too heavy)
+	Boot up all 50 computers and attach them to your network. What is the Y value of the first packet sent to address 255?
 
-
-take
-drop
-
-A loud, robotic voice says "Analysis complete! You may proceed." and you enter the cockpit.
-Santa notices your small droid, looks puzzled for a moment, realizes what has happened, and radios your ship directly.
-"Oh, hello! You should be able to get in by typing 20483 on the keypad at the main airlock.
+	Your puzzle answer was 23886.
 
 """
 
@@ -152,7 +61,7 @@ class CPU:
 		""" 
 		"""
 		debug_loadIntCodeProgram = False
-		progName = "input.txt"
+		progName = "AOC2019D23input.txt"
 		if debug_loadIntCodeProgram:
 			print("Input File Name :",progName)
 		with open(progName, 'r') as filehandle:  
@@ -374,44 +283,42 @@ class CPU:
 				exit()
 		assert False,"Unexpected exit of the CPU"
 
-def allInputQueuesEmpty():
-	allQueuesEmpty = True
-	for cpuNumber in xrange(50):
-		if CPUs[cpuNumber].getInputQueueLength() >= 2:
-			return False
-	return True
-
 debugAll = False
 
-debug_main = True
-#debug_main = False
+#debug_main = True
+debug_main = False
 
-drop="drop"
-inv="inv"
-north="north"
-south="south"
-east="east"
-west="west"
-
-def getWriteString():
-	print(" ")
-	strToWrite = raw_input()
-	for chToWr in strToWrite:
-		myCPU.inputQueue.append(ord(chToWr))
-	myCPU.inputQueue.append(10)
-
-lastPacketValue = [-1,-1]
 # Spawn 50 CPUs
-myCPU= CPU()
-cpuRunning = True
-while cpuRunning:
-	myCPU.runCPU()
-	state = myCPU.getProgState()
-	if state == 'progDone':
-		cpuRunning = False
-	elif state == 'waitForInput':
-		getWriteString()
-	if state == 'outputReady':
-		#print("output is ready ")
-		print(str(unichr(myCPU.outputQueue[0])),end='')
-		del myCPU.outputQueue[0]
+CPUs = []
+cpuRunning = []
+for cpuNumber in xrange(50):
+	CPUs.append(CPU())
+	# Feed the CPU its node number
+	CPUs[cpuNumber].inputQueue.append(cpuNumber)
+	cpuRunning.append(True)
+while True in cpuRunning:
+	for cpuNumber in range(50):
+		CPUs[cpuNumber].runCPU()
+		state = CPUs[cpuNumber].getProgState()
+		if debug_main:
+			print("CPU Number",cpuNumber,"state",state)
+		if state == 'progDone':
+			cpuRunning[cpuNumber] = False
+		elif state == 'waitForInput' and CPUs[cpuNumber].getInputQueueLength() == 0:
+			CPUs[cpuNumber].inputQueue.append(-1)			# Nothing in the queue so send -1
+		if state == 'outputReady' and CPUs[cpuNumber].getOutputQueueLength() != 0:
+			if debug_main:
+				print("len of outputQueue =",len(CPUs[cpuNumber].outputQueue))
+			cpuNum = CPUs[cpuNumber].outputQueue[0]
+			if cpuNum < 255:
+				xVal = CPUs[cpuNumber].outputQueue[1]
+				yVal = CPUs[cpuNumber].outputQueue[2]
+				CPUs[cpuNum].inputQueue.append(xVal)
+				CPUs[cpuNum].inputQueue.append(yVal)
+				del CPUs[cpuNumber].outputQueue[2]
+				del CPUs[cpuNumber].outputQueue[1]
+				del CPUs[cpuNumber].outputQueue[0]
+			else:
+				print("yValue to node 255 is",CPUs[cpuNumber].outputQueue[2])
+				exit()
+				

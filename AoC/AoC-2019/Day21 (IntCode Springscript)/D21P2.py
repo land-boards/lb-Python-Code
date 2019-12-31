@@ -1,8 +1,8 @@
-# Pt2-AoCDay19.py
+# Pt2-AoCDay21.py
 # 2019 Advent of Code
-# Day 19
-# Part 1
-# https://adventofcode.com/2019/day/19
+# Day 21
+# Part 2
+# https://adventofcode.com/2019/day/21
 
 from __future__ import print_function
 
@@ -11,35 +11,19 @@ import sys
 import time
 
 """
---- Day 19: Tractor Beam ---
-Unsure of the state of Santa's ship, you borrowed the tractor beam technology from Triton. Time to test it out.
+--- Part Two ---
+There are many areas the springdroid can't reach. You flip through the manual and discover a way to increase its sensor range.
 
-When you're safely away from anything else, you activate the tractor beam, but nothing happens. It's hard to tell whether it's working if there's nothing to use it on. Fortunately, your ship's drone system can be configured to deploy a drone to specific coordinates and then check whether it's being pulled. There's even an Intcode program (your puzzle input) that gives you access to the drone system.
+Instead of ending your springcode program with WALK, use RUN. Doing this will enable extended sensor mode, capable of sensing ground up to nine tiles away. This data is available in five new read-only registers:
 
-The program uses two input instructions to request the X and Y position to which the drone should be deployed. Negative numbers are invalid and will confuse the drone; all numbers should be zero or positive.
+Register E indicates whether there is ground five tiles away.
+Register F indicates whether there is ground six tiles away.
+Register G indicates whether there is ground seven tiles away.
+Register H indicates whether there is ground eight tiles away.
+Register I indicates whether there is ground nine tiles away.
+All other functions remain the same.
 
-Then, the program will output whether the drone is stationary (0) or being pulled by something (1). For example, the coordinate X=0, Y=0 is directly in front of the tractor beam emitter, so the drone control program will always report 1 at that location.
-
-To better understand the tractor beam, it is important to get a good picture of the beam itself. For example, suppose you scan the 10x10 grid of points closest to the emitter:
-
-       X
-  0->      9
- 0#.........
- |.#........
- v..##......
-  ...###....
-  ....###...
-Y .....####.
-  ......####
-  ......####
-  .......###
- 9........##
-In this example, the number of points affected by the tractor beam in the 10x10 area closest to the emitter is 27.
-
-However, you'll need to scan a larger area to understand the shape of the beam. How many points are affected by the tractor beam in the 50x50 area closest to the emitter? (For each of X and Y, this will be 0 through 49.)
-
-1250 is too high
-
+Successfully survey the rest of the hull by ending your program with RUN. What amount of hull damage does the springdroid now report?
 """
 
 debugAll = False
@@ -50,23 +34,36 @@ class CPU:
 	Takes input value
 	Returns the output value
 	"""
-	progState = ''
-	programCounter = 0
-	relativeBaseRegister = 0
 	
+	def __init__(self):
+		self.programMemory = []
+		debug_initCPU = False
+		self.setProgState('initCPU')
+		self.programCounter = 0
+		self.relativeBaseRegister = 0
+		self.inputQueue = []
+		self.outputQueue = []
+		self.loadIntCodeProgram()
+		if debug_initCPU:
+			print("Memory Dump :",self.programMemory)
+		
 	def getProgState(self):
-		#print("getProgState: progState =",self.progState)
+		""" Returns the value of the program state variable
+		"""
+		#print("getProgState: self.progState =",self.progState)
 		return self.progState
 	
 	def setProgState(self,state):
+		""" Sets the value of the program state variable
+		"""
 		debug_setProgState = False
 		self.progState = state
 		if debug_setProgState:
-			print("setProgState: progState =",self.progState)
+			print("setProgState: self.progState =",self.progState)
 			
 	def intTo5DigitString(self, instruction):
-		"""Takes a variable length string and packs the front with zeros to make it
-		5 digits long.
+		"""Takes a variable length string and packs the front with zeros 
+		to make it 5 digits long.
 		"""
 		instrString=str(instruction)
 		if len(instrString) == 1:
@@ -82,11 +79,11 @@ class CPU:
 
 	def extractFieldsFromInstruction(self, instruction):
 		""" Take the Instruction and turn into opcode fields
-		ABCDE
+		ABCD
 		A = mode of 3rd parm
 		B = mode of 2nd parm
 		C = mode of 1st parm
-		DE = opcode
+		D = opcode
 		
 		:returns: [opcode,parm1,parm2,parm3]
 		"""
@@ -98,23 +95,10 @@ class CPU:
 		retVal=[opcode,parm1,parm2,parm3]
 		return retVal
 
-	def initCPU(self):
-		global inputQueue
-		global outputQueue
-		debug_initCPU = False
-		# state transitions are 
-		# 'inputReady' => 'waitingOnInput' => 
-		# 'inputReady' => 'waitingOnInput' => 
-		# 'progDone'
-		self.setProgState('initCPU')
-		self.programCounter = 0
-		self.relativeBaseRegister = 0
-		inputQueue = []
-		outputQueue = []
-		if debug_initCPU:
-			print("Memory Dump :",programMemory)
-		
 	def evalOpPair(self, currentOp):
+		""" Evaluages the two values for instruction like ADD, MUL
+		Returns the two values as a list pair
+		"""
 		debug_BranchEval = False
 		if debug_BranchEval:
 			print("         evalOpPair: currentOp =",currentOp)
@@ -123,19 +107,22 @@ class CPU:
 		return[val1,val2]
 	
 	def dealWithOp(self,currentOp,offset):
-		global programMemory
-		global programCounter
+		""" Single place to interpret opcodes which read program memory
+		Input the opcode field and the offset to the correct opcode field
+		"""
+		#global self.programMemory
+		#global self.programCounter
 		debug_dealWithOp = False
 		if currentOp[offset] == 0:	# position mode
-			val = programMemory[programMemory[self.programCounter+offset]]
+			val = self.programMemory[self.programMemory[self.programCounter+offset]]
 			if debug_dealWithOp:
 				print("         dealWithOp: Position Mode Parm",offset,"pos :",self.programCounter+offset,"value =",val)
 		elif currentOp[offset] == 1:	# immediate mode
-			val = programMemory[self.programCounter+offset]
+			val = self.programMemory[self.programCounter+offset]
 			if debug_dealWithOp:
 				print("         dealWithOp: Immediate Mode parm",offset,": value =",val)
 		elif currentOp[offset] == 2:	# relative mode
-			val = programMemory[programMemory[self.programCounter+offset] + self.relativeBaseRegister]
+			val = self.programMemory[self.programMemory[self.programCounter+offset] + self.relativeBaseRegister]
 			if debug_dealWithOp:
 				print("         dealWithOp: Relative Mode parm",offset,": value =",val)
 		else:
@@ -143,30 +130,27 @@ class CPU:
 		return val
 	
 	def writeOpResult(self,opcode,opOffset,val):
-		global programMemory
-		global programCounter
+		#global self.programMemory
+		#global self.programCounter
 		debug_writeEqLtResult = False
 		if opcode[opOffset] == 0:
-			programMemory[programMemory[self.programCounter+opOffset]] = val
+			self.programMemory[self.programMemory[self.programCounter+opOffset]] = val
 			if debug_writeEqLtResult:
 				print("         output position mode comparison val =",val)
 		elif opcode[opOffset] == 1:
-			programMemory[self.programCounter+opOffset] = val
+			self.programMemory[self.programCounter+opOffset] = val
 			if debug_writeEqLtResult:
 				print("         output immediate mode comparison val =",val,)
 		elif opcode[opOffset] == 2:
-			programMemory[programMemory[self.programCounter+opOffset] + self.relativeBaseRegister] = val
+			self.programMemory[self.programMemory[self.programCounter+opOffset] + self.relativeBaseRegister] = val
 			if debug_writeEqLtResult:
 				print("         output relative mode comparison val =",val,)
 	
 	def runCPU(self):
 #		debug_runCPU = True
 		debug_runCPU = False
-		global programMemory
-		global inputQueue
-		global outputQueue
 		while(1):
-			currentOp = self.extractFieldsFromInstruction(programMemory[self.programCounter])
+			currentOp = self.extractFieldsFromInstruction(self.programMemory[self.programCounter])
 			#self.getProgState()
 			if currentOp[0] == 1:		# Addition Operator
 				if debug_runCPU:
@@ -189,18 +173,18 @@ class CPU:
 #				debug_CPUInput = True
 				if debug_runCPU or debug_CPUInput:
 					print("PC =",self.programCounter,"INP Opcode = ",currentOp,end='')
-				if len(inputQueue) == 0:
+				if len(self.inputQueue) == 0:
 					if debug_runCPU or debug_CPUInput:
 						print(" - Returning to main for input value")
 					self.setProgState('waitForInput')
 					return
 				if debug_runCPU or debug_CPUInput:
-					print(" value =",inputQueue[0])
-				result = inputQueue[0]
+					print(" value =",self.inputQueue[0])
+				result = self.inputQueue[0]
 				self.writeOpResult(currentOp,1,result)
-				del inputQueue[0]	 # Empty the input queue
-				if len(inputQueue) != 0:
-					assert False,"Still stuff in output queue"
+				del self.inputQueue[0]	 # Empty the input queue
+				# if len(self.inputQueue) != 0:
+					# assert False,"Still stuff in input queue"
 				self.setProgState('inputWasRead')
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 4:		# Output Operator
@@ -210,7 +194,7 @@ class CPU:
 				if debug_runCPU or debug_CPUOutput:
 					print("PC =",self.programCounter,"OUT Opcode = ",currentOp,end='')
 					print(" value =",val1)
-				outputQueue.append(val1)
+				self.outputQueue.append(val1)
 				self.programCounter = self.programCounter + 2
 				self.setProgState('outputReady')
 				return
@@ -234,7 +218,7 @@ class CPU:
 						print("PC =",self.programCounter,"JIT currentOp",currentOp,"Branch not taken")
 			elif currentOp[0] == 7:		# Evaluate if less-than
 				valPair = self.evalOpPair(currentOp)
-				pos = programMemory[self.programCounter+3]
+				pos = self.programMemory[self.programCounter+3]
 				if valPair[0] < valPair[1]:
 					result = 1
 					if debug_runCPU:
@@ -247,7 +231,7 @@ class CPU:
 				self.programCounter = self.programCounter + 4
 			elif currentOp[0] == 8:		# Evaluate if equal
 				valPair = self.evalOpPair(currentOp)
-				pos = programMemory[self.programCounter+3]
+				pos = self.programMemory[self.programCounter+3]
 				if valPair[0] == valPair[1]:
 					result = 1
 					if debug_runCPU:
@@ -263,7 +247,7 @@ class CPU:
 					print("PC =",self.programCounter,"SBR Opcode = ",currentOp," ",end='')
 				self.relativeBaseRegister += self.dealWithOp(currentOp,1)
 				if debug_runCPU:
-					print("relativeBaseRegister =",self.relativeBaseRegister)
+					print("self.relativeBaseRegister =",self.relativeBaseRegister)
 				self.programCounter = self.programCounter + 2
 			elif currentOp[0] == 99:
 				if debug_runCPU:
@@ -276,67 +260,75 @@ class CPU:
 				exit()
 		assert False,"Unexpected exit of the CPU"
 
-programMemory = []
+	def loadIntCodeProgram(self):
+		""" 
+		"""
+		#global self.programMemory
+		#global self.inputQueue
+		#global self.outputQueue
+	#	debug_loadIntCodeProgram = True
+		debug_loadIntCodeProgram = False
+		# Load program memory from file
+		progName = "AOC2019D21input.txt"
+		if debug_loadIntCodeProgram:
+			print("Input File Name :",progName)
+		with open(progName, 'r') as filehandle:  
+			inLine = filehandle.readline()
+			self.programMemory = map(int, inLine.split(','))
+		# pad out past end
+		for i in range(10000):
+			self.programMemory.append(0)
+		if debug_loadIntCodeProgram:
+			print(self.programMemory)
 
-def runToEnd(xVal,yVal):
-	""" runToEnd(xVal,yVal)
-	Returns the output from the CPU
-	"""
-	global programMemory
-	global inputQueue
-	global outputQueue
-	debug_runToEnd = False
-#	debug_runToEnd = False
-	# Load program memory from file
-	progName = "input.txt"
-	if debug_runToEnd:
-		print("Input File Name :",progName)
-	with open(progName, 'r') as filehandle:  
-		inLine = filehandle.readline()
-		programMemory = map(int, inLine.split(','))
-	# pad out past end
-	for i in range(100):
-		programMemory.append(0)
-	if debug_runToEnd:
-		print(programMemory)
-	myCPU = CPU()
-	myCPU.initCPU()
-	if debug_runToEnd:
-		print("progState :",myCPU.getProgState())
-	myCPU.runCPU()
-	if debug_runToEnd:
-		print("progState :",myCPU.getProgState())
-	inputQueue.append(xVal)
-	if debug_runToEnd:
-		print("inputQueue",inputQueue)
-	myCPU.runCPU()
-	if debug_runToEnd:
-		print("progState :",myCPU.getProgState())
-	inputQueue.append(yVal)
-	if debug_runToEnd:
-		print("inputQueue",inputQueue)
-	myCPU.runCPU()
-	if debug_runToEnd:
-		print("progState :",myCPU.getProgState())
-	if debug_runToEnd:
-		print("outputQueue",outputQueue)
-	retVal = outputQueue[0]
-	del outputQueue[0]
-	myCPU.runCPU()
-	if debug_runToEnd:
-		print("progState :",myCPU.getProgState())
-	return retVal
+T_Register = False
+J_Register = False
+
+TileA_Value = False
+TileB_Value = False
+TileC_Value = False
+TileD_Value = False
+
+myCPU = CPU()
 
 debug_main = True
 #debug_main = False
 
-inTractorBeamCount = 0
+def uploadSpringScriptProgram(myCPU,springScriptProgram):
+	for line in springScriptProgram:
+		for charOut in line:
+			myCPU.inputQueue.append(ord(charOut))
+		myCPU.inputQueue.append(10)
+	#print("uploadSpringScriptProgram: myCPU.inputQueue",myCPU.inputQueue)
 
-for yVal in range(0,50):
-	rowVal = []
-	for xVal in range(0,50):
-		# if debug_main:
-			# print("main: Providing input val",xVal,yVal)
-		inTractorBeamCount += runToEnd(xVal,yVal)
-		
-print("inTractorBeamCount",inTractorBeamCount)
+springScriptProgram = []
+springScriptProgram.append('NOT A J')
+springScriptProgram.append('NOT C T')
+springScriptProgram.append('AND H T')
+springScriptProgram.append('OR T J')
+springScriptProgram.append('NOT B T')
+springScriptProgram.append('AND A T')
+springScriptProgram.append('AND C T')
+springScriptProgram.append('OR T J')
+springScriptProgram.append('AND D J')
+springScriptProgram.append('RUN')
+
+programLoaded = False
+progRunning = True
+print("Running Springscript Program")
+while progRunning:
+	myCPU.runCPU()
+	state = myCPU.getProgState()
+	#print(state)
+	if state == 'outputReady':
+		try:
+			print(str(unichr(myCPU.outputQueue[0])),end='')
+		except:
+			print(myCPU.outputQueue[0])
+		del myCPU.outputQueue[0]
+	elif state == 'waitForInput' and not programLoaded:
+		uploadSpringScriptProgram(myCPU,springScriptProgram)
+		programLoaded = True
+	elif state == 'progDone':
+		print("Program done")
+		progRunning = False

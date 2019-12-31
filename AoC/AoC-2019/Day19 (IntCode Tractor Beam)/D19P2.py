@@ -1,8 +1,8 @@
-# Pt1-AoCDay17.py
+# Pt2-AoCDay19.py
 # 2019 Advent of Code
-# Day 17
-# Part 1
-# https://adventofcode.com/2019/day/17
+# Day 19
+# Part 
+# https://adventofcode.com/2019/day/19
 
 from __future__ import print_function
 
@@ -11,46 +11,56 @@ import sys
 import time
 
 """
---- Day 17: Set and Forget ---
-An early warning system detects an incoming solar flare and automatically activates the ship's electromagnetic shield. Unfortunately, this has cut off the Wi-Fi for many small robots that, unaware of the impending danger, are now trapped on exterior scaffolding on the unsafe side of the shield. To rescue them, you'll have to act quickly!
+--- Part Two ---
+You aren't sure how large Santa's ship is. You aren't even sure if you'll need to use this thing on Santa's ship, but it doesn't hurt to be prepared. You figure Santa's ship might fit in a 100x100 square.
 
-The only tools at your disposal are some wired cameras and a small vacuum robot currently asleep at its charging station. The video quality is poor, but the vacuum robot has a needlessly bright LED that makes it easy to spot no matter where it is.
+The beam gets wider as it travels away from the emitter; you'll need to be a minimum distance away to fit a square of that size into the beam fully. (Don't rotate the square; it should be aligned to the same axes as the drone grid.)
 
-An Intcode program, the Aft Scaffolding Control and Information Interface (ASCII, your puzzle input), provides access to the cameras and the vacuum robot. Currently, because the vacuum robot is asleep, you can only access the cameras.
+For example, suppose you have the following tractor beam readings:
 
-Running the ASCII program on your Intcode computer will provide the current view of the scaffolds. This is output, purely coincidentally, as ASCII code: 35 means #, 46 means ., 10 starts a new line of output below the current one, and so on. (Within a line, characters are drawn left-to-right.)
+#.......................................
+.#......................................
+..##....................................
+...###..................................
+....###.................................
+.....####...............................
+......#####.............................
+......######............................
+.......#######..........................
+........########........................
+.........#########......................
+..........#########.....................
+...........##########...................
+...........############.................
+............############................
+.............#############..............
+..............##############............
+...............###############..........
+................###############.........
+................#################.......
+.................########OOOOOOOOOO.....
+..................#######OOOOOOOOOO#....
+...................######OOOOOOOOOO###..
+....................#####OOOOOOOOOO#####
+.....................####OOOOOOOOOO#####
+.....................####OOOOOOOOOO#####
+......................###OOOOOOOOOO#####
+.......................##OOOOOOOOOO#####
+........................#OOOOOOOOOO#####
+.........................OOOOOOOOOO#####
+..........................##############
+..........................##############
+...........................#############
+............................############
+.............................###########
+In this example, the 10x10 square closest to the emitter that fits entirely within the tractor beam has been marked O. Within it, the point closest to the emitter (the only highlighted O) is at X=25, Y=20.
 
-In the camera output, # represents a scaffold and . represents open space. The vacuum robot is visible as ^, v, <, or > depending on whether it is facing up, down, left, or right respectively. When drawn like this, the vacuum robot is always on a scaffold; if the vacuum robot ever walks off of a scaffold and begins tumbling through space uncontrollably, it will instead be visible as X.
+Find the 100x100 square closest to the emitter that fits entirely within the tractor beam; within that square, find the point closest to the emitter. What value do you get if you take that point's X coordinate, multiply it by 10000, then add the point's Y coordinate? (In the example above, this would be 250020.)
 
-In general, the scaffold forms a path, but it sometimes loops back onto itself. For example, suppose you can see the following view from the cameras:
+Your puzzle answer was 9290812.
 
-..#..........
-..#..........
-#######...###
-#.#...#...#.#
-#############
-..#...#...#..
-..#####...^..
-Here, the vacuum robot, ^ is facing up and sitting at one end of the scaffold near the bottom-right of the image. The scaffold continues up, loops across itself several times, and ends at the top-left of the image.
+Both parts of this puzzle are complete! They provide two gold stars: **
 
-The first step is to calibrate the cameras by getting the alignment parameters of some well-defined points. Locate all scaffold intersections; for each, its alignment parameter is the distance between its left edge and the left edge of the view multiplied by the distance between its top edge and the top edge of the view. Here, the intersections from the above image are marked O:
-
-..#..........
-..#..........
-##O####...###
-#.#...#...#.#
-##O###O###O##
-..#...#...#..
-..#####...^..
-For these intersections:
-
-The top-left intersection is 2 units from the left of the image and 2 units from the top of the image, so its alignment parameter is 2 * 2 = 4.
-The bottom-left intersection is 2 units from the left and 4 units from the top, so its alignment parameter is 2 * 4 = 8.
-The bottom-middle intersection is 6 from the left and 4 from the top, so its alignment parameter is 24.
-The bottom-right intersection's alignment parameter is 40.
-To calibrate the cameras, you need the sum of the alignment parameters. In the above example, this is 76.
-
-Run your ASCII program. What is the sum of the alignment parameters for the scaffold intersections?
 """
 
 debugAll = False
@@ -289,65 +299,141 @@ class CPU:
 
 programMemory = []
 
-def loadIntCodeProgram():
-	""" 
+def runToEnd(xVal,yVal):
+	""" runToEnd(xVal,yVal)
+	Returns the output from the CPU
 	"""
 	global programMemory
 	global inputQueue
 	global outputQueue
-#	debug_loadIntCodeProgram = True
-	debug_loadIntCodeProgram = False
+	debug_runToEnd = False
+#	debug_runToEnd = False
 	# Load program memory from file
-	progName = "input.txt"
-	if debug_loadIntCodeProgram:
+	progName = "AOC2019D19input.txt"
+	if debug_runToEnd:
 		print("Input File Name :",progName)
 	with open(progName, 'r') as filehandle:  
 		inLine = filehandle.readline()
 		programMemory = map(int, inLine.split(','))
 	# pad out past end
-	for i in range(10000):
+	for i in range(100):
 		programMemory.append(0)
-	if debug_loadIntCodeProgram:
+	if debug_runToEnd:
 		print(programMemory)
-
-loadIntCodeProgram()
-myCPU = CPU()
-myCPU.initCPU()
+	myCPU = CPU()
+	myCPU.initCPU()
+	if debug_runToEnd:
+		print("progState :",myCPU.getProgState())
+	myCPU.runCPU()
+	if debug_runToEnd:
+		print("progState :",myCPU.getProgState())
+	inputQueue.append(xVal)
+	if debug_runToEnd:
+		print("inputQueue",inputQueue)
+	myCPU.runCPU()
+	if debug_runToEnd:
+		print("progState :",myCPU.getProgState())
+	inputQueue.append(yVal)
+	if debug_runToEnd:
+		print("inputQueue",inputQueue)
+	myCPU.runCPU()
+	if debug_runToEnd:
+		print("progState :",myCPU.getProgState())
+	if debug_runToEnd:
+		print("outputQueue",outputQueue)
+	retVal = outputQueue[0]
+	del outputQueue[0]
+	myCPU.runCPU()
+	if debug_runToEnd:
+		print("progState :",myCPU.getProgState())
+	return retVal
 
 debug_main = True
 #debug_main = False
 
-inList = []
-inRow = []
-while myCPU.getProgState() != 'progDone':
-	#print("progState",myCPU.getProgState())
-	myCPU.runCPU()
-	#print("progState",myCPU.getProgState())
-	if myCPU.getProgState() == 'outputReady':
-		intOut = outputQueue[0]
-		retVal = (str(unichr(intOut)))
-		print(retVal,end='')
-		del outputQueue[0]
-		if intOut == 10:	# enter
-			if inRow != []:
-				inList.append(inRow)
-			inRow = []
-		else:				# crosshatch
-			inRow.append(intOut)
+inTractorBeamCount = 0
 
-#print(inList)
+# print("012345678901234567890123456789012345678901234567890123456789012345678901234")
+# for yVal in range(45,50):
+	# rowVal = []
+	# for xVal in range(0,50):
+		# if debug_main:
+			# print("main: Providing input val",xVal,yVal)
+		# val = runToEnd(xVal,yVal)
+		# inTractorBeamCount += val
+		# if val == 1:
+			# print("o",end='')
+		# else:
+			# print(".",end='')
+	# print(" < ",yVal)
+		
+# print("inTractorBeamCount",inTractorBeamCount)
 
-locs = []
-for yVal in range(1,len(inList) - 2):
-	for xVal in range(1,len(inList[0])-2):
-		#print("x,y",xVal,yVal)
-		if inList[yVal][xVal] == 35:
-			if inList[yVal-1][xVal] == 35 and inList[yVal+1][xVal] == 35 and inList[yVal][xVal-1] == 35 and inList[yVal][xVal+1] == 35:
-				locs.append([xVal,yVal])
-#assert False,"Hey"
-print(locs)
-sum = 0
-for loc in locs:
-	product = loc[0] * loc[1]
-	sum += product
-print("sum",sum)
+yVal = 812
+leftX1 = 9999
+rightX1 = 0
+leftCount = (1017 * yVal) / 1000
+rightCount = (1270 * yVal) / 1000
+print("012345678901234567890123456789012345678901234567890123456789012345678901234")
+for xVal in range(leftCount,leftCount+5):
+	# if debug_main:
+		# print("main: Providing input val",xVal,yVal)
+	val = runToEnd(xVal,yVal)
+	if val == 1:
+		print("o",end='')
+		if xVal < leftX1:
+			leftX1 = xVal
+	else:
+		print(".",end='')
+print(" < ",yVal)
+
+for xVal in range(rightCount-5,rightCount+2):
+	# if debug_main:
+		# print("main: Providing input val",xVal,yVal)
+	val = runToEnd(xVal,yVal)
+	if val == 1:
+		print("o",end='')
+		if xVal > rightX1:
+			rightX1 = xVal
+	else:
+		print(".",end='')
+print(" < ",yVal)
+
+print("leftX1",leftX1,"yVal",yVal)
+print("rightX1",rightX1,"yVal",yVal)
+print("delta",rightX1-leftX1)
+
+yVal2 = yVal + 99
+leftX2 = 9999
+rightX2 = 0
+leftCount = (1017 * yVal2) / 1000
+rightCount = (1270 * yVal2) / 1000
+print("012345678901234567890123456789012345678901234567890123456789012345678901234")
+for xVal in range(leftCount,leftCount+5):
+	# if debug_main:
+		# print("main: Providing input val",xVal,yVal2)
+	val = runToEnd(xVal,yVal2)
+	if val == 1:
+		print("o",end='')
+		if xVal < leftX2:
+			leftX2 = xVal
+	else:
+		print(".",end='')
+print(" < ",yVal2)
+
+for xVal in range(rightCount-5,rightCount):
+	# if debug_main:
+		# print("main: Providing input val",xVal,yVal2)
+	val = runToEnd(xVal,yVal2)
+	if val == 1:
+		print("o",end='')
+		if xVal > rightX2:
+			rightX2 = xVal
+	else:
+		print(".",end='')
+print(" < ",yVal2)
+
+print("leftX2",leftX2,"yVal2",yVal2)
+print("rightX2",rightX2,"yVal2",yVal2)
+print("delta",rightX1-leftX2+1)
+print("result",10000*leftX2+yVal)

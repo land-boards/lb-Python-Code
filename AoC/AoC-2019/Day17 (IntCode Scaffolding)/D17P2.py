@@ -301,7 +301,7 @@ class CPU:
 	#	debug_loadIntCodeProgram = True
 		debug_loadIntCodeProgram = False
 		# Load program memory from file
-		progName = "input.txt"
+		progName = "AOC2019D17input.txt"
 		if debug_loadIntCodeProgram:
 			print("Input File Name :",progName)
 		with open(progName, 'r') as filehandle:  

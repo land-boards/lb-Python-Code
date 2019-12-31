@@ -9,7 +9,7 @@
 """
 from __future__ import print_function
 
-#fileName = 'input.txt'
+#fileName = 'AOC2019D14input.txt'
 fileName = 'example_1_1.txt'
 #fileName = 'example_1_2.txt'
 #fileName = 'example_1_3.txt'
