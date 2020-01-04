@@ -5,6 +5,8 @@
 
 == Cards ==
 
+<img src="http://land-boards.com/blwiki/images/8/80/P1060894-crop-720px.jpg"></img>
+
 * [http://land-boards.com/blwiki/index.php?title=ESP32-I2C-HUB Land Boards ESP32-I2C-HUB Wiki Page] 
 * [http://land-boards.com/blwiki/index.php?title=ESP-32-VGA Land Boards ESP-32-VGA Wiki Page] 
 
