@@ -1,3 +1,7 @@
+<a href="https://www.tindie.com/stores/land_boards/" >
+<img src="http://land-boards.com/tindie/tindie-larges-v2.png" alt="Tindie Logo">
+</img></a> 
+
 == land-boards MicroPython Code ==
 
 * These are our [http://www.micropython.org/ MicroPython] Source Code/Library files.
