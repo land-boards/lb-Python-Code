@@ -5,8 +5,8 @@
 
 == Cards ==
 
-* [http://land-boards.com/blwiki/index.php?title=ESP32 Land Boards ESP32 Wiki Page] 
-* [http://land-boards.com/blwiki/index.php?title=STM32F405_PyBoard_Clone Land Boards PyBoard Clone Wiki Page]
+* [http://land-boards.com/blwiki/index.php?title=ESP32-I2C-HUB Land Boards ESP32-I2C-HUB Wiki Page] 
+* [http://land-boards.com/blwiki/index.php?title=ESP-32-VGA Land Boards ESP-32-VGA Wiki Page] 
 
 == Ownership ==
 
