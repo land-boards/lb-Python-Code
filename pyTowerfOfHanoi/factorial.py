@@ -10,4 +10,3 @@ def factorial(val):
 		return val * factorial(val-1)
 
 print(factorial(5))
-
