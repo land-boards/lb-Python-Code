@@ -7,6 +7,7 @@ def factorial(val):
 	elif val < 2:		# base case
 		return 1
 	else:
+		print("returning :",(val * factorial(val-1)))
 		return val * factorial(val-1)
 
 print(factorial(5))
