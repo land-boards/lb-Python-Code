@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """
-==================
-dgReadCSVtoList.py
-==================
+====================
+dgReadCSVtoListTK.py
+====================
 
 Functions to read a CSV file into a list and return the list.
 
@@ -37,20 +37,18 @@ from builtins import object
 import os
 import datetime
 import time
-import pygtk
 import sys
-pygtk.require('2.0')
 
-sys.path.append('C:\\Python27\\Lib\\site-packages\\dgCommonModules')
+sys.path.append('C:\\Python27\\Lib\\site-packages\\dgCommonModules\\TKDGCommon')
 
 try:
-	from dgProgDefaults import *
+	from dgProgDefaultsTK import *
 except:
-	print('Need to load dgProgDefaults into site-packages')
+	print('Need to load dgProgDefaultsTK into site-packages')
 try:
-	from dgCheckFileFresh import *
+	from dgCheckFileFreshTK import *
 except:
-	print('Need to load dgCheckFileFresh into site-packages')
+	print('Need to load dgCheckFileFreshTK into site-packages')
 
 lastPathFileName = ''
 
@@ -58,21 +56,11 @@ verboseMode = False
 freshFlag = False
 useSniffer = False
 
-import gtk
-# Check for new pygtk: this is new class in PyGtk 2.4
-if gtk.pygtk_version < (2,3,90):
-	print("PyGtk 2.3.90 or later required for this example")
-	raise SystemExit
-
 def errorDialog(errorString):
 	"""
 	Prints an error message as a gtk style dialog box
 	"""
-	message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
-	message.set_markup(errorString)
-	message.run()		# Display the dialog box and hang around waiting for the "OK" button
-	message.destroy()	# Takes down the dialog box
-	return
+	messagebox.showerror("Error", errorString)
 
 class ReadCSVtoList(object):
 	def findOpenReadCSV(self, defaultPath='', dialogHeader='Open File'):

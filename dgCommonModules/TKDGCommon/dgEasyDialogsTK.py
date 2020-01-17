@@ -1,12 +1,5 @@
 from __future__ import print_function
-import pygtk
-pygtk.require('2.0')
-
-import gtk
-# Check for new pygtk: this is new class in PyGtk 2.4
-if gtk.pygtk_version < (2,3,90):
-	print("PyGtk 2.3.90 or later required for this example")
-	raise SystemExit
+import Tkinter
 
 def errorDialog(errorString):
 	"""errorDialog(errorString)

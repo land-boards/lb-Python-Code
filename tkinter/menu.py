@@ -12,12 +12,12 @@ def browse_to_folder():
 	print (dirname)
 
 def open_file():
-	filename = filedialog.askopenfilename()
-	print (dirname)
+	filename = filedialog.askopenfilename(title = "Select file")
+	print (filename)
 
 def save_as_file():
 	filename = filedialog.asksaveasfilename()
-	print (dirname)
+	print (filename)
 
 root = Tk()
 menubar = Menu(root)
@@ -25,7 +25,8 @@ filemenu = Menu(menubar, tearoff = 0)
 # filemenu.add_command(label="New", command = donothing)
 filemenu.add_command(label = "Select Folder", command = browse_to_folder)
 # filemenu.add_command(label = "Save", command = donothing)
-filemenu.add_command(label = "Save as...", command = save_as_file)
+filemenu.add_command(label = "Open", command = open_file)
+#filemenu.add_command(label = "Save as...", command = save_as_file)
 # filemenu.add_command(label = "Close", command = donothing)
 
 filemenu.add_separator()

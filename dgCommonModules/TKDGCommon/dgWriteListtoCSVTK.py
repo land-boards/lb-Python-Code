@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """
-===================
-dgWriteListtoCSV.py
-===================
+=====================
+dgWriteListtoCSVTK.py
+=====================
 
 Functions to write a list to a CSV file.
 
@@ -24,33 +24,21 @@ from builtins import object
 import os
 import datetime
 import time
-import pygtk
 import sys
-pygtk.require('2.0')
+from tkinter import *
+from tkinter import messagebox
 
-sys.path.append('C:\\Users\\DGilliland\\Documents\\Subversion\\python\\dgCommonModules')
-sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules')
-from dgProgDefaults import *
-
-import gtk
-
-# Check for new pygtk: this is new class in PyGtk 2.4
-if gtk.pygtk_version < (2,3,90):
-	print("PyGtk 2.3.90 or later required for this example")
-	raise SystemExit
+sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules\\TKDGCommon')
+from dgProgDefaultsTK import *
 
 verboseMode = False
 outFileNameAppendage = ''
 
 def errorDialog(errorString):
-	"""
-	Prints an error message as a gtk style dialog box
-	"""
-	message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
-	message.set_markup(errorString)
-	message.run()		# Display the dialog box and hang around waiting for the "OK" button
-	message.destroy()	# Takes down the dialog box
-	return
+	messagebox.showerror("Error", errorString)
+
+def infoBox(msgString):
+	messagebox.showinfo("Information",msgString)
 
 class WriteListtoCSV(object):
 	"""This is the class that has the methods which are used to write out a CSV list.
@@ -63,24 +51,7 @@ class WriteListtoCSV(object):
 		:return: the name of the output csv file
 		
 		"""
-		dialog = gtk.FileChooserDialog(title="Save as", 
-			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
-		filter = gtk.FileFilter() 
-		if defaultPath != '':
-			dialog.set_current_folder(defaultPath)
-		filter.set_name("*.csv")
-		filter.add_pattern("*.csv") # whats the pattern for a folder 
-		dialog.add_filter(filter)
-		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-			retFileName = dialog.get_filename()
-			dialog.destroy()
-			return(retFileName)
-		elif response == gtk.RESPONSE_CANCEL: 
-			print('Closed, no files selected')
-		dialog.destroy()
-		exit()
+		filedialog.asksaveasfilename(initialdir = defaultPath,title = "Select file",filetypes = (("csv files","*.scv"),("all files","*.*")))
 	
 	def writeOutList(self, outPathFilename, header, csvListToWrite):
 		"""Write out the csvListToWrite

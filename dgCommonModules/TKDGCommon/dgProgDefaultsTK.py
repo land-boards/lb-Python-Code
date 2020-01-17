@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """
-=================
-dgProgDefaults.py
-=================
+===================
+dgProgDefaultsTK.py
+===================
 
 This method handles program defaults.
 
@@ -41,12 +41,8 @@ import string
 import csv
 import os
 
-# import pygtk
-# pygtk.require('2.0')
 
-# global program options
-
-dgProgDefaultsModuleName = 'dgProgDefaults.py'
+dgProgDefaultsModuleName = 'dgProgDefaultsTK.py'
 progVer = '0.0.1'
 
 defaultsFileNamePath = '.\\Defaults.csv'
@@ -65,23 +61,23 @@ class HandleDefault(object):
 		defaultFilePath = os.getcwd()
 		defaultsFileNamePath = defaultFilePath + '\\Defaults.csv'
 		if verboseMode:
-			print('set defaultsFileNamePath to', defaultsFileNamePath)
+			print('initDefaults: set defaultsFileNamePath to', defaultsFileNamePath)
 		if self.ifExistsDefaults() == True:
 			detailParmList = self.loadDefaults()
 			if verboseMode:
-				print('loaded defaults file')
+				print('initDefaults: loaded defaults file')
 		else:
 			if verboseMode:
-				print('defaults file did not exist')
+				print('initDefaults: defaults file did not exist')
 			self.createDefaults()
 			if verboseMode:
-				print('created defaults file')
+				print('initDefaults: created defaults file')
 			detailParmList = self.loadDefaults()
 			if verboseMode:
-				print('loaded defaults file')
+				print('initDefaults: loaded defaults file')
 		if self.getKeyVal('DEFAULT_PATH') == False:
 			if verboseMode:
-				print('There was no default path set')
+				print('initDefaults: There was no default path set')
 			self.storeKeyValuePair('DEFAULT_PATH',defaultPath)
 		return True
 		
@@ -91,7 +87,7 @@ class HandleDefault(object):
 
 		Load the defaults file
 		"""
-		defaultFileHdl = open(defaultsFileNamePath, 'rb')
+		defaultFileHdl = open(defaultsFileNamePath, 'r')
 		defaultListItem = csv.reader(defaultFileHdl)
 		defaultList = []
 		for row in defaultListItem:
@@ -105,12 +101,13 @@ class HandleDefault(object):
 		
 		Feed it a key name and it returns the corresponding key value
 		"""
+		global verboseMode
 		#print 'getKeyVal: got here'
 		if self.ifExistsDefaults() == False:
 			if verboseMode:
-				print('getKeyVal: had to creat defaults')
+				print('getKeyVal: had to create defaults')
 			self.createDefaults()
-		defaultFileHdl = open(defaultsFileNamePath, 'rb')
+		defaultFileHdl = open(defaultsFileNamePath, 'r')
 		defaultListItem = csv.reader(defaultFileHdl)
 		defaultList = []
 		for row in defaultListItem:
@@ -126,22 +123,23 @@ class HandleDefault(object):
 		if verboseMode:
 			print('storeKeyValuePair: storing value =', valueToWrite, 'to key =', keyName)
 		if self.ifExistsDefaults() == False:
-			print('had to create defaults')
+			print('storeKeyValuePair: had to create defaults')
 			self.createDefaults()
-		defaultFileHdl = open(defaultsFileNamePath, 'rb')
+		defaultFileHdl = open(defaultsFileNamePath, 'r')
 		defaultListItem = csv.reader(defaultFileHdl)
 		newList = []
 		foundKey = False
 		for item in defaultListItem:
 			if verboseMode:
-				print('item',item)
+				print('storeKeyValuePair: item',item)
 			newLine = []
 			if item[0] == keyName:
 				newLine.append(item[0])
 				newLine.append(valueToWrite)
 				foundKey = True
 				if verboseMode:
-					print('found the key',foundKey)
+					print('storeKeyValuePair: found the key',foundKey)
+				break
 			else:
 				newLine = item
 			newList.append(newLine)
@@ -161,8 +159,8 @@ class HandleDefault(object):
 		Store the key name and key value pair list to the defaults file
 		"""
 		if verboseMode:
-			print('storing list', defaultList)
-		defaultFileHdl = open(defaultsFileNamePath, 'wb')
+			print('storeDefaults: storing list', defaultList)
+		defaultFileHdl = open(defaultsFileNamePath, 'w')
 		defaultFile = csv.writer(defaultFileHdl)
 		defaultFile.writerows(defaultList)
 		return True
@@ -173,7 +171,7 @@ class HandleDefault(object):
 		
 		Create the defaults file with a single pair
 		"""
-		defaultFileHdl = open(defaultsFileNamePath, 'wb')
+		defaultFileHdl = open(defaultsFileNamePath, 'w')
 		defaultFile = csv.writer(defaultFileHdl)
 		defaultArray = ['DEFAULT_PATH','.']
 		defaultFile.writerow(defaultArray)
