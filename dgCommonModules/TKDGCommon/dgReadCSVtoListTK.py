@@ -49,6 +49,10 @@ try:
 	from dgCheckFileFreshTK import *
 except:
 	print('Need to load dgCheckFileFreshTK into site-packages')
+	
+from tkinter import filedialog
+from tkinter import *
+from tkinter import messagebox
 
 lastPathFileName = ''
 
@@ -57,10 +61,10 @@ freshFlag = False
 useSniffer = False
 
 def errorDialog(errorString):
-	"""
-	Prints an error message as a gtk style dialog box
-	"""
 	messagebox.showerror("Error", errorString)
+
+def infoBox(msgString):
+	messagebox.showinfo("pyCSVtoMWTable",msgString)
 
 class ReadCSVtoList(object):
 	def findOpenReadCSV(self, defaultPath='', dialogHeader='Open File'):
@@ -109,28 +113,8 @@ class ReadCSVtoList(object):
 		
 		Uses filechooser to browse for a CSV file.		
 		"""
-		dialog = gtk.FileChooserDialog(bomFileString,
-													None,
-													gtk.FILE_CHOOSER_ACTION_OPEN,
-													(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-													gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-		dialog.set_default_response(gtk.RESPONSE_OK)
-
-		dialog.set_current_folder(defaultPath)
-		
-		filter = gtk.FileFilter()
-		filter.set_name("CSV or TSV Files")
-		filter.add_pattern("*.*sv")
-		dialog.add_filter(filter)
-		
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-			inFileNameString = dialog.get_filename()
-			dialog.destroy()
-			return inFileNameString
-		elif response == gtk.RESPONSE_CANCEL or response == gtk.RESPONSE_DELETE_EVENT:
-			dialog.destroy()
-			return ''
+		inFileNameString =  filedialog.askopenfilename(initialdir = defaultPath,title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*")))
+		return inFileNameString
 			
 	def extractFilenameFromPathfilename(self, fullPathFilename):
 		"""
@@ -154,7 +138,7 @@ class ReadCSVtoList(object):
 		"""
 		global useSniffer
 		# select the input file names and open the files
-		intFileHdl = open(inFileN, 'rb')
+		intFileHdl = open(inFileN, 'r')
 		if useSniffer:
 			print('using sniffer')
 			try:
