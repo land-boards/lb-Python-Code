@@ -91,9 +91,10 @@ class HandleDefault(object):
 		"""
 		defaultFileHdl = open(defaultsFileNamePath, 'r')
 		defaultListItem = csv.reader(defaultFileHdl)
-		defaultList = []
-		for row in defaultListItem:
-			defaultList+=row
+		defaultList = [row for row in defaultListItem]
+		# defaultList = []
+		# for row in defaultListItem:
+			# defaultList+=row
 		return defaultList
 
 	def getKeyVal(self, keyName):
@@ -104,17 +105,13 @@ class HandleDefault(object):
 		Feed it a key name and it returns the corresponding key value
 		"""
 		global verboseMode
-		#print 'getKeyVal: got here'
 		if self.ifExistsDefaults() == False:
 			if verboseMode:
 				print('getKeyVal: had to create defaults')
 			self.createDefaults()
 		defaultFileHdl = open(defaultsFileNamePath, 'r')
 		defaultListItem = csv.reader(defaultFileHdl)
-#		defaultList = []
-		#print("getKeyVal: defaultListItem",defaultListItem)
 		for row in defaultListItem:
-			#print("row",row)
 			if row != []:
 				if row[0] == keyName:
 					if verboseMode:
