@@ -13,6 +13,8 @@ Background
 Programs need to have certain defaults from one run to another.
 This file has those functions.
 
+Uses Python 3 and Tkinter
+
 ================
 Input File Types
 ================
@@ -109,12 +111,15 @@ class HandleDefault(object):
 			self.createDefaults()
 		defaultFileHdl = open(defaultsFileNamePath, 'r')
 		defaultListItem = csv.reader(defaultFileHdl)
-		defaultList = []
+#		defaultList = []
+		#print("getKeyVal: defaultListItem",defaultListItem)
 		for row in defaultListItem:
-			if row[0] == keyName:
-				if verboseMode:
-					print('getKeyVal: found a match for key, match was', row[1])
-				return row[1]
+			#print("row",row)
+			if row != []:
+				if row[0] == keyName:
+					if verboseMode:
+						print('getKeyVal: found a match for key, match was', row[1])
+					return row[1]
 		if verboseMode:
 			print('getKeyVal: did not find a match for the key',keyName)
 		return ''
@@ -133,16 +138,17 @@ class HandleDefault(object):
 			if verboseMode:
 				print('storeKeyValuePair: item',item)
 			newLine = []
-			if item[0] == keyName:
-				newLine.append(item[0])
-				newLine.append(valueToWrite)
-				foundKey = True
-				if verboseMode:
-					print('storeKeyValuePair: found the key',foundKey)
-				break
-			else:
-				newLine = item
-			newList.append(newLine)
+			if item != []:
+				if item[0] == keyName:
+					newLine.append(item[0])
+					newLine.append(valueToWrite)
+					foundKey = True
+					if verboseMode:
+						print('storeKeyValuePair: found the key',foundKey)
+					break
+				else:
+					newLine = item
+				newList.append(newLine)
 		if not foundKey:
 			newLine = []
 			newLine.append(keyName)
