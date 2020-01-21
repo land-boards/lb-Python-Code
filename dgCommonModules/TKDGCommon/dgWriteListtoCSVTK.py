@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 =====================
 dgWriteListtoCSVTK.py
@@ -78,11 +78,11 @@ class WriteListtoCSV(object):
 		:param csvName: String which has the Pathfilename of the csv file
 		"""
 		try:
-			myCSVFile = open(csvName, 'wb')
+			myCSVFile = open(csvName, 'w', newline='')
 		except:
 			errorDialog("Couldn't open the output file\nIs the file open in Excel?")
 			try:
-				myCSVFile = open(csvName, 'wb')
+				myCSVFile = open(csvName, 'w', newline='')
 			except:
 				errorDialog("Couldn't open the output file, Exiting...")
 				exit()
@@ -147,6 +147,7 @@ class WriteListtoCSV(object):
 			errorDialog('header was empty')
 			return
 		elif self.test_dim(header) == 1:
+			#print("writeOutputHeader: header",header)
 			outPtr.writerow(header)
 		else:
 			outPtr.writerows(header)

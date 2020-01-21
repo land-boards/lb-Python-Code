@@ -39,7 +39,7 @@ import datetime
 import time
 import sys
 
-sys.path.append('C:\\Python27\\Lib\\site-packages\\dgCommonModules\\TKDGCommon')
+#sys.path.append('C:\\Python37\\Lib\\site-packages\\dgCommonModules\\TKDGCommon')
 
 try:
 	from dgProgDefaultsTK import *
@@ -64,7 +64,7 @@ def errorDialog(errorString):
 	messagebox.showerror("Error", errorString)
 
 def infoBox(msgString):
-	messagebox.showinfo("pyCSVtoMWTable",msgString)
+	messagebox.showinfo("pyReadCSVtoListTK",msgString)
 
 class ReadCSVtoList(object):
 	def findOpenReadCSV(self, defaultPath='', dialogHeader='Open File'):
@@ -80,14 +80,18 @@ class ReadCSVtoList(object):
 		"""
 		global lastPathFileName
 		global verboseMode
-		#print 'findOpenReadCSV: got here'
+		if verboseMode:
+			print 'findOpenReadCSV: got here'
 		inPathFilename = self.findInputCSVFile(defaultPath, dialogHeader)
 		if inPathFilename == '':
 			if verboseMode:
 				errorDialog('Input file was not selected')
 			return []
+		inPathFilename = os.path.normpath(inPathFilename)
 		lastPathFileName = inPathFilename
 		defaultPath = inPathFilename[0:inPathFilename.rfind('\\')+1]
+		if verboseMode:
+			print("findOpenReadCSV: defaultPath",defaultPath)
 		myDefaultHandler = HandleDefault()
 		myDefaultHandler.storeKeyValuePair('DEFAULT_PATH',defaultPath)
 		if verboseMode:
@@ -103,6 +107,8 @@ class ReadCSVtoList(object):
 		csvFileAsReadIn = self.readInCSV(inPathFilename)
 		if csvFileAsReadIn == []:
 			errorDialog("Didn't read in any BOM contents")
+		if verboseMode:
+			print("findOpenReadCSV: BOM is",csvFileAsReadIn)
 		return csvFileAsReadIn
 
 	def findInputCSVFile(self,defaultPath,bomFileString='Select File to Open'):
@@ -113,7 +119,7 @@ class ReadCSVtoList(object):
 		
 		Uses filechooser to browse for a CSV file.		
 		"""
-		inFileNameString =  filedialog.askopenfilename(initialdir = defaultPath,title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*")))
+		inFileNameString =  os.path.normpath(filedialog.askopenfilename(initialdir = defaultPath,title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*"))))
 		return inFileNameString
 			
 	def extractFilenameFromPathfilename(self, fullPathFilename):
@@ -124,7 +130,7 @@ class ReadCSVtoList(object):
 
 		Extract fileName without extension from pathfullPathName
 		"""
-		return(fullPathFilename[fullPathFilename.rfind('\\')+1:])
+		return(os.path.normpath(fullPathFilename[fullPathFilename.rfind('\\')+1:]))
 
 	def readInCSV(self, inFileN):
 		"""
@@ -171,7 +177,7 @@ class ReadCSVtoList(object):
 		of the last file that was read in was.
 		"""
 		global lastPathFileName
-		return lastPathFileName
+		return os.path.normpath(lastPathFileName)
 
 	def getLastPath(self):
 		"""
@@ -183,7 +189,8 @@ class ReadCSVtoList(object):
 		of the last file that was read in was.
 		"""
 		global lastPathFileName
-		return(lastPathFileName[0:lastPathFileName.rfind('\\')+1])
+		lastPathFileName = os.path.normpath(lastPathFileName)
+		return(os.path.normpath(lastPathFileName[0:lastPathFileName.rfind('/')+1]))
 
 	def getLastFileNameNoExt(self):
 		"""
@@ -195,7 +202,8 @@ class ReadCSVtoList(object):
 		of the last file that was read in was.
 		"""
 		global lastPathFileName
-		return lastPathFileName[lastPathFileName.rfind('\\')+1:-4]
+		lastPathFileName = os.path.normpath(lastPathFileName)
+		return lastPathFileName[lastPathFileName.rfind('/')+1:-4]
 
 	def setVerboseMode(self,verboseFlag):
 		"""
