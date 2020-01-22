@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 ===================
-dgProgDefaultsTK.py
+dgProgDefaultsTk.py
 ===================
 
 This method handles program defaults.
@@ -45,7 +45,7 @@ import os
 
 
 dgProgDefaultsModuleName = 'dgProgDefaultsTK.py'
-progVer = '0.0.1'
+progVer = '0.0.2'
 
 defaultsFileNamePath = '.\\Defaults.csv'
 
@@ -109,21 +109,24 @@ class HandleDefault(object):
 			if verboseMode:
 				print('getKeyVal: had to create defaults')
 			self.createDefaults()
+		elif verboseMode:
+			print('getKeyVal: did not have to create defaults.csv')
 		defaultFileHdl = open(defaultsFileNamePath, 'r')
 		defaultListItem = csv.reader(defaultFileHdl)
 		for row in defaultListItem:
 			if row != []:
 				if row[0] == keyName:
 					if verboseMode:
-						print('getKeyVal: found a match for key, match was', row[1])
+						print('getKeyVal: found a match for key,',keyName,'match was', row[1])
 					return row[1]
 		if verboseMode:
-			print('getKeyVal: did not find a match for the key',keyName)
+			print('getKeyVal: did not find a match for the key',keyName,'creating key')
+			self.storeKeyValuePair(keyName,'.')
 		return ''
 	
 	def storeKeyValuePair(self,keyName,valueToWrite):
 		if verboseMode:
-			print('storeKeyValuePair: storing value =', valueToWrite, 'to key =', keyName)
+			print('storeKeyValuePair: setting key',keyName, 'to value',valueToWrite)
 		if self.ifExistsDefaults() == False:
 			print('storeKeyValuePair: had to create defaults')
 			self.createDefaults()
@@ -141,16 +144,21 @@ class HandleDefault(object):
 					newLine.append(valueToWrite)
 					foundKey = True
 					if verboseMode:
-						print('storeKeyValuePair: found the key',foundKey)
-					break
+						print('storeKeyValuePair: found the key',item[0])
+						print("storeKeyValuePair: made a new list entry with",newLine)
 				else:
 					newLine = item
 				newList.append(newLine)
+		if verboseMode:
+			print("storeKeyValuePair: newList",newList)
 		if not foundKey:
+			print("storeKeyValuePair: Adding new key")
 			newLine = []
 			newLine.append(keyName)
 			newLine.append(valueToWrite)
 			newList.append(newLine)
+		if verboseMode:
+			print("storeKeyValuePair: Storing defaults list",newList)
 		self.storeDefaults(newList)
 		return True
 		
