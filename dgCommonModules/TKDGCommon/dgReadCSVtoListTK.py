@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 ====================
 dgReadCSVtoListTK.py
@@ -21,7 +21,7 @@ Installation/Usage
 Typical use
 
 - myCSVFileReadClass = ReadCSVtoList()	# instantiate the class
-- myCSVFileReadClass.setVerboseMode(True)	# turn on verbose mode until all is working 
+- myCSVFileReadClass.setself.verboseMode(True)	# turn on verbose mode until all is working 
 - csvAsReadIn = myCSVFileReadClass.findOpenReadCSV(defaultPath,'Select CSV File')	# read in CSV into list
 - if csvAsReadIn == []:
 -  return False
@@ -42,23 +42,17 @@ import sys
 #sys.path.append('C:\\Python37\\Lib\\site-packages\\dgCommonModules\\TKDGCommon')
 
 try:
-	from dgProgDefaultsTK import *
+	from dgProgDefaultsTk import *
 except:
 	print('Need to load dgProgDefaultsTK into site-packages')
 try:
-	from dgCheckFileFreshTK import *
+	from dgCheckFileFreshTk import *
 except:
 	print('Need to load dgCheckFileFreshTK into site-packages')
 	
 from tkinter import filedialog
 from tkinter import *
 from tkinter import messagebox
-
-lastPathFileName = ''
-
-verboseMode = False
-freshFlag = False
-useSniffer = False
 
 def errorDialog(errorString):
 	messagebox.showerror("Error", errorString)
@@ -67,10 +61,17 @@ def infoBox(msgString):
 	messagebox.showinfo("pyReadCSVtoListTK",msgString)
 
 class ReadCSVtoList(object):
+
+	def __init__(self):
+		self.verboseMode = False
+		self.freshFlag = False
+		self.useSniffer = False
+		self.lastPathFileName = ''
+
 	def findOpenReadCSV(self, defaultPath='', dialogHeader='Open File'):
 		"""
-		:global lastPathFileName: The path asset by this function based on the path found by the browser.
-		:global verboseMode: Set to true if you want diagnostic messages printed along the way. Verbose Mode can also be changed by calling setVerboseMode().
+		:global self.lastPathFileName: The path asset by this function based on the path found by the browser.
+		:global self.verboseMode: Set to true if you want diagnostic messages printed along the way. Verbose Mode can also be changed by calling setself.verboseMode().
 
 		:param defaultPath: Optional default path. If none is entered defaults to empty.
 		:param dialogHeader: Optional headers that is printed on the top of the screen.
@@ -78,40 +79,38 @@ class ReadCSVtoList(object):
 		
 		This is the main method which calls the other methods in this class.		
 		"""
-		global lastPathFileName
-		global verboseMode
-		if verboseMode:
-			print 'findOpenReadCSV: got here'
+		if self.verboseMode:
+			print('findOpenReadCSV: got here')
 		inPathFilename = self.findInputCSVFile(defaultPath, dialogHeader)
 		if inPathFilename == '':
-			if verboseMode:
+			if self.verboseMode:
 				errorDialog('Input file was not selected')
 			return []
 		inPathFilename = os.path.normpath(inPathFilename)
-		lastPathFileName = inPathFilename
+		self.lastPathFileName = inPathFilename
 		defaultPath = inPathFilename[0:inPathFilename.rfind('\\')+1]
-		if verboseMode:
+		if self.verboseMode:
 			print("findOpenReadCSV: defaultPath",defaultPath)
 		myDefaultHandler = HandleDefault()
 		myDefaultHandler.storeKeyValuePair('DEFAULT_PATH',defaultPath)
-		if verboseMode:
-			print('Input file name :', end=' ')
+		if self.verboseMode:
+			print('findOpenReadCSVInput file name :', end=' ')
 			print(self.extractFilenameFromPathfilename(inPathFilename))
-		if freshFlag:
+		if self.freshFlag:
 			myFreshCheck = CheckFreshness()
 			if not myFreshCheck.isFresh(inPathFilename):
-				if verboseMode:
-					print('fresh flag was set to check freshness for CSV files')
-				errorDialog("The CSV File is not fresh\nEither change the Options to ignore the freshness check\nor create/choose a fresh file")
+				if self.verboseMode:
+					print('findOpenReadCSV: fresh flag was set to check freshness for CSV files')
+				errorDialog("findOpenReadCSV: The CSV File is not fresh\nEither change the Options to ignore the freshness check\nor create/choose a fresh file")
 				return []
 		csvFileAsReadIn = self.readInCSV(inPathFilename)
 		if csvFileAsReadIn == []:
-			errorDialog("Didn't read in any BOM contents")
-		if verboseMode:
-			print("findOpenReadCSV: BOM is",csvFileAsReadIn)
+			errorDialog("findOpenReadCSV: Didn't read in any BOM contents")
+		# if self.verboseMode:
+			# print("findOpenReadCSV: CSV file is",csvFileAsReadIn)
 		return csvFileAsReadIn
 
-	def findInputCSVFile(self,defaultPath,bomFileString='Select File to Open'):
+	def findInputCSVFile(self,defaultPath,header='Select File to Open'):
 		"""
 		:param defaultPath: The path that was selected. The calling function is responsible for remembering the name.
 
@@ -119,7 +118,7 @@ class ReadCSVtoList(object):
 		
 		Uses filechooser to browse for a CSV file.		
 		"""
-		inFileNameString =  os.path.normpath(filedialog.askopenfilename(initialdir = defaultPath,title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*"))))
+		inFileNameString = os.path.normpath(filedialog.askopenfilename(initialdir = defaultPath,title = header,filetypes = (("csv files","*.csv"),("all files","*.*"))))
 		return inFileNameString
 			
 	def extractFilenameFromPathfilename(self, fullPathFilename):
@@ -134,7 +133,7 @@ class ReadCSVtoList(object):
 
 	def readInCSV(self, inFileN):
 		"""
-		:global useSniffer: Flag which indicates whether or not to use the file sniffer. Set the sniffer flag by setUseSnifferFlag().
+		:global self.useSniffer: Flag which indicates whether or not to use the file sniffer. Set the sniffer flag by setself.useSnifferFlag().
 		
 		:param inFileN: Input pathfilename
 
@@ -142,10 +141,9 @@ class ReadCSVtoList(object):
 		
 		Reads a CSV file into a list. This method 
 		"""
-		global useSniffer
 		# select the input file names and open the files
 		intFileHdl = open(inFileN, 'r')
-		if useSniffer:
+		if self.useSniffer:
 			print('using sniffer')
 			try:
 				dialect = csv.Sniffer().sniff(intFileHdl.read(2048))
@@ -169,41 +167,37 @@ class ReadCSVtoList(object):
 
 	def getLastPathFileName(self):
 		"""
-		:global lastPathFileName: the last path file name that was used
 		
 		:returns: the last path file name
 		
-		getLastPathFileName - Used by external calling methods to determine what the path/filename 
+		getself.lastPathFileName - Used by external calling methods to determine what the path/filename 
 		of the last file that was read in was.
 		"""
-		global lastPathFileName
-		return os.path.normpath(lastPathFileName)
+		return os.path.normpath(self.lastPathFileName)
 
 	def getLastPath(self):
 		"""
-		:global lastPathFileName: the last path file name that was used
+		:global self.lastPathFileName: the last path file name that was used
 		
 		:returns: the last path file name
 		
-		getLastPathFileName - Used by external calling methods to determine what the path/filename 
+		getself.lastPathFileName - Used by external calling methods to determine what the path/filename 
 		of the last file that was read in was.
 		"""
-		global lastPathFileName
-		lastPathFileName = os.path.normpath(lastPathFileName)
-		return(os.path.normpath(lastPathFileName[0:lastPathFileName.rfind('/')+1]))
+		self.lastPathFileName = os.path.normpath(self.lastPathFileName)
+		return(os.path.normpath(self.lastPathFileName[0:self.lastPathFileName.rfind('\\')+1]))
 
 	def getLastFileNameNoExt(self):
 		"""
-		:global lastPathFileName: the last path file name that was used
+		:global self.lastPathFileName: the last path file name that was used
 		
 		:returns: the last path file name
 
 		getLastFileNameNoExt - Used by external calling methods to determine what the filename 
 		of the last file that was read in was.
 		"""
-		global lastPathFileName
-		lastPathFileName = os.path.normpath(lastPathFileName)
-		return lastPathFileName[lastPathFileName.rfind('/')+1:-4]
+		self.lastPathFileName = os.path.normpath(self.lastPathFileName)
+		return self.lastPathFileName[self.lastPathFileName.rfind('\\')+1:-4]
 
 	def setVerboseMode(self,verboseFlag):
 		"""
@@ -214,14 +208,13 @@ class ReadCSVtoList(object):
 		of this module without changing the module in debug.
 		The verbose messages go to the command prompt window.
 		"""
-		global verboseMode
-		verboseMode = verboseFlag
+		self.verboseMode = verboseFlag
 		return True
 	
 	def setFreshCheckFlag(self,freshnessFlag):
 		"""
-		:global freshFlag: Flag value stored as a global for use directly by other functions
-		:global verboseMode: Verbose flag.
+		:global self.freshFlag: Flag value stored as a global for use directly by other functions
+		:global self.verboseMode: Verbose flag.
 		
 		:returns: True always
 		
@@ -230,31 +223,27 @@ class ReadCSVtoList(object):
 		If this flag is set the file has to be created on the same day that this method is invoked.
 		This is intended to be set from other modules which use this class.		
 		"""
-		global freshFlag
-		global verboseMode
-		if verboseMode:
+		if self.verboseMode:
 			print('CheckFreshness:setFreshCheckFlag: setting freshness flag', freshnessFlag)
-		freshFlag = freshnessFlag
+		self.freshFlag = freshnessFlag
 		return True
 		
 	def getFreshFlag(self):
 		"""
-		:global freshFlag: Flag value stored as a global for use directly by other functions
-		:global verboseMode: Verbose flag.
+		:global self.freshFlag: Flag value stored as a global for use directly by other functions
+		:global self.verboseMode: Verbose flag.
 		
 		:returns: the value of the fresh check flag.
 
 		Return the value of the freshness check flag
 		"""
-		global freshFlag
-		global verboseMode
-		if verboseMode:
-			print('CheckFreshness:getFreshFlag: getting freshness flag',freshFlag)
-		return freshFlag
+		if self.verboseMode:
+			print('CheckFreshness:getself.freshFlag: getting freshness flag',self.freshFlag)
+		return self.freshFlag
 
 	def setUseSnifferFlag(self,snifferFlag):
 		"""
-		:global useSniffer: Flag that determines whether or not to use the CSV sniffer.
+		:global self.useSniffer: Flag that determines whether or not to use the CSV sniffer.
 
 		:returns: True always
 				
@@ -262,7 +251,6 @@ class ReadCSVtoList(object):
 		The sniffer can determine the input file style of the delimiter (comma separated, tab separated, etc.)
 		
 		"""
-		global useSniffer
-		useSniffer = snifferFlag
+		self.useSniffer = snifferFlag
 		return True
 		

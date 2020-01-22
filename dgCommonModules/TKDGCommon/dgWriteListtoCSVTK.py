@@ -29,7 +29,7 @@ from tkinter import *
 from tkinter import messagebox
 
 sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules\\TKDGCommon')
-from dgProgDefaultsTK import *
+from dgProgDefaultsTk import *
 
 verboseMode = False
 outFileNameAppendage = ''
@@ -65,7 +65,7 @@ class WriteListtoCSV(object):
 			errorDialog('Write list is empty for some reason')
 			return
 		outFilePtr = self.openCSVFile(outFileNm)	# start at the same folder as the input file was located
-		self.writeOutputHeader(outFilePtr,header)			# write out the header
+		self.writeOutputHeader(outFilePtr,header)	# write out the header
 		if self.test_dim(csvListToWrite) == 1:
 			outFilePtr.writerow(csvListToWrite)
 		else:
