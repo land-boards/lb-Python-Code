@@ -163,7 +163,7 @@ class HandleDefault(object):
 		"""
 		if verboseMode:
 			print('storeDefaults: storing list', defaultList)
-		defaultFileHdl = open(defaultsFileNamePath, 'w')
+		defaultFileHdl = open(defaultsFileNamePath, 'w', newline='')
 		defaultFile = csv.writer(defaultFileHdl)
 		defaultFile.writerows(defaultList)
 		return True
@@ -174,7 +174,7 @@ class HandleDefault(object):
 		
 		Create the defaults file with a single pair
 		"""
-		defaultFileHdl = open(defaultsFileNamePath, 'w')
+		defaultFileHdl = open(defaultsFileNamePath, 'w', newline='')
 		defaultFile = csv.writer(defaultFileHdl)
 		defaultArray = ['DEFAULT_PATH','.']
 		defaultFile.writerow(defaultArray)
