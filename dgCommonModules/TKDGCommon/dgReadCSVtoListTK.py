@@ -185,7 +185,10 @@ class ReadCSVtoList(object):
 		of the last file that was read in was.
 		"""
 		self.lastPathFileName = os.path.normpath(self.lastPathFileName)
-		return(os.path.normpath(self.lastPathFileName[0:self.lastPathFileName.rfind('\\')+1]))
+		print("getLastPath: self.lastPathFileName",self.lastPathFileName)
+		retVal = os.path.normpath(self.lastPathFileName[0:self.lastPathFileName.rfind('\\')+1])
+		retVal = retVal + '\\'
+		return(retVal)
 
 	def getLastFileNameNoExt(self):
 		"""
