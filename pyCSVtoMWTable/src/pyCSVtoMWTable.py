@@ -44,8 +44,8 @@ import sys
 sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules\\TKDGCommon')
 sys.path.append('C:\\Users\\HPz420\\Documents\\GitHub\\land-boards\\lb-Python-Code\\dgCommonModules\\TKDGCommon')
 
-from dgProgDefaultsTK import *
-from dgReadCSVtoListTK import *
+from dgProgDefaultsTk import *
+from dgReadCSVtoListTk import *
 defaultPath = '.'
 
 from sys import argv
