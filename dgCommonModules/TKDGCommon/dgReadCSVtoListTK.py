@@ -82,7 +82,8 @@ class ReadCSVtoList(object):
 		if self.verboseMode:
 			print('findOpenReadCSV: got here')
 		inPathFilename = self.findInputCSVFile(defaultPath, dialogHeader)
-		if inPathFilename == '':
+		print("inPathFilename",inPathFilename)
+		if inPathFilename == '.':
 			if self.verboseMode:
 				errorDialog('Input file was not selected')
 			return []
