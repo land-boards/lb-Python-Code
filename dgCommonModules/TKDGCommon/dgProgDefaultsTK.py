@@ -36,7 +36,7 @@ Code
 ====
 
 """
-from __future__ import print_function
+#from __future__ import print_function
 
 from builtins import object
 import string
@@ -44,8 +44,8 @@ import csv
 import os
 
 
-dgProgDefaultsModuleName = 'dgProgDefaultsTK.py'
-progVer = '0.0.2'
+dgProgDefaultsModuleName = 'dgProgDefaultsTk.py'
+progVer = '2020-01-29'
 
 defaultsFileNamePath = '.\\Defaults.csv'
 
@@ -121,7 +121,7 @@ class HandleDefault(object):
 					return row[1]
 		if verboseMode:
 			print('getKeyVal: did not find a match for the key',keyName,'creating key')
-			self.storeKeyValuePair(keyName,'.')
+		self.storeKeyValuePair(keyName,'.')
 		return ''
 	
 	def storeKeyValuePair(self,keyName,valueToWrite):
@@ -152,7 +152,8 @@ class HandleDefault(object):
 		if verboseMode:
 			print("storeKeyValuePair: newList",newList)
 		if not foundKey:
-			print("storeKeyValuePair: Adding new key")
+			if verboseMode:
+				print("storeKeyValuePair: Adding new key")
 			newLine = []
 			newLine.append(keyName)
 			newLine.append(valueToWrite)

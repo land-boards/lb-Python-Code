@@ -31,7 +31,6 @@ API
 ===
 
 """
-from __future__ import print_function
 
 from builtins import object
 import os
@@ -39,16 +38,14 @@ import datetime
 import time
 import sys
 
-#sys.path.append('C:\\Python37\\Lib\\site-packages\\dgCommonModules\\TKDGCommon')
-
 try:
 	from dgProgDefaultsTk import *
 except:
-	print('Need to load dgProgDefaultsTK into site-packages')
+	assert False,'Unable to load dgProgDefaultsTk'
 try:
 	from dgCheckFileFreshTk import *
 except:
-	print('Need to load dgCheckFileFreshTK into site-packages')
+	print('Unable to load dgCheckFileFreshTk')
 	
 from tkinter import filedialog
 from tkinter import *
@@ -82,11 +79,11 @@ class ReadCSVtoList(object):
 		if self.verboseMode:
 			print('findOpenReadCSV: got here')
 		inPathFilename = self.findInputCSVFile(defaultPath, dialogHeader)
-		print("inPathFilename",inPathFilename)
 		if inPathFilename == '.':
 			if self.verboseMode:
 				errorDialog('Input file was not selected')
 			return []
+		print("inPathFilename",inPathFilename)
 		inPathFilename = os.path.normpath(inPathFilename)
 		self.lastPathFileName = inPathFilename
 		defaultPath = inPathFilename[0:inPathFilename.rfind('\\')+1]
@@ -186,7 +183,7 @@ class ReadCSVtoList(object):
 		of the last file that was read in was.
 		"""
 		self.lastPathFileName = os.path.normpath(self.lastPathFileName)
-		print("getLastPath: self.lastPathFileName",self.lastPathFileName)
+		#print("getLastPath: self.lastPathFileName",self.lastPathFileName)
 		retVal = os.path.normpath(self.lastPathFileName[0:self.lastPathFileName.rfind('\\')+1])
 		retVal = retVal + '\\'
 		return(retVal)
