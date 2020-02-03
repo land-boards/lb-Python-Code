@@ -120,7 +120,7 @@ class Dashboard:
 		self.mainmenu = Menu(self.win)
 		self.win.config(menu=self.mainmenu)
 
-		self.filemenu = Menu(self.mainmenu)
+		self.filemenu = Menu(self.mainmenu, tearoff=0)
 		self.mainmenu.add_cascade(label="File",menu=self.filemenu)
 
 		self.filemenu.add_command(label="Open CSV PL file",command=control.theExecutive)
