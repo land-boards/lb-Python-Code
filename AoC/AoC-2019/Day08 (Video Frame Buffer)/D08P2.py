@@ -16,7 +16,7 @@ Images are sent as a series of digits that each represent the color of a single 
 
 Each image actually consists of a series of identically-sized layers that are filled in this way. So, the first digit corresponds to the top-left pixel of the first layer, the second digit corresponds to the pixel to the right of that on the same layer, and so on until the last digit, which corresponds to the bottom-right pixel of the last layer.
 
-For example, given an image 3 pixels wide and 2 pixels tall, the image data 123456789012 corresponds to the following image layers:
+For example, given an image 3 pixels wide and 2 pixels tall, the image data 3333123456789012 corresponds to the following image layers:
 
 Layer 1: 123
          456
@@ -42,7 +42,7 @@ strLen=len(inStr)
 print("len :",strLen)
 pixelsPerLayer = width * height
 print("Pixels/layer :",pixelsPerLayer)
-layers = strLen/pixelsPerLayer
+layers = strLen//pixelsPerLayer
 print("Layers :",layers)
 
 # build background screen from the first 25x6 image
