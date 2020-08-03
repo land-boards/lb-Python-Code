@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """
-==================
-dgReadDirtoList.py
-==================
+====================
+dgReadDirtoListTk.py
+====================
 
 Methods to read a directory structure into a list and return the list.
 
@@ -39,29 +39,33 @@ from builtins import object
 import os
 import datetime
 import time
-import pygtk
+#import pygtk
 import sys
 pygtk.require('2.0')
 
-sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules')
+sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules\\TKDGCommon')
 
 try:
-	from dgProgDefaults import *
+	from dgProgDefaultsTk import *
 except:
 	print('Need to load dgProgDefaults into C:\\HWTeam\\Utilities\\dgCommonModules')
 try:
-	from dgCheckFileFresh import *
+	from dgCheckFileFreshTk import *
 except:
 	print('Need to load dgCheckFileFresh into C:\\HWTeam\\Utilities\\dgCommonModules')
 
 lastPathFileName = ''
 tempFileName = ''
 
-import gtk
-# Check for new pygtk: this is new class in PyGtk 2.4
-if gtk.pygtk_version < (2,3,90):
-	print("PyGtk 2.3.90 or later required for this example")
-	raise SystemExit
+from tkinter import filedialog as fd
+from tkinter import *
+from tkinter import messagebox
+
+# import gtk
+# # Check for new pygtk: this is new class in PyGtk 2.4
+# if gtk.pygtk_version < (2,3,90):
+	# print("PyGtk 2.3.90 or later required for this example")
+	# raise SystemExit
 
 def errorDialog(errorString):
 	"""
@@ -97,24 +101,27 @@ class ReadDirectoryToList(object):
 		Opens a windows folder browser to allow user to navigate to the folder to read.
 
 		"""
-		dialog = gtk.FileChooserDialog(title, 
-			buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
-		filter = gtk.FileFilter() 
-		dialog.set_current_folder(defaultPath)
-		filter.set_name("Select Folder")
-		filter.add_pattern("*") # what's the pattern for a folder 
-		dialog.add_filter(filter)
-		dialog.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-			retFileName = dialog.get_filename()
-			dialog.destroy()
-			defaultPath = retFileName
-			return(retFileName)
-		elif response == gtk.RESPONSE_CANCEL: 
-			errorDialog('Closed, no files selected')
-			dialog.destroy()
-			exit()
+		root = Tk()
+		root.directory = fd.askdirectory()
+		return root.directory
+		# dialog = gtk.FileChooserDialog(title, 
+			# buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)) 
+		# filter = gtk.FileFilter() 
+		# dialog.set_current_folder(defaultPath)
+		# filter.set_name("Select Folder")
+		# filter.add_pattern("*") # what's the pattern for a folder 
+		# dialog.add_filter(filter)
+		# dialog.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+		# response = dialog.run()
+		# if response == gtk.RESPONSE_OK:
+			# retFileName = dialog.get_filename()
+			# dialog.destroy()
+			# defaultPath = retFileName
+			# return(retFileName)
+		# elif response == gtk.RESPONSE_CANCEL: 
+			# errorDialog('Closed, no files selected')
+			# dialog.destroy()
+			# exit()
 	
 	def formCommandLine(self, makeDirPath):
 		"""Form the command line string to read the directory and subdirectories.
@@ -215,6 +222,37 @@ class ReadDirectoryToList(object):
 			if rval2 == 1:
 				print('unable to create c:\\temp\\ folder')
 				s = input('--> ')
+				exit()
+			rval = os.system(commandString)
+		fileNamePath = 'c:\\temp\\'
+		fileNamePath += tempFileName
+		fileNamePath += '.txt'
+		readFile = open(fileNamePath,'rb')
+		dirFileL = self.parseDirTxt(readFile)
+		readFile.close()
+		self.deleteTempFile()
+#		print 'Release folder', pathToDir
+		lastPathFileName = pathToDir
+		return(dirFileL)
+		
+	def doReadDirGivenPath(self, pathToDir):
+		"""Read the directory into a temp file.
+		Then, load the temp file into a list. 
+		Then, delete the temp file.
+		
+		:return: the directory as a list
+		
+		"""		
+		global lastPathFileName
+		global tempFileName
+		commandString = self.formCommandLine(pathToDir)
+		rval = os.system(commandString)
+		if rval == 1:		# error because the c:\temp folder does not exist
+			print ('Creating c:\\temp folder')
+			rval2 = os.system('md c:\\temp\\')
+			if rval2 == 1:
+				print ('unable to create c:\\temp\\ folder')
+				s = raw_input('--> ')
 				exit()
 			rval = os.system(commandString)
 		fileNamePath = 'c:\\temp\\'
