@@ -39,10 +39,7 @@ from builtins import object
 import os
 import datetime
 import time
-#import pygtk
 import sys
-pygtk.require('2.0')
-
 sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules\\TKDGCommon')
 
 try:
@@ -61,21 +58,11 @@ from tkinter import filedialog as fd
 from tkinter import *
 from tkinter import messagebox
 
-# import gtk
-# # Check for new pygtk: this is new class in PyGtk 2.4
-# if gtk.pygtk_version < (2,3,90):
-	# print("PyGtk 2.3.90 or later required for this example")
-	# raise SystemExit
-
 def errorDialog(errorString):
-	"""
-	Prints an error message as a gtk style dialog box
-	"""
-	message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
-	message.set_markup(errorString)
-	message.run()		# Display the dialog box and hang around waiting for the "OK" button
-	message.destroy()	# Takes down the dialog box
-	return
+	messagebox.showerror("Error", errorString)
+
+def infoBox(msgString):
+	messagebox.showinfo("pyFlattenPL_2",msgString)
 
 class ReadDirectoryToList(object):
 	"""
@@ -135,6 +122,7 @@ class ReadDirectoryToList(object):
 		global tempFileName
 		tempFileName = 'tempDir'
 		tempFileName += str(int(time.time()))
+		tempFileName += str(int(time.time()))
 		makeDirPath = '\"' + makeDirPath + '\"'		# path might have spaces, etc
 		commandLine = 'dir '
 		commandLine += makeDirPath
@@ -152,15 +140,17 @@ class ReadDirectoryToList(object):
 		Parse through the text file that was created when the directory was set up
 		"""
 		dirFiles = []
-		dirName = ""
+		dirName = ''
 		global foldersList
 		foldersList = []
-		folderName = ""
+		folderName = ''
 		for textLine in filePtr:
-			textLine = textLine.strip('\r\n')
-			if len(textLine) == 0:
-				None
-			elif "Directory of " in textLine:
+			#print("parseDirTxt: Parsing line ",textLine)
+			try:
+				textLine = textLine.strip('\r\n')
+			except:
+				print("parseDirTxt: Trouble stripping crlf from  line",textLine)
+			if 'Directory of ' in textLine:
 				dirName = textLine[14:].strip()
 			elif '<DIR>' in textLine:			# add to directories list
 				foldersLine = []
@@ -168,9 +158,9 @@ class ReadDirectoryToList(object):
 				foldersLine.append(textLine[12:20])
 				foldersLine.append(textLine[39:])
 				foldersList.append(foldersLine)
-			elif "Volume in drive " in textLine:
+			elif 'Volume in drive ' in textLine:
 				None
-			elif "Volume Serial Number is" in textLine:
+			elif 'Volume Serial Number is' in textLine:
 				None
 			elif '/' in textLine:
 				dirLine = []
@@ -227,7 +217,7 @@ class ReadDirectoryToList(object):
 		fileNamePath = 'c:\\temp\\'
 		fileNamePath += tempFileName
 		fileNamePath += '.txt'
-		readFile = open(fileNamePath,'rb')
+		readFile = open(fileNamePath,'r')
 		dirFileL = self.parseDirTxt(readFile)
 		readFile.close()
 		self.deleteTempFile()
@@ -258,7 +248,7 @@ class ReadDirectoryToList(object):
 		fileNamePath = 'c:\\temp\\'
 		fileNamePath += tempFileName
 		fileNamePath += '.txt'
-		readFile = open(fileNamePath,'rb')
+		readFile = open(fileNamePath,'r')
 		dirFileL = self.parseDirTxt(readFile)
 		readFile.close()
 		self.deleteTempFile()

@@ -51,7 +51,8 @@ class WriteListtoCSV(object):
 		:return: the name of the output csv file
 		
 		"""
-		filedialog.asksaveasfilename(initialdir = defaultPath,title = "Select file",filetypes = (("csv files","*.scv"),("all files","*.*")))
+		fileName = filedialog.asksaveasfilename(initialdir = defaultPath,title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*")))
+		return fileName
 	
 	def writeOutList(self, outPathFilename, header, csvListToWrite):
 		"""Write out the csvListToWrite
