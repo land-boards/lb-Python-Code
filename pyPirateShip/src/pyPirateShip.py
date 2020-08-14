@@ -250,7 +250,7 @@ class ControlClass:
 		fileToWriteJSON = defaultPath + "orders_USPS-"
 		fileToWriteJSON += dateToAppend
 		fileToWriteJSON += ".json"
-		fileToWritePship = defaultPath + "orders_PriateShip-"
+		fileToWritePship = defaultPath + "orders_PirateShip-"
 		fileToWritePship += dateToAppend
 		fileToWritePship += ".csv"
 
@@ -774,7 +774,7 @@ class ControlClass:
 				outLine.append('')
 				outLine.append(entryInRow[shippingLastNameColumn])
 				outLine.append('')
-				numAddrLines = string.count(entryInRow[address1Column],'\n') + 1
+				numAddrLines = entryInRow[address1Column].count('\n') + 1
 				if numAddrLines == 1:
 					firstAddrLine = entryInRow[address1Column]
 					secondAddrLine = ''
@@ -856,7 +856,7 @@ class ControlClass:
 				outLine.append('')
 				outLine.append(row[shippingLastNameColumn])
 				outLine.append(row[companyColumn])
-				numAddrLines = string.count(row[address1Column],'\n') + 1
+				numAddrLines = row[address1Column].count('\n') + 1
 				if numAddrLines == 1:
 					firstAddrLine = row[address1Column]
 					secondAddrLine = ''
@@ -936,7 +936,7 @@ class ControlClass:
 				outLine.append('')
 				outLine.append(row[shippingLastNameColumn])
 				outLine.append('')
-				numAddrLines = string.count(row[address1Column],'\n') + 1
+				numAddrLines = row[address1Column].count('\n') + 1
 				if numAddrLines == 1:
 					firstAddrLine = row[address1Column]
 					secondAddrLine = ''
