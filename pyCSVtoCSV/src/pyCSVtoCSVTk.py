@@ -7,7 +7,8 @@ import string
 import sys
 from sys import version_info
 
-sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules\\TKDGCommon')
+#sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules\\TKDGCommon')
+sys.path.append('C:\\Users\\HPz420\\Documents\\GitHub\\land-boards\\lb-Python-Code\\dgCommonModules\\TKDGCommon')
 
 from dgProgDefaultsTk import *
 from dgReadCSVtoListTk import *
@@ -125,7 +126,7 @@ class Dashboard:
 		self.filemenu = Menu(self.mainmenu, tearoff=0)
 		self.mainmenu.add_cascade(label="File",menu=self.filemenu)
 
-		self.filemenu.add_command(label="Open BOM file",command=control.doConvert)
+		self.filemenu.add_command(label="Open file",command=control.doConvert)
 		self.filemenu.add_separator()
 		self.filemenu.add_command(label="Exit",command=self.win.quit)
 
