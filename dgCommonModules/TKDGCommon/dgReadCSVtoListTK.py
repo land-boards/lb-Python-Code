@@ -116,7 +116,7 @@ class ReadCSVtoList(object):
 		
 		Uses filechooser to browse for a CSV file.		
 		"""
-		inFileNameString = os.path.normpath(filedialog.askopenfilename(initialdir = defaultPath,title = header,filetypes = (("csv files","*.csv"),("all files","*.*"))))
+		inFileNameString = os.path.normpath(filedialog.askopenfilename(initialdir = defaultPath,title = header,filetypes = (("csv files","*.csv"),("tsv files","*.tsv"),("all files","*.*"))))
 		return inFileNameString
 			
 	def extractFilenameFromPathfilename(self, fullPathFilename):
