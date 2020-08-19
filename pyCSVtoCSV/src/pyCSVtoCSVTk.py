@@ -7,8 +7,7 @@ import string
 import sys
 from sys import version_info
 
-#sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules\\TKDGCommon')
-sys.path.append('C:\\Users\\HPz420\\Documents\\GitHub\\land-boards\\lb-Python-Code\\dgCommonModules\\TKDGCommon')
+sys.path.append('C:\\HWTeam\\Utilities\\dgCommonModules\\TKDGCommon')
 
 from dgProgDefaultsTk import *
 from dgReadCSVtoListTk import *
