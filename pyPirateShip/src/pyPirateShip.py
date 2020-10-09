@@ -165,42 +165,12 @@ class ControlClass:
 		
 		Map the column headers to an internal preferred ordering.
 		Latest input format -
-		* Order ID
-		* Date
-		* First Name
-		* Last Name
-		* Email
-		* Company Title
-		* Phone	
-		* Street
-		* City
-		* State / Province
-		* Postal/Zip Code
-		* Country
-		* Additional Instructions
-		* Shipping Methods
-		* Shipping Total
-		* Discount Total
-		* Discount Codes
-		* Tax Total
-		* Order Total
-		* Tindie Fee
-		* Processing Fee
-		* Total Payable to Seller
-		* Refunded
-		* Shipped
-		* Tracking Number		
-		* Pay Out Status
-		* Paid Out
-		* Product Name
-		* Option Summmary
-		* Model Number
-		* Status
-		* Unit Price
-		* Discount Price
-		* Quantity
-		* Total Item Price
-
+		['Order ID', 'Date', 'First Name', 'Last Name', 'Email', 'Company Title', 'Phone', 'Street', 'City', 'State 
+		/ Province', 'Postal/Zip Code', 'Country', 'Additional Instructions', 'Shipping Method', 'Shipping Total', 
+		'Discount Total', 'Discount Codes', 'Tax Total', 'Order Total', 'Tindie Fee', 'Processing Fee', 
+		'Total Payable to Seller', 'Refunded', 'Shipped', 'Tracking Number', 'Pay Out Status', 'Paid Out', 
+		'Product Name', 'Option Summary', 'Model Number', 'Status', 'Unit Price', 'Discount Price', 'Quantity', 
+		'Total Item Price']
 		"""
 		global shippingFirstNameColumn
 		global shippingLastNameColumn
@@ -217,7 +187,7 @@ class ControlClass:
 		#print header
 		myOutList = []
 		itemNum = 0
-		#print 'mapTindieInList: header',header
+		# print('mapTindieInList: header',header)
 		for item in header:
 			if item == 'First Name':
 				shippingFirstNameColumn = itemNum
@@ -242,8 +212,8 @@ class ControlClass:
 			elif item == 'Shipped':
 				rewardsSentColumn = itemNum
 				#print 'shipped column mapped'
-			#else:
-				#print 'unknown/unused header',item
+			# else:
+				# print('unknown/unused header',item)
 			itemNum += 1
 		if shippingFirstNameColumn == 99:
 			return False
