@@ -11,18 +11,15 @@ roboLocY = 0
 locationsOfPkgs = []
 santaLoc = []
 roboLoc = []
-locationsOfPkgs.append(santaLocX)
-locationsOfPkgs.append(santaLocY)
-locationsOfPkgs.append(loc)
-locationsOfPkgs.append(roboLocX)
-locationsOfPkgs.append(roboLocY)
-locationsOfPkgs.append(loc)
+santaLoc.append(santaLocX)
+santaLoc.append(santaLocY)
+locationsOfPkgs.append(santaLoc)
+roboLoc.append(roboLocX)
+roboLoc.append(roboLocY)
+locationsOfPkgs.append(roboLoc)
 santaOrRobot = 'Santa'
 for inChar in inDirections:
 	loc = []
-	loc.append(locX)
-	loc.append(locY)
-	locationsOfPkgs.append(loc)
 	if santaOrRobot == 'Santa':
 		if inChar == '>':
 			santaLocX += 1
@@ -32,6 +29,9 @@ for inChar in inDirections:
 			santaLocY -= 1
 		elif inChar == '^':
 			santaLocY += 1
+		loc.append(santaLocX)
+		loc.append(santaLocY)
+		locationsOfPkgs.append(loc)
 		santaOrRobot = 'Robot'
 	else:
 		if inChar == '>':
@@ -42,6 +42,9 @@ for inChar in inDirections:
 			roboLocY -= 1
 		elif inChar == '^':
 			roboLocY += 1
+		loc.append(roboLocX)
+		loc.append(roboLocY)
+		locationsOfPkgs.append(loc)
 		santaOrRobot = 'Santa'
 print(locationsOfPkgs)
 print("total locs",len(locationsOfPkgs))
