@@ -24,7 +24,7 @@ def loadInitialVals(variableTable,functionsList):
 	"""
 	for row in functionsList:
 		if (row[0].isnumeric()) and (row[1] == '->'):
-			print("(loadInitialVals): row",row)
+			# print("(loadInitialVals): row",row)
 			for val in variableTable:
 				if row[2] == val[0]:
 					val[1] = 'solved'
@@ -162,6 +162,11 @@ def classifyOp(line):
 		assert False,"classifyOp - Unclassified Op"
 	return
 
+def setAllValsToZero():
+	for row in variableTable:
+		row[1] = 'unsolved'
+		row[2] = '0'
+
 # The main code
 
 inList = readFileToList()
@@ -203,7 +208,38 @@ while not allSolved:
 			assert False,"Unsolved"
 		allSolved = True
 		
-print('variableTable after last pass: ')
+# print('variableTable after last pass: ')
+# for var in variableTable:
+	# varStr = var[0]
+	# varVal = int(var[2])
+	# if varVal == '-123456789':
+		# varVal = 'Uninit'
+	# elif varVal < 0:
+		# varVal = 65536 - varVal
+	# print(varStr,varVal)
+	
+valOnA = getVarVal('a')
+# print("\na val is",getVarVal('a'))
+setAllValsToZero()
+functionsList = loadInitialVals(variableTable,functionsList)
+outVarVal('b',valOnA)
+allSolved = False
+lastSolvedCount = 0
+while not allSolved:
+	solveWhatCanBeSolved()
+	#print('variableTable after middle pass: ',variableTable)
+	allSolved = checkAllSolved()
+	solveCount = countSolved()
+	# print("solved Count",solveCount)
+	if lastSolvedCount != solveCount:
+		lastSolvedCount = solveCount
+	else:
+		if not allSolved:
+			print("ended with unsolveds")
+			assert False,"Unsolved"
+		allSolved = True
+		
+# print('variableTable after last pass: ')
 for var in variableTable:
 	varStr = var[0]
 	varVal = int(var[2])
@@ -212,5 +248,4 @@ for var in variableTable:
 	elif varVal < 0:
 		varVal = 65536 - varVal
 	print(varStr,varVal)
-	
 print("\na val is",getVarVal('a'))
