@@ -5,7 +5,7 @@ fileLen = 0
 def readFileToList():
 	global fileLen
 	inList = []
-	with open('input.txt', 'r', encoding='utf-8') as filehandle:  
+	with open('input1.txt', 'r', encoding='utf-8') as filehandle:  
 		for line in filehandle:
 			inLine = line.rstrip()
 			inList.append(inLine)
@@ -16,7 +16,7 @@ def readFileToList():
 def countStorageSpaceForLine(line,reallyLongString):
 	charCount = 0
 	localStr = ''
-	for charVal in line[1:-1]:
+	for charVal in line:
 		# print(charVal,end='')
 		charCount += 1
 		localStr += charVal
