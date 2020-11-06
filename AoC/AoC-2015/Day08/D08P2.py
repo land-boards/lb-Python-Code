@@ -1,11 +1,10 @@
-#985 is too low
-#1245 is too low
-#1512 is too high
+# 
+
 fileLen = 0
 def readFileToList():
 	global fileLen
 	inList = []
-	with open('input1.txt', 'r', encoding='utf-8') as filehandle:  
+	with open('input.txt', 'r', encoding='utf-8') as filehandle:  
 		for line in filehandle:
 			inLine = line.rstrip()
 			inList.append(inLine)
@@ -23,48 +22,34 @@ def countStorageSpaceForLine(line,reallyLongString):
 	return(charCount,localStr)
 	
 inList = readFileToList()
-#inList = ['""','"abc"','"aaa\"aaa"','"\x27"']
 #print(inList)
 count = 0
 for line in inList:
 	count += len(line)
 print("count of total chars",count)
 storageSpace = 0
-reallyLongString = ''
+print("inList",inList)
+outList = []
+expandedSpace = 0
 for line in inList:
-	pairOfThings = countStorageSpaceForLine(line,reallyLongString)
-	print("pairOfThings",pairOfThings)
-	storageSpace += pairOfThings[0]
-	reallyLongString += pairOfThings[1]
-print
-print("reallyLongString",reallyLongString)
-print("raw storageSpace",storageSpace)
-storeCount = 0
-charToCheckOffset = 0
-while charToCheckOffset < len(reallyLongString):
-	print("Current char is :",reallyLongString[charToCheckOffset])
-	if reallyLongString[charToCheckOffset] == '\\':
-		print("Got backslash")
-		if (reallyLongString[charToCheckOffset+1] == 'x'):
-			print("Got x, Offset = 4")
-			charToCheckOffset += 4
-			storeCount += 1
-		elif reallyLongString[charToCheckOffset+1] == '"':
-			print("Got quote, offset = 2")
-			charToCheckOffset += 2
-			storeCount += 1
-		elif reallyLongString[charToCheckOffset+1] == '\\"':
-			print("Offset = 2")
-			charToCheckOffset += 2
-			storeCount += 1
+	outLine = ''
+	outLine += '"'
+	expandedSpace += 1
+	for inChar in line:
+		if inChar == '"':
+			outLine += '\\"'
+			expandedSpace += 2
+		elif inChar == '\\':
+			outLine += '\\\\'
+			expandedSpace += 2
 		else:
-			storeCount += 1
-			charToCheckOffset += 2
-	else:
-		charToCheckOffset += 1
-		storeCount += 1
-# storeCount -= 1
-print("storeCount",storeCount)
-print("count",count)
-print("fileLen",fileLen)
-print("Delta =",count-storeCount)
+			outLine += inChar
+			expandedSpace += 1
+		storageSpace += 1
+	outLine += '"'
+	expandedSpace += 1
+	print("outLine",outLine)
+print("storageSpace",storageSpace)
+print("expandedSpace",expandedSpace)
+print("expandedSpace-storageSpace",expandedSpace-storageSpace)
+
