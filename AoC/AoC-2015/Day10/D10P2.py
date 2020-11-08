@@ -18,10 +18,11 @@ InputStr = '1113122113'
 # for loopCount in range(loops):
 	# print("loopCounxt",loopCount)
 
-loopCount = 40
+loopCount = 50
 while loopCount > 0:
 	strPtr = 0
 	newStr = ''
+#	print(loopCount)
 	while(strPtr < len(InputStr)):
 		repCount = countDigits(InputStr[strPtr:])
 #		print("count",repCount,"of",InputStr[strPtr])
@@ -31,5 +32,4 @@ while loopCount > 0:
 	InputStr = newStr
 #	print("InputStr",InputStr)
 	loopCount -= 1
-
-print("len",len(InputStr))
+	print(loopCount,"len",len(InputStr))
