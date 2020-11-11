@@ -7,4 +7,8 @@ in_dict = json.loads(inString)
 # print("Dictionary after parsing: ", in_dict) 
 for element in in_dict:
 	print('element',element)
-
+	print(type(element))
+	for item in element:
+		print(item)
+		
+	
