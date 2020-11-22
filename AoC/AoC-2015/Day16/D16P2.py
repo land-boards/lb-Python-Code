@@ -22,7 +22,13 @@ resultList = [['children',3],['cats',7],['samoyeds',2],['pomeranians',3],['akita
 
 def checkItemMatch(item,qty):
 	for result in resultList:
-		if (item == result[0]) and (qty == result[1]):
+		if (item == 'cats') or (item == 'trees'):
+			if (item == result[0]) and (qty > result[1]):
+				return True
+		elif (item == 'pomeranians') or (item == 'goldfish'):
+			if (item == result[0]) and (qty < result[1]):
+				return True
+		elif (item == result[0]) and (qty == result[1]):
 			return True
 	return False
 
