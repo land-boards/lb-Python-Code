@@ -1,0 +1,589 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to pyKickTinMail’s documentation! &mdash; pyUnivBom 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyUnivBom 1.0.1 documentation" href="#" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-pykicktinmail-s-documentation">
+<h1>Welcome to pyKickTinMail&#8217;s documentation!<a class="headerlink" href="#welcome-to-pykicktinmail-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-pyKickTinMail"></span><p>TindieMail.py - Automate Kickstarter and Tindie shipping lists.</p>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Input is the csv or tsv file(s) as exported from Kickstarter or Tindie</li>
+<li>Intent of this program is to automate a lot of copy-pasting of data for shipping.</li>
+<li>Program provides input field flexibility to allow for some column moving</li>
+<li>There are two possible types of file output</li>
+<li>One of the output formats is PayPal multiple shipping formated CSV file for US shipping</li>
+<li>The other output format is json file (used with bookmarklet.js and the USPS site for foreign shipping)</li>
+<li>Output Files are only produced for items which have not yet shippped.</li>
+</ul>
+</div>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>For the USPS (Foreign shipment) output -</li>
+<li>Create a bookmark in Firefox and put the bookmarklet.js script into the bookmark.</li>
+<li>Properties, location, paste <a class="reference external" href="javascript:(funct">javascript:(funct</a>...</li>
+<li>Name as KickerMailScript</li>
+</ul>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Run this program selecting as many input files as you wish.</li>
+<li>Typically only one Tindie file is selected.</li>
+<li>More than one Kickstarter file can be selected.</li>
+<li>Statistics will be shown for Kickstarter rewards (how many rewards, etc).</li>
+<li>The PayPal file is loaded from inside PayPal Multi-Order Shipping.</li>
+<li>The USPS file is run by copy-pasting one line at a time from the .json output.</li>
+<li>Select the bookmark (setup in the Setup above) and do the copy-paste.</li>
+<li>Being in wordwrap on NotePad++ helps for copy.</li>
+</ul>
+</div>
+<div class="section" id="tindie-input-file">
+<h2>Tindie Input File<a class="headerlink" href="#tindie-input-file" title="Permalink to this headline">¶</a></h2>
+<p>How to export the file from Tindie</p>
+<ul class="simple">
+<li>Tindie</li>
+<li>Menu</li>
+<li>My Store</li>
+<li>Export CSV</li>
+</ul>
+</div>
+<div class="section" id="kickstarter-input-file">
+<h2>Kickstarter Input File<a class="headerlink" href="#kickstarter-input-file" title="Permalink to this headline">¶</a></h2>
+<p>How to export the file from Kickstarter</p>
+<ul class="simple">
+<li>Kickstarter</li>
+<li>Menu (on)</li>
+<li>Backer Report</li>
+<li>Export</li>
+<li>All Reward Tiers</li>
+<li>Save to ZIP</li>
+<li>Extract into CSV file(s)</li>
+<li>This program can combine separate files/rewards</li>
+</ul>
+</div>
+<div class="section" id="paypal-import-steps">
+<h2>PayPal Import Steps<a class="headerlink" href="#paypal-import-steps" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Log into PayPal</li>
+<li>Under Selling Tools</li>
+<li>Select MultiOrder Shipping</li>
+<li>Select Import From file: Import</li>
+<li>Select from a file radio button</li>
+<li>Browse and Select the File name to import</li>
+<li>Click Import</li>
+<li>Setup mapping and make sure to save the mapping</li>
+<li>If already set up, select this mapping</li>
+<li>Select Done</li>
+<li>Fix any errors and retry</li>
+<li>Select Finished</li>
+<li>You can select multiple rows and set them to use the same weight/service type</li>
+</ul>
+</div>
+<div class="section" id="usps-import-steps">
+<h2>USPS Import Steps<a class="headerlink" href="#usps-import-steps" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Log into USPS website</li>
+<li>Select Mail &amp; Ship: Print &amp; Ship</li>
+<li>Should be in Create Label</li>
+<li>Open the json program created by this program into NotePad++ (or equivalent)</li>
+<li>Select KickerMailScript button on Bookmarks bar</li>
+<li>Copy/paste a line from NotePad++</li>
+<li>That will fill in most if not all of the page with default values</li>
+<li>Shipping method, weight, etc can vary so verify that the defaults are OK</li>
+<li>Select a service type</li>
+<li>Select Continue to go to the next screen</li>
+<li>Select the KickerMailScript button</li>
+<li>This time the script will autofill the screen based on defaults</li>
+<li>Verify the defaults are correct</li>
+<li>Select Continue to go to the next screen</li>
+<li>If there are more labels, select Create Another Label</li>
+<li>Rinse and repeat for all labels</li>
+</ul>
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+</div>
+<dl class="class">
+<dt id="pyKickTinMail.ControlClass">
+<em class="property">class </em><code class="descclassname">pyKickTinMail.</code><code class="descname">ControlClass</code><a class="headerlink" href="#pyKickTinMail.ControlClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Methods to read tindie or Kickstarter files and write out USPS and PayPal lists.</p>
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.countKickBoards">
+<code class="descname">countKickBoards</code><span class="sig-paren">(</span><em>theInList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.countKickBoards" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theInList</strong> &#8211; The entire list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">no value</td>
+</tr>
+</tbody>
+</table>
+<p>Count the boards and generate a snapshot of the data.</p>
+<ul class="simple">
+<li>4 - Shipping Amount, $5.00 USD</li>
+<li>5 - Reward Minimum,</li>
+<li>6 - Pledge Amount,</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.createKickPayPalAddrList">
+<code class="descname">createKickPayPalAddrList</code><span class="sig-paren">(</span><em>theList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.createKickPayPalAddrList" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theList</strong> &#8211; the List</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List</td>
+</tr>
+</tbody>
+</table>
+<p>Write out the USPS Address book values.
+The output file is a CSV that can be read by the USPS Address Book Import.</p>
+<p>Output list -</p>
+<ul class="simple">
+<li>0 - First Name,</li>
+<li>1 - MI,</li>
+<li>2 - Last Name,</li>
+<li>3 - Company,</li>
+<li>4 - Address 1,</li>
+<li>5 - Address 2,</li>
+<li>6 - Address 3,</li>
+<li>7 - City,</li>
+<li>8 - State/Province,</li>
+<li>9 - ZIP/Postal Code,</li>
+<li>10 - Country,</li>
+<li>11 - Urbanization (relates to Puerto Rico)</li>
+<li>12 - Phone Number,</li>
+<li>13 - Fax Number,</li>
+<li>14 - E Mail,</li>
+<li>15 - Reference Number,</li>
+<li>16 - Nickname,,,</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.createKickUSPSAddrList">
+<code class="descname">createKickUSPSAddrList</code><span class="sig-paren">(</span><em>theList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.createKickUSPSAddrList" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theList</strong> &#8211; list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+<p>Write out the USPS Address book values.
+The output file is a CSV that can be read by the USPS Address Book Import.</p>
+<p>Output list -</p>
+<ul class="simple">
+<li>0 - First Name,</li>
+<li>1 - MI,</li>
+<li>2 - Last Name,</li>
+<li>3 - Company,</li>
+<li>4 - Address 1,</li>
+<li>5 - Address 2,</li>
+<li>6 - Address 3,</li>
+<li>7 - City,</li>
+<li>8 - State/Province,</li>
+<li>9 - ZIP/Postal Code,</li>
+<li>10 - Country,</li>
+<li>11 - Urbanization (relates to Puerto Rico)</li>
+<li>12 - Phone Number,</li>
+<li>13 - Fax Number,</li>
+<li>14 - E Mail,</li>
+<li>15 - Reference Number,</li>
+<li>16 - Nickname,,,</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.createTindiePayPayAddrList">
+<code class="descname">createTindiePayPayAddrList</code><span class="sig-paren">(</span><em>theList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.createTindiePayPayAddrList" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theList</strong> &#8211; the List</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List</td>
+</tr>
+</tbody>
+</table>
+<p>Write out the USPS Address book values.
+The output file is a CSV that can be read by the USPS Address Book Import.</p>
+<p>Output list -</p>
+<ul class="simple">
+<li>0 - First Name,</li>
+<li>1 - MI,</li>
+<li>2 - Last Name,</li>
+<li>3 - Company,</li>
+<li>4 - Address 1,</li>
+<li>5 - Address 2,</li>
+<li>6 - Address 3,</li>
+<li>7 - City,</li>
+<li>8 - State/Province,</li>
+<li>9 - ZIP/Postal Code,</li>
+<li>10 - Country,</li>
+<li>11 - Urbanization (relates to Puerto Rico)</li>
+<li>12 - Phone Number,</li>
+<li>13 - Fax Number,</li>
+<li>14 - E Mail,</li>
+<li>15 - Reference Number,</li>
+<li>16 - Nickname,,,</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.createTindieUSPSAddrList">
+<code class="descname">createTindieUSPSAddrList</code><span class="sig-paren">(</span><em>theList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.createTindieUSPSAddrList" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theList</strong> &#8211; the List</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List</td>
+</tr>
+</tbody>
+</table>
+<p>Write out the USPS Address book values.
+The output file is a CSV that can be read by the USPS Address Book Import.</p>
+<p>Output list -</p>
+<ul class="simple">
+<li>0 - First Name,</li>
+<li>1 - MI,</li>
+<li>2 - Last Name,</li>
+<li>3 - Company,</li>
+<li>4 - Address 1,</li>
+<li>5 - Address 2,</li>
+<li>6 - Address 3,</li>
+<li>7 - City,</li>
+<li>8 - State/Province,</li>
+<li>9 - ZIP/Postal Code,</li>
+<li>10 - Country,</li>
+<li>11 - Urbanization (relates to Puerto Rico)</li>
+<li>12 - Phone Number,</li>
+<li>13 - Fax Number,</li>
+<li>14 - E Mail,</li>
+<li>15 - Reference Number,</li>
+<li>16 - Nickname,,,</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.determineInputFileType">
+<code class="descname">determineInputFileType</code><span class="sig-paren">(</span><em>theInList</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.determineInputFileType" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Params theInList:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">in file list</td>
+</tr>
+</tbody>
+</table>
+<p>Look at the top row of the file to determine the input file type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.flat_to_objects">
+<code class="descname">flat_to_objects</code><span class="sig-paren">(</span><em>js_like_header</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.flat_to_objects" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>js_like_header</strong> &#8211; </li>
+<li><strong>data</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">objects</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.mapKickInList">
+<code class="descname">mapKickInList</code><span class="sig-paren">(</span><em>header</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.mapKickInList" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>header</strong> &#8211; The list header.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing</td>
+</tr>
+</tbody>
+</table>
+<p>Map the column headers to an internal preferred ordering.
+Latest input format -</p>
+<ul class="simple">
+<li>Backer Number,</li>
+<li>Backer UID,</li>
+<li>Backer Name,</li>
+<li>Email,</li>
+<li>Shipping Country,</li>
+<li>Shipping Amount,</li>
+<li>Reward Minimum,</li>
+<li>Pledge Amount,</li>
+<li>Pledged At,</li>
+<li>Rewards Sent?,</li>
+<li>Pledged Status,</li>
+<li>Notes,</li>
+<li>Survey Response,</li>
+<li>Shipping Name,</li>
+<li>Shipping Address 1,</li>
+<li>Shipping Address 2,</li>
+<li>Shipping City,</li>
+<li>Shipping State,</li>
+<li>Shipping Postal Code,</li>
+<li>Shipping Country Name,</li>
+<li>Shipping Country Code</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.mapTindieInList">
+<code class="descname">mapTindieInList</code><span class="sig-paren">(</span><em>header</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.mapTindieInList" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>header</strong> &#8211; The list header.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a mapping file with the columns mapped to a column number.</td>
+</tr>
+</tbody>
+</table>
+<p>Map the column headers to an internal preferred ordering.
+Latest input format -
+* ID
+* Date
+* First Name
+* Last Name
+* Street
+* City
+* State / Province
+* Postal/Zip Code
+* Country
+* Additional Instructions
+* Email
+* Phone 
+* Refunded
+* Shipped
+* Pay Out Status
+* Paid Out
+* Shipping
+* Shipping Amount 
+* Tracking Number
+* Tindie Fee
+* Processing Fee
+* Product Name
+* Option Summary
+* Status
+* Quantity
+* Unit Price
+* Total Price
+* Model Number</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.row_to_dict">
+<code class="descname">row_to_dict</code><span class="sig-paren">(</span><em>js_like_header</em>, <em>row</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.row_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>js_like_header</strong> &#8211; </li>
+<li><strong>row</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.theExecutive">
+<code class="descname">theExecutive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.theExecutive" title="Permalink to this definition">¶</a></dt>
+<dd><p>The code that calls the other code</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.ControlClass.writeOutJSON">
+<code class="descname">writeOutJSON</code><span class="sig-paren">(</span><em>fileNameJSON</em>, <em>header</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.ControlClass.writeOutJSON" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fileNameJSON</strong> &#8211; </li>
+<li><strong>header</strong> &#8211; </li>
+<li><strong>data</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">json_lines</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyKickTinMail.UIManager">
+<em class="property">class </em><code class="descclassname">pyKickTinMail.</code><code class="descname">UIManager</code><a class="headerlink" href="#pyKickTinMail.UIManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>The UI manager</p>
+<dl class="method">
+<dt id="pyKickTinMail.UIManager.about_TindieMail">
+<code class="descname">about_TindieMail</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.UIManager.about_TindieMail" title="Permalink to this definition">¶</a></dt>
+<dd><p>The about dialog</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.UIManager.openIF">
+<code class="descname">openIF</code><span class="sig-paren">(</span><em>b</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.UIManager.openIF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the interface by calling the control class</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyKickTinMail.UIManager.quit_application">
+<code class="descname">quit_application</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="headerlink" href="#pyKickTinMail.UIManager.quit_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>quit</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to pyKickTinMail&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#tindie-input-file">Tindie Input File</a></li>
+<li><a class="reference internal" href="#kickstarter-input-file">Kickstarter Input File</a></li>
+<li><a class="reference internal" href="#paypal-import-steps">PayPal Import Steps</a></li>
+<li><a class="reference internal" href="#usps-import-steps">USPS Import Steps</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2014, Doug Gilliland.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

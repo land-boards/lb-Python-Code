@@ -100,6 +100,13 @@ USPS Import Steps
 * If there are more labels, select Create Another Label
 * Rinse and repeat for all labels
 
+-----------------------
+PirateShip Import Steps
+-----------------------
+
+* Log into PirateShip website
+* Select spreadsheet
+
 ----
 Code
 ----
@@ -127,7 +134,7 @@ from datetime import date
 
 #sys.path.append('C:\\Users\\doug_000\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
 #sys.path.append('C:\\Users\\DGilliland\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
-sys.path.append('C:\\Users\\Doug\\Documents\\GitHub\\lb-Python-Code\\dgCommonModules')
+sys.path.append('C:\\Users\\HPz420\\Documents\\GitHub\\land-boards\\lb-Python-Code\\dgCommonModules')
 
 from dgProgDefaults import *
 from dgReadCSVtoList import *
@@ -207,17 +214,18 @@ class ControlClass:
 		#print 'list is lines', len(endList)
 		#print 'theExecutive: endList', endList
 
-		if inFileType == 1:		# Kickstarter
+		if inFileType == 1:		# Kickstarter format input
 			self.mapKickInList(endList[0])
 			self.countKickBoards(endList[1:])
 			uspsList = self.createKickUSPSAddrList(endList[1:])
 			payPalList = self.createKickPayPalAddrList(endList[1:])
-		elif inFileType == 2:	# Tindie
+		elif inFileType == 2:	# Tindie format input
 			#print 'first row of list is', endList[0]
 			#print 'second row of list is', endList[1]
 			self.mapTindieInList(endList[0])
 			uspsList = self.createTindieUSPSAddrList(endList[1:])
 			payPalList = self.createTindiePayPayAddrList(endList[1:])
+			pirateShipList = self.createPirateShipAddrList(endList[1:])
 			outMessage = 'TindieMail Statistics\n'
 			outMessage += 'Unfiltered list lines : '
 			outMessage += str(len(endList))
@@ -246,17 +254,25 @@ class ControlClass:
 		fileToWriteJSON = defaultPath + "orders_USPS-"
 		fileToWriteJSON += dateToAppend
 		fileToWriteJSON += ".json"
+		fileToWritePship = defaultPath + "orders_PriateShip-"
+		fileToWritePship += dateToAppend
+		fileToWritePship += ".csv"
 
 		outFileClass = WriteListtoCSV()
 		outFileClass.appendOutFileName('.csv')
-		if uspsList != []:
-			uspsHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
-			# outFileClass.writeOutList(fileToWriteUSPS, uspsHeader, uspsList)
-			self.writeOutJSON(fileToWriteJSON, uspsHeader, uspsList)
-		if payPalList != []:
-			#print 'len of payPalList', len(payPalList)
-			payPalHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
-			outFileClass.writeOutList(fileToWritePayPal, payPalHeader, payPalList)
+		# if uspsList != []:
+			# uspsHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
+			# # outFileClass.writeOutList(fileToWriteUSPS, uspsHeader, uspsList)
+			# self.writeOutJSON(fileToWriteJSON, uspsHeader, uspsList)
+		# if payPalList != []:
+			# #print 'len of payPalList', len(payPalList)
+			# payPalHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
+			# outFileClass.writeOutList(fileToWritePayPal, payPalHeader, payPalList)
+		if pirateShipList != []:
+			#print 'len of pirateShipList', len(pirateShipList)
+			pirateShipHeader = ['First Name','MI','Last Name','Company','Address 1','Address 2','Address 3','City','State/Province','ZIP/Postal Code','Country','Urbanization','Phone Number','Fax Number','E Mail','Reference Number','Nickname']
+			outFileClass.writeOutList(fileToWritePship, pirateShipHeader, pirateShipList)
+		
 
 	def writeOutJSON(self, fileNameJSON, header, data):
 		"""
@@ -633,68 +649,78 @@ class ControlClass:
 		* First Name
 		* Last Name
 		* Email
+		* Company Title
+		* Phone	
 		* Street
 		* City
 		* State / Province
 		* Postal/Zip Code
 		* Country
 		* Additional Instructions
-		* Phone	
-		* Refunded
-		* Shipped
-		* Pay Out Status
-		* Paid Out
-		* Shipping
-		* Shipping Amount 
-		* Tracking Number
+		* Shipping Methods
+		* Shipping Total
+		* Discount Total
+		* Discount Codes
+		* Tax Total
+		* Order Total
 		* Tindie Fee
 		* Processing Fee
+		* Total Payable to Seller
+		* Refunded
+		* Shipped
+		* Tracking Number		
+		* Pay Out Status
+		* Paid Out
 		* Product Name
-		* Option Summary
-		* Status
-		* Quantity
-		* Unit Price
-		* Total Price
+		* Option Summmary
 		* Model Number
+		* Status
+		* Unit Price
+		* Discount Price
+		* Quantity
+		* Total Item Price
 
 		"""
-		global emailColumn
 		global shippingFirstNameColumn
 		global shippingLastNameColumn
+		global companyColumn
 		global address1Column
+		global address2Column
 		global cityColumn
 		global stateColumn
 		global zipColumn
 		global countryColumn
+		global phoneNumberColumn
+		global emailColumn
 		global rewardsSentColumn
 		#print header
 		myOutList = []
 		itemNum = 0
 		#print 'mapTindieInList: header',header
 		for item in header:
-			if item == 'Email':
-				emailColumn = itemNum
-			elif item == 'First Name':
+			if item == 'First Name':
 				shippingFirstNameColumn = itemNum
 			elif item == 'Last Name':
 				shippingLastNameColumn = itemNum
-			elif item == 'Country':
-				countryColumn = itemNum
-			elif item == 'Shipped':
-				rewardsSentColumn = itemNum
-				#print 'shipped column mapped'
-			elif item == 'Shipping Name':
-				shippingNameColumn = itemNum
+			elif item == 'Company Title':
+				companyColumn = itemNum
 			elif item == 'Street':
 				address1Column = itemNum
-			elif item == 'Shipping Address 2':
-				address2Column = itemNum
 			elif item == 'City':
 				cityColumn = itemNum
 			elif item == 'State / Province':
 				stateColumn = itemNum
 			elif item == 'Postal/Zip Code':
 				zipColumn = itemNum
+			elif item == 'Country':
+				countryColumn = itemNum
+			elif item == 'Phone':
+				phoneNumberColumn = itemNum
+			elif item == 'Email':
+				emailColumn = itemNum
+			elif item == 'Shipped':
+				rewardsSentColumn = itemNum
+				#print 'shipped column mapped'
 			#else:
 				#print 'unknown/unused header',item
 			itemNum += 1
@@ -787,6 +813,86 @@ class ControlClass:
 				outList.append(outLine)
 		return outList
 
+	def createPirateShipAddrList(self, theList):
+		"""
+		:param theList: the List
+		:return: List
+		
+		Output list -
+		
+		* 0 - First Name,
+		* 1 - MI,
+		* 2 - Last Name,
+		* 3 - Company,
+		* 4 - Address 1,
+		* 5 - Address 2,
+		* 6 - Address 3,
+		* 7 - City,
+		* 8 - State/Province,
+		* 9 - ZIP/Postal Code,
+		* 10 - Country,
+		* 11 - Urbanization (relates to Puerto Rico)
+		* 12 - Phone Number,
+		* 13 - Fax Number,
+		* 14 - E Mail,
+		* 15 - Reference Number,
+		* 16 - Nickname,,,
+		
+		"""
+		global shippingFirstNameColumn
+		global shippingLastNameColumn
+		global companyColumn
+		global address1Column
+		global address2Column
+		global cityColumn
+		global stateColumn
+		global zipColumn
+		global countryColumn
+		global phoneNumberColumn
+		global emailColumn
+		global rewardsSentColumn
+		outList = []
+		for row in theList:
+			if row[rewardsSentColumn] == 'False':
+			#print 'country', row[countryColumn]
+				outLine = []
+				outLine.append(row[shippingFirstNameColumn])
+				outLine.append('')
+				outLine.append(row[shippingLastNameColumn])
+				outLine.append(row[companyColumn])
+				numAddrLines = string.count(row[address1Column],'\n') + 1
+				if numAddrLines == 1:
+					firstAddrLine = row[address1Column]
+					secondAddrLine = ''
+					thirdAddrLine = ''
+				elif numAddrLines == 2:
+					firstAddrLine = row[address1Column][0:string.find(row[address1Column],'\n')-1]
+					offset1 = string.find(row[address1Column],'\n')
+					secondAddrLine = row[address1Column][offset1+1:]
+					thirdAddrLine = ''
+				elif numAddrLines == 3:
+					firstAddrLine = row[address1Column][0:string.find(row[address1Column],'\n')-1]
+					offset1 = string.find(row[address1Column],'\n')
+					offset2 = string.find(row[address1Column][offset1+1:],'\n')
+					secondAddrLine = row[address1Column][offset1+1:offset1+offset2]
+					thirdAddrLine = row[address1Column][offset1+offset2+2:]
+				else:
+					errorDialog('Too many address lines')
+				outLine.append(firstAddrLine)
+				outLine.append(secondAddrLine)
+				outLine.append(thirdAddrLine)
+				outLine.append(row[cityColumn])
+				outLine.append(row[stateColumn])
+				outLine.append(row[zipColumn])
+				outLine.append(row[countryColumn])
+				outLine.append('')		# urbanization code for Puerto Rico
+				outLine.append(row[phoneNumberColumn])
+				outLine.append('')		# fax
+				outLine.append(row[emailColumn])
+				outList.append(outLine)
+		return outList
+
+		
 	def createTindiePayPayAddrList(self, theList):
 		"""
 		:param theList: the List
