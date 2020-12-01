@@ -27,21 +27,21 @@ testCount = 0
 # print('inList',inList)
 # inList.sort()
 # print('inList',inList)
-# inList.reverse()
+inList.reverse()
 # print('inList',inList)
 print('len inList',len(inList))
 for perm in itertools.permutations(inList):
 	testSize = totalSize
 	# print(inList)
-	# print()
-	for item in inList:
-		# print(item,end=' ')
+	#print(perm)
+	for item in perm:
+		#print(item,end=' ')
 		testSize -= item
 		if testSize == 0:
 			testCount += 1
-			print(testCount)
+			#print(testCount)
 			break
 		if testSize < 0:
 			break
-	# print()
+	#print()
 print('counts',testCount)
