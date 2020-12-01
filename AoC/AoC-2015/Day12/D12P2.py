@@ -60,11 +60,11 @@ for element in inList:
 	if element == '':
 		print('null')
 	elif element == '{':
-		print('down a level',currentLevel)
+		print('going down a level',currentLevel)
 		currentLevel += 1
 		foundRed[currentLevel] = 'no'
 	elif element == '}':
-		print('up a level',currentLevel)
+		print('going up a level',currentLevel)
 		if foundRed[currentLevel]  == 'no':
 			sum += countAtLevel[currentLevel]
 			print('new sum',sum)
