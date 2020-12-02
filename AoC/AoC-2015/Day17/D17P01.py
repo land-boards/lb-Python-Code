@@ -1,3 +1,7 @@
+# 3183 too high
+# 3258 is too high
+# 5570 too high
+
 import itertools
 
 # def next_permutation(arr):
@@ -18,28 +22,28 @@ import itertools
 	# arr[i : ] = arr[len(arr) - 1 : i - 1 : -1]
 	# return True
 
-inList = [50, 49, 47, 46, 44, 43, 42, 40, 40, 36, 32, 26, 24, 22, 21, 18, 18, 11, 10, 7]
-totalSize = 150
-# inList = [20,15,10,5,5]
-# totalSize = 25
+# inList = [50, 49, 47, 46, 44, 43, 42, 40, 40, 36, 32, 26, 24, 22, 21, 18, 18, 11, 10, 7]
+# totalSize = 150
+inList = [20,15,10,5,5]
+totalSize = 25
 
 testCount = 0
 # print('inList',inList)
 # inList.sort()
 # print('inList',inList)
 inList.reverse()
-# print('inList',inList)
+print('inList',inList)
 print('len inList',len(inList))
-for perm in itertools.permutations(inList):
+for combo in itertools.permutations(inList):
 	testSize = totalSize
 	# print(inList)
-	#print(perm)
-	for item in perm:
+	print(combo)
+	for item in combo:
 		#print(item,end=' ')
 		testSize -= item
 		if testSize == 0:
 			testCount += 1
-			#print(testCount)
+			print("hit",testCount)
 			break
 		if testSize < 0:
 			break
