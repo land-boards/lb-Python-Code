@@ -24,8 +24,10 @@ inString = inString.replace('"h"','')
 inString = inString.replace('"i"','')
 inString = inString.replace('"j"','')
 inString = inString.replace(':','')
-inString = inString.replace('[','')
-inString = inString.replace(']','')
+# inString = inString.replace('[','')
+# inString = inString.replace(']','')
+inString = inString.replace(']',',[,')
+inString = inString.replace('[',',],')
 inString = inString.replace('}',',},')
 inString = inString.replace('{',',{,')
 loopStill = True
@@ -59,6 +61,10 @@ currentLevel = 0
 for element in inList:
 	if element == '':
 		print('null')
+	elif element == '[':
+		pass
+	elif element == ']':
+		pass
 	elif element == '{':
 		print('going down a level',currentLevel)
 		currentLevel += 1
@@ -75,7 +81,7 @@ for element in inList:
 		foundRed[currentLevel] = 'yes'
 	else:
 		val = int(element)
-		print('val',val)
+		# print('val',val)
 		countAtLevel[currentLevel] += val
 print('currentLevel',currentLevel)
 if foundRed[currentLevel]  == 'no':
