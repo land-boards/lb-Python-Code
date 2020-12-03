@@ -1,5 +1,6 @@
 # 2020 D03P2
 # 529 is too low
+# 3638606400 is right
 
 def readFileOfStringsToList():
 	inList = []
@@ -10,11 +11,11 @@ def readFileOfStringsToList():
 	return inList
 
 def checkForTree(xpos,ypos,inList):
-	print('check at',xpos,ypos,end=' ')
+	#print('check at',xpos,ypos,end=' ')
 	if inList[ypos][xpos] == '#':
-		print('found tree')
+		#print('found tree')
 		return True
-	print('no tree')
+	#print('no tree')
 	return False
 
 def countTreesOnWayDown(deltaX,deltaY,inList):
@@ -26,7 +27,7 @@ def countTreesOnWayDown(deltaX,deltaY,inList):
 		yPos += deltaY
 		if xPos > columns-1:
 			xPos = xPos % (columns)
-			print('modulo')
+			#print('modulo')
 		if checkForTree(xPos,yPos,inList):
 			numberOfTrees += 1
 	return numberOfTrees	

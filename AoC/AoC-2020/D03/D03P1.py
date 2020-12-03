@@ -1,7 +1,7 @@
 # 2020D3P1
 # 81 is not right
 
-def readFileOfStringsToList():
+def readFileOfStringsToListOfLists():
 	inList = []
 	with open('input.txt', 'r') as filehandle:  
 		for line in filehandle:
@@ -17,7 +17,7 @@ def checkForTree(xpos,ypos,inList):
 	print('no tree')
 	return False
 
-inList = readFileOfStringsToList()
+inList = readFileOfStringsToListOfLists()
 for row in inList:
 	print(row)
 rows = len(inList)
