@@ -34,7 +34,7 @@ testCount = 0
 inList.reverse()
 print('inList',inList)
 print('len inList',len(inList))
-maxNum = 8
+maxNum = 4
 minNum = 4
 for num in range(minNum,maxNum+1):
 	for combo in itertools.combinations(inList,num):
