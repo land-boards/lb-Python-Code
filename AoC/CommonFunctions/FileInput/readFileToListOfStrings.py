@@ -1,4 +1,10 @@
-def readFileToList():
+""" 
+
+readFileToListOfStrings
+
+"""
+
+def readFileToListOfStrings():
 	inList = []
 	with open('input.txt', 'r') as filehandle:  
 		for line in filehandle:
