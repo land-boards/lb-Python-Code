@@ -9,6 +9,22 @@ def readFileOfStringsToList():
 			inList.append(inLine.split(':'))
 	return inList
 
+def isInRange(lower,upper,val):
+	# Returns True if val is in the range from lower to upper
+	# Return False otherwise
+	return lower <= val <= upper
+
+def isValidLength(expectedLength,strToCheck):
+	# returns True if the strToCheck length is expectedLength
+	# Return False otherwise
+	return len(strToCheck) == expectedLength
+
+DEBUG_PRINT = False
+
+def debugPrint(thingToPrint):
+	if DEBUG_PRINT:
+		print(thingToPrint)
+
 expectedFields = ['byr','iyr','eyr','hgt','hcl','ecl','pid','cid']
 requiredFields = ['byr','iyr','eyr','hgt','hcl','ecl','pid']
 
@@ -16,55 +32,46 @@ def getFieldValue(key,record):
 	for fieldOffset in range(len(record)):
 		if record[fieldOffset] == key:
 			return record[fieldOffset+1]
-	print('key',key,end=' ')
-	print('record',record)
+	debugPrint('key '+key+'')
+	debugPrint('record '+record)
 	assert False,'unexpected field'
 
 def checkBYR(key,record):
 	value = getFieldValue(key,record)
-	print('byr',value)
+	debugPrint('byr '+value)
 	year = int(value)
-	if 1920 <= year <= 2002:
-		return True
-	else:
-		return False
+	return isInRange(1920,2002,year)
 
 def checkIYR(key,record):
 	value = getFieldValue(key,record)
-	print('iyr',value)
+	debugPrint('iyr '+value)
 	year = int(value)
-	if 2010 <= year <= 2020:
-		return True
-	else:
-		return False
+	return isInRange(2010,2020,year)
 
 def checkEYR(key,record):
 	value = getFieldValue(key,record)
-	print('eyr',value)
+	debugPrint('eyr '+value)
 	year = int(value)
-	if 2020 <= year <= 2030:
-		return True
-	else:
-		return False
+	return isInRange(2020,2030,year)
 
 def checkHGT(key,record):
 	value = getFieldValue(key,record)
-	print('hgt',value)
+	debugPrint('hgt '+value)
 	if 'cm' in value:
-		if len(value) != 5:
+		if not isValidLength(5,value):
 			return False
 		hgt = value[0:3]
 		hgtNum = int(hgt)
-		if 150 <= hgtNum <= 193:
+		if isInRange(150,193,hgtNum):
 			return True
 		else:
 			return False
 	elif 'in' in value:
-		if len(value) != 4:
+		if not isValidLength(4,value):
 			return False
 		hgt = value[0:2]
 		hgtNum = int(hgt)
-		if 59 <= hgtNum <= 76:
+		if isInRange(59,76,hgtNum):
 			return True
 		else:
 			return False
@@ -73,10 +80,10 @@ def checkHGT(key,record):
 	assert False,"no clue how I got here"
 
 def check_0to9_AtoF(charVal):
-	#print('check_0to9_AtoF',charVal)
-	if 'a' <= charVal <= 'f':
+	debugPrint('check_0to9_AtoF '+charVal)
+	if isInRange('a','f',charVal):
 		return True
-	if '0' <= charVal <= '9':
+	if isInRange('0','9',charVal):
 		return True
 	else:
 		print('failed check_0to9_AtoF')
@@ -84,10 +91,10 @@ def check_0to9_AtoF(charVal):
 		
 def checkHCL(key,record):
 	value = getFieldValue(key,record)
-	print('hcl',value)
+	debugPrint('hcl '+value)
 	if value[0] != '#':
 		return False
-	if len(value) != 7:
+	if not isValidLength(7,value):
 		return False
 	for charVal in value[1:]:
 		if not check_0to9_AtoF(charVal):
@@ -98,18 +105,18 @@ eyeColors = ['amb','blu','brn','gry','grn','hzl','oth']
 
 def checkECL(key,record):
 	value = getFieldValue(key,record)
-	print('ecl',value)
+	debugPrint('ecl '+value)
 	if value not in eyeColors:
 		return False
 	return True
 
 def checkPID(key,record):
 	value = getFieldValue(key,record)
-	print('pid',value)
-	if len(value) != 9:
+	debugPrint('pid '+value)
+	if not isValidLength(9,value):
 		return False
 	for digitVal in value:
-		if not ('0' <= digitVal <= '9'):
+		if not isInRange('0','9',digitVal):
 			return False
 	return True
 
@@ -131,7 +138,7 @@ def validatePassportRecord(record):
 	return True
 
 inList = readFileOfStringsToList()
-#print(inList)
+debugPrint(inList)
 validPassportCount = 0
 passportsWithAllFields = []
 for record in inList:
@@ -143,9 +150,9 @@ for record in inList:
 		validPassportCount += 1
 		passportsWithAllFields.append(record)
 
-#print('validPassportCount',validPassportCount)
-print('passportsWithAllFields',passportsWithAllFields)
-print('count',len(passportsWithAllFields))
+debugPrint('validPassportCount '+str(validPassportCount))
+debugPrint('passportsWithAllFields'+str(passportsWithAllFields))
+print('count of passportsWithAllFields',len(passportsWithAllFields))
 passportsWithFieldsValidated = 0
 for record in passportsWithAllFields:
 	if validatePassportRecord(record):
