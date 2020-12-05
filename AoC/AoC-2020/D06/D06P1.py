@@ -3,6 +3,7 @@ DEBUG_PRINT = True
 
 import itertools
 
+DEBUG_PRINT = True
 def debugPrint(thingToPrint):
 	if DEBUG_PRINT:
 		print(thingToPrint)
@@ -13,4 +14,3 @@ def readFileToListOfStrings():
 		for line in filehandle:
 			inList.append(line.rstrip())
 	return inList
-
