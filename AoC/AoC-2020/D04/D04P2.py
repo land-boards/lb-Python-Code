@@ -19,7 +19,7 @@ def isValidLength(expectedLength,strToCheck):
 	# Return False otherwise
 	return len(strToCheck) == expectedLength
 
-DEBUG_PRINT = False
+DEBUG_PRINT = True
 
 def debugPrint(thingToPrint):
 	if DEBUG_PRINT:
