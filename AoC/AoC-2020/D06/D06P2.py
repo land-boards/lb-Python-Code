@@ -1,11 +1,9 @@
 #1762 is too low
 
-DEBUG_PRINT = True
-#DEBUG_PRINT = False
-
 import itertools
 
 DEBUG_PRINT = True
+DEBUG_PRINT = False
 def debugPrint(thingToPrint):
 	if DEBUG_PRINT:
 		print(thingToPrint)
@@ -48,17 +46,17 @@ for group in newList:
 	for c in charsUsed:
 		charWasUsed = True
 		for person in group:
-			print('checking person',person,'for',c)
+			debugPrint('checking person '+person+' for '+c)
 			if c not in person:
-				print(c,'was not in',person)
+				debugPrint(c+' was not in ' + person)
 				charWasUsed = False
 			else:
-				print(c,'was in',person)
+				debugPrint(c + ' was in ' + person)
+				pass
 		if charWasUsed:
 			debugPrint('char was used by all ' + c)
 			charCount += 1
 			debugPrint('charCount '+str(charCount))
 		else:
-			print('char was not used by all',c)
+			debugPrint('char was not used by all' + c)
 print('charCount',charCount)
-
