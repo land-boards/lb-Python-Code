@@ -1,12 +1,5 @@
 # 2020 D08P1
 
-def readFileToListOfStrings():
-	inList = []
-	with open('input.txt', 'r') as filehandle:  
-		for line in filehandle:
-			inList.append(line.rstrip())
-	return inList
-	
 DEBUG_PRINT = True
 DEBUG_PRINT = False
 
@@ -14,10 +7,17 @@ def debugPrint(thingToPrint):
 	if DEBUG_PRINT:
 		print(thingToPrint)
 
+def readFileToListOfStrings():
+	inList = []
+	with open('input2.txt', 'r') as filehandle:  
+		for line in filehandle:
+			inList.append(line.rstrip())
+	return inList
+	
 def doInstr(instruction):
 	global regA
 	global pc
-	#debugPrint(instruction)
+	debugPrint(instruction)
 	if instruction[0] == 'acc':
 		regA += instruction[1]
 		pc += 1
@@ -38,7 +38,7 @@ for row in inList:
 	newLine = row.replace(',','')
 	newLine2 = newLine.split(' ')
 	if DEBUG_PRINT:
-		print('newLine2' + newLine2)
+		print('newLine2' + newLine2[0] + newLine2[1])
 	opcode = newLine2[0]
 	val = int(newLine2[1])
 	program.append([opcode,val])
@@ -50,20 +50,28 @@ endPC = len(program)
 debugPrint('length='+str(endPC))
 #assert False,'huh'
 
-loopTerminalCount = 100000
-fixLine = 0
+lineNumToFix = 0
 
-loopCount = 0
+# Make a fresh copy of the program
+newProgram = []
 for line in program:
 	newProgram.append(line)
-while loopCount < loopTerminalCount:
+	#print(line)
+loopCount = 0
+loopTerminalCount = 100000
+reachedEndOfCode = 'notYet'
+while reachedEndOfCode == 'notYet':
 	while pc < endPC:
-		instrCounterList[pc] += 1
 		#print(pc,' ',program[pc],'a',regA,end='')
 		doInstr(newProgram[pc])
-		#print(', new pc',pc)
+		#print(', new pc',pc,end='')
 		#print('regA',regA)
-	#	assert False,'huh'
+		#assert False,'huh'
 		loopCount += 1
-	break
+		#debugPrint('loopCount '+ str(loopCount) + ' out of ' + str(loopTerminalCount))
+		if loopCount >= loopTerminalCount:
+			reachedEndOfCode = 'reachedLoopTC'
+			break
+	reachedEndOfCode = 'reachedEndOfCode'
+print('reason for ending',reachedEndOfCode)
 print('regA',regA)
