@@ -33,7 +33,6 @@ DEBUG_PRINT = False
 inList = readFileToListOfStrings()
 debugPrint(inList)
 program = []
-instrCounterList = []
 for row in inList:
 	newRow = []
 	newLine = row.replace(',','')
@@ -43,7 +42,6 @@ for row in inList:
 	opcode = newLine2[0]
 	val = int(newLine2[1])
 	program.append([opcode,val])
-	instrCounterList.append(0)
 debugPrint(program)
 
 pc = 0
@@ -52,13 +50,20 @@ endPC = len(program)
 debugPrint('length='+str(endPC))
 #assert False,'huh'
 
-while pc < endPC:
-	instrCounterList[pc] += 1
-	if instrCounterList[pc] > 1:
-		break
-	#print(pc,' ',program[pc],'a',regA,end='')
-	doInstr(program[pc])
-	#print(', new pc',pc)
-	#print('regA',regA)
-#	assert False,'huh'
+loopTerminalCount = 100000
+fixLine = 0
+
+loopCount = 0
+for line in program:
+	newProgram.append(line)
+while loopCount < loopTerminalCount:
+	while pc < endPC:
+		instrCounterList[pc] += 1
+		#print(pc,' ',program[pc],'a',regA,end='')
+		doInstr(newProgram[pc])
+		#print(', new pc',pc)
+		#print('regA',regA)
+	#	assert False,'huh'
+		loopCount += 1
+	break
 print('regA',regA)
