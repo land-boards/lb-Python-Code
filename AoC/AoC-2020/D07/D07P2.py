@@ -1,9 +1,5 @@
 DEBUG_PRINT = True
 #DEBUG_PRINT = False
-
-import itertools
-
-DEBUG_PRINT = False
 def debugPrint(thingToPrint):
 	if DEBUG_PRINT:
 		print(thingToPrint)
@@ -14,27 +10,6 @@ def readFileToListOfStrings():
 		for line in filehandle:
 			inList.append(line.rstrip())
 	return inList
-
-whereUsedList = []
-
-def findWhereUsedAtCurrentLevel(linksList):
-	foundNewOne = False
-	for nha in whereUsedList:
-		for link in linksList:
-			if link[1] == nha:
-				if link[0] not in whereUsedList:
-					whereUsedList.append(link[0])
-					foundNewOne = True
-	return foundNewOne
-
-def findAllLevelsWhereUsed(searchStr,linksList):
-	debugPrint('linksList ' + str(linksList))
-	whereUsedList.append(searchStr)
-	debugPrint('whereUsedList ' + str(whereUsedList))
-	moreToDo = True
-	while moreToDo:
-		moreToDo = findWhereUsedAtCurrentLevel(linksList)
-		debugPrint('whereUsedList ' + str(whereUsedList))
 
 inList = readFileToListOfStrings()
 debugPrint(inList)
@@ -74,6 +49,28 @@ for row in newList:
 for row in combList:
 	debugPrint(row)
 
+def printGraphText(linksList):
+	debugPrint('\ndigraph G {')
+	for pair in linksList:
+		line = '"'
+		line += pair[0]
+		line += '" -> "'
+		line += pair[1]
+		line += '"'
+		debugPrint(line)
+	debugPrint('}\n')
+
+def printGraphTextBack(linksList):
+	debugPrint('\ndigraph G {')
+	for pair in linksList:
+		line = '"'
+		line += pair[1]
+		line += '" -> "'
+		line += pair[0]
+		line += '"'
+		debugPrint(line)
+	debugPrint('}\n')
+
 linksList = []
 for row in combList:
 	state = 'lookingForFirstColor'
@@ -88,22 +85,49 @@ for row in combList:
 		elif state == 'lookingForOtherColors':
 			state = 'lookingForNumber'
 			currentColor = element
-			line = '"'
-			line += firstColor
-			line += '" -> "'
-			line += currentColor
-			line += '"'
-			print(line)
 			linksRow = []
 			linksRow.append(firstColor)
 			linksRow.append(currentColor)
 			linksRow.append(number)
 			linksList.append(linksRow)
+debugPrint('linksList')
 for row in linksList:
-	debugPrint(row)
+	print(row)
 
-findAllLevelsWhereUsed('shiny gold',linksList)
+printGraphText(linksList)
 
-for row in whereUsedList:
-	debugPrint(row)
-print('\newLinenumber of places pt 1',len(whereUsedList)-1)
+# pointsList - list of the points (a queue)
+pointsList = []
+def addToPointsList(pointToAdd):
+	debugPrint('added to points list'+pointToAdd)
+	pointsList.append(pointToAdd)
+
+def getFromPointsList():
+	val = pointsList.pop()
+	debugPrint('returning from points list' + val)
+	return val
+		
+def isPointsListEmpty():
+	return len(pointsList) == 0
+
+# pairsList - list of the pairs
+pairsList = []
+
+def addToPairsList(pairToAdd):
+	if pairToAdd not in pairsList:
+		pairsList.append(pairToAdd)
+	
+addToPointsList('shiny gold')
+while not isPointsListEmpty():
+	currentPoint = getFromPointsList()
+	debugPrint('got out '+ currentPoint)
+	for pairOfPoints in linksList:
+		#debugPrint('comparing against ' + pairOfPoints[0])
+		if pairOfPoints[0] == currentPoint:
+			debugPrint('found')
+			addToPairsList(pairOfPoints)
+			addToPointsList(pairOfPoints[1])
+
+debugPrint(pairsList)
+printGraphTextBack(pairsList)
+		
