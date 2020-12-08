@@ -3,7 +3,7 @@ DEBUG_PRINT = True
 
 import itertools
 
-DEBUG_PRINT = True
+DEBUG_PRINT = False
 def debugPrint(thingToPrint):
 	if DEBUG_PRINT:
 		print(thingToPrint)
@@ -28,13 +28,13 @@ def findWhereUsedAtCurrentLevel(linksList):
 	return foundNewOne
 
 def findAllLevelsWhereUsed(searchStr,linksList):
-	print('linksList',linksList)
+	debugPrint('linksList ' + str(linksList))
 	whereUsedList.append(searchStr)
-	print('whereUsedList',whereUsedList)
+	debugPrint('whereUsedList ' + str(whereUsedList))
 	moreToDo = True
 	while moreToDo:
 		moreToDo = findWhereUsedAtCurrentLevel(linksList)
-		print('whereUsedList',whereUsedList)
+		debugPrint('whereUsedList ' + str(whereUsedList))
 
 inList = readFileToListOfStrings()
 debugPrint(inList)
@@ -68,7 +68,7 @@ for row in newList:
 			else:
 				combRow.append(int(num))
 				state = 'lookingForAdjective'
-		#print('combRow',combRow)
+		debugPrint('combRow ' + str(combRow))
 	combList.append(combRow)
 	
 for row in combList:
@@ -100,10 +100,10 @@ for row in combList:
 			linksRow.append(number)
 			linksList.append(linksRow)
 for row in linksList:
-	print(row)
+	debugPrint(row)
 
 findAllLevelsWhereUsed('shiny gold',linksList)
 
 for row in whereUsedList:
-	print(row)
-print('number of places pt 1',len(whereUsedList)-1)
+	debugPrint(row)
+print('\newLinenumber of places pt 1',len(whereUsedList)-1)
