@@ -35,25 +35,25 @@ charCount = 0
 for group in newList:
 	debugPrint('group')
 	debugPrint(group)
-	charsUsed = ''
+	charsUsedStr = ''
 	for person in group:
 		for c in person:
 			if (c > 'z') or (c < 'a'):
 				assert False,'bad char'
-			if c not in charsUsed:
-				charsUsed += c
-	debugPrint('chars used = '+charsUsed)
-	for c in charsUsed:
-		charWasUsed = True
+			if c not in charsUsedStr:
+				charsUsedStr += c
+	debugPrint('chars used = '+charsUsedStr)
+	for c in charsUsedStr:
+		charWasUsedFlag = True
 		for person in group:
 			debugPrint('checking person '+person+' for '+c)
 			if c not in person:
 				debugPrint(c+' was not in ' + person)
-				charWasUsed = False
+				charWasUsedFlag = False
 			else:
 				debugPrint(c + ' was in ' + person)
 				pass
-		if charWasUsed:
+		if charWasUsedFlag:
 			debugPrint('char was used by all ' + c)
 			charCount += 1
 			debugPrint('charCount '+str(charCount))
