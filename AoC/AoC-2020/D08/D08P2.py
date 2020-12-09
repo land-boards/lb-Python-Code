@@ -74,7 +74,7 @@ while reachedEndOfCode != 'reachedEndOfCode':
 	pc = 0
 	regA = 0
 	loopCount = 0
-	loopTerminalCount = 500
+	loopTerminalCount = 650
 	while reachedEndOfCode != 'reachedEndOfCode':
 		while pc < endPC:
 			#print('before pc,' ',program[pc],'a',regA,end='')
