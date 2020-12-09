@@ -96,7 +96,7 @@ for row in linksList:
 
 printGraphText(linksList)
 
-# pointsList - list of the points (a queue)
+# pointsList - list of the points (a stack)
 pointsList = []
 def addToPointsList(pointToAdd):
 	debugPrint('added to points list'+pointToAdd)
@@ -116,8 +116,11 @@ pairsList = []
 def addToPairsList(pairToAdd):
 	if pairToAdd not in pairsList:
 		pairsList.append(pairToAdd)
-	
+
+print('pairsList',pairsList)
+
 addToPointsList('shiny gold')
+
 while not isPointsListEmpty():
 	currentPoint = getFromPointsList()
 	debugPrint('got out '+ currentPoint)
@@ -129,5 +132,55 @@ while not isPointsListEmpty():
 			addToPointsList(pairOfPoints[1])
 
 debugPrint(pairsList)
-printGraphTextBack(pairsList)
-		
+# printGraphTextBack(pairsList)
+
+def findListOfEndpoints(pairsList,nodeNamesInGraph):
+	endPoints = []
+	for nodeName in nodeNamesInGraph:
+		isDest = False
+		for pair in pairsList:
+			if pair[0] == nodeName:
+				isDest = True
+		if not isDest:
+			endPoints.append(nodeName)
+#	print('endPoints',endPoints)
+	return endPoints
+
+def findListOfStartpoints(pairsList,nodeNamesInGraph):
+	endPoints = []
+	for nodeName in nodeNamesInGraph:
+		isDest = False
+		for pair in pairsList:
+			if pair[1] == nodeName:
+				isDest = True
+		if not isDest:
+			endPoints.append(nodeName)
+#	print('endPoints',endPoints)
+	return endPoints
+
+def findAllNodeNamesInGraph(pairsList):
+	allNodeNames = []
+	for pair in pairsList:
+		if pair[0] not in allNodeNames:
+			allNodeNames.append(pair[0])
+		if pair[1] not in allNodeNames:
+			allNodeNames.append(pair[1])
+#	print('allNodeNames',allNodeNames)
+	return allNodeNames
+
+nodeNamesInGraph = findAllNodeNamesInGraph(pairsList)
+print('nodeNamesInGraph',nodeNamesInGraph)
+endPointsList = findListOfEndpoints(pairsList,nodeNamesInGraph)
+print('endPointsList',endPointsList)
+startPointsList = findListOfStartpoints(pairsList,nodeNamesInGraph)
+print('startPointsList',startPointsList)
+workingStack = []
+for point in startPointsList:
+	workingStack.append(point)
+connections = []
+while len(workingStack) > 0:
+	currentPoint = workingStack.pop()
+	connections.append(currentPoint)
+	for pair in pairsList:
+		if pair[0] == currentPoint:
+			
