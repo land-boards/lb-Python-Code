@@ -49,10 +49,8 @@ for row in inList:
 #DEBUG_PRINT = True
 endPC = len(program)
 debugPrint('length='+str(endPC))
-#assert False,'huh'
 
 lineNumToFix = 0
-
 reachedEndOfCode = 'notYet'
 while reachedEndOfCode != 'reachedEndOfCode':
 	# Make a deep copy of the program
@@ -76,13 +74,12 @@ while reachedEndOfCode != 'reachedEndOfCode':
 	pc = 0
 	regA = 0
 	loopCount = 0
-	loopTerminalCount = 10000
+	loopTerminalCount = 500
 	while reachedEndOfCode != 'reachedEndOfCode':
 		while pc < endPC:
-			#print(pc,' ',program[pc],'a',regA,end='')
+			#print('before pc,' ',program[pc],'a',regA,end='')
 			doInstr(newProgram[pc])
-			#print('pc ',pc,' regA ',regA)
-			#assert False,'huh'
+			#print('after pc ',pc,' regA ',regA)
 			loopCount += 1
 			#debugPrint('loopCount '+ str(loopCount) + ' out of ' + str(loopTerminalCount))
 			if loopCount >= loopTerminalCount:
@@ -93,5 +90,5 @@ while reachedEndOfCode != 'reachedEndOfCode':
 			print('eoc')
 		if reachedEndOfCode == 'reachedLoopTC':
 			break
-	#print('reason for ending ',reachedEndOfCode)
+print('reason for ending ',reachedEndOfCode)
 print('regA',regA)
