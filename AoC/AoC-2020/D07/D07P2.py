@@ -320,13 +320,11 @@ for row in combList:
 			linksRow.append(currentColor)
 			linksRow.append(number)
 			linksList.append(linksRow)
-debugPrint('linksList')
+print('linksList')
 for row in linksList:
 	print(row)
 
-DEBUG_PRINT = True
 printGraphText(linksList)
-DEBUG_PRINT = False
 
 # pointsList - list of the points (a stack)
 pointsList = []
@@ -419,10 +417,10 @@ while len(workingStack) > 0:
 
 graph = Graph()
 for node in nodeNamesInGraph:
-	print('adding vertex',node)
+	#print('adding vertex',node)
 	graph.add_vertex(node)
 for connection in pairsList:
-	print('adding connection',connection)
+	#print('adding connection',connection)
 	graph.add_edge([connection[0],connection[1]])
 allPaths = []
 for endPoint in endPointsList:
@@ -433,3 +431,17 @@ for endPoint in endPointsList:
 	for path in paths:
 		allPaths.append(path)
 print('allPaths',allPaths)
+total = 0
+for path in allPaths:
+	print('path',path)
+	rowTotal = 1
+	for pathPairOffset in range(len(path)-1):
+		print(path[pathPairOffset],path[pathPairOffset+1])
+		for element in linksList:
+			if (element[0] == path[pathPairOffset]) and (element[1] == path[pathPairOffset+1]):
+				print('number of bags',element[2])
+				rowTotal *= element[2]
+	print('rowTotal',rowTotal)
+	total += rowTotal
+	
+print('total',total)

@@ -29,9 +29,9 @@ def readListOfInts():
 	return newList
 #	return [1,2,3,4,5]
 
-def isRowLegal(row,check):
+def isNumberListLegal(row,check):
 	global DEBUG_PRINT
-	debugPrint('isRowLegal: check ends' + str(check))
+	debugPrint('isNumberListLegal: check ends' + str(check))
 	if row[0] != check[0]:
 		debugPrint('bad first digit')
 		return False
@@ -95,7 +95,7 @@ def countLegalPerms(inRunList):
 		debugPrint('\nchecking combination')
 		debugPrint(list(row))
 		passCheck = True
-		if isRowLegal(list(runList),row):
+		if isNumberListLegal(list(runList),row):
 			newRow = reduceRow(row)
 			if newRow != []:
 				if newRow not in legalLists:
@@ -105,10 +105,8 @@ def countLegalPerms(inRunList):
 		else:
 			debugPrint('fails check for legal')
 			debugPrint(row)
-	DEBUG_PRINT = True
 	debugPrint('legalLists')
 	debugPrint(legalLists)
-	DEBUG_PRINT = False
 	debugPrint('count of legalLists' + str(len(legalLists)))
 	return(len(legalLists))
 
@@ -134,7 +132,7 @@ for adapterOffset in range(0,len(adapterJoltages)-1):
 debugPrint('length of list'+str(len(adapterJoltages)))
 debugPrint('countOfOnes'+str(countOfOnes))
 debugPrint('countOfThrees'+str(countOfThrees))
-debugPrint('product '+str(countOfOnes*countOfThrees))
+print('Part 1 Product '+str(countOfOnes*countOfThrees))
 
 # pt 2
 
@@ -148,14 +146,12 @@ for adapterOffset in range(0,len(adapterJoltages)-1):
 		listOfLists.append(theList)
 		theList = []
 		theList.append(adapterJoltages[adapterOffset+1])
-DEBUG_PRINT = True
 listOfLists.append(theList)
 debugPrint('theList')
 debugPrint(listOfLists)
-DEBUG_PRINT = False
 debugPrint('number of sets of numbers')
 debugPrint(len(listOfLists))
 accumProduct = 1
 for runList in listOfLists:
 	accumProduct *= countLegalPerms(runList)
-print('accumProduct: '+str(accumProduct))
+print('Part 2 Product: '+str(accumProduct))
