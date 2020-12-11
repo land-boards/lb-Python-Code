@@ -18,13 +18,13 @@ def readListOfInts():
 adapterJoltages = readListOfInts()
 #print('adapterJoltages',adapterJoltages)
 adapterJoltages.sort()
+adapterJoltages.insert(0,0)
+lastNum = adapterJoltages[-1]
+print('lastNum',lastNum)
+adapterJoltages.append(lastNum+3)
 print('adapterJoltages',adapterJoltages)
-if adapterJoltages[0] == 1:
-	countOfOnes = 1
-	countOfThrees = 0
-else:
-	countOfOnes = 0
-	countOfThrees = 1
+countOfOnes = 0
+countOfThrees = 0
 for adapterOffset in range(0,len(adapterJoltages)-1):
 	if (adapterJoltages[adapterOffset+1] - adapterJoltages[adapterOffset]) == 1:
 		print('Diff of 1 from',adapterJoltages[adapterOffset],'to',adapterJoltages[adapterOffset+1])
@@ -32,7 +32,7 @@ for adapterOffset in range(0,len(adapterJoltages)-1):
 	if (adapterJoltages[adapterOffset+1] - adapterJoltages[adapterOffset]) == 3:
 		print('Diff of 3 from',adapterJoltages[adapterOffset],'to',adapterJoltages[adapterOffset+1])
 		countOfThrees += 1
-countOfThrees += 1
+print('length of list',len(adapterJoltages))
 print('countOfOnes',countOfOnes)
 print('countOfThrees',countOfThrees)
 print('product',countOfOnes*countOfThrees)
