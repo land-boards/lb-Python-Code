@@ -178,6 +178,56 @@ def prefillEndPointValuesList():
 	print('pointValuesList',pointValuesList)
 	return
 	
+def getAllSelectedPaths(startNodeName):
+	selectedPaths = []
+	for point in pairsList:
+		if point[0] == startNodeName:
+			selectedPaths.append(point[1])
+	# if selectedPaths != []:
+		# print('selectedPaths',selectedPaths)
+	return selectedPaths
+
+def getAllDests(allSelectedPaths):
+	# print('getAllDests: got here')
+	# print('allSelectedPaths',allSelectedPaths)
+	# print('pointValuesList',pointValuesList)
+	allDests = []
+	for path in allSelectedPaths:
+		# print('(getAllDests): path',path)
+		for pointValPair in pointValuesList:
+			if path == pointValPair[0]:
+				# print('matched',pointValPair)
+				allDests.append(pointValPair)
+	# print('allDests',allDests)
+	return allDests
+
+def isSolvable(allDests):
+	# pairsList
+	solvable = True
+	for node in allDests:
+		if node[2] == -1:
+			solvable = False
+	if solvable:
+		print('(isSolvable): solvable')
+	else:
+		print('(isSolvable): not solvable')
+	return solvable
+
+def getSum(point,allDests):
+	sum = 0
+	print('(getSum): got here, point is',point)
+	print('(getSum): pairsList',pairsList)
+	for node in allDests:
+		print('(getSum): node',node)
+		for pathWithWeight in pairsList:
+			print('pathWithWeight',pathWithWeight)
+			if (pathWithWeight[0] == point) and (pathWithWeight[1] == node[0]):
+				weight = pathWithWeight[2]
+				print('(getSum): path weight',weight)
+				sum += (weight * node[2])
+		print('(getSum): weight sum',sum)
+	return sum
+	
 def runList():
 	"""
 	 pointValuesList [['shiny gold', -1, -1], ['dark olive', -1, -1], ['vibrant plum', -1, -1], ['faded blue', 0, 1], ['dotted black', 0, 1]]
@@ -185,41 +235,20 @@ def runList():
 	"""
 	global pointsList
 	global pairsList
-	print('\nrunList: pointValuesList',pointValuesList)
+	print('\nrunList: before pointValuesList',pointValuesList)
 	print('\nrunList: pairsList',pairsList)
 	print('')
 	for point in pointValuesList:
-		if point[2] == -1:		# unsolved net
-			#source shiny gold
-			print('source',point[0])
-			destsList = []
-			for pairVal in pairsList:
-				if pairVal[0] == point[0]:
-					destsList.append(pairVal)
-			#All destination pairs/values destPairVals [['shiny gold', 'dark olive', 1], ['shiny gold', 'vibrant plum', 2]]
-			print('All destination pairs/values destPairVals',destsList)
-			print('')
-			allSolved = True
-			sumVal = 0
-			solvedList = []
-			for destPairVal in destsList:
-				for point2 in pointValuesList:
-					if destPairVal[1] == point2[0]:
-						if point2[2] == -1:
-							allSolved = False
-			print('solver',point[0])
-			if allSolved:
-				print('all predecessors were solved',point[0])
-				for point3 in pointValuesList:
-					if point3[0] == point[0]:
-						point[1] = sum
-						point[2] = sum+1
-			else:
-				print('not solved below',point[0])
-			print('dests',destsList)
-		else:
-			print('already solved',point[0])
-	assert False,''
+		print('\n(runList): Checking point name =',point[0])
+		allSelectedPaths = getAllSelectedPaths(point[0])
+		allDests = getAllDests(allSelectedPaths)
+		if isSolvable(allDests):
+			sum = getSum(point[0],allDests)
+			point[1] = sum
+			point[2] = sum+1
+	# print('\nrunList: after  pointValuesList',pointValuesList)
+	# print('\nrunList: pairsList',pairsList)
+	#assert False,''
 	print('pointValuesList',pointValuesList)
 	return
 
@@ -232,10 +261,10 @@ def solver():
 	prefillEndPointValuesList()
 	while pointValuesList[0][2] == -1:
 		runList()
-	return 0
+	return pointValuesList[0][2] - 1
 	
 # The program
-inList = readFileToListOfStrings('input2.txt')
+inList = readFileToListOfStrings('input.txt')
 debugPrint(inList)
 combList = transformInList(inList)
 for row in combList:
@@ -282,4 +311,4 @@ debugPrint(endPointsList)
 
 total = solver()
 
-#print('total',total)
+print('total',total)
