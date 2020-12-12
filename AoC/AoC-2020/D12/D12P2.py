@@ -20,27 +20,27 @@ def getNewWayPointPosition(direction):
 	global waypointAbsoluteX
 	global waypointAbsoluteY
 	dir = direction[1]
-	print('\n(getNewWayPointPosition): got here')
+	# print('\n(getNewWayPointPosition): got here')
 	waypointRelativeToOriginX = waypointAbsoluteX - shipX
 	waypointRelativeToOriginY = waypointAbsoluteY - shipY
-	print('(before)waypoint relative to origin',waypointRelativeToOriginX,waypointRelativeToOriginY)
+	# print('(before)waypoint relative to origin',waypointRelativeToOriginX,waypointRelativeToOriginY)
 	if ((direction[0] == 'L') and (dir == 90)) or ((direction[0] == 'R') and (dir == 270)):
-		print('L90 or R270')
+		# print('L90 or R270')
 		store = waypointRelativeToOriginX
 		waypointRelativeToOriginX = -waypointRelativeToOriginY
 		waypointRelativeToOriginY = store
 	elif ((direction[0] == 'L') and (dir == 270)) or ((direction[0] == 'R') and (dir == 90)):
-		print('L270 or R90')
+		# print('L270 or R90')
 		store = waypointRelativeToOriginY
 		waypointRelativeToOriginY = -waypointRelativeToOriginX
 		waypointRelativeToOriginX = store
 	elif dir == 180:
-		print('LR180')
+		# print('LR180')
 		waypointRelativeToOriginX = -waypointRelativeToOriginX
 		waypointRelativeToOriginY = -waypointRelativeToOriginY
 	else:
 		print('parse error')
-	print('(after)waypoint relative to origin',waypointRelativeToOriginX,waypointRelativeToOriginY)
+	# print('(after)waypoint relative to origin',waypointRelativeToOriginX,waypointRelativeToOriginY)
 	waypointAbsoluteX = waypointRelativeToOriginX + shipX
 	waypointAbsoluteY = waypointRelativeToOriginY + shipY
 
@@ -49,7 +49,7 @@ def doOperation(direction):
 	global shipY
 	global waypointAbsoluteX
 	global waypointAbsoluteY
-	print('\n',direction,end= ' ')
+	# print('\n',direction,end= ' ')
 	delta = direction[1]
 	if direction[0] == 'N':
 		waypointAbsoluteY += delta
@@ -92,32 +92,32 @@ def setShipLocXyWaypointXY(sX,sY,wX,wY):
 	waypointAbsoluteX = wX
 	waypointAbsoluteY = wY
 	
-setShipLocXyWaypointXY(0,0,1,2)
-print('Before',end = ' ')
-report()
-doOperation(['L',180])
-print('After', end = ' ')
-report()
-print('')
-print('')
+# setShipLocXyWaypointXY(0,0,1,2)
+# print('Before',end = ' ')
+# report()
+# doOperation(['L',180])
+# print('After', end = ' ')
+# report()
+# print('')
+# print('')
 
-setShipLocXyWaypointXY(0,0,2,1)
-print('Before',end = ' ')
-report()
-doOperation(['L',90])
-print('After', end = ' ')
-report()
-print('')
-print('')
+# setShipLocXyWaypointXY(0,0,2,1)
+# print('Before',end = ' ')
+# report()
+# doOperation(['L',90])
+# print('After', end = ' ')
+# report()
+# print('')
+# print('')
 
-setShipLocXyWaypointXY(0,0,1,2)
-print('Before',end = ' ')
-report()
-doOperation(['R',90])
-print('After', end = ' ')
-report()
-print('')
-print('')
+# setShipLocXyWaypointXY(0,0,1,2)
+# print('Before',end = ' ')
+# report()
+# doOperation(['R',90])
+# print('After', end = ' ')
+# report()
+# print('')
+# print('')
 
 # assert False,"tested"
 
@@ -127,7 +127,7 @@ waypointAbsoluteX = 0
 waypointAbsoluteY = 0
 
 inList = readFileToListOfStrings('input.txt')
-print(inList)
+# print(inList)
 directionsList = []
 for row in inList:
 	listRow = []
@@ -135,15 +135,15 @@ for row in inList:
 	listRow.append(int(row[1:]))
 	directionsList.append(listRow)
 
-print('directionsList',directionsList)
-print('')
+# print('directionsList',directionsList)
+# print('')
 
 setShipLocXyWaypointXY(0,0,10,1)
 
-report()
+# report()
 for direction in directionsList:
 	doOperation(direction)
-	report()
+	# report()
 
-print('\n',shipX,shipY)
+# #print('\n',shipX,shipY)
 print(abs(shipX)+abs(shipY))
