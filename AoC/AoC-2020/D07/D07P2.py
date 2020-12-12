@@ -10,7 +10,7 @@ facts and functionalities of graphs.
 """
 
 class Graph(object):
-
+	# https://www.python-course.eu/graphs_python.php
     def __init__(self, graph_dict=None):
         """ initializes a graph object 
             If no dictionary or None is given, an empty dictionary will be used
@@ -82,7 +82,7 @@ class Graph(object):
         graph = self.__graph_dict
         isolated = []
         for vertex in graph:
-            print(isolated, vertex)
+            #print(isolated, vertex)
             if not graph[vertex]:
                 isolated += [vertex]
         return isolated
@@ -237,102 +237,99 @@ class Graph(object):
             return False
         return True
 		
-def readFileToListOfStrings():
+def readFileToListOfStrings(inFileName):
 	inList = []
-	with open('input2.txt', 'r') as filehandle:  
+	with open(inFileName, 'r') as filehandle:  
 		for line in filehandle:
 			inList.append(line.rstrip())
 	return inList
 
-inList = readFileToListOfStrings()
-debugPrint(inList)
-newList = []
-for row in inList:
-	newLine = row.replace('bags','bag')
-	newLine = newLine.replace(' bag','')
-	newLine = newLine.replace(' contain','')
-	newLine = newLine.replace(',','')
-	newLine = newLine.replace('.','')
-	spLine = newLine.split(' ')
-	newList.append(spLine)
-for row in newList:
-	debugPrint(row)
-combList = []
-for row in newList:
-	state = 'lookingForAdjective'
-	combRow = []
-	for word in row:
-		if state == 'lookingForAdjective':
-			adj = word
-			state = 'lookingForColor'
-		elif state == 'lookingForColor':
-			col = word
-			state = 'lookingForNumber'
-			combRow.append(adj+' '+col)
-		elif state == 'lookingForNumber':
-			num = word
-			if num == 'no':
-				state = 'done'
-			else:
-				combRow.append(int(num))
-				state = 'lookingForAdjective'
-		debugPrint('combRow ' + str(combRow))
-	combList.append(combRow)
-	
-for row in combList:
-	debugPrint(row)
+def transformInList(inList):
+	newList = []
+	for row in inList:
+		newLine = row.replace('bags','bag')
+		newLine = newLine.replace(' bag','')
+		newLine = newLine.replace(' contain','')
+		newLine = newLine.replace(',','')
+		newLine = newLine.replace('.','')
+		spLine = newLine.split(' ')
+		newList.append(spLine)
+	for row in newList:
+		debugPrint(row)
+	combList = []
+	for row in newList:
+		state = 'lookingForAdjective'
+		combRow = []
+		for word in row:
+			if state == 'lookingForAdjective':
+				adj = word
+				state = 'lookingForColor'
+			elif state == 'lookingForColor':
+				col = word
+				state = 'lookingForNumber'
+				combRow.append(adj+' '+col)
+			elif state == 'lookingForNumber':
+				num = word
+				if num == 'no':
+					state = 'done'
+				else:
+					combRow.append(int(num))
+					state = 'lookingForAdjective'
+			debugPrint('combRow ' + str(combRow))
+		combList.append(combRow)
+	return combList
 
 def printGraphText(linksList):
-	debugPrint('\ndigraph G {')
+	"""
+	LR_0 -> LR_2 [ label = "SS(B)" ];
+	"""
+	print('\ndigraph G {')
 	for pair in linksList:
-		line = '"' + pair[0] + '" -> "' + pair[1]
-		line += '"'
-		debugPrint(line)
-	debugPrint('}\n')
+		line = '"' + pair[0] + '" -> "' + pair[1] + '" [ label = "' + str(pair[2]) + '" ];'
+		print(line)
+	print('}\n')
 
 def printGraphTextBack(linksList):
-	debugPrint('\ndigraph G {')
+	print('\ndigraph G {')
 	for pair in linksList:
 		line = '"'
 		line += pair[1]
 		line += '" -> "'
 		line += pair[0]
-		line += '"'
-		debugPrint(line)
-	debugPrint('}\n')
+		line += '" [ label = "'
+		line += str(pair[2])
+		line += '" ]'
+		print(line)
+	print('}\n')
 
-linksList = []
-for row in combList:
-	state = 'lookingForFirstColor'
-	firstColor = ''
-	for element in row:
-		if state == 'lookingForFirstColor':
-			firstColor = element
-			state = 'lookingForNumber'
-		elif state == 'lookingForNumber':
-			state = 'lookingForOtherColors'
-			number = element
-		elif state == 'lookingForOtherColors':
-			state = 'lookingForNumber'
-			currentColor = element
-			linksRow = []
-			linksRow.append(firstColor)
-			linksRow.append(currentColor)
-			linksRow.append(number)
-			linksList.append(linksRow)
-print('linksList')
-for row in linksList:
-	print(row)
-
-printGraphText(linksList)
-
-# pointsList - list of the points (a stack)
-pointsList = []
-def addToPointsList(pointToAdd):
-	debugPrint('added to points list'+pointToAdd)
-	pointsList.append(pointToAdd)
+def makeLinksList(inList):
+	global DEBUG_PRINT
+	linksList = []
+	for row in combList:
+		state = 'lookingForFirstColor'
+		firstColor = ''
+		for element in row:
+			if state == 'lookingForFirstColor':
+				firstColor = element
+				state = 'lookingForNumber'
+			elif state == 'lookingForNumber':
+				state = 'lookingForOtherColors'
+				number = element
+			elif state == 'lookingForOtherColors':
+				state = 'lookingForNumber'
+				currentColor = element
+				linksRow = []
+				linksRow.append(firstColor)
+				linksRow.append(currentColor)
+				linksRow.append(number)
+				linksList.append(linksRow)
+	debugPrint('linksList')
+	for row in linksList:
+		debugPrint(row)
+	return linksList
 
 def getFromPointsList():
+	global DEBUG_PRINT
 	val = pointsList.pop()
 	debugPrint('returning from points list' + val)
 	return val
@@ -340,31 +337,13 @@ def getFromPointsList():
 def isPointsListEmpty():
 	return len(pointsList) == 0
 
-# pairsList - list of the pairs
-pairsList = []
-
 def addToPairsList(pairToAdd):
+	global DEBUG_PRINT
 	if pairToAdd not in pairsList:
 		pairsList.append(pairToAdd)
 
-print('pairsList',pairsList)
-
-addToPointsList('shiny gold')
-
-while not isPointsListEmpty():
-	currentPoint = getFromPointsList()
-	debugPrint('got out '+ currentPoint)
-	for pairOfPoints in linksList:
-		#debugPrint('comparing against ' + pairOfPoints[0])
-		if pairOfPoints[0] == currentPoint:
-			debugPrint('found')
-			addToPairsList(pairOfPoints)
-			addToPointsList(pairOfPoints[1])
-
-debugPrint(pairsList)
-printGraphTextBack(pairsList)
-
 def findListOfEndpoints(pairsList,nodeNamesInGraph):
+	global DEBUG_PRINT
 	endPoints = []
 	for nodeName in nodeNamesInGraph:
 		isDest = False
@@ -377,6 +356,7 @@ def findListOfEndpoints(pairsList,nodeNamesInGraph):
 	return endPoints
 
 def findListOfStartpoints(pairsList,nodeNamesInGraph):
+	global DEBUG_PRINT
 	endPoints = []
 	for nodeName in nodeNamesInGraph:
 		isDest = False
@@ -389,6 +369,7 @@ def findListOfStartpoints(pairsList,nodeNamesInGraph):
 	return endPoints
 
 def findAllNodeNamesInGraph(pairsList):
+	global DEBUG_PRINT
 	allNodeNames = []
 	for pair in pairsList:
 		if pair[0] not in allNodeNames:
@@ -398,12 +379,48 @@ def findAllNodeNamesInGraph(pairsList):
 #	print('allNodeNames',allNodeNames)
 	return allNodeNames
 
+# The program
+inList = readFileToListOfStrings('input2.txt')
+debugPrint(inList)
+combList = transformInList(inList)
+for row in combList:
+	debugPrint(row)
+linksList = makeLinksList(combList)
+printGraphTextBack(linksList)
+
+# pairsList - list of the pairs
+pairsList = []
+
+debugPrint('pairsList')
+debugPrint(pairsList)
+
+# pointsList - list of the points (a stack)
+pointsList = []
+pointsList.append('shiny gold')
+
+while not isPointsListEmpty():
+	currentPoint = getFromPointsList()
+	debugPrint('got out '+ currentPoint)
+	for pairOfPoints in linksList:
+		#debugPrint('comparing against ' + pairOfPoints[0])
+		if pairOfPoints[0] == currentPoint:
+			debugPrint('found')
+			addToPairsList(pairOfPoints)
+			pointsList.append(pairOfPoints[1])
+
+debugPrint('pairsList')
+debugPrint(pairsList)
+printGraphTextBack(pairsList)
+
 nodeNamesInGraph = findAllNodeNamesInGraph(pairsList)
-print('nodeNamesInGraph',nodeNamesInGraph)
+debugPrint('nodeNamesInGraph')
+debugPrint(nodeNamesInGraph)
 endPointsList = findListOfEndpoints(pairsList,nodeNamesInGraph)
-print('endPointsList',endPointsList)
+debugPrint('endPointsList')
+debugPrint(endPointsList)
 startPointsList = findListOfStartpoints(pairsList,nodeNamesInGraph)
-print('startPointsList',startPointsList)
+debugPrint('startPointsList')
+debugPrint(startPointsList)
 workingStack = []
 for point in startPointsList:
 	workingStack.append(point)
@@ -417,31 +434,41 @@ while len(workingStack) > 0:
 
 graph = Graph()
 for node in nodeNamesInGraph:
-	#print('adding vertex',node)
+	debugPrint('adding vertex')
+	debugPrint(node)
 	graph.add_vertex(node)
 for connection in pairsList:
-	#print('adding connection',connection)
+	debugPrint('adding connection')
+	debugPrint(connection)
 	graph.add_edge([connection[0],connection[1]])
 allPaths = []
 for endPoint in endPointsList:
 	paths = []
-	print('finding path from','shiny gold to',endPoint)
+	debugPrint('Finding path(s) from shiny gold to')
+	debugPrint(endPoint)
 	paths = graph.find_all_paths('shiny gold',endPoint)
-	print('paths',paths)
+	debugPrint('paths')
+	debugPrint(paths)
 	for path in paths:
 		allPaths.append(path)
-print('allPaths',allPaths)
+DEBUG_PRINT = True
+debugPrint('allPaths')
+debugPrint(allPaths)
 total = 0
 for path in allPaths:
-	print('path',path)
+	debugPrint('path')
+	debugPrint(path)
 	rowTotal = 1
 	for pathPairOffset in range(len(path)-1):
-		print(path[pathPairOffset],path[pathPairOffset+1])
+		if DEBUG_PRINT:
+			print(path[pathPairOffset],path[pathPairOffset+1])
 		for element in linksList:
 			if (element[0] == path[pathPairOffset]) and (element[1] == path[pathPairOffset+1]):
-				print('number of bags',element[2])
+				if DEBUG_PRINT:
+					print('number of bags',element[2])
 				rowTotal *= element[2]
-	print('rowTotal',rowTotal)
+	if DEBUG_PRINT:
+		print('rowTotal',rowTotal)
 	total += rowTotal
 	
 print('total',total)
