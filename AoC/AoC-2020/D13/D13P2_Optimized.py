@@ -32,16 +32,18 @@ def isDivisible(timeSlot,testNum):
 inList = readFileToListOfStrings('input.txt')
 
 sched = inList[1].split(',')
+digitCount = 0
 reduxSched = []
 for bus in sched:
 	if bus != 'x':
 		reduxSched.append(int(bus))
+		digitCount += 1
 	else:
 		reduxSched.append(1)
 numberBuses = len(reduxSched)
 
 dVec = []
-def looper(timeStart,timeStep,numDigits):
+def findStartStopFactors(timeStart,timeStep,numDigits):
 	global reduxSched
 	global dVec
 	timeCurrent = timeStart
@@ -73,13 +75,13 @@ def looper(timeStart,timeStep,numDigits):
 				print('delta T',matchVal)
 			dVecCnt += 1
 			if dVecCnt == 2:
-				return firstOffset,matchVal
+				return [firstOffset,matchVal]
 		timeCurrent += timeStep
 
 timeStart = 1		# from 1st offset
 timeStep = 1 		# from repeat
-for loopLen in range(1,len(reduxSched)):
-	res = looper(timeStart,timeStep,loopLen)
-	print(res)
+for loopLen in range(digitCount):
+	print('look for T count',loopLen)
+	res = findStartStopFactors(timeStart,timeStep,loopLen)
 	timeStart = res[0]		# from 1st offset
 	timeStep = res[1]		# from repeat
