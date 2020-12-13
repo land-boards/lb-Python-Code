@@ -1,7 +1,6 @@
 """ 
 
-2020 AoC Day 13 Part 1
-1000109 too high
+2020 AoC Day 13 Part 2
 
 """
 import math
@@ -55,8 +54,6 @@ print('reduxSched',reduxSched)
 numberBuses = len(reduxSched)
 print('numberBuses',numberBuses)
 
-# assert False,'stats'
-
 stepSize = maxNum
 slotNumMaxNum = 0
 slotMaxOffset = 0
@@ -69,11 +66,7 @@ noMatchAtTime = True
 busNumOffset = 0
 
 allMatch = False
-timeStart = maxNum-slotMaxOffset
 timeStart = 4211100242		# from 1st offset
-# step up by the max slot value
-#timeStep = maxNum
-#timeStep = 5367
 timeStep = 5679312743 		# from repeat
 timeCurrent = timeStart
 dVec = []
@@ -95,8 +88,6 @@ while not allMatch:
 		if dVec[dtestOff] != 'D':
 			marchDs = False
 	if marchDs:
-		#print(testVal,timeCurrent)
-		#assert False,'first match'
 		print(dVec)
 		if dVecCnt == 0:
 			matchVal = -timeCurrent
@@ -108,13 +99,10 @@ while not allMatch:
 		dVecCnt += 1
 		if dVecCnt == 2:
 			assert False,"Matched D's"
-	#leftOver = sumRemainders()
-	#print(leftOver)
 	debugPrint('\n')
 	if allMatch:
 		print('Match at time',timeCurrent)
 		break
 	timeCurrent += timeStep
-	#timeCurrent += 1
 	# if timeCurrent >= 1000000:
 		# assert False,'ended due to time'
