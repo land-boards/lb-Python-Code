@@ -41,17 +41,24 @@ for bus in sched:
 	else:
 		reduxSched.append(1)
 numberBuses = len(reduxSched)
+print('reduxSched',reduxSched)
 
 dVec = []
 def findStartStopFactors(timeStart,timeStep,numDigits):
 	global reduxSched
 	global dVec
+	print('timeStart',timeStart,'timeStep',timeStep)
 	timeCurrent = timeStart
 	dVecCnt = 0
 	matchVal = 0
 	allMatch = False
 	firstOffset = 0
+	testVal = ''
+	for x in range(numDigits):
+		testVal += 'D'
+	#print(testVal)
 	while not allMatch:
+		#print('timeCurrent',timeCurrent)
 		debugPrint(str(timeCurrent) + ' ')
 		allMatch = True
 		dVec = []
@@ -59,9 +66,6 @@ def findStartStopFactors(timeStart,timeStep,numDigits):
 			if reduxSched[slot] != 1:
 				if not isDivisible(timeCurrent+slot,reduxSched[slot]):
 					allMatch = False
-		testVal = ''
-		for x in range(numDigits):
-			testVal += 'D'
 		marchDs = True
 		for dtestOff in range(len(testVal)):
 			if dVec[dtestOff] != 'D':
@@ -71,6 +75,7 @@ def findStartStopFactors(timeStart,timeStep,numDigits):
 				firstOffset = timeCurrent
 				print('First offset',firstOffset)
 			else:
+				#print('Second offset',timeCurrent)
 				matchVal = timeCurrent - firstOffset
 				print('delta T',matchVal)
 			dVecCnt += 1
@@ -80,8 +85,11 @@ def findStartStopFactors(timeStart,timeStep,numDigits):
 
 timeStart = 1		# from 1st offset
 timeStep = 1 		# from repeat
-for loopLen in range(digitCount):
-	print('look for T count',loopLen)
+for loopLen in range(digitCount+1):
+	#print('look for number of busses count',loopLen)
 	res = findStartStopFactors(timeStart,timeStep,loopLen)
-	timeStart = res[0]		# from 1st offset
-	timeStep = res[1]		# from repeat
+	if res and res[0]:
+		#print(res[0])
+		timeStart = res[0]		# from 1st offset
+		#print(res[1])
+		timeStep = res[1]		# from repeat

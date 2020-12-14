@@ -3,7 +3,7 @@ AoC D12 P2
 13340 is right
 """
 import pygame, sys
-
+import time
 def readFileToListOfStrings(fileName):
 	inList = []
 	with open(fileName, 'r') as filehandle:  
@@ -182,19 +182,28 @@ BLUE = (30,30,230)
 GREEN = (20,220,10)
 
 lineOff = 0
-while lineOff < len(results)-1:
-	xS = 400 + int(scale*results[lineOff][0])
-	yS = 200 + int(scale*results[lineOff][1])
-	lineOff += 1
-	xE = 400 + int(scale*results[lineOff][0])
-	yE = 200 + int(scale*results[lineOff][1])
-	pygame.draw.line(window,RED,(xS,yS), (xE,yE), 1) #surface, colour, x & y start point, x & y end point, width of line
+# while lineOff < len(results)-1:
+	# xS = 400 + int(scale*results[lineOff][0])
+	# yS = 200 + int(scale*results[lineOff][1])
+	# lineOff += 1
+	# xE = 400 + int(scale*results[lineOff][0])
+	# yE = 200 + int(scale*results[lineOff][1])
+	# pygame.draw.line(window,RED,(xS,yS), (xE,yE), 1) #surface, colour, x & y start point, x & y end point, width of line
+	# time.sleep(0.001)
 
 while True: #while the loop is true
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-    pygame.display.update()
+	for event in pygame.event.get():
+		if event.type == QUIT:
+			pygame.quit()
+			sys.exit()
+	while lineOff < len(results)-1:
+		xS = 400 + int(scale*results[lineOff][0])
+		yS = 200 + int(scale*results[lineOff][1])
+		lineOff += 1
+		xE = 400 + int(scale*results[lineOff][0])
+		yE = 200 + int(scale*results[lineOff][1])
+		pygame.draw.line(window,RED,(xS,yS), (xE,yE), 1) #surface, colour, x & y start point, x & y end point, width of line
+		time.sleep(0.01)
+		pygame.display.update()
 	
 	
