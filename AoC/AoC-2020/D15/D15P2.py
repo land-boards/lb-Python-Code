@@ -21,7 +21,7 @@ for num in startingNumbers:
 	turn += 1
 
 while turn < numberOfTurns:
-	if turn % 1000 == 0:
+	if turn & 1023 == 0:
 		print(turn)
 	if numberSeries[-1] not in foundNumbers[:-1]:
 		numberSeries.append(0)
