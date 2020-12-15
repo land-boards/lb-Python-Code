@@ -12,10 +12,12 @@ turn = 0
 
 numberSeries = []
 foundNumbers = []
+foundNumbersCount = 0
 
 for num in startingNumbers:
 	numberSeries.append(num)
 	foundNumbers.append(num)
+	foundNumbersCount += 1
 	turn += 1
 
 while turn < numberOfTurns:
@@ -34,9 +36,18 @@ while turn < numberOfTurns:
 				delta2 = delta1
 				delta1 = searchNum
 			if delta2 != 0:
-				numberSeries.append(delta2-delta1)
-				if (delta2-delta1) not in foundNumbers[:-1]:
-					foundNumbers.append(delta2-delta1)
+				deltasDelta = delta2-delta1
+				numberSeries.append(deltasDelta)
+				deltasOffset = 0
+				foundDeltasDelta = False
+				while deltasOffset < foundNumbersCount-1:
+					if deltasDelta == foundNumbers[deltasOffset]:
+						foundDeltasDelta = True
+						break
+					deltasOffset += 1
+				if not foundDeltasDelta:
+					foundNumbers.append(deltasDelta)
+					foundNumbersCount += 1
 				break
 	turn += 1
 	#print(numberSeries)
