@@ -109,6 +109,9 @@ def setMaskVals(maskString):
 	global preserveBitMask
 	print('maskString',maskString)
 	newVal = 0
+	preserveBitMask = 0
+	andBitMask = 0
+	orBitMask = 0
 	for pos in maskString:
 		if pos == 'X':
 			preserveBitMask |= 1
@@ -128,7 +131,7 @@ def setMaskVals(maskString):
 	print('preserveBitMask',preserveBitMask)
 	print('andBitMask',andBitMask)
 	print('orBitMask',orBitMask)
-	return newVal
+	return
 
 def applyMask(dataVal):
 	"""
@@ -138,34 +141,21 @@ def applyMask(dataVal):
 	global orBitMask
 	global andBitMask
 	global preserveBitMask
-	print('dataVal',dataVal)
+	print('\ndataVal',dataVal)
 	valStr = bin(dataVal)[2:]
 	print('valStr',valStr)
 	
 	print('orBitMask',bin(orBitMask)[2:])
 	print('andBitMask',bin(andBitMask)[2:])
 	print('preserveBitMask',bin(preserveBitMask)[2:])
-	newValue = 0
-	
-	for bitToTest in range(len(valStr)-1,-1,-1):
-		print('\nbitToTest',bitToTest)
-		if (preserveBitMask & (1<<bitToTest)) !=0:
-			print('preserve op')
-			newValue |= dataVal & bitToTest
-		elif (andBitMask & (1<<bitToTest)) != 0:
-			print('and op')
-			newValue &= 68719476735 ^ (1<<bitToTest)
-		elif (orBitMask & (1<<bitToTest)) != 0:
-			print('or op')
-			newValue |= (1<<bitToTest)
-		else:
-			print('')
-			assert False,'No mask was set'
+	newValue = dataVal
+	newValue &= preserveBitMask
+	newValue |= orBitMask
 	print('newValue',newValue)
-	assert False,'stop'
-	return 0
+	# assert False,'stop'
+	return newValue
 
-inList = readFileToListOfStrings('input1.txt')
+inList = readFileToListOfStrings('input.txt')
 inProgram = parseProgramToList(inList)
 usedMemoryLocations = []
 makeMemoryLocList(inProgram)
@@ -187,7 +177,12 @@ for programLine in inProgram:
 		newVal = applyMask(programLine[2])
 		setMemoryValue(programLine[1],newVal)
 
+sum = 0
 for memVal in memoryLocationValuesList:
 	print(memVal)
+	sum += memVal[1]
+
+print('sum',sum)
+
 
 		
