@@ -123,14 +123,20 @@ recLen = len(goodTickets[0])
 print('len goodTickets[0] =',recLen)
 
 ticketFieldValuesRange = []
-# recLen = 3
-for fieldOffset in range(recLen):
-	print('fieldOffset',fieldOffset)
-	valMin = goodTickets[0][fieldOffset]
-	valMax = goodTickets[0][fieldOffset]
+recLen = 3
+fieldOff = 0
+while fieldOff < recLen:
+	print('fieldOff',fieldOff)
+	valMin = goodTickets[0][fieldOff]
+	valMax = goodTickets[0][fieldOff]
 	valPair = []
 	valPair.append(valMin)
 	valPair.append(valMax)
 	ticketFieldValuesRange.append(valPair)
+	fieldOff += 1
 
+# ticketFieldValuesRange [[3, 3], [9, 9], [18, 18]]
 print('ticketFieldValuesRange',ticketFieldValuesRange)	
+
+for goodValPair in goodTickets:
+	
