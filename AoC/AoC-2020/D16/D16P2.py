@@ -71,7 +71,7 @@ for row in inList:
 		nearbyTicketsList.append(line)
 
 # print('rulesList',rulesList)
-# print('myTicketList -',myTicketList)
+# print('myTicketList -',myTicket)List)
 # print('nearbyTicketValuesList -',nearbyTicketValuesList)
 # print('nearbyTicketsList',nearbyTicketsList)
 
@@ -118,4 +118,19 @@ print('badTicketSum',badTicketSum)
 
 # goodTickets [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
 print('goodTickets',goodTickets)
+print('goodTickets[0] =',goodTickets[0])
+recLen = len(goodTickets[0])
+print('len goodTickets[0] =',recLen)
 
+ticketFieldValuesRange = []
+recLen = 3
+for i in range(3):
+	print('i',i)
+	valMin = goodTickets[i]
+	valMax = goodTickets[fieldOffset]
+	valPair = []
+	valPair.append(valMin)
+	valPair.append(valMax)
+	ticketFieldValuesRange.append(valPair)
+
+print('ticketFieldValuesRange',ticketFieldValuesRange)	
