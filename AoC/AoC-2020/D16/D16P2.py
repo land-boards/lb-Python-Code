@@ -138,8 +138,8 @@ print('ticketFieldValuesMinMaxRange',ticketFieldValuesMinMaxRange)
 # goodTickets [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
 print('goodTickets',goodTickets)
 
-for goodTicket in goodTickets:
-	print('goodTicket',goodTicket[1:])
+for goodTicket in goodTickets[1:]:
+	print('goodTicket',goodTicket)
 	for ticketFieldValues in ticketFieldValuesMinMaxRange:
 		print('ticketFieldValues',ticketFieldValues)
 		for ticketField in goodTicket:
@@ -148,5 +148,6 @@ for goodTicket in goodTickets:
 				ticketFieldValues[0] = ticketField
 			elif ticketField > ticketFieldValues[1]:
 				ticketFieldValues[1] = ticketField
+	print('ticketFieldValuesMinMaxRange',ticketFieldValuesMinMaxRange)
 	assert False,'stopped'
 print('ticketFieldValuesMinMaxRange',ticketFieldValuesMinMaxRange)
