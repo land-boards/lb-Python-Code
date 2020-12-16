@@ -1,55 +1,45 @@
-""" 
+my_dict = {}
 
-AoC 2020 D15 P1
+myList = [5,2,8,16,18,0,1]
+lastEntryCount = 30000000
 
-"""
+listValCounter = 0
+lastVal = 0
 
-# startingNumbers = [0,3,6]
-# numberOfTurns = 2020
-startingNumbers = [5,2,8,16,18,0,1]
-numberOfTurns = 30000000
-turn = 0
-
-numberSeries = []
-foundNumbers = []
-foundNumbersCount = 0
-
-for num in startingNumbers:
-	numberSeries.append(num)
-	foundNumbers.append(num)
-	foundNumbersCount += 1
-	turn += 1
-
-while turn < numberOfTurns:
-	if turn & 1023 == 0:
-		print(turn)
-	if numberSeries[-1] not in foundNumbers[:-1]:
-		numberSeries.append(0)
+# Load seed values from myList
+for listOffset in range(len(myList)):
+	theNum = myList[listValCounter]
+	if theNum not in my_dict:
+		my_dict[theNum] = [listValCounter]
 	else:
-		foundOffset = 0
-		lookingForLastNumber = numberSeries[-1]
-		delta1 = 0
-		delta2 = 0
-		for searchNum in range(turn-1,-1,-1):
-			#print('checking',searchNum)
-			if numberSeries[searchNum] == lookingForLastNumber:
-				delta2 = delta1
-				delta1 = searchNum
-			if delta2 != 0:
-				deltasDelta = delta2-delta1
-				numberSeries.append(deltasDelta)
-				deltasOffset = 0
-				foundDeltasDelta = False
-				while deltasOffset < foundNumbersCount-1:
-					if deltasDelta == foundNumbers[deltasOffset]:
-						foundDeltasDelta = True
-						break
-					deltasOffset += 1
-				if not foundDeltasDelta:
-					foundNumbers.append(deltasDelta)
-					foundNumbersCount += 1
-				break
-	turn += 1
-	#print(numberSeries)
-	#input('hit key')
-print(numberSeries[-1])
+		my_dict[theNum].append(listValCounter)
+	listValCounter += 1
+	lastVal = theNum
+print('my_dict',my_dict)
+print('lastVal',lastVal)
+#assert False,''
+
+while listValCounter < lastEntryCount:
+	if listValCounter & 0xffff == 0:
+		print(listValCounter)
+	# print('my_dict[lastVal]',my_dict[lastVal])
+	if len(my_dict[lastVal]) == 1:
+		my_dict[0].append(listValCounter)
+		lastVal = 0
+		# print('my_dict',my_dict)
+		# print()
+	elif len(my_dict[lastVal]) > 1:
+		countList = my_dict[lastVal]
+		lastVal = countList[-1]-countList[-2]
+		if lastVal not in my_dict:
+			my_dict[lastVal] = [listValCounter]
+		else:
+			my_dict[lastVal].append(listValCounter)
+		# print('lastVal',lastVal)
+		# print('my_dict',my_dict)
+		# assert False,'done'
+	listValCounter += 1
+print('my_dict[lastVal]',my_dict[lastVal])
+#print('my_dict',my_dict)
+# assert False,'ended'		
+print
