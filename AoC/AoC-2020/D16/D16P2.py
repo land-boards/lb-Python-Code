@@ -1,6 +1,6 @@
 """ 
 
-Ao'c 2020 D16 P1
+Ao'c 2020 D16 P2
 
 """
 
@@ -13,16 +13,17 @@ def readFileToListOfStrings(fileName):
 			inList.append(line.rstrip())
 	return inList
 
-inList = readFileToListOfStrings('input.txt')
+inList = readFileToListOfStrings('input2.txt')
 
 stateList = ['headerBlock','myTicketHeader','myTicketVal','blank1','nearby','ticketsList','done']
 state = 0
 rulesList = []
 myTicketList = []
-nearbyTicketList = []
+nearbyTicketValuesList = []
+nearbyTicketsList = []
 
 for row in inList:
-	print(stateList[state])
+	# print(stateList[state])
 	if stateList[state] == 'headerBlock':
 		if row == '':
 			state += 1
@@ -41,7 +42,6 @@ for row in inList:
 			ruleLine.append(int(ruleSplit[4]))
 			ruleLine.append(int(ruleSplit[5]))
 			rulesList.append(ruleLine)
-		#print(row)
 	elif stateList[state] == 'myTicketHeader':
 		if row != 'your ticket:':
 			assert False,'Your ticket missing'
@@ -64,17 +64,22 @@ for row in inList:
 		ruleSplit = row.split(',')
 		# print('myTicketVal - ruleSplit',ruleSplit)
 		for ticketString in ruleSplit:
-			nearbyTicketList.append(int(ticketString))
+			nearbyTicketValuesList.append(int(ticketString))
+			line = []
+		for item in ruleSplit:
+			line.append(int(item))
+		nearbyTicketsList.append(line)
 
-print('rulesList',rulesList)
-print('myTicketList -',myTicketList)
-print('nearbyTicketList -',nearbyTicketList)
+# print('rulesList',rulesList)
+# print('myTicketList -',myTicketList)
+# print('nearbyTicketValuesList -',nearbyTicketValuesList)
+# print('nearbyTicketsList',nearbyTicketsList)
 
 goodTicketCount = 0
 badTicketCount = 0
 
 # rulesList [['class', 1, 3, 5, 7], ['row', 6, 11, 33, 44], ['seat', 13, 40, 45, 50]]
-# nearbyTicketList [7, 3, 47, 40, 4, 50, 55, 2, 20, 38, 6, 12]
+# nearbyTicketValuesList [7, 3, 47, 40, 4, 50, 55, 2, 20, 38, 6, 12]
 # rangesList [[1, 3], [5, 7], [6, 11], [33, 44], [13, 40], [45, 50]]
 rangesList = []
 for rule in rulesList:
@@ -86,14 +91,31 @@ for rule in rulesList:
 	rangesLine.append(rule[3])
 	rangesLine.append(rule[4])
 	rangesList.append(rangesLine)
-print('rangesList',rangesList)
+#print('rangesList',rangesList)
 badTicketSum = 0
-for nearbyTicket in nearbyTicketList:
-	ticketGood = False
-	for range in rangesList:
-		if range[0] <= nearbyTicket <= range[1]:
-			ticketGood = True
-	if not ticketGood:
-		badTicketSum += nearbyTicket
+
+goodValues = []
+goodTickets = []
+
+# goodValues [7, 3, 47, 40, 50, 2, 20, 38, 6]
+for nearbyTicket in nearbyTicketsList:
+	ticketAllGood = True
+	for ticketVal in nearbyTicket:
+		ticketGood = False
+		for range in rangesList:
+			if range[0] <= ticketVal <= range[1]:
+				ticketGood = True
+		if not ticketGood:
+			badTicketSum += ticketVal
+			ticketAllGood = False
+		else:
+			goodValues.append(ticketVal)
+	if ticketAllGood:
+		goodTickets.append(nearbyTicket)
 			
+#print('goodValues',goodValues)
 print('badTicketSum',badTicketSum)
+
+# goodTickets [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
+print('goodTickets',goodTickets)
+

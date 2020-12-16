@@ -24,7 +24,7 @@ A0C 2020 Day 14 Part 2
 	# global usedMemoryLocations
 	# global memoryLocationValuesList
 	# for memoryAddress in usedMemoryLocations:
-		# print('memoryAddress',memoryAddress)
+		# # print('memoryAddress',memoryAddress)
 		# memoryLine = []
 		# memoryLine.append(int(memoryAddress))
 		# memoryLine.append(0)
@@ -33,7 +33,7 @@ A0C 2020 Day 14 Part 2
 	# global orBitMask
 	# global andBitMask
 	# global preserveBitMask
-	# print('maskString',maskString)
+	# # print('maskString',maskString)
 	# newVal = 0
 	# preserveBitMask = 0
 	# andBitMask = 0
@@ -46,7 +46,7 @@ A0C 2020 Day 14 Part 2
 		# elif pos == '1':
 			# orBitMask |= 1
 		# else:
-			# print('mask err')
+			# # print('mask err')
 			# assert False,'mask err'
 		# preserveBitMask <<= 1
 		# andBitMask <<= 1
@@ -54,9 +54,9 @@ A0C 2020 Day 14 Part 2
 	# preserveBitMask >>= 1
 	# andBitMask >>= 1
 	# orBitMask >>= 1
-	# print('preserveBitMask',preserveBitMask)
-	# print('andBitMask',andBitMask)
-	# print('orBitMask',orBitMask)
+	# # print('preserveBitMask',preserveBitMask)
+	# # print('andBitMask',andBitMask)
+	# # print('orBitMask',orBitMask)
 	# return
 
 # def applyMask(dataVal):
@@ -67,17 +67,17 @@ A0C 2020 Day 14 Part 2
 	# global orBitMask
 	# global andBitMask
 	# global preserveBitMask
-	# print('\ndataVal',dataVal)
+	# # print('\ndataVal',dataVal)
 	# valStr = bin(dataVal)[2:]
-	# print('valStr',valStr)
+	# # print('valStr',valStr)
 	
-	# print('orBitMask',bin(orBitMask)[2:])
-	# print('andBitMask',bin(andBitMask)[2:])
-	# print('preserveBitMask',bin(preserveBitMask)[2:])
+	# # print('orBitMask',bin(orBitMask)[2:])
+	# # print('andBitMask',bin(andBitMask)[2:])
+	# # print('preserveBitMask',bin(preserveBitMask)[2:])
 	# newValue = dataVal
 	# newValue &= preserveBitMask
 	# newValue |= orBitMask
-	# print('newValue',newValue)
+	# # print('newValue',newValue)
 	# # assert False,'stop'
 	# return newValue
 
@@ -105,7 +105,7 @@ def parseProgramToList(inList):
 			progLine.append(newRow[0])
 			progLine.append(newRow[1])
 			newProgList.append(progLine)
-			#print('mask')
+			## print('mask')
 			pass
 		elif row[0:2] == 'me':
 			newRow = row.replace('[',',')
@@ -113,16 +113,16 @@ def parseProgramToList(inList):
 			newRow = newRow.replace(']',',')
 			newRow = newRow.replace(' = ',',')
 			newLine = newRow.split(',')
-			#print('split line',newLine)
+			## print('split line',newLine)
 			progLine = []
 			progLine.append(newLine[0])
 			progLine.append(int(newLine[1]))
 			progLine.append(int(newLine[3]))
 			newProgList.append(progLine)
-			#print('mem',newRow)
+			## print('mem',newRow)
 			pass
 		else:
-			print(row)
+			# print(row)
 			assert False,'parse err'
 	return newProgList
 	
@@ -149,8 +149,8 @@ def setMemoryValue(address,value):
 			memPairVal[1] = value
 			return
 	else:
-		print('address',address)
-		print('value',value)
+		# print('address',address)
+		# print('value',value)
 		assert False,'setMemoryValue error'
 	return 0
 
@@ -168,13 +168,13 @@ maskString = ''
 maxCountXs = 0
 
 def makeListOf1s(numOfFloatBits):
-	#print('numOfFloatBits',numOfFloatBits)
+	## print('numOfFloatBits',numOfFloatBits)
 	rangeSize = 2
 	listOf1s = []
 	for num in range(pow(2,numOfFloatBits)):
-		#print('num',num)
+		## print('num',num)
 		str1s = bin(num)[2:]
-		#print('str1s',str1s)
+		## print('str1s',str1s)
 #		listOf1s.append(str1s)
 		lenStr1s = len(str1s)
 		newStr1s = ''
@@ -182,19 +182,19 @@ def makeListOf1s(numOfFloatBits):
 			newStr1s += '0'
 		for x in range(len(str1s)):
 			newStr1s += str1s[x]
-		#print('newStr1s',newStr1s)
+		## print('newStr1s',newStr1s)
 		listOf1s.append(newStr1s)
-	#print('listOf1s',listOf1s)
-	#print()
+	## print('listOf1s',listOf1s)
+	## print()
 	return listOf1s
 
 def makeListOfOffsets(listOf1s,trimmedFloatBits):
-	#print('(makeListOfOffsets): listOf1s',listOf1s)
-	#print('trimmedFloatBits',trimmedFloatBits)
+	## print('(makeListOfOffsets): listOf1s',listOf1s)
+	## print('trimmedFloatBits',trimmedFloatBits)
 	listOfOffsets = []
 	trimOffset = 0
 	for off in listOf1s:
-		#print('off',off)
+		## print('off',off)
 		listOf1sOffset = 0
 		outStr = ''
 		for trimBit in trimmedFloatBits:
@@ -204,12 +204,12 @@ def makeListOfOffsets(listOf1s,trimmedFloatBits):
 				outStr += off[listOf1sOffset]
 				listOf1sOffset += 1
 		listOfOffsets.append(outStr)
-	#print('listOfOffsets',listOfOffsets)
+	## print('listOfOffsets',listOfOffsets)
 	offNums = []
 	for offNum in listOfOffsets:
 		num = int(offNum,2)
 		offNums.append(num)
-	#print('offNums',offNums)
+	## print('offNums',offNums)
 	return offNums
 		
 def genAddrList(addr):
@@ -228,25 +228,25 @@ def genAddrList(addr):
 		is floating.
 	"""
 	global maskString
-	#print('addr',addr)
-	#print('addr                                    ',bin(addr)[2:])
-	#print('maskString',maskString)
+	## print('addr',addr)
+	## print('addr                                    ',bin(addr)[2:])
+	## print('maskString',maskString)
 	maskForce0 = maskString.replace('1','0')
 	maskForce0 = maskForce0.replace('X','1') # Floating forces to zero
-	#print('maskForce0',maskForce0)
+	## print('maskForce0',maskForce0)
 	maskForce0Int = int(maskForce0,2)
 	maskForce0Int = ~maskForce0Int
 	addr = addr & maskForce0Int
-	#print('addr                                      ',bin(addr)[2:])
+	## print('addr                                      ',bin(addr)[2:])
 	maskForce1 = maskString.replace('X','0')
-	#print('maskForce1',maskForce1)
+	## print('maskForce1',maskForce1)
 	maskForce1Int = int(maskForce1,2)
 	baseAddress = addr | maskForce1Int
-	#print('baseAddress                                    ',bin(baseAddress)[2:])
-	#print('base address',baseAddress)
+	## print('baseAddress                                    ',bin(baseAddress)[2:])
+	## print('base address',baseAddress)
 	floatBits = maskString.replace('1','0')
 	floatBits = floatBits.replace('X','1')
-	#print('float bits',floatBits)
+	## print('float bits',floatBits)
 	trimmedFloatBits = ''
 	found1 = False
 	for offset in range(len(floatBits)):
@@ -254,23 +254,23 @@ def genAddrList(addr):
 			found1 = True
 		if found1:
 			trimmedFloatBits += floatBits[offset]
-	#print('trimmedFloatBits',trimmedFloatBits)
+	## print('trimmedFloatBits',trimmedFloatBits)
 	numOfFloatBits = trimmedFloatBits.count('1')
-	#print('numOfFloatBits',numOfFloatBits)
+	## print('numOfFloatBits',numOfFloatBits)
 	listOf1s = makeListOf1s(numOfFloatBits)
 	listOfOffsets = makeListOfOffsets(listOf1s,trimmedFloatBits)
-	print('listOfOffsets',listOfOffsets)
+	# print('listOfOffsets',listOfOffsets)
 	addressList = []
 	for offset in listOfOffsets:
 		addr = baseAddress + offset
 		addressList.append(addr)
-	print('addressList',addressList)
+	# print('addressList',addressList)
 	return addressList
 
 for programLine in inProgram:
-	# print('progLine',programLine)
+	# # print('progLine',programLine)
 	if programLine[0] == 'mask':
-		#print('set mask')
+		## print('set mask')
 		maskString = programLine[1]
 	if programLine[0] == 'mem':
 		addrList = genAddrList(programLine[1])
@@ -285,7 +285,7 @@ for programLine in inProgram:
 
 sum = 0
 for memVal in memoryLocationValuesList:
-	#print(memVal)
+	## print(memVal)
 	sum += memVal[1]
 
 print('sum',sum)
