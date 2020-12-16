@@ -1,5 +1,3 @@
-len = 4
-
-for i in range(len):
-	print(i)
-	
+recLen = 3
+for fieldOffset in range(recLen):
+	print('fieldOffset',fieldOffset)
