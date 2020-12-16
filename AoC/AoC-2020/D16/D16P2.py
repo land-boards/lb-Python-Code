@@ -1,6 +1,6 @@
 """ 
 
-Ao'c 2020 D16 P2
+AoC 2020 D16 P2
 
 """
 
@@ -114,29 +114,39 @@ for nearbyTicket in nearbyTicketsList:
 		goodTickets.append(nearbyTicket)
 			
 #print('goodValues',goodValues)
-print('badTicketSum',badTicketSum)
+# print('badTicketSum',badTicketSum)
 
 goodTickets = [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
-print('goodTickets',goodTickets)
-print('goodTickets[0] =',goodTickets[0])
+# print('goodTickets',goodTickets)
+# print('goodTickets[0] =',goodTickets[0])
 recLen = len(goodTickets[0])
 print('len goodTickets[0] =',recLen)
 
-ticketFieldValuesRange = []
-recLen = 3
+ticketFieldValuesMinMaxRange = []
 fieldOff = 0
 while fieldOff < recLen:
-	print('fieldOff',fieldOff)
 	valMin = goodTickets[0][fieldOff]
 	valMax = goodTickets[0][fieldOff]
 	valPair = []
 	valPair.append(valMin)
 	valPair.append(valMax)
-	ticketFieldValuesRange.append(valPair)
+	ticketFieldValuesMinMaxRange.append(valPair)
 	fieldOff += 1
 
-# ticketFieldValuesRange [[3, 3], [9, 9], [18, 18]]
-print('ticketFieldValuesRange',ticketFieldValuesRange)	
+# ticketFieldValuesMinMaxRange [[3, 3], [9, 9], [18, 18]]
+print('ticketFieldValuesMinMaxRange',ticketFieldValuesMinMaxRange)	
+# goodTickets [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
+print('goodTickets',goodTickets)
 
-for goodValPair in goodTickets:
-	
+for goodTicket in goodTickets:
+	print('goodTicket',goodTicket[1:])
+	for ticketFieldValues in ticketFieldValuesMinMaxRange:
+		print('ticketFieldValues',ticketFieldValues)
+		for ticketField in goodTicket:
+			print('ticketField',ticketField)
+			if ticketField < ticketFieldValues[0]:
+				ticketFieldValues[0] = ticketField
+			elif ticketField > ticketFieldValues[1]:
+				ticketFieldValues[1] = ticketField
+	assert False,'stopped'
+print('ticketFieldValuesMinMaxRange',ticketFieldValuesMinMaxRange)
