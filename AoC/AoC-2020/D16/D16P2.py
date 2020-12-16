@@ -116,18 +116,18 @@ for nearbyTicket in nearbyTicketsList:
 #print('goodValues',goodValues)
 print('badTicketSum',badTicketSum)
 
-# goodTickets [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
+goodTickets = [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
 print('goodTickets',goodTickets)
 print('goodTickets[0] =',goodTickets[0])
 recLen = len(goodTickets[0])
 print('len goodTickets[0] =',recLen)
 
 ticketFieldValuesRange = []
-recLen = 3
-for i in range(3):
-	print('i',i)
-	valMin = goodTickets[i]
-	valMax = goodTickets[fieldOffset]
+# recLen = 3
+for fieldOffset in range(recLen):
+	print('fieldOffset',fieldOffset)
+	valMin = goodTickets[0][fieldOffset]
+	valMax = goodTickets[0][fieldOffset]
 	valPair = []
 	valPair.append(valMin)
 	valPair.append(valMax)
