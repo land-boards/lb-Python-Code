@@ -13,7 +13,7 @@ def readFileToListOfStrings(fileName):
 			inList.append(line.rstrip())
 	return inList
 
-inList = readFileToListOfStrings('input2.txt')
+inList = readFileToListOfStrings('input.txt')
 
 stateList = ['headerBlock','myTicketHeader','myTicketVal','blank1','nearby','ticketsList','done']
 state = 0
@@ -23,7 +23,6 @@ nearbyTicketValuesList = []
 nearbyTicketsList = []
 
 for row in inList:
-	# print(stateList[state])
 	if stateList[state] == 'headerBlock':
 		if row == '':
 			state += 1
@@ -70,11 +69,6 @@ for row in inList:
 			line.append(int(item))
 		nearbyTicketsList.append(line)
 
-# print('rulesList',rulesList)
-# print('myTicketList -',myTicket)List)
-# print('nearbyTicketValuesList -',nearbyTicketValuesList)
-# print('nearbyTicketsList',nearbyTicketsList)
-
 goodTicketCount = 0
 badTicketCount = 0
 
@@ -102,8 +96,8 @@ for nearbyTicket in nearbyTicketsList:
 	ticketAllGood = True
 	for ticketVal in nearbyTicket:
 		ticketGood = False
-		for range in rangesList:
-			if range[0] <= ticketVal <= range[1]:
+		for myRange in rangesList:
+			if myRange[0] <= ticketVal <= myRange[1]:
 				ticketGood = True
 		if not ticketGood:
 			badTicketSum += ticketVal
@@ -116,38 +110,71 @@ for nearbyTicket in nearbyTicketsList:
 #print('goodValues',goodValues)
 # print('badTicketSum',badTicketSum)
 
-goodTickets = [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
-# print('goodTickets',goodTickets)
-# print('goodTickets[0] =',goodTickets[0])
+# goodTickets = [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
 recLen = len(goodTickets[0])
-print('len goodTickets[0] =',recLen)
 
-ticketFieldValuesMinMaxRange = []
+ticketFieldValuesRange = []
 fieldOff = 0
 while fieldOff < recLen:
-	valMin = goodTickets[0][fieldOff]
-	valMax = goodTickets[0][fieldOff]
-	valPair = []
-	valPair.append(valMin)
-	valPair.append(valMax)
-	ticketFieldValuesMinMaxRange.append(valPair)
+	ticketFieldValuesRange.append([goodTickets[0][fieldOff]])
 	fieldOff += 1
 
-# ticketFieldValuesMinMaxRange [[3, 3], [9, 9], [18, 18]]
-print('ticketFieldValuesMinMaxRange',ticketFieldValuesMinMaxRange)	
-# goodTickets [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
-print('goodTickets',goodTickets)
+# ticketFieldValuesRange [[3, 3], [9, 9], [18, 18]]
+# goodTickets = [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
 
+# goodTickets [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
+# should make [[3,15,5],[9,1,14],[18,5,9]]
+print('ticketFieldValuesRange',ticketFieldValuesRange)
 for goodTicket in goodTickets[1:]:
-	print('goodTicket',goodTicket)
-	for ticketFieldValues in ticketFieldValuesMinMaxRange:
-		print('ticketFieldValues',ticketFieldValues)
-		for ticketField in goodTicket:
-			print('ticketField',ticketField)
-			if ticketField < ticketFieldValues[0]:
-				ticketFieldValues[0] = ticketField
-			elif ticketField > ticketFieldValues[1]:
-				ticketFieldValues[1] = ticketField
-	print('ticketFieldValuesMinMaxRange',ticketFieldValuesMinMaxRange)
-	assert False,'stopped'
-print('ticketFieldValuesMinMaxRange',ticketFieldValuesMinMaxRange)
+	#print('goodTicket',goodTicket)
+	numRecs = len(ticketFieldValuesRange)
+	for recNum in range(numRecs):
+		#print('goodTicket[recNum]',goodTicket[recNum])
+		ticketFieldValuesRange[recNum].append(goodTicket[recNum])
+# ticketFieldValuesRange [[3, 15, 5], [9, 1, 14], [18, 5, 9]]
+#print('ticketFieldValuesRange',ticketFieldValuesRange)
+# rulesList [['class', 0, 1, 4, 19], ['row', 0, 5, 8, 19], ['seat', 0, 13, 16, 19]]
+#print('rulesList',rulesList)
+
+valsOffset = 0
+departuresList = []
+for ticketVals in ticketFieldValuesRange:
+	print('ticketVals valsOffset',valsOffset)
+	ruleNum = 0
+	for rule in rulesList:
+		matchedAll = True
+		#print('rule',ruleNum,rule)
+		for ticket in ticketVals:
+			#print('ticket',ticket)
+			if (rule[1] <= ticket <= rule[2]) or (rule[3] <= ticket <= rule[4]):
+				pass
+			else:
+				matchedAll = False
+				#print('not matched')
+		ruleNum += 1
+		if matchedAll and ('depart' in rule[0]):
+			#print('ticketVals valsOffset',valsOffset)
+			print('matched',ruleNum,rule[0])
+	valsOffset += 1
+	
+# [1] ticketVals valsOffset 19 = matched 4 departure track (107)
+# [2] ticketVals valsOffset 11 = matched 5 departure date (179)
+# [3] ticketVals valsOffset 13 = matched 6 departure time (89)
+# [4] ticketVals valsOffset 2 = matched 1 departure location (83)
+# [5] ticketVals valsOffset 4 = matched 2 departure station (109)
+# [6] ticketVals valsOffset 0 = matched 3 departure platform (103)
+# 1588432009897 = too low
+# or 
+# [6] ticketVals valsOffset 1 = matched 3 departure platform (197)
+# or 
+# ticketVals valsOffset 12 = matched 3 departure platform
+# [6] ticketVals valsOffset 14 =  matched 3 departure platform
+#
+# 3038068989803 = too low
+# product = 
+
+# myTicketList [11, 12, 13]
+# print('myTicketList',myTicketList)
+
+for offset in range(len(myTicketList)):
+	print('myTicketList',offset,myTicketList[offset])
