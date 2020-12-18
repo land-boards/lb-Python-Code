@@ -24,9 +24,9 @@ def debugPrint(thingToPrint):
 	if DEBUG_PRINT:
 		print(thingToPrint)
 
-def readFileOfStringsToListOfLists():
+def readFileOfStringsToListOfLists(inFileName):
 	inList = []
-	with open('input.txt', 'r') as filehandle:  
+	with open(inFileName, 'r') as filehandle:  
 		for line in filehandle:
 			inLine = line.rstrip()
 			inList.append(list(inLine))
@@ -37,9 +37,9 @@ def countNeighbors(location,oldDict):
 	global neighborsOffsetList
 	neighborCount = 0
 	for neighbor in neighborsOffsetList:
-		checkLoc = (location[0]+neighbor[0],location[1]+neighbor[1],location[2]+neighbor[2])
+		checkLoc = (location[0]+neighbor[0],location[1]+neighbor[1],location[2]+neighbor[2],location[3]+neighbor[3])
 		if checkLoc in oldDict:
-			debugPrint('found # at (x,y,z) = ' + str(checkLoc))
+			debugPrint('found # at (x,y,z,w) = ' + str(checkLoc))
 			neighborCount += 1
 	return neighborCount
 
@@ -58,7 +58,7 @@ def makeNewDict(oldDict):
 				newDict[location] = '#'
 		neighborCount = 0		
 		for neighbor in neighborsOffsetList:
-			checkLoc = (location[0]+neighbor[0],location[1]+neighbor[1],location[2]+neighbor[2])
+			checkLoc = (location[0]+neighbor[0],location[1]+neighbor[1],location[2]+neighbor[2],location[3]+neighbor[3])
 			neighborCount = countNeighbors(checkLoc,oldDict)
 			debugPrint('Location at ' + str(location) + ' has ' + str(neighborCount) + ' neighbor(s)')
 			if (neighborCount == 3):
@@ -71,7 +71,7 @@ def makeNewDict(oldDict):
 	return newDict
 
 def printDict(arrayDict):
-	xMax, xMin, yMax, yMin, zMax, zMin = 0,0,0,0,0,0
+	xMax, xMin, yMax, yMin, zMax, zMin, wMax, wMin = 0,0,0,0,0,0,0,0
 	for point in arrayDict:
 		if point[0] > xMax:
 			xMax = point[0]
@@ -85,40 +85,48 @@ def printDict(arrayDict):
 			zMax = point[2]
 		if point[2] < zMin:
 			zMin = point[2]
-	#print('max/min x,y,z',xMax, xMin, yMax, yMin, zMax, zMin)
-	for z in range(zMin,zMax+1):
-		for y in range(yMin,yMax+1):
-			for x in range(xMin,xMax+1):
-				if (x,y,z) in arrayDict:
-					print('#',end='')
-				else:
-					print('.',end='')
+		if point[3] > wMax:
+			wMax = point[3]
+		if point[3] < wMin:
+			wMin = point[3]
+	#print('max/min x,y,z,w',xMax, xMin, yMax, yMin, zMax, zMin, wMax, wMin)
+	for w in range(wMin,wMax+1):
+		for z in range(zMin,zMax+1):
+			print('z=',z,'w=',w)
+			for y in range(yMin,yMax+1):
+				for x in range(xMin,xMax+1):
+					if (x,y,z,w) in arrayDict:
+						print('#',end='')
+					else:
+						print('.',end='')
+				print()
 			print()
-		print()
-	print(point)
+		print(point)
 
 # program
-inList = readFileOfStringsToListOfLists()
+inList = readFileOfStringsToListOfLists('input.txt')
 debugPrint(str(inList))
 
 # list of offsets to all possible neighbors
 neighborsOffsetList = []
-for z in range(-1,2,1):
-	debugPrint(z)
-	for y in range(-1,2,1):
-		for x in range(-1,2,1):
-			if (x,y,z) != (0,0,0):
-				neighborsOffsetList.append((x,y,z))
+for w in range(-1,2,1):
+	for z in range(-1,2,1):
+		debugPrint(z)
+		for y in range(-1,2,1):
+			for x in range(-1,2,1):
+				if (x,y,z,w) != (0,0,0,0):
+					neighborsOffsetList.append((x,y,z,w))
 debugPrint('neighborsOffsetList' + str(neighborsOffsetList))
 debugPrint(str(len(neighborsOffsetList)))
 
+w = 0
 z = 0
 conroySpaceDict = {}
 for y in range(len(inList)):
 	for x in range(len(inList[0])):
 		debugPrint(str(inList[y][x]))
 		if inList[y][x] == '#':
-			conroySpaceDict[(x,y,z)] = '#'
+			conroySpaceDict[(x,y,z,w)] = '#'
 	debugPrint('')
 debugPrint(str(conroySpaceDict))
 for dictItem in conroySpaceDict:
