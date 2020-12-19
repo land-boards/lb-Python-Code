@@ -136,6 +136,6 @@ for loopCount in range(6):
 	print(loopCount)
 	debugPrint(str(loopCount))
 	conroySpaceDict = copy.deepcopy(makeNewDict(conroySpaceDict))
-	printDict(conroySpaceDict)
+	#printDict(conroySpaceDict)
 	print('filled count',len(conroySpaceDict))
 debugPrint(str(conroySpaceDict))
