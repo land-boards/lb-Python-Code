@@ -64,36 +64,69 @@ def countDepth(theRow):
 	debugPrint('(countDepth): maxDepth = ' + str(maxDepth))
 	return maxDepth
 
-def solveSingleLevel(cutList):
+def solveSingleLevelLeftToRight(singleLevelEqn):
 	global DEBUG_PRINT
-	DEBUG_PRINT = False
-	debugPrint('(solveSingleLevel): input = ' + str(cutList))
+	DEBUG_PRINT = True
+	debugPrint('(solveSingleLevelLeftToRight): input = ' + str(singleLevelEqn))
 	result = 0
 	operator = 'start'
-	for item in cutList:
+	for item in singleLevelEqn:
 		if item == '+':
 			operator = 'plus'
-			debugPrint('(solveSingleLevel): plus')
+			debugPrint('(solveSingleLevelLeftToRight): plus')
 		elif item == '*':
 			operator = 'multiply'
-			debugPrint('(solveSingleLevel): multiply')
+			debugPrint('(solveSingleLevelLeftToRight): multiply')
 		elif operator == 'start':
 			result = item
 			operator = 'waitForOp'
-			debugPrint('(solveSingleLevel): initial val ' + str(item))
+			debugPrint('(solveSingleLevelLeftToRight): initial val ' + str(item))
 		else:
 			if operator == 'multiply':
-				debugPrint('(solveSingleLevel): multiply, ' + str(result) + " " + str(item))
+				debugPrint('(solveSingleLevelLeftToRight): multiply, ' + str(result) + " " + str(item))
 				result = result * item
-				operator = '(solveSingleLevel): waitForOp'
+				operator = '(solveSingleLevelLeftToRight): waitForOp'
 			elif operator == 'plus':
-				debugPrint('(solveSingleLevel): adding, ' + str(result) + ' ' + str(item))
+				debugPrint('(solveSingleLevelLeftToRight): adding, ' + str(result) + ' ' + str(item))
 				result = result + item
-				operator = '(solveSingleLevel): waitForOp'
-		debugPrint('(solveSingleLevel): accumuator result ' + str(result))
-	debugPrint('(solveSingleLevel): returning result ' + str(result))
+				operator = '(solveSingleLevelLeftToRight): waitForOp'
+		debugPrint('(solveSingleLevelLeftToRight): accumuator result ' + str(result))
+	debugPrint('(solveSingleLevelLeftToRight): returning result ' + str(result))
 	DEBUG_PRINT = False
 	return result
+
+def solveSingleLevelPt2Pri(singleLevelEqn):
+	global DEBUG_PRINT
+	DEBUG_PRINT = True
+	debugPrint('(solveSingleLevelPt2Pri): input = ' + str(singleLevelEqn))
+	result = 0
+	solvedForAdds = []
+	operator = 'start'
+	offset = 0
+	while offset < len(singleLevelEqn)-1:
+		print('offset',offset)
+		if singleLevelEqn[offset+1] == '+':
+			firstNum = singleLevelEqn.pop(offset)
+			op = singleLevelEqn.pop(offset)
+			secondNum = singleLevelEqn.pop(offset)
+			singleLevelEqn.insert(offset,firstNum+secondNum)
+			print('inserted',firstNum+secondNum)
+		else:
+			offset += 1
+		print('singleLevelEqn',singleLevelEqn)
+	if len(singleLevelEqn) == 1:
+		return singleLevelEqn[0]
+	product = 1
+	offset = 0
+	while offset < len(singleLevelEqn)-2:
+		print('singleLevelEqn (2)',singleLevelEqn)
+		product *= singleLevelEqn[offset]
+		offset += 2
+	if offset < len(singleLevelEqn):
+		product *= singleLevelEqn[-1]
+	print('product',product)
+	# assert False,'stopped'
+	return product
 
 def evalAtDepth(theRow,searchDepth):
 	""" evalAtDepth(theRow,searchDepth)
@@ -167,7 +200,7 @@ def solveRow(theRow):
 		depth = countDepth(newRow)
 		debugPrint('(solveRow): depth (2) ' + str(depth))
 		# input('\nHit enter')
-	result = solveSingleLevel(newRow)
+	result = solveSingleLevelPt2Pri(newRow)
 	debugPrint('(solveRow): result' + str(result))
 	return result
 
