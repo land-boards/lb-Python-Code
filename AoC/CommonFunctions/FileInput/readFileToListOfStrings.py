@@ -12,3 +12,10 @@ def readFileToListOfStrings(fileName):
 		for line in filehandle:
 			inList.append(line.rstrip())
 	return inList
+
+inList = readFileToListOfStrings('input.txt')
+print(inList)
+for row in inList:
+	print(row)
+
+
