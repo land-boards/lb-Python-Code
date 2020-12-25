@@ -4,7 +4,8 @@ AoC 2020 D24P2
 
 181 too low
 
-Cube coordinates f+-edblobgames.com/grids/hexagons/
+Cube coordinates
+	https://www.redblobgames.com/grids/hexagons/
 
 """
 
@@ -20,11 +21,9 @@ def readFileToListOfStrings(fileName):
 	return inList
 
 def parseInList():
-	# print(inList)
 	global inList
 	newList = []
 	for row in inList:
-		#print(row)
 		off = 0
 		newRow = []
 		while off < len(row):
@@ -34,16 +33,13 @@ def parseInList():
 			elif row[off] == 'e' or row[off] == 'w':
 				newRow.append(row[off])
 				off += 1
-		# print(newRow)
-#		input('hit ret')
 		newList.append(newRow)
 	return newList
 
 def initList(dirsLists):
 	posList = []
 	for row in dirsLists:
-		# print('row',row)
-		pos = [0,0,0]	# [e=1/w=-1,ne=1/sw=-1,nw=1/se=-1]
+		pos = [0,0,0]
 		for elem in row:
 			if elem == 'e':
 				pos[0] += 1
@@ -63,7 +59,6 @@ def initList(dirsLists):
 			elif elem == 'se':
 				pos[1] += -1
 				pos[2] += 1
-		# print('pos',pos)
 		foundAtPos = False
 		for item in posList:
 			if item[0] == pos:
@@ -74,14 +69,11 @@ def initList(dirsLists):
 					color = 'white'
 				item[1] = color
 				foundAtPos = True
-				# print('was already in the list',pos,'updating color to',color)
 		if not foundAtPos:
 			newLineVal = []
 			newLineVal.append(pos)
 			newLineVal.append('black')
 			posList.append(newLineVal)
-			# print('new at',pos,'with color black')
-	# print('posList',posList)
 	return posList
 
 def conwayIt(inList):
@@ -97,9 +89,10 @@ dirsLists = parseInList()
 posList = initList(dirsLists)
 for loopCount in range (1,10):
 	print('loop count',loopCount)
-	posList = conwayIt(posList)
 	blackCount = 0
 	for row in posList:
 		if row[1] == 'black':
 			blackCount += 1
 	print('black',blackCount)
+	posList = conwayIt(posList)
+	
