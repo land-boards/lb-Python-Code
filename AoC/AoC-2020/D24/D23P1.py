@@ -89,10 +89,10 @@ def conwayIt(inList):
 	return outList
 
 # program follows
-# inList = readFileToListOfStrings('input1.txt')
+# inList = readFileToListOfStrings('input.txt')
+inList = readFileToListOfStrings('input1.txt')
 # inList = ['esenee','esew','nwwswee']
 # inList = ['nwwswee']
-inList = readFileToListOfStrings('input.txt')
 dirsLists = parseInList()
 posList = initList(dirsLists)
 for loopCount in range (1,10):
