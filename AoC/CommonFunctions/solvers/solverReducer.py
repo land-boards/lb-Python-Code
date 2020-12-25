@@ -6,14 +6,13 @@ possible = {
 
 def reduce(possible):
   reduced = {}
-  singles = set()
 
   while len(reduced) != len(possible):
     for k, v in possible.items():
-      if len(v - singles) == 1:
-        v = list(v)[0]
-        reduced[k] = v
-        singles.add(v)
+      single = v - set(reduced.values())
+
+      if len(single) == 1:
+        reduced[k] = list(single)[0]
 
   return reduced
 

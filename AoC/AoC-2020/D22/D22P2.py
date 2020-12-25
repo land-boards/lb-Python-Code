@@ -1,19 +1,67 @@
-possible = {
-  'dairy': { 'abc' },
-  'eggs': { 'abc', 'def' },
-  'fish': { 'abc', 'def', 'ghi' },
-}
+""" 
 
-def reduce(possible):
-  reduced = {}
+D22P1
 
-  while len(reduced) != len(possible):
-    for k, v in possible.items():
-      single = v - set(reduced.values())
+"""
 
-      if len(single) == 1:
-        reduced[k] = list(single)[0]
+list1 = []
+list2 = []
 
-  return reduced
+def readToLists(fileName):
+	"""
+	"""
+	global list1
+	global list2
+	stateList = ['inWaitPlayer1','inList1','inWaitPlayer2','inList2']
+	state = 'inWaitPlayer1'
+	with open(fileName, 'r') as filehandle:  
+		for line in filehandle:
+			line = line.strip()
+			if state == 'inWaitPlayer1':
+				# print('Playa 1')
+				state = 'inList1'
+			elif state == 'inList1':
+				if line != '':
+					list1.append(int(line.strip()))
+				else:
+					state = 'inWaitPlayer2'
+			elif state == 'inWaitPlayer2':
+				# print('Playa 2')
+				state = 'inList2'
+			elif state == 'inList2':
+				list2.append(int(line.strip()))
+	return
 
-print(reduce(possible))
+readToLists('input.txt')
+
+while (len(list1) != 0) and (len(list2) != 0):
+	topCardPlaya1 = list1[0]
+	topCardPlaya2 = list2[0]
+	# print('comparing',topCardPlaya1,'to',topCardPlaya2)
+	if topCardPlaya1 > topCardPlaya2:
+		list1.append(topCardPlaya1)
+		list1.append(topCardPlaya2)
+		list1.pop(0)
+		list2.pop(0)
+		# print('Playa 1 wins')
+	else:
+		list2.append(topCardPlaya2)
+		list2.append(topCardPlaya1)
+		list1.pop(0)
+		list2.pop(0)	
+
+productSum = 0
+if len(list1) != 0:
+	print('Playa 1',list1)
+	val = len(list1)
+	for listItem in list1:
+		productSum += val*listItem
+		val -= 1
+else:
+	print('Playa 2',list2)
+	val = len(list2)
+	for listItem in list2:
+		productSum += val*listItem
+		val -= 1
+	
+print('productSum',productSum)
