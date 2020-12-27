@@ -28,7 +28,7 @@ def makeBetterList(inList):
 			lineList.append(line)
 		else:
 			bigList.append(lineList)
-	#bigList.append(lineList)
+	bigList.append(lineList)
 	return bigList
 	
 def printImage(theImage):
@@ -108,7 +108,6 @@ def findOtherNode(edgeVal,nodeNumberToSkip,edgesList):
 	assert False,'findOtherNode) : wtf'
 
 # Program follows
-
 inList = readFileOfStringsToListOfLists('input1.txt')
 
 # bigList [[2311, ['.', '.', '#', '#', '.', '#', '.', '.', '#', '.'], ...
@@ -171,7 +170,7 @@ for shape in edgesList:
 		minVal = totalEdges
 	if totalEdges > maxVal:
 		maxVal = totalEdges
-print('totalEdges',totalEdges)
+# print('totalEdges',totalEdges)
 # print('minVal',minVal)
 # print('maxVal',maxVal)
 
@@ -187,16 +186,15 @@ for shape in edgesList:
 		cornerPieces.append(shape[0])
 	# print('totalEdges',totalEdges>>1)
 
-# print('corner pieces',cornerPieces)
+# Calculate Part 1 check result
+print('corner pieces',cornerPieces)
 total = 1
 for end in cornerPieces:
 	total *= end
-
-print('val',total)
+print('Pt 1 val =',total)
 
 initialCornerId = cornerPieces[0]
-
-print('initialCornerId',initialCornerId)
+# print('initialCornerId',initialCornerId)
 
 # allEdgeVals = {666: 1, 357: 1, 547: 1, 785: 1, 813: 1,  759: 0, 
 matchedEdges = []
