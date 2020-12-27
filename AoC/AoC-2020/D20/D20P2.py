@@ -107,6 +107,130 @@ def findOtherNode(edgeVal,nodeNumberToSkip,edgesList):
 					return testNodeNumber
 	assert False,'findOtherNode) : wtf'
 
+def makeEdgesList(bigList):
+	# print('\nSides values list')
+	edgesList = []
+	for image in bigList:
+		edgesLine = []
+		edgesLine.append(image[0])
+		edgeVals = evalEdges(image)
+		edgesLine.append(edgeVals)
+		edgesList.append(edgesLine)
+	# print('edgesList',edgesList)
+	# for edge in edgesList:
+		# print('Id',edge[0],end = ' ')
+		# for val in edge[1]:
+			# print(val,end=' ')
+			# pass
+		# print()
+	# listOfEdges = []
+	# allEdgeVals {300: 1, 210: 1, 616: 0, 89: 0, 231: 0, 924: 0, 498: 1, 318: 1, 397: 1, 710: 1, 564: 0, 177: 0, 841: 0, 587: 0, 399: 1, 966: 1, 18: 1, 288: 1, 24: 0, 96: 0, 902: 0, 391: 0, 183: 1, 948: 1, 348: 1, 234: 1, 576: 1, 9: 1, 43: 0, 848: 0, 565: 1, 689: 1, 481: 0, 542: 0, 184: 0, 116: 0, 532: 0, 161: 0, 85: 1, 680: 1, 456: 0, 78: 0, 271: 0, 962: 0}
+	return edgesList
+
+def countEdges(edgesList):
+	# Sides one by one
+	# Id 2311 300 210 616 89 231 924 498 318
+	# Id 1951 397 710 318 498 564 177 841 587
+	# Id 1171 399 966 18 288 24 96 902 391
+	# Id 1427 183 948 348 234 210 300 576 9
+	# Id 1489 43 848 288 18 948 183 565 689
+	# Id 2473 481 542 184 116 234 348 966 399
+	# Id 2971 532 161 689 565 85 680 456 78
+	# Id 2729 680 85 9 576 710 397 271 962
+	# print('\nSides one by one')
+	allEdgeVals = {}
+	for edge in edgesList:
+		for edgeVal in edge[1]:
+			if edgeVal not in allEdgeVals:
+				allEdgeVals[edgeVal] = 0
+			else:
+				allEdgeVals[edgeVal] += 1
+	# print('\nCounts of allEdgeVals')
+	# for key in allEdgeVals:
+		# if allEdgeVals[key] == 0:
+			# del allEdgeVals[key]
+	# print('allEdgeVals ',end='')
+	# print(allEdgeVals)
+	return allEdgeVals
+
+def findCorners(edgesList):
+	minVal = 9999
+	maxVal = 0
+	# print('\nCounting edges')
+	for shape in edgesList:
+		#print('Key Id',shape[0],end = ' ')
+		totalEdges = 0
+		for keyVal in shape[1]:
+			# print(keyVal,allEdgeVals[keyVal],end=' ')
+			totalEdges += allEdgeVals[keyVal]
+		if totalEdges < minVal:
+			minVal = totalEdges
+		if totalEdges > maxVal:
+			maxVal = totalEdges
+	# print('totalEdges',totalEdges)
+	# print('minVal',minVal)
+	# print('maxVal',maxVal)
+
+	cornerPieces = []
+	# print('\nFind corners')
+	for shape in edgesList:
+		# print('Key Id',shape[0],end = ' ')
+		totalEdges = 0
+		for keyVal in shape[1]:
+			# print(keyVal,allEdgeVals[keyVal],end=' ')
+			totalEdges += allEdgeVals[keyVal]
+		if totalEdges == minVal:
+			cornerPieces.append(shape[0])
+		# print('totalEdges',totalEdges>>1)
+
+	# Calculate Part 1 check result
+	print('corner pieces',cornerPieces)
+	return cornerPieces
+
+def solvePt1(cornerPieces):
+	total = 1
+	for end in cornerPieces:
+		total *= end
+	print('Pt 1 val =',total)
+
+def makeNewEdgesDict(allEdgeVals,edgesList):
+	# allEdgeVals = {666: 1, 357: 1, 547: 1, 785: 1, 813: 1,  759: 0, 
+	matchedEdges = []
+	for edgeVal in allEdgeVals:
+		if allEdgeVals[edgeVal] != 0:
+			matchedEdges.append(edgeVal)
+	# print('matchedEdges',matchedEdges)
+
+	# edgesList = [[2411, [666, 357, 547, 785, 813, 723, 63, 1008]],
+	newEdgesDict = {}
+	for edge in edgesList:
+		nodeNumber = edge[0]
+		matchingNodeNumber = []
+		firstSecond = 'First'
+		for edgeVal in edge[1]:
+			if edgeVal not in matchedEdges:
+				if firstSecond == 'First':
+					matchingNodeNumber.append(-1)
+					firstSecond = 'Second'
+				else:
+					firstSecond = 'First'
+			else:
+				otherNode = findOtherNode(edgeVal,nodeNumber,edgesList)
+				#print('nodeNumber',nodeNumber,'otherNode',otherNode)
+				if firstSecond == 'First':
+					matchingNodeNumber.append(otherNode)
+					firstSecond = 'Second'
+				else:
+					firstSecond = 'First'
+		newEdgesDict[nodeNumber] = matchingNodeNumber
+
+	print('[top,left,bottom,right]')
+	print('newEdgesDict')
+	for row in newEdgesDict:
+		print(row,newEdgesDict[row])
+	return newEdgesDict
+
+######################################################################
 # Program follows
 inList = readFileOfStringsToListOfLists('input1.txt')
 
@@ -114,128 +238,33 @@ inList = readFileOfStringsToListOfLists('input1.txt')
 bigList = makeBetterList(inList)
 # print('bigList',bigList)
 
-# print('\nSides values list')
 # edgesList [[2311, [300, 210, 616, 89, 231, 924, 498, 318]], [1951, [397, 710, 318, 498, 564, 177, 841, 587]], [1171, [399, 966, 18, 288, 24, 96, 902, 391]], [1427, [183, 948, 348, 234, 210, 300, 576, 9]], [1489, [43, 848, 288, 18, 948, 183, 565, 689]], [2473, [481, 542, 184, 116, 234, 348, 966, 399]], [2971, [532, 161, 689, 565, 85, 680, 456, 78]], [2729, [680, 85, 9, 576, 710, 397, 271, 962]]]
-edgesList = []
-for image in bigList:
-	edgesLine = []
-	edgesLine.append(image[0])
-	edgeVals = evalEdges(image)
-	edgesLine.append(edgeVals)
-	edgesList.append(edgesLine)
-# print('edgesList',edgesList)
+edgesList = makeEdgesList(bigList)
 
-# Sides one by one
-# Id 2311 300 210 616 89 231 924 498 318
-# Id 1951 397 710 318 498 564 177 841 587
-# Id 1171 399 966 18 288 24 96 902 391
-# Id 1427 183 948 348 234 210 300 576 9
-# Id 1489 43 848 288 18 948 183 565 689
-# Id 2473 481 542 184 116 234 348 966 399
-# Id 2971 532 161 689 565 85 680 456 78
-# Id 2729 680 85 9 576 710 397 271 962
-# print('\nSides one by one')
-# for edge in edgesList:
-	# print('Id',edge[0],end = ' ')
-	# for val in edge[1]:
-		# print(val,end=' ')
-		# pass
-	# print()
-# listOfEdges = []
-# allEdgeVals {300: 1, 210: 1, 616: 0, 89: 0, 231: 0, 924: 0, 498: 1, 318: 1, 397: 1, 710: 1, 564: 0, 177: 0, 841: 0, 587: 0, 399: 1, 966: 1, 18: 1, 288: 1, 24: 0, 96: 0, 902: 0, 391: 0, 183: 1, 948: 1, 348: 1, 234: 1, 576: 1, 9: 1, 43: 0, 848: 0, 565: 1, 689: 1, 481: 0, 542: 0, 184: 0, 116: 0, 532: 0, 161: 0, 85: 1, 680: 1, 456: 0, 78: 0, 271: 0, 962: 0}
-allEdgeVals = {}
-for edge in edgesList:
-	for edgeVal in edge[1]:
-		if edgeVal not in allEdgeVals:
-			allEdgeVals[edgeVal] = 0
-		else:
-			allEdgeVals[edgeVal] += 1
-# print('\nCounts of allEdgeVals')
+allEdgeVals = countEdges(edgesList)
 
-# for key in allEdgeVals:
-	# if allEdgeVals[key] == 0:
-		# del allEdgeVals[key]
-# print('allEdgeVals ',end='')
-# print(allEdgeVals)
-minVal = 9999
-maxVal = 0
-# print('\nCounting edges')
-for shape in edgesList:
-	#print('Key Id',shape[0],end = ' ')
-	totalEdges = 0
-	for keyVal in shape[1]:
-		# print(keyVal,allEdgeVals[keyVal],end=' ')
-		totalEdges += allEdgeVals[keyVal]
-	if totalEdges < minVal:
-		minVal = totalEdges
-	if totalEdges > maxVal:
-		maxVal = totalEdges
-# print('totalEdges',totalEdges)
-# print('minVal',minVal)
-# print('maxVal',maxVal)
+cornerPieces = findCorners(edgesList)
 
-cornerPieces = []
-# print('\nFind corners')
-for shape in edgesList:
-	# print('Key Id',shape[0],end = ' ')
-	totalEdges = 0
-	for keyVal in shape[1]:
-		# print(keyVal,allEdgeVals[keyVal],end=' ')
-		totalEdges += allEdgeVals[keyVal]
-	if totalEdges == minVal:
-		cornerPieces.append(shape[0])
-	# print('totalEdges',totalEdges>>1)
+solvePt1(cornerPieces)
 
-# Calculate Part 1 check result
-print('corner pieces',cornerPieces)
-total = 1
-for end in cornerPieces:
-	total *= end
-print('Pt 1 val =',total)
+newEdgesDict = makeNewEdgesDict(allEdgeVals,edgesList)
 
-initialCornerId = cornerPieces[0]
-# print('initialCornerId',initialCornerId)
-
-# allEdgeVals = {666: 1, 357: 1, 547: 1, 785: 1, 813: 1,  759: 0, 
-matchedEdges = []
-for edgeVal in allEdgeVals:
-	if allEdgeVals[edgeVal] != 0:
-		matchedEdges.append(edgeVal)
-# print('matchedEdges',matchedEdges)
-
-# edgesList = [[2411, [666, 357, 547, 785, 813, 723, 63, 1008]],
-newEdgesDict = {}
-for edge in edgesList:
-	nodeNumber = edge[0]
-	matchingNodeNumber = []
-	firstSecond = 'First'
-	for edgeVal in edge[1]:
-		if edgeVal not in matchedEdges:
-			if firstSecond == 'First':
-				matchingNodeNumber.append(-1)
-				firstSecond = 'Second'
-			else:
-				firstSecond = 'First'
-		else:
-			otherNode = findOtherNode(edgeVal,nodeNumber,edgesList)
-			#print('nodeNumber',nodeNumber,'otherNode',otherNode)
-			if firstSecond == 'First':
-				matchingNodeNumber.append(otherNode)
-				firstSecond = 'Second'
-			else:
-				firstSecond = 'First'
-	newEdgesDict[nodeNumber] = matchingNodeNumber
-
-print('newEdgesDict')
-for row in newEdgesDict:
-	print(row,newEdgesDict[row])
-print('initialCornerId',initialCornerId)
 print(cornerPieces[0],'matches',newEdgesDict[cornerPieces[0]])
 print(cornerPieces[1],'matches',newEdgesDict[cornerPieces[1]])
 print(cornerPieces[2],'matches',newEdgesDict[cornerPieces[2]])
 print(cornerPieces[3],'matches',newEdgesDict[cornerPieces[3]])
 for corner in range(4):
-	print('CornerList',newEdgesDict[cornerPieces[corner]])
+	# print('CornerList',newEdgesDict[cornerPieces[corner]])
 	if (newEdgesDict[cornerPieces[corner]][2] != -1) and (newEdgesDict[cornerPieces[corner]][3] != -1):
 		upperLeftCornerID = cornerPieces[corner]
-print('Upper Left Corner ID',upperLeftCornerID)
+print('[top,left,bottom,right]')
+print('Upper Left Corner ID',upperLeftCornerID,end = '')
+print(', corner vals',newEdgesDict[upperLeftCornerID])
+rightVal = newEdgesDict[upperLeftCornerID][3]
+downVal = newEdgesDict[upperLeftCornerID][2]
+print('rightVal',rightVal)
+print('downVal',downVal)
+nextDict = newEdgesDict[rightVal]
+print('[top,left,bottom,right]')
+print('nextDict',nextDict)
+
