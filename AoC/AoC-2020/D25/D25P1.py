@@ -1,3 +1,5 @@
+import time
+startTime = time.time()
 loop1Val = 13233401
 loop2Val = 6552760
 # loop1Val = 5764801
@@ -33,3 +35,5 @@ while loopCount != matchCount1+1:
 	currentVal = (val * currentVal) % modVal
 	loopCount += 1
 print('loopCount',loopCount,'currentVal',currentVal)
+endTime = time.time()
+print('time',endTime-startTime)
