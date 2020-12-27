@@ -70,9 +70,9 @@ def edgeValRightToLeft(inListTopRow):
 	return accumVal
 
 def evalEdges(image):
-	# print('image number',image[0])
+	# print('(evalEdges): image number',image[0])
 	theImage = image[1:]
-	# print('original image')
+	# print('(evalEdges): original image')
 	# printImage(theImage)
 	lfValsList = []
 	lfValsList.append(edgeValLeftToRight(theImage[0]))
@@ -93,11 +93,15 @@ def evalEdges(image):
 	#printImage(theImage)
 	# print('lfValsList',lfValsList,'\n')
 	return lfValsList
-
+# Program follows
 inList = readFileOfStringsToListOfLists('input.txt')
 		
+# bigList [[2311, ['.', '.', '#', '#', '.', '#', '.', '.', '#', '.'], ...
 bigList = makeBetterList(inList)
+# print('bigList',bigList)
 
+# print('\nSides values list')
+# edgesList [[2311, [300, 210, 616, 89, 231, 924, 498, 318]], [1951, [397, 710, 318, 498, 564, 177, 841, 587]], [1171, [399, 966, 18, 288, 24, 96, 902, 391]], [1427, [183, 948, 348, 234, 210, 300, 576, 9]], [1489, [43, 848, 288, 18, 948, 183, 565, 689]], [2473, [481, 542, 184, 116, 234, 348, 966, 399]], [2971, [532, 161, 689, 565, 85, 680, 456, 78]], [2729, [680, 85, 9, 576, 710, 397, 271, 962]]]
 edgesList = []
 for image in bigList:
 	edgesLine = []
@@ -105,8 +109,18 @@ for image in bigList:
 	edgeVals = evalEdges(image)
 	edgesLine.append(edgeVals)
 	edgesList.append(edgesLine)
-
 print('edgesList',edgesList)
+
+# Sides one by one
+# Id 2311 300 210 616 89 231 924 498 318
+# Id 1951 397 710 318 498 564 177 841 587
+# Id 1171 399 966 18 288 24 96 902 391
+# Id 1427 183 948 348 234 210 300 576 9
+# Id 1489 43 848 288 18 948 183 565 689
+# Id 2473 481 542 184 116 234 348 966 399
+# Id 2971 532 161 689 565 85 680 456 78
+# Id 2729 680 85 9 576 710 397 271 962
+# print('\nSides one by one')
 for edge in edgesList:
 	print('Id',edge[0],end = ' ')
 	for val in edge[1]:
