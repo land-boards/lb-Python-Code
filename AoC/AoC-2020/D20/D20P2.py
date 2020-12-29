@@ -232,7 +232,7 @@ def makeNewEdgesDict(allEdgeVals,edgesList):
 
 ######################################################################
 # Program follows
-inList = readFileOfStringsToListOfLists('input1.txt')
+inList = readFileOfStringsToListOfLists('input.txt')
 
 # bigList [[2311, ['.', '.', '#', '#', '.', '#', '.', '.', '#', '.'], ...
 bigList = makeBetterList(inList)
@@ -249,22 +249,179 @@ solvePt1(cornerPieces)
 
 newEdgesDict = makeNewEdgesDict(allEdgeVals,edgesList)
 
-print(cornerPieces[0],'matches',newEdgesDict[cornerPieces[0]])
-print(cornerPieces[1],'matches',newEdgesDict[cornerPieces[1]])
-print(cornerPieces[2],'matches',newEdgesDict[cornerPieces[2]])
-print(cornerPieces[3],'matches',newEdgesDict[cornerPieces[3]])
+# print(cornerPieces[0],'matches',newEdgesDict[cornerPieces[0]])
+# print(cornerPieces[1],'matches',newEdgesDict[cornerPieces[1]])
+# print(cornerPieces[2],'matches',newEdgesDict[cornerPieces[2]])
+# print(cornerPieces[3],'matches',newEdgesDict[cornerPieces[3]])
+IDsArray = []
+IDsRow = []
 for corner in range(4):
 	# print('CornerList',newEdgesDict[cornerPieces[corner]])
 	if (newEdgesDict[cornerPieces[corner]][2] != -1) and (newEdgesDict[cornerPieces[corner]][3] != -1):
-		upperLeftCornerID = cornerPieces[corner]
+		currentID = cornerPieces[corner]
+# Fill in top row
 print('[top,left,bottom,right]')
-print('Upper Left Corner ID',upperLeftCornerID,end = '')
-print(', corner vals',newEdgesDict[upperLeftCornerID])
-rightVal = newEdgesDict[upperLeftCornerID][3]
-downVal = newEdgesDict[upperLeftCornerID][2]
-print('rightVal',rightVal)
-print('downVal',downVal)
-nextDict = newEdgesDict[rightVal]
-print('[top,left,bottom,right]')
-print('nextDict',nextDict)
+print('Upper Left Corner ID',currentID,end = '')
+print(', corner vals',newEdgesDict[currentID])
+lastCellInRow = False
+transformedList = []
+transformedLine = []
+transformedDict = {}
+transformedLine.append(newEdgesDict[currentID])
+transformedLine.append(0)
+transformedLine.append(False)
+transformedLine.append(False)
+transformedDict[currentID] = transformedLine
+while not lastCellInRow:
+	# print('transformedDict[currentID]',transformedDict[currentID])
+	upVal = transformedDict[currentID][0][0]
+	leftVal = transformedDict[currentID][0][1]
+	downVal = transformedDict[currentID][0][2]
+	rightVal = transformedDict[currentID][0][3]
+	nextVal0 = newEdgesDict[rightVal][0]
+	nextVal1 = newEdgesDict[rightVal][1]
+	nextVal2 = newEdgesDict[rightVal][2]
+	nextVal3 = newEdgesDict[rightVal][3]
+	print('before rightVal',rightVal,nextVal0,nextVal1,nextVal2,nextVal3)
+	rotated = False
+	if nextVal1 != currentID and nextVal3 != currentID:
+		# rotate if necessary
+		n0 = nextVal1
+		n1 = nextVal2
+		n2 = nextVal3
+		n3 = nextVal0
+		nextVal0 = n0
+		nextVal1 = n1
+		nextVal2 = n2
+		nextVal3 = n3
+		rotated = True
+		print('cell',rightVal,'rotated')
+	else:
+		print('cell',rightVal,'not rotated')
+	flippedHoriz = False
+	if currentID == nextVal3:
+		n1 = nextVal1
+		nextVal1 = nextVal3
+		nextVal3 = n1
+		flippedHoriz = True
+		print('cell',rightVal,'flipped horizontally')
+	else:
+		print('cell',rightVal,'not flipped horizontally')
+	flippedVert = False
+	if nextVal2 == -1:
+		n0 = nextVal0
+		nextVal0 = nextVal2
+		nextVal2 = n0
+		print('cell',rightVal,'flipped vertically')
+		flippedVert = True
+	else:
+		print('cell',rightVal,'not flipped vertically')
+	print('After rightVal',rightVal,nextVal0,nextVal1,nextVal2,nextVal3)
+	IDsRow.append(currentID)
+	currentID = rightVal
+	countNeg1s = 0
+	if newEdgesDict[currentID][0] == -1:
+		countNeg1s += 1
+	if newEdgesDict[currentID][1] == -1:
+		countNeg1s += 1
+	if newEdgesDict[currentID][2] == -1:
+		countNeg1s += 1
+	if newEdgesDict[currentID][3] == -1:
+		countNeg1s += 1
+	if countNeg1s == 2:
+		print('end of first row')
+		lastCellInRow = True
+	transformedLine = []
+	tranformedCoordList = []
+	tranformedCoordList.append(nextVal0)
+	tranformedCoordList.append(nextVal1)
+	tranformedCoordList.append(nextVal2)
+	tranformedCoordList.append(nextVal3)
+	transformedLine.append(tranformedCoordList)
+	transformedLine.append(rotated)
+	transformedLine.append(flippedHoriz)
+	transformedLine.append(flippedVert)
+	transformedDict[currentID] = transformedLine
+	# print('transformedDict[currentID]',transformedDict[currentID])
+IDsRow.append(currentID)
+IDsArray.append(IDsRow)
+
+print('transformedDict top row',transformedDict)
+widthOfField = len(transformedDict)
+print('IDsArray',IDsArray)
+print('widthOfField',widthOfField)
+for row in range(1,12):
+	IDsRow = []
+	for col in range(widthOfField):
+		prevRowID = IDsArray[row-1][col]
+		print('prevRowID',prevRowID)
+		print('')
+		currentID = transformedDict[prevRowID][0][2]
+		print('currentID',currentID,'newEdgesDict[currentID]',newEdgesDict[currentID])
+		nextVal0 = newEdgesDict[currentID][0]
+		nextVal1 = newEdgesDict[currentID][1]
+		nextVal2 = newEdgesDict[currentID][2]
+		nextVal3 = newEdgesDict[currentID][3]
+		rotated = False
+		if newEdgesDict[currentID][0] != prevRowID and newEdgesDict[currentID][2] != prevRowID:
+			n0 = nextVal1
+			n1 = nextVal2
+			n2 = nextVal3
+			n3 = nextVal0
+			nextVal0 = n0
+			nextVal1 = n1
+			nextVal2 = n2
+			nextVal3 = n3
+			rotated = True
+			print('cell',rightVal,'rotated')
+		else:
+			print('cell',rightVal,'not rotated')
+		flippedHoriz = False
+		if col == 0:
+			if nextVal1 != -1:
+				n1 = nextVal1
+				nextVal1 = nextVal3
+				nextVal3 = n1
+				flippedHoriz = True
+				print('cell',rightVal,'flipped horizontally')
+			else:
+				print('cell',rightVal,'not flipped horizontally')
+		elif IDsRow[row][col] == nextVal1:
+			n1 = nextVal1
+			nextVal1 = nextVal3
+			nextVal3 = n1
+			flippedHoriz = True
+			print('cell',rightVal,'flipped horizontally')
+		else:
+			print('cell',rightVal,'not flipped horizontally')
+		flippedVert = False
+		if nextVal0 != IDsArray[row-1][col]:
+			n0 = nextVal0
+			nextVal0 = nextVal2
+			nextVal2 = n0
+			print('cell','flipped vertically')
+			flippedVert = True
+		else:
+			print('cell','not flipped vertically')
+		IDsRow.append(currentID)
+		
+		transformedLine = []
+		tranformedCoordList = []
+		tranformedCoordList.append(nextVal0)
+		tranformedCoordList.append(nextVal1)
+		tranformedCoordList.append(nextVal2)
+		tranformedCoordList.append(nextVal3)
+		transformedLine.append(tranformedCoordList)
+		transformedLine.append(rotated)
+		transformedLine.append(flippedHoriz)
+		transformedLine.append(flippedVert)
+		transformedDict[currentID] = transformedLine
+
+		
+		# print('')
+		# assert False,'first'
+	
+	IDsArray.append(IDsRow)
+
+assert False, 'formed top row'
 
