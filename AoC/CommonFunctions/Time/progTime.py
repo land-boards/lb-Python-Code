@@ -1,3 +1,5 @@
+import time
+
 # At start
 startTime = time.time()
 

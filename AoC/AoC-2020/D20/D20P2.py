@@ -4,6 +4,11 @@ D20P1
 2347 too high
 """
 
+import time
+
+# At start
+startTime = time.time()
+
 # DEBUG_PRINT = True
 DEBUG_PRINT = False
 
@@ -718,3 +723,6 @@ if countOfSeaMonsters > 0:
 	printImage(seaMonsterList)
 	print('seaWaves',seaWaves)
 
+# At end
+endTime = time.time()
+print('time',endTime-startTime)
