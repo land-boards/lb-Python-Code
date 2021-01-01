@@ -1,12 +1,14 @@
 import time
 
+# 94365872 too high
+
 # At start
 startTime = time.time()
 
 # The program
 
-DEBUG_PRINT = True
-#DEBUG_PRINT = False
+# DEBUG_PRINT = True
+DEBUG_PRINT = False
 
 def debugPrint(thingToPrint):
 	global DEBUG_PRINT		# need to put in each function
@@ -16,9 +18,9 @@ def debugPrint(thingToPrint):
 def getCups():
 	global q
 	
-#inStr = '284573961'	# My input
-inStr = '389125467'		# Example
-moves = 10				# Number of moves
+inStr = '284573961'	# My input
+# inStr = '389125467'		# Example
+moves = 100				# Number of moves
 
 # Initalize the queue
 q = []
@@ -26,7 +28,8 @@ for element in inStr:
 	q.append(int(element))
 numberOfCups = len(q)
 debugPrint('Number of cups ' + str(numberOfCups))
-debugPrint('Initial cups list ' + str(q))
+debugPrint('Number of moves ' + str(moves) + '\n')
+# debugPrint('Initial cups list ' + str(q))
 
 # Setup
 moveNumber = 1
@@ -34,15 +37,19 @@ currentCupPtr = 0
 
 # The loop
 while moveNumber <= moves:
-	debugPrint('\n-- Move ' + str(moveNumber) + ' --')
-	debugPrint('cups (before move) ' + str(q))
+	debugPrint('-- Move ' + str(moveNumber) + ' --')
+	debugPrint('cups: ' + str(q))
 	cupsRemovedList = []
+	nextCupNumber = q[(currentCupPtr + 4) % numberOfCups]
+	debugPrint('nextCupNumber ' + str(nextCupNumber))
 	for i in range(3):
 		getCupOffset = (currentCupPtr + 1 + i) % numberOfCups
 		debugPrint('getCupOffset ' + str(getCupOffset))
 		cupsRemovedList.append(q[getCupOffset])
-	debugPrint('picked up cups ' + str(cupsRemovedList))
+	debugPrint('pick up: ' + str(cupsRemovedList))
 	lookingForValue = q[currentCupPtr] - 1
+	if lookingForValue == 0:
+		lookingForValue = numberOfCups
 	debugPrint('Initial destination cup ' + str(lookingForValue))
 	for cupToRemove in cupsRemovedList:
 		q.remove(cupToRemove)
@@ -54,14 +61,15 @@ while moveNumber <= moves:
 			if lookingForValue == 0:
 				lookingForValue = numberOfCups
 		debugPrint('found val ' + str(lookingForValue))
-		debugPrint('destination (looking for value) after adjustment ' + str(lookingForValue))
+		debugPrint('destination: ' + str(lookingForValue))
 		for offset in range(len(q)):
 			if q[offset] == lookingForValue:
 				break
 		offset += 1
 		debugPrint('insert at offset ' + str(offset))
 	else:
-		debugPrint('destination (looking for value) after adjustment ' + str(lookingForValue))
+		# assert False,'wtf'
+		debugPrint('destination:  ' + str(lookingForValue))
 		if lookingForValue == 0:
 			lookingForValue = numberOfCups
 		for offset in range(len(q)):
@@ -72,14 +80,20 @@ while moveNumber <= moves:
 	debugPrint('inserting cups ' + str(cupsRemovedList))
 	for val in range(3):
 		q.insert(offset,cupsRemovedList[2-val])	# insert backwards
-	if offset < currentCupPtr:
-		# rotate left 3 positions
-		q = q[3:] + q[:3]
-	currentCupPtr += 1
-	if currentCupPtr >= numberOfCups:
-		currentCupPtr = 0
+	currentCupPtr = (currentCupPtr + 1) % numberOfCups
+	# rotate left until lines up
+	while q[currentCupPtr] != nextCupNumber:
+		q = q[1:] + q[:1]
 	moveNumber += 1
+	debugPrint('')
 
+print('q before final rotation',q)
+while q[0] != 1:
+	q = q[1:] + q[:1]
+print('q (after final rotation',q)
+for num in q[1:]:
+	print(num,end='')
+print()
 # At end
 endTime = time.time()
 print('time',endTime-startTime)
