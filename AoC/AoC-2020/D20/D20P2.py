@@ -544,7 +544,7 @@ def countSeaMonsters(seaMonsterList,newArr):
 			if foundMonster:
 				print('found a monster x',colInArray,'y',rowInArray)
 				monsterCount += 1
-	print('monsterCount',monsterCount)
+	# print('monsterCount',monsterCount)
 	return monsterCount
 
 def rotateSeaMonster(inImage):
@@ -630,20 +630,6 @@ for row in range(pixelsWide):
 		newArr[row][col] = val
 	# print('')
 
-print('newArr')
-# for row in newArr:
-	# print(row)
-# for row in range(len(newArr)):
-	# for col in range(len(newArr[0])):
-		# print(newArr[row][col],end = ' ')
-		# if col%blockSize == blockSize-1:
-			# print(' ',end = ' ')
-	# print('')
-	# if row%blockSize == blockSize-1:
-		# print('')
-
-# printImage(newArr)
-
 seaMonster =   ['                  # ',\
 				'#    ##    ##    ###',\
 				' #  #  #  #  #  #   ']
@@ -663,66 +649,72 @@ for rowInArray in range(0,len(newArr)):
 	for colInArray in range(0,len(newArr[0])):
 		if newArr[rowInArray][colInArray] == '#':
 			hashCnt += 1
-print('hashCnt',hashCnt)
+# print('hashCnt',hashCnt)
 
 countOfSeaMonsters = countSeaMonsters(seaMonsterList,newArr)
-print('\ncountOfSeaMonsters',countOfSeaMonsters)
-# printImage(seaMonsterList)
-
-seaMonsterList = rotateSeaMonster(seaMonsterList)
-countOfSeaMonsters = countSeaMonsters(seaMonsterList,newArr)
-print('countOfSeaMonsters',countOfSeaMonsters)
-print('')
-seaWaves = hashCnt - (15 * countOfSeaMonsters)
-print('seaWaves',seaWaves)
-# printImage(seaMonsterList)
+if countOfSeaMonsters > 0:
+	print('\ncountOfSeaMonsters',countOfSeaMonsters)
+	printImage(seaMonsterList)
 
 seaMonsterList = rotateSeaMonster(seaMonsterList)
 countOfSeaMonsters = countSeaMonsters(seaMonsterList,newArr)
-print('countOfSeaMonsters',countOfSeaMonsters)
-print('')
-seaWaves = hashCnt - (15 * countOfSeaMonsters)
-print('seaWaves',seaWaves)
-# printImage(seaMonsterList)
+if countOfSeaMonsters > 0:
+	print('countOfSeaMonsters',countOfSeaMonsters)
+	seaWaves = hashCnt - (15 * countOfSeaMonsters)
+	printImage(seaMonsterList)
+	printImage(newArr)
+	print('seaWaves',seaWaves)
 
 seaMonsterList = rotateSeaMonster(seaMonsterList)
 countOfSeaMonsters = countSeaMonsters(seaMonsterList,newArr)
-print('countOfSeaMonsters',countOfSeaMonsters)
-print('')
-seaWaves = hashCnt - (15 * countOfSeaMonsters)
-print('seaWaves',seaWaves)
-# printImage(seaMonsterList)
+if countOfSeaMonsters > 0:
+	print('countOfSeaMonsters',countOfSeaMonsters)
+	seaWaves = hashCnt - (15 * countOfSeaMonsters)
+	printImage(seaMonsterList)
+	printImage(newArr)
+	print('seaWaves',seaWaves)
+
+seaMonsterList = rotateSeaMonster(seaMonsterList)
+countOfSeaMonsters = countSeaMonsters(seaMonsterList,newArr)
+if countOfSeaMonsters > 0:
+	print('countOfSeaMonsters',countOfSeaMonsters)
+	seaWaves = hashCnt - (15 * countOfSeaMonsters)
+	printImage(seaMonsterList)
+	printImage(newArr)
+	print('seaWaves',seaWaves)
 
 seaMonsterList = rotateSeaMonster(seaMonsterList)
 seaMonsterList = flipHoriz(seaMonsterList)
 countOfSeaMonsters = countSeaMonsters(seaMonsterList,newArr)
-print('countOfSeaMonsters',countOfSeaMonsters)
-print('')
-seaWaves = hashCnt - (15 * countOfSeaMonsters)
-print('seaWaves',seaWaves)
-# printImage(seaMonsterList)
+if countOfSeaMonsters > 0:
+	print('countOfSeaMonsters',countOfSeaMonsters)
+	seaWaves = hashCnt - (15 * countOfSeaMonsters)
+	printImage(seaMonsterList)
+	printImage(newArr)
+	print('seaWaves',seaWaves)
 
 seaMonsterList = rotateSeaMonster(seaMonsterList)
 countOfSeaMonsters = countSeaMonsters(seaMonsterList,newArr)
-print('countOfSeaMonsters',countOfSeaMonsters)
-print('')
-seaWaves = hashCnt - (15 * countOfSeaMonsters)
-print('seaWaves',seaWaves)
-# printImage(seaMonsterList)
+if countOfSeaMonsters > 0:
+	print('countOfSeaMonsters',countOfSeaMonsters)
+	seaWaves = hashCnt - (15 * countOfSeaMonsters)
+	printImage(seaMonsterList)
+	printImage(newArr)
+	print('seaWaves',seaWaves)
 
 seaMonsterList = rotateSeaMonster(seaMonsterList)
 countOfSeaMonsters = countSeaMonsters(seaMonsterList,newArr)
-print('countOfSeaMonsters',countOfSeaMonsters)
-print('')
-seaWaves = hashCnt - (15 * countOfSeaMonsters)
-print('seaWaves',seaWaves)
-# printImage(seaMonsterList)
+if countOfSeaMonsters > 0:
+	print('countOfSeaMonsters',countOfSeaMonsters)
+	seaWaves = hashCnt - (15 * countOfSeaMonsters)
+	printImage(seaMonsterList)
+	print('seaWaves',seaWaves)
 
 seaMonsterList = rotateSeaMonster(seaMonsterList)
 countOfSeaMonsters = countSeaMonsters(seaMonsterList,newArr)
-print('countOfSeaMonsters',countOfSeaMonsters)
-print('')
-seaWaves = hashCnt - (15 * countOfSeaMonsters)
-print('seaWaves',seaWaves)
-# printImage(seaMonsterList)
+if countOfSeaMonsters > 0:
+	print('countOfSeaMonsters',countOfSeaMonsters)
+	seaWaves = hashCnt - (15 * countOfSeaMonsters)
+	printImage(seaMonsterList)
+	print('seaWaves',seaWaves)
 
