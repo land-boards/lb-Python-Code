@@ -91,9 +91,11 @@ print('q before final rotation',q)
 while q[0] != 1:
 	q = q[1:] + q[:1]
 print('q (after final rotation',q)
-for num in q[1:]:
-	print(num,end='')
-print()
 # At end
 endTime = time.time()
 print('time',endTime-startTime)
+print('result (Pt1) ', end = ' ')
+for num in q[1:]:
+	print(num,end='')
+print()
+input()

@@ -93,7 +93,6 @@ while moveNumber <= moves:
 	debugPrint('')
 	endTime = time.time()
 	print('time',endTime-startTime)
-	# startTime = time.time()
 	off = 0
 	while q[off] != 1:
 		off += 1
@@ -102,16 +101,8 @@ while moveNumber <= moves:
 off = 0
 while q[off] != 1:
 	off += 1
-# print(q[off],q[off+1],q[off+2])
-# while q[0] != 1:
-	# q = q[1:] + q[:1]
-# print('q (after final rotation',q[0:10])
 endTime = time.time()
 print('time',endTime-startTime)
-# assert False,'end'
-# for num in q[q.find(1):3]:
-	# print(num,end='')
-# print()
-# At end
 endTime = time.time()
 print('time',endTime-startTime)
+input()
