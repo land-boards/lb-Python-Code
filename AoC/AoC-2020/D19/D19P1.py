@@ -35,15 +35,15 @@ def formatInputList(inList):
 			newLineList = newLine.split(' ')
 			newRow = []
 			for item in newLineList:
-				try:
-					val = int(item)
-					newRow.append(val)
-				except:
-					if item != '|':
-						newRow.append(item)
 				if item == '|':
 					topLine.append(newRow)
 					newRow = []
+				elif 'a' <= item[0] <= 'z':
+					newRow.append(item)
+				elif '0' <= item[0] <= '9':
+					newRow.append(int(item))
+				else:
+					print('wtf')
 			topLine.append(newRow)
 			top.append(topLine)
 		elif line != '':
@@ -68,5 +68,5 @@ inList = readFileOfStringsToListOfLists('input1.txt')
 # print(inList)
 rulesList,testValues = formatInputList(inList)
 DEBUG_PRINT = True
-debugPrint('(main): Rules List ' + str(rulesList))
-debugPrint('(main): testValues ' + str(testValues))
+debugPrint('(main): rulesList  : ' + str(rulesList))
+debugPrint('(main): testValues : ' + str(testValues))
