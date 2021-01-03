@@ -46,9 +46,7 @@ def formatInputList(inList):
 					newRow = []
 			topLine.append(newRow)
 			top.append(topLine)
-		elif line == '':
-			pass
-		else:
+		elif line != '':
 			strBody.append(line)
 	top.sort(key=lambda r:r[0])
 
