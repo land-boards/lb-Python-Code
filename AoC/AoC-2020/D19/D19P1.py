@@ -1,4 +1,4 @@
-""" 
+""" )
 2020 D19 P1
 """
 
@@ -39,7 +39,7 @@ def formatInputList(inList):
 			newRule = []
 			newLine = []
 			if len(sp) == 2:
-				solvedDict[sp[0]] = sp[1]
+				solvedDict[int(sp[0])] = sp[1]
 			else:
 				off = 1
 				while off < len(sp):
@@ -61,20 +61,28 @@ def checkAllValsForSolved(checkRule):
 	global DEBUG_PRINT		# need to put in each function
 	global unsolvedDict
 	global solvedDict
-	ruleAsList = unsolvedDict[checkRule]
+	# print('checking rule',checkRule)
 	varsInRule = []
-	
+	for level in checkRule:
+		for item in level:
+			if item not in varsInRule:
+				varsInRule.append(item)
+	# print('varsInRule',varsInRule)
+	for val in varsInRule:
+		if val not in solvedDict:
+			# print('val',val,'not in solved')
+			return False
+	return True
 
 def findNextSolvableRule():
 	global DEBUG_PRINT		# need to put in each function
 	global unsolvedDict
 	global solvedDict
 	for rule in unsolvedDict:
+		# print('rule',rule)
 		if checkAllValsForSolved(unsolvedDict[rule]):
-			print('all vals are solved',unsolvedDict[rule])
-		else:
-			print('all vals are not solved',unsolvedDict[rule])
-
+			 return rule
+			 
 # Program start
 inList = readFileOfStringsToList('input1.txt')
 # print(inList)
@@ -86,3 +94,11 @@ formatInputList(inList)
 DEBUG_PRINT = True
 print('solvedDict',solvedDict)
 print('unsolvedDict',unsolvedDict)
+
+solvedGoal = False
+while not solvedGoal:
+	solvableRule = findNextSolvableRule()
+	print('solvable rule',solvableRule)
+	if solvableRule == 0:
+		solvedGoal = True
+	
