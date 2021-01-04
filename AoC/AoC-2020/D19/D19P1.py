@@ -21,52 +21,38 @@ def readFileOfStringsToListOfLists(inFileName):
 
 def formatInputList(inList):
 	global DEBUG_PRINT		# need to put in each function
-	top = []
-	strBody = []
-	# Input = '2: 12 16 | 41 26'
-	# Output = [2, [12, 16], [41, 26]]
+	global unsolvedDict
+	global solvedDict
+	# Input = ['0: 4 1 5', '1: 2 3 | 3 2', '3: 4 5 | 5 4', 
+	# Output = 
 	for line in inList:
 		if ':' in line:
-			sp = line.split(' ')
-			topLine = []
-			topLine.append(int(line[0:line.find(':')]))
-			newLine = line[line.find(':')+2:]
-			newLine = newLine.replace('"','')
-			newLineList = newLine.split(' ')
-			newRow = []
-			for item in newLineList:
-				if item == '|':
-					topLine.append(newRow)
-					newRow = []
-				elif 'a' <= item[0] <= 'z':
-					newRow.append(item)
-				elif '0' <= item[0] <= '9':
-					newRow.append(int(item))
-				else:
-					print('wtf')
-			topLine.append(newRow)
-			top.append(topLine)
+			line = line.replace(' ', ',')
+			line = line.replace(':', '')
+			line = line.replace('"', '')
+			sp = line.split(',')
+			print('sp',sp)
+			if len(sp) == 2:
+				solvedDict[int(sp[0])] = sp[1]
+			elif len(sp) == 3:
+				unsolvedDict[int(sp[0])] = [[int(sp[1]),int(sp[2])]]
+			elif len(sp) == 4:
+				unsolvedDict[int(sp[0])] = [[int(sp[1]),int(sp[2])]]
+			elif len(sp) == 6:
+				unsolvedDict[int(sp[0])] = [[int(sp[1]),int(sp[2])],[int(sp[4]),int(sp[5])]]
+			else:
+				print('wtf-1')
 		elif line != '':
-			strBody.append(line)
-	top.sort(key=lambda r:r[0])
-
-	rulesList = []
-	for rule in top:
-		if len(rule) == 2:
-			rulesList.append(rule[1])
-		else:
-			newRule = []
-			newRule.append(rule[1])
-			newRule.append(rule[2])
-			rulesList.append(newRule)
-	debugPrint('(formatInputList): rulesList ' + str(top))
-	debugPrint('(formatInputList): top ' + str(top))
-	return rulesList,strBody
+			break
+	return
 
 # Program start
 inList = readFileOfStringsToListOfLists('input1.txt')
-# print(inList)
-rulesList,testValues = formatInputList(inList)
+print(inList)
+solvedDict = {}
+unsolvedDict = {}
+
+formatInputList(inList)
 DEBUG_PRINT = True
-debugPrint('(main): rulesList  : ' + str(rulesList))
-debugPrint('(main): testValues : ' + str(testValues))
+print('solvedDict',solvedDict)
+print('unsolvedDict',unsolvedDict)
