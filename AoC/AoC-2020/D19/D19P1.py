@@ -35,7 +35,7 @@ def formatInputList(inList):
 			line = line.replace(':', '')
 			line = line.replace('"', '')
 			sp = line.split(',')
-			print('sp',sp)
+			print('rule',sp[0],':',sp[1:])
 			newRule = []
 			newLine = []
 			if len(sp) == 2:
@@ -45,6 +45,7 @@ def formatInputList(inList):
 				while off < len(sp):
 					if sp[off] == '|':
 						newRule.append(newLine)
+						newLine = []
 					else:
 						newLine.append(int(sp[off]))
 					off += 1
@@ -89,10 +90,26 @@ def backFitSolved(rule):
 	global unsolvedDict
 	global solvedDict
 	print('rule',rule)
+	print('unsolvedDict',unsolvedDict[rule])
+	lineList = []
+	for orLevel in unsolvedDict[rule]:
+		print('orLevel',orLevel)
+		lineStr = ''
+		for andLevel in orLevel:
+			print('andLevel',andLevel,end=' ')
+			print('andLevel',solvedDict[andLevel])
+			lineStr += solvedDict[andLevel]
+		lineList.append(lineStr)
+		print('lineStr',lineStr)
+	print('lineList',lineList)
+	solvedDict[rule] = lineList
+	print('solvedDict',solvedDict)
+	unsolvedDict.pop(rule)
+	
 
 # Program start
 inList = readFileOfStringsToList('input1.txt')
-# print(inList)
+print(inList)
 solvedDict = {}
 unsolvedDict = {}
 testStrings = []
@@ -109,4 +126,4 @@ while not solvedGoal:
 	if solvableRule == 0:
 		solvedGoal = True
 	backFitSolved(solvableRule)
-	break
+	# break
