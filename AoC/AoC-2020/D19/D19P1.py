@@ -82,7 +82,14 @@ def findNextSolvableRule():
 		# print('rule',rule)
 		if checkAllValsForSolved(unsolvedDict[rule]):
 			 return rule
-			 
+	assert False,'wtf'
+		
+def backFitSolved(rule):
+	global DEBUG_PRINT		# need to put in each function
+	global unsolvedDict
+	global solvedDict
+	print('rule',rule)
+
 # Program start
 inList = readFileOfStringsToList('input1.txt')
 # print(inList)
@@ -101,4 +108,5 @@ while not solvedGoal:
 	print('solvable rule',solvableRule)
 	if solvableRule == 0:
 		solvedGoal = True
-	
+	backFitSolved(solvableRule)
+	break
