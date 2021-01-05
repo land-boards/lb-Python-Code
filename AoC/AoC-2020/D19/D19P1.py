@@ -35,11 +35,11 @@ def formatInputList(inList):
 			line = line.replace(':', '')
 			line = line.replace('"', '')
 			sp = line.split(',')
-			print('rule',sp[0],':',sp[1:])
+			debugPrint('(formatInputList) : rule' + str(sp[0]) + ' : ' + str(sp[1:]))
 			newRule = []
 			newLine = []
 			if len(sp) == 2:
-				solvedDict[int(sp[0])] = sp[1]
+				solvedDict[int(sp[0])] = [sp[1]]
 			else:
 				off = 1
 				while off < len(sp):
@@ -89,27 +89,26 @@ def backFitSolved(rule):
 	global DEBUG_PRINT		# need to put in each function
 	global unsolvedDict
 	global solvedDict
-	print('rule',rule)
-	print('unsolvedDict',unsolvedDict[rule])
+	debugPrint('\n(backFitSolved) : unsolvedDict[rule=' + str(rule) + '] = ' + str(unsolvedDict[rule]))
 	lineList = []
 	for orLevel in unsolvedDict[rule]:
-		print('orLevel',orLevel)
+		debugPrint('(backFitSolved) : current orLevel=' + str(orLevel))
 		lineStr = ''
 		for andLevel in orLevel:
-			print('andLevel',andLevel,end=' ')
-			print('andLevel',solvedDict[andLevel])
-			lineStr += solvedDict[andLevel]
+			debugPrint('(backFitSolved) : solvedDict[andLevel=' + str(andLevel) + '] ' + str(solvedDict[andLevel]))
+			for distVal in solvedDict[andLevel]:
+				lineStr += distVal
 		lineList.append(lineStr)
-		print('lineStr',lineStr)
-	print('lineList',lineList)
+		debugPrint('(backFitSolved) : lineStr=' + lineStr)
+	debugPrint('(backFitSolved) : lineList ' + str(lineList))
 	solvedDict[rule] = lineList
-	print('solvedDict',solvedDict)
+	debugPrint('(backFitSolved) : solvedDict[rule=' + str(rule) + '] = ' + str(solvedDict[rule]))
 	unsolvedDict.pop(rule)
 	
 
 # Program start
 inList = readFileOfStringsToList('input1.txt')
-print(inList)
+# print(inList)
 solvedDict = {}
 unsolvedDict = {}
 testStrings = []
@@ -122,7 +121,6 @@ print('unsolvedDict',unsolvedDict)
 solvedGoal = False
 while not solvedGoal:
 	solvableRule = findNextSolvableRule()
-	print('solvable rule',solvableRule)
 	if solvableRule == 0:
 		solvedGoal = True
 	backFitSolved(solvableRule)
