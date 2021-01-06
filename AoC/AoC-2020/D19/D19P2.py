@@ -129,16 +129,13 @@ def backFitSolved(rule):
 	unsolvedDict.pop(rule)
 
 # Program start
-inList = readFileOfStringsToList('inputPt2.txt')
+inList = readFileOfStringsToList('inputPt2b.txt')
 # print(inList)
 solvedDict = {}
 unsolvedDict = {}
 testStrings = []
 
 formatInputList(inList)
-DEBUG_PRINT = False
-debugPrint('solvedDict' + str(solvedDict))
-debugPrint('unsolvedDict' + str(unsolvedDict))
 
 solvedGoal = False
 while not solvedGoal:
@@ -146,10 +143,14 @@ while not solvedGoal:
 	if solvableRule == 0:
 		solvedGoal = True
 	elif solvableRule == -1:
-		assert False,'stopped me'
+		solvedGoal = True
 	elif solvableRule != -1:
 		backFitSolved(solvableRule)
-assert False,'stopped'
+# assert False,'stopped here'
+
+DEBUG_PRINT = True
+debugPrint('solvedDict' + str(solvedDict))
+debugPrint('unsolvedDict' + str(unsolvedDict))
 
 regexVal = solvedDict[0]
 debugPrint('regexVal' + str(regexVal[0]))
