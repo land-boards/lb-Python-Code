@@ -2,6 +2,8 @@
 2020 D19 P1
 """
 
+import re
+
 # DEBUG_PRINT = True
 DEBUG_PRINT = False
 
@@ -24,6 +26,7 @@ def formatInputList(inList):
 	global unsolvedDict
 	global solvedDict
 	global testStrings
+	DEBUG_PRINT = False
 	# Input = ['0: 4 1 5', '1: 2 3 | 3 2', '3: 4 5 | 5 4', 
 	# Output = 
 	state = 'inRules'
@@ -35,11 +38,14 @@ def formatInputList(inList):
 			line = line.replace(':', '')
 			line = line.replace('"', '')
 			sp = line.split(',')
-			debugPrint('(formatInputList) : rule' + str(sp[0]) + ' : ' + str(sp[1:]))
+			debugPrint('(formatInputList) : rule=' + str(sp[0]) + ' : ' + str(sp[1:]))
 			newRule = []
 			newLine = []
-			if len(sp) == 2:
-				solvedDict[int(sp[0])] = [sp[1]]
+			if (len(sp) == 2):
+				if 'a' <= sp[1] <= 'z':
+					solvedDict[int(sp[0])] = [sp[1]]
+				else:
+					unsolvedDict[int(sp[0])] = [[int(sp[1])]]
 			else:
 				off = 1
 				while off < len(sp):
@@ -51,10 +57,13 @@ def formatInputList(inList):
 					off += 1
 				newRule.append(newLine)
 				unsolvedDict[int(sp[0])] = newRule
+				debugPrint('newRule'+str(newRule))
 		elif state == 'inTestData':
 			testStrings.append(line)
 		else:
-			print('wtf-1')
+			print('(formatInputList) : wtf-1')
+			assert False,'(formatInputList) : wtf-1'
+	# assert False,'formatInputList) : stopped'
 	return
 
 def checkAllValsForSolved(checkRule):
@@ -62,16 +71,16 @@ def checkAllValsForSolved(checkRule):
 	global DEBUG_PRINT		# need to put in each function
 	global unsolvedDict
 	global solvedDict
-	# print('checking rule',checkRule)
+	debugPrint('(checkAllValsForSolved) : checking rule' + str(checkRule))
 	varsInRule = []
 	for level in checkRule:
 		for item in level:
 			if item not in varsInRule:
 				varsInRule.append(item)
-	# print('varsInRule',varsInRule)
+	debugPrint('(checkAllValsForSolved) : varsInRule' + str(varsInRule))
 	for val in varsInRule:
 		if val not in solvedDict:
-			# print('val',val,'not in solved')
+			debugPrint('(checkAllValsForSolved) : val' + str(val) + 'not in solved')
 			return False
 	return True
 
@@ -80,43 +89,56 @@ def findNextSolvableRule():
 	global unsolvedDict
 	global solvedDict
 	for rule in unsolvedDict:
-		# print('rule',rule)
+		debugPrint('(findNextSolvableRule) : rule' + str(rule))
 		if checkAllValsForSolved(unsolvedDict[rule]):
 			 return rule
-	assert False,'wtf'
+	print('\n(findNextSolvableRule) : unsolvable rule = ' + str(rule))
+	print('(findNextSolvableRule) : solvedDict' + str(solvedDict))
+	print('(findNextSolvableRule) : unsolvedDict' + str(unsolvedDict))
+	assert False,''
 		
 def backFitSolved(rule):
+	"""
+	rule is a rule that can be solved
+	Convert into regular expression
+	"""
 	global DEBUG_PRINT		# need to put in each function
 	global unsolvedDict
 	global solvedDict
 	debugPrint('\n(backFitSolved) : unsolvedDict[rule=' + str(rule) + '] = ' + str(unsolvedDict[rule]))
 	lineList = []
+	lineStr = ''
+	first = True
 	for orLevel in unsolvedDict[rule]:
 		debugPrint('(backFitSolved) : current orLevel=' + str(orLevel))
-		lineStr = ''
+		lineStr += '('
 		for andLevel in orLevel:
 			debugPrint('(backFitSolved) : solvedDict[andLevel=' + str(andLevel) + '] ' + str(solvedDict[andLevel]))
 			for distVal in solvedDict[andLevel]:
-				lineStr += distVal
-		lineList.append(lineStr)
-		debugPrint('(backFitSolved) : lineStr=' + lineStr)
+				lineStr += '(' + distVal + ')'
+		lineStr += ')'
+		if first and len(unsolvedDict[rule]) > 1:
+			lineStr += '|'
+			first = False
+		
+	debugPrint('(backFitSolved) : lineStr=' + lineStr)
+	lineList.append(lineStr)
 	debugPrint('(backFitSolved) : lineList ' + str(lineList))
 	solvedDict[rule] = lineList
 	debugPrint('(backFitSolved) : solvedDict[rule=' + str(rule) + '] = ' + str(solvedDict[rule]))
 	unsolvedDict.pop(rule)
-	
 
 # Program start
-inList = readFileOfStringsToList('input1.txt')
+inList = readFileOfStringsToList('input.txt')
 # print(inList)
 solvedDict = {}
 unsolvedDict = {}
 testStrings = []
 
 formatInputList(inList)
-DEBUG_PRINT = True
-print('solvedDict',solvedDict)
-print('unsolvedDict',unsolvedDict)
+DEBUG_PRINT = False
+debugPrint('solvedDict' + str(solvedDict))
+debugPrint('unsolvedDict' + str(unsolvedDict))
 
 solvedGoal = False
 while not solvedGoal:
@@ -124,4 +146,15 @@ while not solvedGoal:
 	if solvableRule == 0:
 		solvedGoal = True
 	backFitSolved(solvableRule)
-	# break
+
+regexVal = solvedDict[0]
+debugPrint('regexVal' + str(regexVal[0]))
+
+count = 0
+for line in testStrings:
+	matchVal = bool(re.fullmatch(regexVal[0],line))
+	if matchVal:
+		count += 1
+	debugPrint('line ' + str(line) + ' ' + str(matchVal))
+	
+print('count',count)
