@@ -156,7 +156,7 @@ def backFitSolved(rule):
 	debugPrint('\n(backFitSolved) : unsolvedDict[rule=' + str(rule) + '] = ' + str(unsolvedDict[rule]))
 	lineList = []
 	lineStr = ''
-	orLevels = len(unsolvedDict)
+	orLevels = len(unsolvedDict[rule])
 	for orLevel in unsolvedDict[rule]:
 		debugPrint('(backFitSolved) : current orLevel=' + str(orLevel))
 		lineStr += '('
