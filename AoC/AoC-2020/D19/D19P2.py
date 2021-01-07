@@ -1,5 +1,53 @@
 """ )
-2020 D19 P1
+2020 D19 P2
+268 is too low
+404 is too high
+Rule 8 produces 5 versions
+Rule 11 produces 4 versions
+
+8: 42
+11: 42 31
+208
+
+8: 42 42
+11: 42 31
+30
+
+8: 42 42 42
+11: 42 31
+21
+
+8: 42 42 42 42
+11: 42 31
+16
+
+8: 42 42 42 42 42
+11: 42 31
+4
+
+8: 42 42 42 42 42 42
+11: 42 31
+0
+
+8: 42
+11: 42 42 31 31
+16
+
+8: 42
+11: 42 42 42 31 31 31
+3
+
+8: 42
+11: 42 42 42 42 31 31 31 31
+1
+
+8: 42
+11: 42 42 42 42 42 31 31 31 31 31
+0
+
+8: 42 42
+11: 42 42 42 42 31 31 31 31
+1
 """
 
 import re
@@ -57,7 +105,7 @@ def formatInputList(inList):
 					off += 1
 				newRule.append(newLine)
 				unsolvedDict[int(sp[0])] = newRule
-				debugPrint('newRule'+str(newRule))
+				debugPrint('(formatInputList) : newRule ' + sp[0] + ' ' + str(newRule))
 		elif state == 'inTestData':
 			testStrings.append(line)
 		else:
@@ -108,7 +156,7 @@ def backFitSolved(rule):
 	debugPrint('\n(backFitSolved) : unsolvedDict[rule=' + str(rule) + '] = ' + str(unsolvedDict[rule]))
 	lineList = []
 	lineStr = ''
-	first = True
+	orLevels = len(unsolvedDict)
 	for orLevel in unsolvedDict[rule]:
 		debugPrint('(backFitSolved) : current orLevel=' + str(orLevel))
 		lineStr += '('
@@ -117,9 +165,9 @@ def backFitSolved(rule):
 			for distVal in solvedDict[andLevel]:
 				lineStr += '(' + distVal + ')'
 		lineStr += ')'
-		if first and len(unsolvedDict[rule]) > 1:
+		orLevels -= 1
+		if orLevels > 0:
 			lineStr += '|'
-			first = False
 		
 	debugPrint('(backFitSolved) : lineStr=' + lineStr)
 	lineList.append(lineStr)
@@ -130,6 +178,8 @@ def backFitSolved(rule):
 
 # Program start
 inList = readFileOfStringsToList('inputPt2b.txt')
+# inList = readFileOfStringsToList('inputPt2.txt')
+# inList = readFileOfStringsToList('input.txt')
 # print(inList)
 solvedDict = {}
 unsolvedDict = {}
@@ -142,24 +192,38 @@ while not solvedGoal:
 	solvableRule = findNextSolvableRule()
 	if solvableRule == 0:
 		solvedGoal = True
+		backFitSolved(solvableRule)
 	elif solvableRule == -1:
 		solvedGoal = True
 	elif solvableRule != -1:
 		backFitSolved(solvableRule)
 # assert False,'stopped here'
 
-DEBUG_PRINT = True
 debugPrint('solvedDict' + str(solvedDict))
 debugPrint('unsolvedDict' + str(unsolvedDict))
 
-regexVal = solvedDict[0]
-debugPrint('regexVal' + str(regexVal[0]))
+# unsolvedDict{
+	# 0: [[8, 11]], 
+	# 8: [[42], [42, 8]], 
+	# 11: [[42, 31], [42, 11, 31]]
+	# }
+if len(unsolvedDict) > 0:
+	savedRules = {}
+	for rule in unsolvedDict:
+		savedRules[rule] = unsolvedDict[rule]
+	print('savedRules',savedRules)
+	print('')
+	assert False,'stop'
+else:
+	regexVal = solvedDict[0][0]
+	DEBUG_PRINT = True
+	debugPrint('regexVal( rule 0) ' + str(regexVal))
 
-count = 0
-for line in testStrings:
-	matchVal = bool(re.fullmatch(regexVal[0],line))
-	if matchVal:
-		count += 1
-	debugPrint('line ' + str(line) + ' ' + str(matchVal))
-	
-print('count',count)
+	count = 0
+	for line in testStrings:
+		matchVal = bool(re.fullmatch(regexVal,line))
+		if matchVal:
+			count += 1
+		# debugPrint('line ' + str(line) + ' ' + str(matchVal))
+		
+	print('count',count)
