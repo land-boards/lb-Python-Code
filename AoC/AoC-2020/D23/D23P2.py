@@ -1,6 +1,5 @@
 import time
 
-
 # At start
 startTime = time.time()
 
@@ -66,7 +65,7 @@ def doMove(currentVal):
 	
 inStr = '284573961'		# My input
 # inStr = '389125467'	# Example
-moves = 10_000_000				# Number of moves
+moves = 10_000_000		# Number of moves
 maxVal = 1_000_000
 
 inDict = {}

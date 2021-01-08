@@ -1,67 +1,80 @@
-""" 
-
-D22P1
-
+"""
+AoC 2020 D22 Pt2
+	Needed help with recursion
+	Watched video at: https://www.youtube.com/watch?v=7pZeSfFBQRo
 """
 
-list1 = []
-list2 = []
+from collections import deque
 
 def readToLists(fileName):
+	""" Cards are added to the right in the deque
+	Returns the two decks of cards
 	"""
-	"""
-	global list1
-	global list2
+	playa1Deck = deque()
+	playa2Deck = deque()
 	stateList = ['inWaitPlayer1','inList1','inWaitPlayer2','inList2']
 	state = 'inWaitPlayer1'
 	with open(fileName, 'r') as filehandle:  
 		for line in filehandle:
 			line = line.strip()
 			if state == 'inWaitPlayer1':
-				# print('Playa 1')
 				state = 'inList1'
 			elif state == 'inList1':
 				if line != '':
-					list1.append(int(line.strip()))
+					playa1Deck.append(int(line.strip()))
 				else:
 					state = 'inWaitPlayer2'
 			elif state == 'inWaitPlayer2':
-				# print('Playa 2')
 				state = 'inList2'
 			elif state == 'inList2':
-				list2.append(int(line.strip()))
-	return
+				playa2Deck.append(int(line.strip()))
+	return playa1Deck,playa2Deck
 
-readToLists('input.txt')
-
-while (len(list1) != 0) and (len(list2) != 0):
-	topCardPlaya1 = list1[0]
-	topCardPlaya2 = list2[0]
-	# print('comparing',topCardPlaya1,'to',topCardPlaya2)
-	if topCardPlaya1 > topCardPlaya2:
-		list1.append(topCardPlaya1)
-		list1.append(topCardPlaya2)
-		list1.pop(0)
-		list2.pop(0)
-		# print('Playa 1 wins')
-	else:
-		list2.append(topCardPlaya2)
-		list2.append(topCardPlaya1)
-		list1.pop(0)
-		list2.pop(0)	
-
-productSum = 0
-if len(list1) != 0:
-	print('Playa 1',list1)
-	val = len(list1)
-	for listItem in list1:
+def calculateResult(hand):
+	productSum = 0
+	val = len(hand)
+	for listItem in hand:
 		productSum += val*listItem
 		val -= 1
-else:
-	print('Playa 2',list2)
-	val = len(list2)
-	for listItem in list2:
-		productSum += val*listItem
-		val -= 1
-	
-print('productSum',productSum)
+	return productSum
+
+def playRecursiveCombat(deck1, deck2):
+	# Called with the two decks
+	# Returns winner number and the winner's hand
+	numberOfCards = len(deck1) + len(deck2)
+	gameHistory = []
+	while len(deck1) != 0 and len(deck2) != 0:
+		# Handle the history
+		if (tuple(deck1), tuple(deck2)) in gameHistory:
+			return 1, None
+		gameHistory.append((tuple(deck1), tuple(deck2)))
+		# Get the current cards
+		card1 = deck1.popleft()
+		card2 = deck2.popleft()
+		# Handle the case where the lengths match
+		if card1 <= len(deck1) and card2 <= len(deck2):
+			subDeck1 = deque(list(deck1)[:card1])
+			subDeck2 = deque(list(deck2)[:card2])
+			# Play sub-game, dummyHand is not used
+			winnerOfHand,dummyHand = playRecursiveCombat(subDeck1, subDeck2)
+		else:
+			if card1 > card2:
+				winnerOfHand = 1
+			else:
+				winnerOfHand = 2
+		# Put the cards at the back of the winner's deck
+		if winnerOfHand == 1:
+			deck1.append(card1)
+			deck1.append(card2)
+		else:
+			deck2.append(card2)
+			deck2.append(card1)
+	# Winner's deck is the deck that is not empty
+	if len(deck2) == 0:
+		return 1, deck1
+	return 2, deck2
+
+hand1,hand2 = readToLists('input.txt')
+winnerOfHand, winningDeck = playRecursiveCombat(hand1, hand2)
+productSum = calculateResult(winningDeck)
+print(productSum)
