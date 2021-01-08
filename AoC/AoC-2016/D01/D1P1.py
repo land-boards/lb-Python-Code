@@ -11,7 +11,7 @@ distanceX = 0
 distanceY = 0
 dirOfTravel='N'
 places = []
-print "original dirOfTravel",dirOfTravel
+print("original dirOfTravel",dirOfTravel)
 for movement in steps:
 	moveDir = movement[0]
 	moveDistance = int(movement[1:])
@@ -41,22 +41,8 @@ for movement in steps:
 		elif dirOfTravel=='E':
 			distanceY = distanceY + moveDistance
 			dirOfTravel='N'
-	print "Movement",movement,"dirOfTravel",dirOfTravel,"X :",distanceX,"Y :",distanceY
+	print("Movement",movement,"dirOfTravel",dirOfTravel,"X :",distanceX,"Y :",distanceY)
 	xyLoc = [distanceX,distanceY]
 	places.append(xyLoc)
-newPlaces = []
-print "points in list",len(places)
-listLen = len(places)
-point = 0
-while (point < listLen):
-	print "point",point
-	checkLoc = point + 1
-	while (checkLoc < listLen):
-		print "checkLoc",checkLoc
-		if ((places[point][0] == places[checkLoc][0]) and (places[point][1] == places[checkLoc][1])):
-			print "Been here before", places[point][0],places[point][1]
-			print "Distance to first place visited twice",abs(places[point][0])+abs(places[point][1])
-			exit()
-		checkLoc = checkLoc + 1
-	point = point + 1
-print places
+print('places[end]',places[-1])
+print('result',abs(places[-1][0])+abs(places[-1][1]))
