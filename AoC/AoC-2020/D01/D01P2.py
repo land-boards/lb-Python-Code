@@ -19,7 +19,7 @@ print('newList',newList)
 desiredNumber = 2020
 
 for numVal in newList:
-	lookingFor = desiredNumber-numVal
+	lookingFor = desiredNumber - numVal
 	for x in newList:
 		for y in newList:
 			checkVal = product2(x,y)
