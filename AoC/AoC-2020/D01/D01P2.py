@@ -6,12 +6,13 @@
 """
 """
 
-def product2(x,y):
-	return x+y
+import time
+
+startTime = time.time()
 
 # open file and read the content into an accumulated sum
 newList = []
-with open('input.txt', 'r') as filehandle:  
+with open('input.txt', 'r') as filehandle:
 	for lineIn in filehandle:
 		newList.append(int(lineIn.strip()))
 print('newList',newList)
@@ -22,6 +23,8 @@ for numVal in newList:
 	lookingFor = desiredNumber - numVal
 	for x in newList:
 		for y in newList:
-			checkVal = product2(x,y)
-			if checkVal == lookingFor:
+			if x+y == lookingFor:
 				print(numVal*x*y)
+				endTime = time.time()
+				print('time',endTime-startTime)
+				exit()
