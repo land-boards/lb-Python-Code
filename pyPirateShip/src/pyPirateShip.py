@@ -104,7 +104,7 @@ class ControlClass:
 		myCSVFileReadClass.setVerboseMode(False)	# turn on verbose mode until all is working 
 		myCSVFileReadClass.setUseSnifferFlag(True)
 		doneReading = False
-		endList = myCSVFileReadClass.findOpenReadCSV(defaultPath,'Select TSV File')	# read in TSV into list
+		endList = myCSVFileReadClass.findOpenReadCSV(defaultPath,'Select CSV File')	# read in CSV into list
 		if endList == []:
 			errorDialog("doConvert): No file selected")
 			return
@@ -129,7 +129,7 @@ class ControlClass:
 		
 		errorDialog(outMessage)
 		inFileNameTindie = myCSVFileReadClass.getLastPathFileName()
-		renFileNameTindie = inFileNameTindie[0:-4] + "-Tindie-" + str(date.today()) + '.tsv'
+		renFileNameTindie = inFileNameTindie[0:-4] + "-Tindie-" + str(date.today()) + '.csv'
 		#print '(doConvert): changing file name from: ', inFileNameTindie, ' to: ', renFileNameTindie
 		os.rename(inFileNameTindie, renFileNameTindie)
 		defaultPath = myCSVFileReadClass.getLastPath()
@@ -165,12 +165,7 @@ class ControlClass:
 		
 		Map the column headers to an internal preferred ordering.
 		Latest input format -
-		['Order ID', 'Date', 'First Name', 'Last Name', 'Email', 'Company Title', 'Phone', 'Street', 'City', 'State 
-		/ Province', 'Postal/Zip Code', 'Country', 'Additional Instructions', 'Shipping Method', 'Shipping Total', 
-		'Discount Total', 'Discount Codes', 'Tax Total', 'Order Total', 'Tindie Fee', 'Processing Fee', 
-		'Total Payable to Seller', 'Refunded', 'Shipped', 'Tracking Number', 'Pay Out Status', 'Paid Out', 
-		'Product Name', 'Option Summary', 'Model Number', 'Status', 'Unit Price', 'Discount Price', 'Quantity', 
-		'Total Item Price']
+		['Order ID', 'Order Date', 'First Name', 'Last Name', 'Email', 'Company', 'Phone', 'Street', 'City', 'State/Province', 'Postal/Zip Code', 'Country', 'Shipping Instructions', 'Shipping Method', 'Shipping Total', 'Discount Total', 'Discount Codes', 'Tax', 'Order Total', 'Tindie Fee', 'Transaction Fee', 'Seller Amount', 'Refund Date', 'Shipped', 'Tracking Number', 'Pay Out Status', 'Pay Out Date', 'Product Title', 'Option Summary', 'Model Number', 'Status', 'Unit Price', 'Discount Price', 'Quantity', 'Item Total']
 		"""
 		global shippingFirstNameColumn
 		global shippingLastNameColumn
@@ -187,28 +182,30 @@ class ControlClass:
 		#print header
 		myOutList = []
 		itemNum = 0
-		# print('mapTindieInList: header',header)
+		if header != ['Order ID', 'Order Date', 'First Name', 'Last Name', 'Email', 'Company', 'Phone', 'Street', 'City', 'State/Province', 'Postal/Zip Code', 'Country', 'Shipping Instructions', 'Shipping Method', 'Shipping Total', 'Discount Total', 'Discount Codes', 'Tax', 'Order Total', 'Tindie Fee', 'Transaction Fee', 'Seller Amount', 'Refund Date', 'Shipped', 'Tracking Number', 'Pay Out Status', 'Pay Out Date', 'Product Title', 'Option Summary', 'Model Number', 'Status', 'Unit Price', 'Discount Price', 'Quantity', 'Item Total']:
+			print('mapTindieInList: header',header)
+			assert False, 'yuck, changes again to the header'
 		for item in header:
 			if item == 'First Name':
 				shippingFirstNameColumn = itemNum
 			elif item == 'Last Name':
 				shippingLastNameColumn = itemNum
-			elif item == 'Company Title':
+			elif item == 'Company':
 				companyColumn = itemNum
 			elif item == 'Street':
 				address1Column = itemNum
 			elif item == 'City':
 				cityColumn = itemNum
-			elif item == 'State / Province':
+			elif item == 'State/Province':
 				stateColumn = itemNum
 			elif item == 'Postal/Zip Code':
 				zipColumn = itemNum
 			elif item == 'Country':
 				countryColumn = itemNum
-			elif item == 'Phone':
-				phoneNumberColumn = itemNum
-			elif item == 'Email':
-				emailColumn = itemNum
+			# elif item == 'Phone':
+				# phoneNumberColumn = itemNum
+			# elif item == 'Email':
+				# emailColumn = itemNum
 			elif item == 'Shipped':
 				rewardsSentColumn = itemNum
 				#print 'shipped column mapped'
@@ -254,12 +251,12 @@ class ControlClass:
 		global stateColumn
 		global zipColumn
 		global countryColumn
-		global phoneNumberColumn
-		global emailColumn
+		# global phoneNumberColumn
+		# global emailColumn
 		global rewardsSentColumn
 		outList = []
 		for row in theList:
-			if row[rewardsSentColumn] == 'False' and row[countryColumn] != 'United States of America':
+			if row[rewardsSentColumn] == '' and row[countryColumn] != 'United States of America':
 			#print 'country', row[countryColumn]
 				outLine = []
 				outLine.append(row[shippingFirstNameColumn])
@@ -292,9 +289,9 @@ class ControlClass:
 				outLine.append(row[zipColumn])
 				outLine.append(row[countryColumn])
 				outLine.append('')		# urbanization code for Puerto Rico
-				outLine.append(row[phoneNumberColumn])
+				outLine.append('')
 				outLine.append('')		# fax
-				outLine.append(row[emailColumn])
+				outLine.append('')
 				outList.append(outLine)
 		return outList
 
@@ -371,9 +368,9 @@ class ControlClass:
 				outLine.append(row[zipColumn])
 				outLine.append(row[countryColumn])
 				outLine.append('')		# urbanization code for Puerto Rico
-				outLine.append(row[phoneNumberColumn])
+				outLine.append('')
 				outLine.append('')		# fax
-				outLine.append(row[emailColumn])
+				outLine.append('')
 				outList.append(outLine)
 		return outList
 
