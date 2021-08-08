@@ -183,7 +183,7 @@ class ControlClass:
 		myOutList = []
 		itemNum = 0
 		if header != ['Order ID', 'Order Date', 'First Name', 'Last Name', 'Email', 'Company', 'Phone', 'Street', 'City', 'State/Province', 'Postal/Zip Code', 'Country', 'Shipping Instructions', 'Shipping Method', 'Shipping Total', 'Discount Total', 'Discount Codes', 'Tax', 'Order Total', 'Tindie Fee', 'Transaction Fee', 'Seller Amount', 'Refund Date', 'Shipped', 'Tracking Number', 'Pay Out Status', 'Pay Out Date', 'Product Title', 'Option Summary', 'Model Number', 'Status', 'Unit Price', 'Discount Price', 'Quantity', 'Item Total']:
-			print('mapTindieInList: header',header)
+			print('mapTindieInList: header as read in',header)
 			assert False, 'yuck, changes again to the header'
 		for item in header:
 			if item == 'First Name':
