@@ -1,9 +1,7 @@
-# D04P1.py
+# D04P2.py
 # 2021 Advent of Code
 # Day 4
-# Part 1
-# 3852 is too low
-# Answer was 5147
+# Part 2
 
 # readFileOfStringsToListOfLists
 def readFileOfStringsToList(inFileName):
@@ -16,43 +14,26 @@ def readFileOfStringsToList(inFileName):
 
 # returns list of x1,y1,x2,y3 line segments
 def makeLinesList(inList):
-	lineList = []
+	linesList = []
 	for line in inList:
 		newList = line.replace(' -> ',',')
 		#print("newList",newList)
-		newLineList = newList.split(',')
+		newlinesList = newList.split(',')
 		newRow = []
-		newRow.append(int(newLineList[0]))
-		newRow.append(int(newLineList[1]))
-		newRow.append(int(newLineList[2]))
-		newRow.append(int(newLineList[3]))
-		lineList.append(newRow)
-	# print("List of all lines",lineList)
-	return lineList
-
-# Return list of straight lines
-def makeStraightLionesList(lineList):
-	straightLines = []
-	for line in lineList:
-		if line[0] == line[2]:
-			straightLines.append(line)
-		elif line[1] == line[3]:
-			straightLines.append(line)
-		# if (line[0] == line[2]) and (line[1] == line[3]):
-			# print("Single point",line)
-		# else:
-			# print("Discarding",line)
-	# print("List of all straight lines")
-	# for line in straightLines:
-		# print(line)
-	return straightLines
+		newRow.append(int(newlinesList[0]))
+		newRow.append(int(newlinesList[1]))
+		newRow.append(int(newlinesList[2]))
+		newRow.append(int(newlinesList[3]))
+		linesList.append(newRow)
+	# print("List of all lines",linesList)
+	return linesList
 
 inList = readFileOfStringsToList('input.txt')
-lineList = makeLinesList(inList)
-straightLines = makeStraightLionesList(lineList)
+linesList = makeLinesList(inList)
 
 filledPoints = {}
-for line in straightLines:
+for line in linesList:
+	# print("line",line)	# horiz
 	if line[0] == line[2]:
 		xVal = line[0]
 		if line[1] < line[3]:
@@ -67,8 +48,7 @@ for line in straightLines:
 				filledPoints[currentPoint] += 1
 			else:
 				filledPoints[currentPoint] = 1
-
-	elif line[1] == line[3]:
+	elif line[1] == line[3]:	# vert
 		yVal = line[1]
 		if line[0] < line[2]:
 			xStart = line[0]
@@ -82,13 +62,45 @@ for line in straightLines:
 				filledPoints[currentPoint] += 1
 			else:
 				filledPoints[currentPoint] = 1
+	else:	# 45 degree diag
+		print("line(diag)",line)
+		xStart = line[0]
+		yStart = line[1]
+		xEnd = line[2]
+		yEnd = line[3]
+		if line[0] < line[2]:
+			incXVal = 1
+		else:
+			incXVal = -1
+		if line[1] < line[3]:
+			incYVal = 1
+		else:
+			incYVal = -1
+		print("incXVal,incYVal",incXVal,incYVal)
+		xPos = xStart
+		yPos = yStart
+		while xPos != xEnd:
+			currentPoint = (xPos,yPos)
+			print("Fill point",currentPoint)
+			if currentPoint in filledPoints:
+				filledPoints[currentPoint] += 1
+			else:
+				filledPoints[currentPoint] = 1
+			xPos += incXVal
+			yPos += incYVal
+		currentPoint = (xPos,yPos)
+		print("Fill point",currentPoint)
+		if currentPoint in filledPoints:
+			filledPoints[currentPoint] += 1
+		else:
+			filledPoints[currentPoint] = 1
 
 # print("filledPoints",filledPoints)		
 
 overlapCount = 0
 for point in filledPoints:
-	# print("point",point,filledPoints[point])
 	if filledPoints[point] > 1:
+		print("point",point,filledPoints[point])
 		overlapCount += 1
 		# print("Overlap at",point)
 print("overlapCount",overlapCount)
