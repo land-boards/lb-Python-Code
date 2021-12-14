@@ -142,7 +142,7 @@ def calcArea(pointsList,inList):
 		area += inList[y][x]
 	print("area",area)
 
-inList = readFileToListOfStrings('input.txt')
+inList = readFileToListOfStrings('9-2_SteveInput.txt')
 # for row in inList:
 	# print(row)
 paddedArray = padArray(inList,9)

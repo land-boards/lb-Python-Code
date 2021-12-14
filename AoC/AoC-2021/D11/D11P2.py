@@ -1,7 +1,7 @@
-# D11P1.py
+# D11P2.py
 # 2021 Advent of Code
 # Day 11
-# Part 1
+# Part 2
 
 def readFileToList(inFileName):
 	inList = []
@@ -74,6 +74,13 @@ def flashOctopusArray(inList):
 		# print("Here")
 	return outList
 
+def checkAllFlashed(inList):
+	for rowOffset in range(len(inList)):
+		for colOffset in range(len(inList[0])):
+			if inList[rowOffset][colOffset] != 0:
+				return False
+	return True
+	
 
 # print("0,0",makeLegalNeighboringValsList(0,0,0,9,0,9,True))
 # print("0,0",makeLegalNeighboringValsList(0,0,0,9,0,9,False))
@@ -82,17 +89,16 @@ def flashOctopusArray(inList):
 # quit()
 
 inList = readFileToList("input.txt")
-numSteps = 100
+allFlashed = False
 stepCount = 0
-countTotal = 0
-while stepCount < numSteps:
+while not allFlashed:
 	print("stepCount",stepCount)
 	printOctopusArray(inList)
 	inList = incrementOctopusArray(inList)
-	inList = flashOctopusArray(inList)	
-	countTotal += countFlashedVals(inList)
+	inList = flashOctopusArray(inList)
+	if checkAllFlashed(inList):
+		break
 	stepCount += 1
-print("stepCount",stepCount)
+print("Done at stepCount",stepCount+1)
 printOctopusArray(inList)
-print("countTotal",countTotal)
 
