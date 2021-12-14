@@ -53,18 +53,6 @@ def generateAdjacencyList(edges):
 visitedList = [[]]
 visitedLinksCount = {}
 
-# def depthFirst(graph, currentVertex, visited):
-	# print("depthFirst: visited",end=' ')
-	# for point in visited:
-		# print(valuesDict[point],end = ' ')
-	# print()
-	# visited.append(currentVertex)
-	# for vertex in graph[currentVertex]:
-		# print("depthFirst: vertex",valuesDict[vertex])
-		# if vertex not in visited:
-			# depthFirst(graph, vertex, visited.copy())
-	# visitedList.append(visited)
-
 def makeListOfPathsList(graph,startPoint):
 	print("makeListOfPathsList: graph",graph)
 	print("makeListOfPathsList: startPoint",startPoint)
