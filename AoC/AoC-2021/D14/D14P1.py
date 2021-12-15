@@ -19,11 +19,11 @@ def doInsertions(strVal,insertionsList):
 		# print("strCheck",strCheck)
 		newString += insertionsList[strVal[strPos]+strVal[strPos+1]]
 		# newString += strVal[strPos+1]
-		# print("newString",newString)
+	# print("newString",newString)
 	newString += strVal[-1]
 	return newString
 
-inList = readFileToList("input1.txt")
+inList = readFileToList("input.txt")
 # print(inList)
 initStr = inList[0]
 print(initStr)
@@ -45,13 +45,13 @@ while count <= maxCount:
 		if charVal not in charsCountDict:
 			charsCountDict[charVal] = 0
 		for charVal in insertions:
-			print("charVal",charVal)
+			# print("charVal",charVal)
 			if insertions[charVal] not in charsCountDict:
 				charsCountDict[insertions[charVal]] = 0
 		# print("charsCountDict (init)",charsCountDict)
 	newStr = doInsertions(newStr,insertions)
 	print("After step:",count,end = ' ')
-	print("newStr",newStr)
+	# print("newStr",newStr)
 	count += 1
 	# print("len of newStr",len(newStr))
 	maxVal = 0
@@ -68,13 +68,17 @@ while count <= maxCount:
 	print("answer =",maxVal-minVal)
 	dictLine = charsCountDict
 	stepCount.append(dictLine)
+step = 1
 for row in stepCount:
+	print("step",step,end = ' ')
+	step += 1
 	print(row)
 # print("newStr",newStr)
 charsCountDict = {}
 for charVal in newStr:
 	if charVal not in charsCountDict:
 		charsCountDict[charVal] = 0
+	step += 1
 
 maxVal = 0
 minVal = len(newStr)
