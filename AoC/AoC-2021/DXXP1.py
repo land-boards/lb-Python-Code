@@ -3,6 +3,11 @@
 # Day XX
 # Part 1
 
+import time
+
+# At start
+startTime = time.time()
+
 def readFileToListOfStrings(fileName):
 	"""
 	"""
@@ -18,3 +23,5 @@ for row in inList:
 	print(row)
 
 
+endTime = time.time()
+print('time',endTime-startTime)
