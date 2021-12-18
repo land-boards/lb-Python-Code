@@ -69,43 +69,63 @@ def makeListOfPathsList(graph,startPoint):
 	print("seenPairs",seenPairs)
 	return pathsList 
 
+def findAllPaths(startNode,endNode,adjacencyList):
+	print("startNode",startNode)
+	print("endNode",endNode)
+	print("adjacencyList",adjacencyList)
+
 inList = readFileToList("input3.txt")
 print("Original - inList",inList)
-pointsList = []
+allPointsList = []
 for pair in inList:
-	if pair[0] not in pointsList:
-		pointsList.append(pair[0])
-	if pair[1] not in pointsList: 
-		pointsList.append(pair[1])
-# print("pointsList",pointsList)
-# quit()
-pointsDict = {}
-valuesDict = {}
+	if pair[0] not in allPointsList:
+		allPointsList.append(pair[0])
+	if pair[1] not in allPointsList: 
+		allPointsList.append(pair[1])
+print("allPointsList",allPointsList)
+pointsLettersToNumsDict = {}
+pointsNumsToLettersDict = {}
 nodeNum = 0
-for node in pointsList:
+for node in allPointsList:
 	# print("node",node)
-	pointsDict[node] = nodeNum
-	valuesDict[nodeNum] = node
-	visitedLinksCount[nodeNum] = 0
+	pointsLettersToNumsDict[node] = nodeNum
+	pointsNumsToLettersDict[nodeNum] = node
 	nodeNum += 1
-# print("pointsDict",pointsDict)
-# print("valuesDict",valuesDict)
-# print("visitedLinksCount",visitedLinksCount)
+print("pointsLettersToNumsDict",pointsLettersToNumsDict)
+print("pointsNumsToLettersDict",pointsNumsToLettersDict)
 pairsAsInts = []
 for path in inList:
-	pairsAsInts.append([pointsDict[path[0]],pointsDict[path[1]]])
-# print("pairsAsInts",pairsAsInts)
+	pairsAsInts.append([pointsLettersToNumsDict[path[0]],pointsLettersToNumsDict[path[1]]])
+print("pairsAsInts",pairsAsInts)
 pointsAsIntsDict = {}
 adjacencyList = generateAdjacencyList(pairsAsInts)
-print("adjList",adjacencyList)
+# print("adjList",adjacencyList)
+# print("\nadjList")
+# for node in adjacencyList:
+	# print(node,adjacencyList[node])
 
-# depthFirst(adjacencyList, pointsDict['start'], [])
-pathsList = makeListOfPathsList(adjacencyList, pointsDict['start'])
-print("pathsList")
-for path in pathsList:
-	if path != []:
-		if path[-1] == pointsDict['end']:
-			for point in path:
-				print(valuesDict[point],end=' ')
-			print()
-			
+# remove pathe from Destination
+adjacencyList.pop(pointsLettersToNumsDict['end'])
+# print("\nadjList")
+# for node in adjacencyList:
+	# print(node,adjacencyList[node])
+# Remove paths out of the end
+for node in adjacencyList:
+	# print("node",node,"node list =",adjacencyList[node])
+	theList = []
+	hadStart = False
+	for val in adjacencyList[node]:
+		# print(" val",val)
+		if val == pointsLettersToNumsDict['start']:
+			# print("Hit start")
+			hadStart = True
+		else:
+			theList.append(val)
+	if hadStart:
+		adjacencyList[node] = theList
+print("\nadjList")
+for node in adjacencyList:
+	print(node,adjacencyList[node])
+print("adjList",adjacencyList)
+findAllPaths(pointsLettersToNumsDict['start'],pointsLettersToNumsDict['end'],adjacencyList)
+
