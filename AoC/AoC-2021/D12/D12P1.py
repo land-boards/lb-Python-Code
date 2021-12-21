@@ -70,9 +70,34 @@ def makeListOfPathsList(graph,startPoint):
 	return pathsList 
 
 def findAllPaths(startNode,endNode,adjacencyList):
-	print("startNode",startNode)
-	print("endNode",endNode)
-	print("adjacencyList",adjacencyList)
+	print("findAllPaths: startNode",startNode)
+	print("findAllPaths: endNode",endNode)
+	print("findAllPaths: adjacencyList",adjacencyList)
+	allPaths = []
+	allPaths.append([startNode])
+	solvedAll = False
+	while not solvedAll:
+		print("\nfindAllPaths: allPaths",allPaths)
+		newPaths = []
+		for path in allPaths:
+			print("findAllPaths: path",path)
+			for currentPath in allPaths:
+				print("findAllPaths: currentPath",currentPath)
+				endNode = currentPath[-1]
+				print("findAllPaths: endNode",endNode)
+				nextNodes = adjacencyList[endNode]
+				print("findAllPaths: nextNodes",nextNodes)
+				for currentNextNode in nextNodes:
+					nodePath = []
+					for point in currentPath:
+						nodePath.append(point)
+					nodePath.append(currentNextNode)
+					newPaths.append(nodePath)
+					print("findAllPaths: newPaths",newPaths)
+		if allPaths == []:
+			solvedAll = True
+		else:
+			allPaths = newPaths
 
 inList = readFileToList("input3.txt")
 print("Original - inList",inList)
