@@ -34,3 +34,26 @@ print("9,9 (w diags) ",makeLegalNeighboringValsList(9,9,0,9,0,9))
 # 0,0 (no diags) [[0, 1], [1, 0]]
 # 1,1 (w diags)  [[0, 0], [0, 1], [0, 2], [1, 0], [1, 2], [2, 0], [2, 1], [2, 2]]
 # 9,9 (w diags)  [[8, 8], [8, 9], [9, 8]]
+
+#Alternate method
+def padArray(arrayIn,padChar):
+	arrayOut = []
+	arrayWidthPlusPad = len(arrayIn[0]) + 2
+	arrayHeight = len(arrayIn)
+	newRow = []
+	for charVal in range(arrayWidthPlusPad):
+		newRow.append(padChar)
+	arrayOut.append(newRow)
+	for row in arrayIn:
+		newRow = []
+		newRow.append(padChar)
+		for charVal in row:
+			newRow.append(charVal)
+		newRow.append(padChar)
+		arrayOut.append(newRow)
+	newRow = []
+	for charVal in range(arrayWidthPlusPad):
+		newRow.append(padChar)
+	arrayOut.append(newRow)
+	return arrayOut	
+
