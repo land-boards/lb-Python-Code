@@ -49,10 +49,11 @@ def getValAtPoint(xLoc,yLoc,arrayIn):
 	# print(xVal,yVal,val)
 	return val
 
-loopCount = 50
-inList = readFileToListOfStrings('input.txt')
+loopCount = 2
+inList = readFileToListOfStrings('input1.txt')
 
 decoder = inList[0]
+print("len(decode)",len(decoder))
 puzzleRaw = inList[2:]
 puzzle = []
 for row in puzzleRaw:
@@ -60,6 +61,9 @@ for row in puzzleRaw:
 	for char in row:
 		newRow.append(char)
 	puzzle.append(newRow)
+
+# puzzle = ['...','...','...']
+# puzzle = ['#####','#####','#####','#####','#####']
 
 print("decoder",decoder)
 
@@ -82,13 +86,13 @@ while loopCount > 0:
 			puzzleRow.append(newVal)
 		newPuzzle.append(puzzleRow)
 	print("newPuzzle")
+	loopCount -= 1
 	paddedPuzzle = padArray(newPuzzle,'.')
 	paddedPuzzle = padArray(paddedPuzzle,'.')
 	for row in paddedPuzzle:
 		for  charVal in row:
 			print(charVal,end='')
 		print()
-	loopCount -= 1
 	
 count = 0
 for row in paddedPuzzle:
