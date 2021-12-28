@@ -72,6 +72,7 @@ def complementNumber(val):
 			retVal = complementDigit(val[digitToCheckOffset]) + retVal
 	while len(retVal) < 14:
 		retVal = '9' + retVal
+	retVal = addAsStringVals(retVal,"00000000000001")
 	print("complementNumber: retVal",retVal)
 	# assert False,'comp'
 	return retVal
@@ -127,7 +128,7 @@ def parseMathOps(opLine):
 	regA = opLine[0]
 	aVal = valReg(regA)
 	regB = opLine[1]
-	print("parseMathOps: add",regA,regB)
+	print("\nparseMathOps: add",regA,regB)
 	if isReg(regB):		# B is a register
 		retStr = (valReg(regA),valReg(regB))
 	else:				# B is a literal
@@ -138,9 +139,9 @@ def addOp(opLine):
 	global xVar
 	global yVar
 	global zVar
-	global wVarStr
+	global wVarStr65qq
 	regA,regB = parseMathOps(opLine)
-	print("\naddOp: opLine",opLine)
+	print("addOp: opLine",opLine)
 	val = addAsStringVals(regA,regB)
 	print("addOp: val",val)
 	return 0
@@ -174,6 +175,45 @@ def executeLine(line):
 	else:
 		assert False,"bad opcode"
 
+def numInBCDStrToInt(numStr):
+	num = 0
+	# print("numStr",numStr)
+	sign = False
+	for dig in numStr:
+		if dig != '-':
+			num *= 10
+			num += int(dig)
+		else:
+			sign = True
+	if not sign:
+		return num
+	return -num
+
+def intToBCDStr(num):
+	# print("num",num)
+	numStr = ''
+	endLoop = False
+	negNum = False
+	if num < 0:
+		negNum = True
+		num = -num
+	while not endLoop:
+		remainder = num % 10
+		num = int(num / 10)
+		numStr += str(remainder)
+		if num == 0:
+			endLoop = True
+	revStr = numStr[::-1]
+	if negNum:
+		revStr = complementNumber(revStr)
+	return revStr
+	
+print("numInBCDStrToInt: str 987, num",numInBCDStrToInt("987"))
+print("numInBCDStrToInt: str -987, num",numInBCDStrToInt("-987"))
+print("intToBCDStr: num 123, str",intToBCDStr(123))
+print("intToBCDStr: num -123, str",intToBCDStr(-123))
+quit()
+
 inList = readFileOfStringsToListOfLists('input.txt')
 # print(inList)
 wVarStr = ''
@@ -184,7 +224,8 @@ inNum = '13579246899999'
 inOffset = 0
 for line in inList:
 	executeLine(line)
-print("wVarStr",wVarStr,end=' ')
+
+print("\nwVarStr",wVarStr,end=' ')
 print("xVarStr",xVarStr,end=' ')
 print("yVarStr",yVarStr,end=' ')
 print("zVarStr",zVarStr,end=' ')
