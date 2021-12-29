@@ -34,7 +34,7 @@ def printBoard(inList):
 		print()
 		rowNum += 1
 
-def findAllMovablePieces(board):
+def findMoveablePiecesInHomeRow(board):
 	moveablePieces = []
 	yVal = 1
 	for xVal in range(1,12):
@@ -42,12 +42,42 @@ def findAllMovablePieces(board):
 			if board[yVal][xVal-1] == '.' or board[yVal][xVal+1] == '.':
 				char = board[yVal][xVal]
 				moveablePieces.append([char,xVal,yVal])
+	return moveablePieces
+
+def isValTopAlreadyAtDestTop(xVal,yVal,board):
+	charTestVal = board[yVal][xVal]
+	for yOff in range(yVal,6):
+		if yOff != charTestVal:
+			return True
+	return False
+
+def shouldPieceBeMovedFromColumn(xVal,yVal,board):
+	charMovingMaybe = board[yVal][xVal]
+	if (charMovingMaybe == 'A') and (yVal != 3):
+		return True
+	if (charMovingMaybe == 'B') and (yVal != 5):
+		return True
+	if (charMovingMaybe == 'C') and (yVal != 7):
+		return True
+	if (charMovingMaybe == 'D') and (yVal != 9):
+		return True
+	if isValTopAlreadyAtDestTop(xVal,yVal,board):
+		return False
+	return True
+
+def findMoveablePiecesInLowerColumns(board):
+	moveablePieces = []
 	for xVal in range(3,10,2):
 		for yVal in range(2,6):
 			if 'A' <= board[yVal][xVal] <= 'D':
 				if board[yVal-1][xVal] == '.':
-					char = board[yVal][xVal]
-					moveablePieces.append([char,xVal,yVal])
+					if shouldPieceBeMovedFromColumn(xVal,yVal,board):
+						char = board[yVal][xVal]
+						moveablePieces.append([char,xVal,yVal])
+	return moveablePieces
+
+def findAllMovablePieces(board):
+	moveablePieces = findMoveablePiecesInLowerColumns(board)
 	return moveablePieces
 
 def findLegalMovesToHomeRow(x,y,list):
@@ -106,7 +136,7 @@ def findLegalMovesToDestColumns(x,y,list):
 	if list[4][xOffset] != checkLetter:
 		return []
 	if list[3][xOffset] == '.':
-		return [[xOffset,y]]
+		return [[xOffset,3]]
 	if list[3][xOffset] != checkLetter:
 		return []
 	if list[2][xOffset] == '.':
@@ -116,64 +146,109 @@ def findLegalMovesToDestColumns(x,y,list):
 	assert False,"weirdness"
 
 def findAllLegalMoves(x,y,list):
-	legalMovesToDestColumns = findLegalMovesToDestColumns(x,y,list)
-	if legalMovesToDestColumns != []:
-		print("findAllLegalMoves: found legal moves to dest columns")
-		return legalMovesToDestColumns
-	legalMovesToHomeRow = findLegalMovesToHomeRow(x,y,list)
-	if legalMovesToHomeRow == []:
-		# print("findAllLegalMoves: No legal moves for ",list[y][x])
-		return []
-	return legalMovesToHomeRow
+	if y == 1:
+		return findLegalMovesToDestColumns(x,y,list)
+	else:
+		return findLegalMovesToHomeRow(x,y,list)
 
 def checkBoardLocked(inList):
-	allMoveablePieces = findAllMovablePieces(inList)
-	if allMoveablePieces == []:
-		return False
-	# print("checkBoardLocked: Still have pieces that can be moved")
-	for pieceToMove in allMoveablePieces:
-		x = pieceToMove[1]
-		y = pieceToMove[2]
-		legalMoves = findAllLegalMoves(x,y,inList)
-		if legalMoves != []:
-			# print("checkBoardLocked: Legal moves",legalMoves)
-			return False
-	# print("checkBoardLocked: Board is Locked up for moves")
-	return True
+	print("checkBoardLocked: reached function")
+	if findMoveablePiecesInHomeRow(inList) == []:
+		print("No moveable pieces in the home row")
+		if findMoveablePiecesInLowerColumns(inList) == []:
+			print("No moveable pieces in column")
+			return True
+	else:
+		print("Moveable pieces in home row")
+	return False
+		
 
 def checkBoardSolved(inList):
-	return
+	if inList == []:
+		return False
+	if inList[3][2] != 'A':
+		return False
+	elif inList[3][3] != 'A':
+		return False
+	elif inList[3][4] != 'A':
+		return False
+	elif inList[3][5] != 'A':
+		return False
+		
+	if inList[5][2] != 'B':
+		return False
+	elif inList[5][3] != 'B':
+		return False
+	elif inList[5][4] != 'B':
+		return False
+	elif inList[5][5] != 'B':
+		return False
+	
+	if inList[7][2] != 'C':
+		return False
+	elif inList[7][3] != 'C':
+		return False
+	elif inList[7][4] != 'C':
+		return False
+	elif inList[7][5] != 'C':
+		return False
+	
+	if inList[9][2] != 'D':
+		return False
+	elif inList[9][3] != 'D':
+		return False
+	elif inList[9][4] != 'D':
+		return False
+	elif inList[9][5] != 'D':
+		return False
+		
+	return True
 
-boardSolved = False
-while not boardSolved:
+def moveAllHomeRowPiecesToColumns(board):
+	moveablePieces = findMoveablePiecesInHomeRow(board)
+	if moveablePieces == []:
+		return board
+	for pieceToMove in moveablePieces:
+		# print("moveAllHomeRowPiecesToColumns: Piece to move",pieceToMove)
+		allLegalDest = findLegalMovesToDestColumns(pieceToMove[1],pieceToMove[2],board)
+		# print("All dests",allLegalDest)
+		if allLegalDest != []:
+			board[allLegalDest[1]][allLegalDest[0]] = pieceToMove[0]
+			board[pieceToMove[2]][pieceToMove[1]] = '.'
+	return board
+	# quit()
+
+# main follows
+inList = []
+while not checkBoardSolved(inList):
 	inList = readFileOfStringsToListOfLists('input.txt')
 	score = 0
 	moveablePieces = findAllMovablePieces(inList)
-	print("Before moves")
-	printBoard(inList)
-	boardLocked = False
-	while not boardLocked:
+	# print("Before moves")
+	# printBoard(inList)
+	while not checkBoardLocked(inList):
 		printBoard(inList)
+		inList = moveAllHomeRowPiecesToColumns(inList)
 		pieceToMoveOffset = random.randrange(0,len(moveablePieces))
-		
-		# print("main: Moving from",moveablePieces[pieceToMoveOffset])
+		print("main: Moving from",moveablePieces[pieceToMoveOffset])
 		x = moveablePieces[pieceToMoveOffset][1]
 		y = moveablePieces[pieceToMoveOffset][2]
 		legalMoves = findAllLegalMoves(x,y,inList)
 		if legalMoves != []:
 			print("main: legalMoves",legalMoves)
 			destOffset = random.randrange(0,len(legalMoves))
-			# print("main: moving to",legalMoves[destOffset])
+			print("main: moving to",legalMoves[destOffset])
 			moveablePieces[pieceToMoveOffset][1]
 			pickUpPiece = inList[y][x]
 			inList[y][x] = '.'
 			inList[legalMoves[destOffset][1]][legalMoves[destOffset][0]] = pickUpPiece
 			moveablePieces = findAllMovablePieces(inList)
-			# print("moveablePieces",moveablePieces,"\n")
-		boardLocked = checkBoardLocked(inList)
+			print("moveablePieces",moveablePieces,"\n")
 	print("After moves")
 	printBoard(inList)
 	print("***********************************************")
+	# input("hit key")
 	# quit()
-
+	
+printBoard(inList)
 print("score",score)
