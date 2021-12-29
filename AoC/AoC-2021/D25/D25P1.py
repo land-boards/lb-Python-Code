@@ -28,108 +28,84 @@ def printHerd(inList):
 
 def moveHerdEast(inList):
 	outList = emptyOutList(inList)
+	lastColNumber = len(inList[0]) - 1
 	for yOffset in range(len(inList)):
-		for xOffset in range(len(inList[0])-1):
+		xOffset = 0
+		while xOffset < len(inList[0]):
 			if inList[yOffset][xOffset] == '>':
-				if inList[yOffset][xOffset+1] == '.':
-					outList[yOffset][xOffset] = '.'
-					outList[yOffset][xOffset+1] = '>'
+				if xOffset != lastColNumber:
+					if inList[yOffset][xOffset+1] == '.':
+						outList[yOffset][xOffset] = '.'
+						outList[yOffset][xOffset+1] = '>'
+						xOffset += 1
+					else:
+						outList[yOffset][xOffset] = inList[yOffset][xOffset]
 				else:
-					outList[yOffset][xOffset] = inList[yOffset][xOffset]
-			elif outList[yOffset][xOffset] != '>':
-				outList[yOffset][xOffset] = inList[yOffset][xOffset]
-		if inList[yOffset][len(inList[0])-1] == '>':
-			if inList[yOffset][0] =='.':
-				outList[yOffset][0] = inList[yOffset][len(inList[yOffset])-1]
-				outList[yOffset][len(inList[yOffset])-1] = '.'
+					if inList[yOffset][0] == '.':
+						outList[yOffset][xOffset] = '.'
+						outList[yOffset][0] = '>'
+					else:
+						outList[yOffset][xOffset] = inList[yOffset][xOffset]
 			else:
-				outList[yOffset][len(inList[yOffset])-1] = inList[yOffset][len(inList[yOffset])-1]
-		else:
-			outList[yOffset][len(inList[yOffset])-1] = inList[yOffset][len(inList[yOffset])-1]
+				outList[yOffset][xOffset] = inList[yOffset][xOffset]
+			xOffset += 1
 	return outList
 
 def moveHerdSouth(inList):
-	debugSouth = False
 	outList = emptyOutList(inList)
+	lastRowNum = len(inList) -1
 	for xOffset in range(len(inList[0])):
-		if debugSouth:
-			print("\ncolCount",xOffset)
-		for yOffset in range(len(inList)-1):
-			if debugSouth:
-				print("yOffset",yOffset)
-				print("Val at x y",xOffset,yOffset,"is",inList[yOffset][xOffset])
+		yOffset = 0
+		while yOffset < len(inList):
 			if inList[yOffset][xOffset] == 'v':
-				if debugSouth:
-					print("Found a v at x y",xOffset,yOffset)
-				if inList[yOffset+1][xOffset] == '.':
-					outList[yOffset][xOffset] = '.'
-					outList[yOffset+1][xOffset] = 'v'
-					if debugSouth:
-						print("Moved v from",xOffset,yOffset,"to",xOffset,yOffset+1,"val",outList[yOffset+1][xOffset])
+				if yOffset != lastRowNum:
+					if inList[yOffset+1][xOffset] == '.':
+						outList[yOffset][xOffset] = '.'
+						outList[yOffset+1][xOffset] = 'v'
+						yOffset += 1
+					else:
+						outList[yOffset][xOffset] = inList[yOffset][xOffset]
 				else:
-					outList[yOffset][xOffset] = inList[yOffset][xOffset]
-			elif outList[yOffset][xOffset] != 'v':
-				outList[yOffset][xOffset] = inList[yOffset][xOffset]
-		lastRowNum = len(inList)-1
-		if debugSouth:
-			print("Finished most rows, last row number",lastRowNum,"column",xOffset)
-			printHerd(inList)
-			print("inList",inList)
-		if inList[lastRowNum][xOffset] == 'v':
-			if inList[0][xOffset] == '.':
-				outList[lastRowNum][xOffset] = '.'
-				outList[0][xOffset] = 'v'
+					if inList[0][xOffset] == '.':
+						outList[yOffset][xOffset] = '.'
+						outList[0][xOffset] = 'v'
+					else:
+						outList[yOffset][xOffset] = inList[yOffset][xOffset]
 			else:
-				outList[lastRowNum][xOffset]= inList[lastRowNum][xOffset]
-		else:
-			outList[lastRowNum][xOffset] = inList[lastRowNum][xOffset]
+				outList[yOffset][xOffset] = inList[yOffset][xOffset]
+			yOffset += 1
 	return outList
 
 def transformList(inList):
 	saveList = list(inList)
 	count = 0
-	printHerd(inList)
+	# printHerd(inList)
 	while True:
 		inList = moveHerdEast(inList)
-		print("\nAfter East")
-		printHerd(inList)
 		inList = moveHerdSouth(inList)
-		print("\nAfter south")
-		printHerd(inList)
 		if saveList != inList:
 			count += 1
-			print("\nAfter",count,"step")
+			# print("\nAfter",count,"step")
 			saveList = list(inList)
-			printHerd(inList)
+			# printHerd(inList)
 		else:
 			break
 		break
 	return inList
 
-inList =  readFileOfStringsToListOfLists('input2.txt')
-# print("Initial inList")
-# printHerd(inList)
-
-inList = transformList(inList)
-# print("After 1 move")
-# printHerd(inList)
-
-
-quit()
-
-
+inList =  readFileOfStringsToListOfLists('input.txt')
 
 newList = inList
 stillRunning = True
 loopCount = 0
 while stillRunning:
 	tranList = transformList(newList)
+	loopCount += 1
 	if tranList == newList:
 		stillRunning = False
 	else:
-		loopCount += 1
 		newList = []
 		newList = tranList
-	print(loopCount)
-
-print(loopCount)
+	# print(loopCount)
+printHerd(inList)
+print("loopCount",loopCount)
