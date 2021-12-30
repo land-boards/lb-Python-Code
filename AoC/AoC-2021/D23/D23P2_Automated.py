@@ -243,10 +243,11 @@ def checkBoardSolved(inList):
 	return True
 
 def moveAllHomeRowPiecesToColumns(board):
-	movedAPieceFromHomeRow = False
+	# movedAPieceFromHomeRow = False
 	moveablePieces = findMoveablePiecesInHomeRow(board)
 	if moveablePieces == []:
-		return movedAPieceFromHomeRow,board
+		return board
+		# return movedAPieceFromHomeRow,board
 	for pieceToMove in moveablePieces:
 		# print("moveAllHomeRowPiecesToColumns: Piece to move",pieceToMove)
 		allLegalDest = findLegalMovesToDestColumns(pieceToMove[1],pieceToMove[2],board)
@@ -255,8 +256,8 @@ def moveAllHomeRowPiecesToColumns(board):
 			for legalDests in allLegalDest:
 				board[legalDests[1]][legalDests[0]] = pieceToMove[0]
 				board[pieceToMove[2]][pieceToMove[1]] = '.'
-				movedAPieceFromHomeRow = True
-	return movedAPieceFromHomeRow,board
+				# movedAPieceFromHomeRow = True
+	return board
 	# quit()
 
 def moveRandomPieceFromColumns(board):
@@ -282,25 +283,32 @@ def moveRandomPieceFromColumns(board):
 	return board
 
 # main follows
+movesList = []
 inList = readFileOfStringsToListOfLists('input.txt')
 while not checkBoardSolved(inList):
 	inList = readFileOfStringsToListOfLists('input.txt')
 	score = 0
+	movesList = []
 	# print("Before moves")
 	# printBoard(inList)
 	while not checkBoardLocked(inList):
 		# printBoard(inList)
+		# time.sleep(0.1)
 		# Always move all pieces from home row if possible
-		movedAPieceFromHomeRow,inList = moveAllHomeRowPiecesToColumns(inList)
+		# movedAPieceFromHomeRow,inList = moveAllHomeRowPiecesToColumns(inList)
+		inList = moveAllHomeRowPiecesToColumns(inList)
+		movesList.append(inList)
 		# Move a single piece from the columns to the home row
 		inList = moveRandomPieceFromColumns(inList)
+		movesList.append(inList)
 		
 	# print("After moves")
-	printBoard(inList)
-	time.sleep(0.1)
+	# printBoard(inList)
+	# time.sleep(0.5)
 	# print("***********************************************")
 	# input("hit key")
 	# quit()
 	
 printBoard(inList)
+print(movesList)
 print("score",score)
