@@ -235,7 +235,7 @@ def moveAllHomeRowPiecesToColumns(board):
 		return movedAPieceFromHomeRow,board
 	for pieceToMove in moveablePieces:
 		print("moveAllHomeRowPiecesToColumns: Piece to move",pieceToMove)
-		allLegalDest = findLegalMovesToDestColumns(pieceToMove[1],pieceToMove[2],board)
+		allLegalDest = 1(pieceToMove[1],pieceToMove[2],board)
 		print("All dests",allLegalDest)
 		if allLegalDest != []:
 			board[allLegalDest[1]][allLegalDest[0]] = pieceToMove[0]
