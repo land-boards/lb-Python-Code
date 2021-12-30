@@ -6,6 +6,7 @@
 # Clear B column first didn't work
 
 import random
+import os
 
 # print(random.randrange(1, 10))
 
@@ -18,6 +19,7 @@ def readFileOfStringsToListOfLists(inFileName):
 	return inList
 
 def printBoard(inList):
+	os.system("cls")
 	colNum = 0
 	print("\n   ",end='')
 	for col in range(len(inList[0])):
@@ -44,51 +46,60 @@ def findMoveablePiecesInHomeRow(board):
 				moveablePieces.append([char,xVal,yVal])
 	return moveablePieces
 
-def isValTopAlreadyAtDestTop(xVal,yVal,board):
-	print("isValTopAlreadyAtDestTop: xVal,yVal",xVal,yVal)
-	charTestVal = board[yVal][xVal]
-	if xVal == 3:
-		charExectedVal = 'A'
-	elif xVal == 5:
-		charExectedVal = 'B'
-	elif xVal == 7:
-		charExectedVal = 'C'
-	elif xVal == 9:
-		charExectedVal = 'D'
-	for yOff in range(yVal,6):
-		if board[yOff] != charExectedVal:
+def isColumnAtLeastPartlySolved(charExpectedVal,xOff,board):
+	for row in range(2,6):
+		charAtSpot = board[row][xOff]
+		if (charAtSpot != charExpectedVal) and (charAtSpot != '.'):
 			return False
 	return True
+			
+
+def isValTopAlreadyAtDestTop(xVal,yVal,board):
+	# print("isValTopAlreadyAtDestTop: xVal,yVal",xVal,yVal)
+	charTestVal = board[yVal][xVal]
+	if xVal == 3:
+		charExpectedVal = 'A'
+	elif xVal == 5:
+		charExpectedVal = 'B'
+	elif xVal == 7:
+		charExpectedVal = 'C'
+	elif xVal == 9:
+		charExpectedVal = 'D'
+	colPartlySolved = isColumnAtLeastPartlySolved(charExpectedVal,xVal,board)
+	if colPartlySolved:
+		# print("isValTopAlreadyAtDestTop: Partly solved char,xVal,yVal",board[yVal][xVal],xVal,yVal)
+		return True
+	else:
+		# print("isValTopAlreadyAtDestTop: Not partly solved char,xVal,yVal",board[yVal][xVal],xVal,yVal)
+		return False
 
 def shouldPieceBeMovedFromColumn(xVal,yVal,board):
 	# print("shouldPieceBeMovedFromColumn: xVal,yVal",xVal,yVal)
 	charMovingMaybe = board[yVal][xVal]
-	if (charMovingMaybe == 'A') and (yVal != 3):
+	if (charMovingMaybe == 'A') and (xVal != 3):
 		return True
-	if (charMovingMaybe == 'B') and (yVal != 5):
+	if (charMovingMaybe == 'B') and (xVal != 5):
 		return True
-	if (charMovingMaybe == 'C') and (yVal != 7):
+	if (charMovingMaybe == 'C') and (xVal != 7):
 		return True
-	if (charMovingMaybe == 'D') and (yVal != 9):
+	if (charMovingMaybe == 'D') and (xVal != 9):
 		return True
 	if isValTopAlreadyAtDestTop(xVal,yVal,board):
+		# print("shouldPieceBeMovedFromColumn: returning False")
 		return False
 	return True
 
-def findMoveablePiecesInLowerColumns(board):
+def findTopPiecesInColumns(board):
 	moveablePieces = []
 	for xVal in range(3,10,2):
 		for yVal in range(2,6):
 			if 'A' <= board[yVal][xVal] <= 'D':
 				if board[yVal-1][xVal] == '.':
 					if shouldPieceBeMovedFromColumn(xVal,yVal,board):
-						# print("findMoveablePiecesInLowerColumns: adding xVal,yVal",xVal,yVal)
+						# print("findTopPiecesInColumns: adding xVal,yVal",xVal,yVal)
 						char = board[yVal][xVal]
 						moveablePieces.append([char,xVal,yVal])
-	return moveablePieces
-
-def findAllMovablePieces(board):
-	moveablePieces = findMoveablePiecesInLowerColumns(board)
+	# print("findTopPiecesInColumns: moveablePieces",moveablePieces)
 	return moveablePieces
 
 def findLegalMovesToHomeRow(x,y,list):
@@ -163,28 +174,30 @@ def findAllLegalMoves(x,y,list):
 		return findLegalMovesToHomeRow(x,y,list)
 
 def checkBoardLocked(board):
-	print("checkBoardLocked: reached function")
+	# print("checkBoardLocked: reached function")
 	moveableHomeRowPieces = findMoveablePiecesInHomeRow(board)
 	if moveableHomeRowPieces == []:
-		print("checkBoardLocked: No moveable pieces in the home row")
+		# print("checkBoardLocked: No moveable pieces in the home row")
+		pass
 	else:
-		print("checkBoardLocked: Moveable pieces in the home row",moveableHomeRowPieces)
+		# print("checkBoardLocked: Moveable pieces in the home row",moveableHomeRowPieces)
 		noDestsForHome = True
 		for moveablePiece in moveableHomeRowPieces:
 			if findLegalMovesToDestColumns(moveablePiece[1],moveablePiece[2],board) != []:
-				print("checkBoardLocked: Still can move from home row")
+				# print("checkBoardLocked: Still can move from home row")
 				return False
-		print("checkBoardLocked: No place to move home row pieces")
-	moveableColumnPieces = findMoveablePiecesInLowerColumns(board)
+		# print("checkBoardLocked: No place to move home row pieces")
+	moveableColumnPieces = findTopPiecesInColumns(board)
 	if moveableColumnPieces == []:
-		print("checkBoardLocked: No moveable pieces in column")
+		# print("checkBoardLocked: No moveable pieces in column")
+		pass
 	else:
-		print("checkBoardLocked: Moveable pieces in column",moveableColumnPieces)
+		# print("checkBoardLocked: Moveable pieces in column",moveableColumnPieces)
 		for moveablePiece in moveableColumnPieces:
 			if findLegalMovesToHomeRow(moveablePiece[1],moveablePiece[2],board) != []:
-				print("checkBoardLocked: Still can move from columns")
+				# print("checkBoardLocked: Still can move from columns")
 				return False
-		print("checkBoardLocked: No place to move column pieces")
+		# print("checkBoardLocked: No place to move column pieces")
 	return True
 		
 def checkBoardSolved(inList):
@@ -234,19 +247,23 @@ def moveAllHomeRowPiecesToColumns(board):
 	if moveablePieces == []:
 		return movedAPieceFromHomeRow,board
 	for pieceToMove in moveablePieces:
-		print("moveAllHomeRowPiecesToColumns: Piece to move",pieceToMove)
-		allLegalDest = 1(pieceToMove[1],pieceToMove[2],board)
-		print("All dests",allLegalDest)
+		# print("moveAllHomeRowPiecesToColumns: Piece to move",pieceToMove)
+		allLegalDest = findLegalMovesToDestColumns(pieceToMove[1],pieceToMove[2],board)
+		# print("All dests",allLegalDest)
 		if allLegalDest != []:
-			board[allLegalDest[1]][allLegalDest[0]] = pieceToMove[0]
-			board[pieceToMove[2]][pieceToMove[1]] = '.'
-			movedAPieceFromHomeRow = True
+			for legalDests in allLegalDest:
+				board[legalDests[1]][legalDests[0]] = pieceToMove[0]
+				board[pieceToMove[2]][pieceToMove[1]] = '.'
+				movedAPieceFromHomeRow = True
 	return movedAPieceFromHomeRow,board
 	# quit()
 
 def moveRandomPieceFromColumns(board):
-	moveablePieces = findAllMovablePieces(board)
+	moveablePieces = findTopPiecesInColumns(board)
 	# print("moveRandomPieceFromColumns: moveablePieces",moveablePieces)
+	if moveablePieces == []:
+		# assert False,"moveRandomPieceFromColumns: no moveable pieces"
+		return board
 	pieceToMoveOffset = random.randrange(0,len(moveablePieces))
 	# print("moveRandomPieceFromColumns: Moving from",moveablePieces[pieceToMoveOffset])
 	x = moveablePieces[pieceToMoveOffset][1]
@@ -260,7 +277,7 @@ def moveRandomPieceFromColumns(board):
 		pickUpPiece = board[y][x]
 		board[y][x] = '.'
 		board[legalMoves[destOffset][1]][legalMoves[destOffset][0]] = pickUpPiece
-		moveablePieces = findAllMovablePieces(board)
+		moveablePieces = findTopPiecesInColumns(board)
 	return board
 
 # main follows
@@ -271,13 +288,13 @@ while not checkBoardSolved(inList):
 	# print("Before moves")
 	# printBoard(inList)
 	while not checkBoardLocked(inList):
-		printBoard(inList)
+		# printBoard(inList)
 		movedAPieceFromHomeRow,inList = moveAllHomeRowPiecesToColumns(inList)
 		inList = moveRandomPieceFromColumns(inList)
 		
-	print("After moves")
+	# print("After moves")
 	printBoard(inList)
-	print("***********************************************")
+	# print("***********************************************")
 	# input("hit key")
 	# quit()
 	
