@@ -7,6 +7,7 @@
 
 import random
 import os
+import time
 
 # print(random.randrange(1, 10))
 
@@ -281,7 +282,7 @@ def moveRandomPieceFromColumns(board):
 	return board
 
 # main follows
-inList = []
+inList = readFileOfStringsToListOfLists('input.txt')
 while not checkBoardSolved(inList):
 	inList = readFileOfStringsToListOfLists('input.txt')
 	score = 0
@@ -289,11 +290,14 @@ while not checkBoardSolved(inList):
 	# printBoard(inList)
 	while not checkBoardLocked(inList):
 		# printBoard(inList)
+		# Always move all pieces from home row if possible
 		movedAPieceFromHomeRow,inList = moveAllHomeRowPiecesToColumns(inList)
+		# Move a single piece from the columns to the home row
 		inList = moveRandomPieceFromColumns(inList)
 		
 	# print("After moves")
 	printBoard(inList)
+	time.sleep(0.1)
 	# print("***********************************************")
 	# input("hit key")
 	# quit()
