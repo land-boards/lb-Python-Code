@@ -197,18 +197,24 @@ def moveAllHomeRowPiecesToColumns(board):
 				# movedAPieceFromHomeRow = True
 	return board
 
-def isColumnAtLeastPartlySolved(charExpectedVal,xOff,board):
-	for yOff in range(2,6):
-		charAtSpot = board[yOff][xOff]
-		if (charAtSpot != charExpectedVal) and (charAtSpot != '.'):
-			return False
-	return True
+# def isColumnAtLeastPartlySolved(charExpectedVal,xOff,board):
+	# for yOff in range(2,6):
+		# charAtSpot = board[yOff][xOff]
+		# if (charAtSpot != charExpectedVal) and (charAtSpot != '.'):
+			# return False
+	# return True
 
 valCharDict = {3:'A',5:'B',7:'C',9:'D'}
 
 def isValAlreadyAtTop(xVal,yVal,board):
 	# print("isValAlreadyAtTop: xVal,yVal",xVal,yVal)
 	charExpectedVal = valCharDict[xVal]
+	for yOff in range(2,6):
+		charAtSpot = board[yOff][xVal]
+		if (charAtSpot != charExpectedVal) and (charAtSpot != '.'):
+			return False
+	return True
+
 	colPartlySolved = isColumnAtLeastPartlySolved(charExpectedVal,xVal,board)
 	if colPartlySolved:
 		# print("isValAlreadyAtTop: Partly solved char,xVal,yVal",board[yVal][xVal],xVal,yVal)
@@ -216,21 +222,6 @@ def isValAlreadyAtTop(xVal,yVal,board):
 	else:
 		# print("isValAlreadyAtTop: Not partly solved char,xVal,yVal",board[yVal][xVal],xVal,yVal)
 		return False
-
-charVal = {'A':3,'B':5,'C':7,'D':9}
-
-def shouldPieceBeMovedFromColumn(xVal,yVal,board):
-	# print("shouldPieceBeMovedFromColumn: xVal,yVal",xVal,yVal)
-	# charMovingMaybe = board[yVal][xVal]
-	# print("shouldPieceBeMovedFromColumn: charMovingMaybe",charMovingMaybe)
-	# if charMovingMaybe != charVal[charMovingMaybe]:
-		# print("shouldPieceBeMovedFromColumn: returning True (1)")
-		# return True
-	if isValAlreadyAtTop(xVal,yVal,board):
-		# print("shouldPieceBeMovedFromColumn: returning False")
-		return False
-	# print("shouldPieceBeMovedFromColumn: returning True (2)")
-	return True
 
 def findTopPiecesInColumns(board):
 	# Find the top elements in all the columns on the board
@@ -241,7 +232,7 @@ def findTopPiecesInColumns(board):
 		for yVal in range(2,6):
 			if 'A' <= board[yVal][xVal] <= 'D':
 				if board[yVal-1][xVal] == '.':
-					if shouldPieceBeMovedFromColumn(xVal,yVal,board):
+					if not isValAlreadyAtTop(xVal,yVal,board):
 						# print("findTopPiecesInColumns: adding xVal,yVal",xVal,yVal)
 						char = board[yVal][xVal]
 						topColumnValList.append([char,xVal,yVal])
@@ -294,14 +285,14 @@ while not checkBoardSolved(board):
 		# print("main: moved all home row pieces")
 		# printBoard(board)
 		if movesList[-1] != board:
-			movesList.append(list(board))
+			movesList.append(board)
 		# printMoves(movesList)
 		# Move a single piece from the columns to the home row
 		board = moveRandomPieceFromColumns(board)
 		# print("main: moved all column pieces")
 		# printBoard(board)
 		if movesList[-1] != board:
-			movesList.append(list(board))
+			movesList.append(board)
 		# printMoves(movesList)
 	# print("After moves")
 	# printBoard(board)
@@ -310,6 +301,7 @@ while not checkBoardSolved(board):
 	# input("hit key")
 	# quit()
 	# printMoves(movesList)
+	# break
 	
 print("\nmovesList")
 for board in movesList:
