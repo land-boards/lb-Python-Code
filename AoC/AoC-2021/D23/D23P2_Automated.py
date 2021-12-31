@@ -3,7 +3,6 @@
 # Day 23
 # Part 2
 # 41213 is too low
-# Clear B column first didn't work
 
 import random
 import os
@@ -37,14 +36,41 @@ def printBoard(inList):
 		print()
 		rowNum += 1
 
-def findMoveablePiecesInHomeRow(board):
-	moveablePieces = []
+def findAllPiecesInHomeRow(board):
+	allPiecesInTopRow = []
 	yVal = 1
 	for xVal in range(1,12):
 		if 'A' <= board[yVal][xVal] <= 'D':
 			if board[yVal][xVal-1] == '.' or board[yVal][xVal+1] == '.':
 				char = board[yVal][xVal]
-				moveablePieces.append([char,xVal,yVal])
+				allPiecesInTopRow.append([char,xVal,yVal])
+	return allPiecesInTopRow
+
+letterToColDestDict = {'A':3,'B':5,'C':7,'D':9}
+
+def pathIsOpen(piece,board):
+	# piece [char,xVal,yVal]
+	destCol = letterToColDestDict[piece[0]]
+	startCol = piece[1]
+	if startCol < destCol:
+		for xOff in range(startCol+1,destCol+1):
+			# print("pathIsOpen: ",board[1][xOff])
+			if board[1][xOff] != '.':
+				return False
+		return True
+	elif startCol > destCol:
+		for xOff in range(startCol-1,destCol-1,-1):
+			if board[1][xOff] != '.':
+				return False
+	else:
+		assert False,"pathIsOpen: weirdness"
+
+def findMoveablePiecesInHomeRow(board):
+	allPiecesInTopRow = findAllPiecesInHomeRow(board)
+	moveablePieces = []
+	for piece in allPiecesInTopRow:
+		if pathIsOpen(piece,board):
+			moveablePieces.append(piece)
 	return moveablePieces
 
 def findLegalMovesToHomeRow(x,y,list):
@@ -72,45 +98,6 @@ def findLegalMovesToHomeRow(x,y,list):
 			else:
 				break
 	return legalMovesToHomeRow
-
-def findLegalMovesToDestColumns(x,y,list):
-	   # 0123456789012
-	# 0  #############
-	# 1  #...........#
-	# 2  ###B#B#D#D###
-	# 3    #D#C#B#A#
-	# 4    #D#B#A#C#
-	# 5    #C#A#A#C#
-	# 6    #########
-	checkLetter = list[y][x]
-	if checkLetter == 'A':
-		xOffset = 3
-	elif checkLetter == 'B':
-		xOffset = 5
-	elif checkLetter == 'C':
-		xOffset = 7
-	elif checkLetter == 'D':
-		xOffset = 9
-	else:
-		assert False,"Huh?"
-	# print("xOffset",xOffset)
-	if list[5][xOffset] == '.':
-		return [[xOffset,5]]
-	if list[5][xOffset] != checkLetter:
-		return []
-	if list[4][xOffset] == '.':
-		return [[xOffset,4]]
-	if list[4][xOffset] != checkLetter:
-		return []
-	if list[3][xOffset] == '.':
-		return [[xOffset,3]]
-	if list[3][xOffset] != checkLetter:
-		return []
-	if list[2][xOffset] == '.':
-		return [[xOffset,2]]
-	if list[2][xOffset] != checkLetter:
-		return []
-	assert False,"weirdness"
 
 def checkBoardLocked(board):
 	# print("checkBoardLocked: reached function")
@@ -142,50 +129,77 @@ def checkBoardLocked(board):
 def checkBoardSolved(inList):
 	if inList == []:
 		return False
-	if inList[3][2] != 'A':
+	if inList[2][3] != 'A':
 		return False
 	elif inList[3][3] != 'A':
 		return False
-	elif inList[3][4] != 'A':
+	elif inList[4][3] != 'A':
 		return False
-	elif inList[3][5] != 'A':
+	elif inList[5][3] != 'A':
 		return False
 		
-	if inList[5][2] != 'B':
+	if inList[2][5] != 'B':
 		return False
-	elif inList[5][3] != 'B':
+	elif inList[3][5] != 'B':
 		return False
-	elif inList[5][4] != 'B':
+	elif inList[4][5] != 'B':
 		return False
 	elif inList[5][5] != 'B':
 		return False
 	
-	if inList[7][2] != 'C':
+	if inList[2][7] != 'C':
 		return False
-	elif inList[7][3] != 'C':
+	elif inList[3][7] != 'C':
 		return False
-	elif inList[7][4] != 'C':
+	elif inList[4][7] != 'C':
 		return False
-	elif inList[7][5] != 'C':
+	elif inList[5][7] != 'C':
 		return False
 	
-	if inList[9][2] != 'D':
+	if inList[2][9] != 'D':
 		return False
-	elif inList[9][3] != 'D':
+	elif inList[3][9] != 'D':
 		return False
-	elif inList[9][4] != 'D':
+	elif inList[4][9] != 'D':
 		return False
-	elif inList[9][5] != 'D':
+	elif inList[5][9] != 'D':
 		return False
 		
 	return True
 
+def findLegalMovesToDestColumns(x,y,list):
+	   # 0123456789012
+	# 0  #############
+	# 1  #...........#
+	# 2  ###B#B#D#D###
+	# 3    #D#C#B#A#
+	# 4    #D#B#A#C#
+	# 5    #C#A#A#C#
+	# 6    #########
+	checkLetter = list[y][x]
+	xOffset = letterToColDestDict[checkLetter]
+	if list[5][xOffset] == '.':
+		return [[xOffset,5]]
+	if list[5][xOffset] != checkLetter:
+		return []
+	if list[4][xOffset] == '.':
+		return [[xOffset,4]]
+	if list[4][xOffset] != checkLetter:
+		return []
+	if list[3][xOffset] == '.':
+		return [[xOffset,3]]
+	if list[3][xOffset] != checkLetter:
+		return []
+	if list[2][xOffset] == '.':
+		return [[xOffset,2]]
+	if list[2][xOffset] != checkLetter:
+		return []
+	assert False,"weirdness"
+
 def moveAllHomeRowPiecesToColumns(board):
-	# movedAPieceFromHomeRow = False
 	moveablePieces = findMoveablePiecesInHomeRow(board)
 	if moveablePieces == []:
 		return board
-		# return movedAPieceFromHomeRow,board
 	for pieceToMove in moveablePieces:
 		# print("moveAllHomeRowPiecesToColumns: Piece to move",pieceToMove)
 		allLegalDest = findLegalMovesToDestColumns(pieceToMove[1],pieceToMove[2],board)
@@ -194,15 +208,7 @@ def moveAllHomeRowPiecesToColumns(board):
 			for legalDests in allLegalDest:
 				board[legalDests[1]][legalDests[0]] = pieceToMove[0]
 				board[pieceToMove[2]][pieceToMove[1]] = '.'
-				# movedAPieceFromHomeRow = True
 	return board
-
-# def isColumnAtLeastPartlySolved(charExpectedVal,xOff,board):
-	# for yOff in range(2,6):
-		# charAtSpot = board[yOff][xOff]
-		# if (charAtSpot != charExpectedVal) and (charAtSpot != '.'):
-			# return False
-	# return True
 
 valCharDict = {3:'A',5:'B',7:'C',9:'D'}
 
@@ -214,7 +220,6 @@ def isValAlreadyAtTop(xVal,yVal,board):
 		if (charAtSpot != charExpectedVal) and (charAtSpot != '.'):
 			return False
 	return True
-
 	colPartlySolved = isColumnAtLeastPartlySolved(charExpectedVal,xVal,board)
 	if colPartlySolved:
 		# print("isValAlreadyAtTop: Partly solved char,xVal,yVal",board[yVal][xVal],xVal,yVal)
@@ -260,10 +265,34 @@ def moveRandomPieceFromColumns(board):
 		board[legalMoves[randomDestOffset][1]][legalMoves[randomDestOffset][0]] = pickUpPiece
 	return board
 
-def printMoves(movesList):
+def printMoves():
+	global movesList
 	print("movesList")
 	for board in movesList:
 		printBoard(board)
+
+def clearMovesList(board):
+	global movesList
+	movesList = []
+	newBoard = []
+	for row in board:
+		newRow = []
+		for col in row:
+			newRow.append(col)
+		newBoard.append(newRow)
+	movesList.append(newBoard)
+
+def addToMovesList(board):
+	global movesList
+	if board == movesList[-1]:
+		return
+	newBoard = []
+	for row in board:
+		newRow = []
+		for col in row:
+			newRow.append(col)
+		newBoard.append(newRow)
+	movesList.append(newBoard)
 
 # main follows
 board = readFileOfStringsToListOfLists('input.txt')
@@ -271,8 +300,7 @@ movesList = []
 while not checkBoardSolved(board):
 	board = readFileOfStringsToListOfLists('input.txt')
 	score = 0
-	movesList = []
-	movesList.append(board)
+	clearMovesList(board)
 	# printMoves(movesList)
 	# print("Before moves")
 	# printBoard(board)
@@ -284,27 +312,25 @@ while not checkBoardSolved(board):
 		board = moveAllHomeRowPiecesToColumns(board)
 		# print("main: moved all home row pieces")
 		# printBoard(board)
-		if movesList[-1] != board:
-			movesList.append(board)
+		addToMovesList(board)
 		# printMoves(movesList)
 		# Move a single piece from the columns to the home row
 		board = moveRandomPieceFromColumns(board)
 		# print("main: moved all column pieces")
 		# printBoard(board)
-		if movesList[-1] != board:
-			movesList.append(board)
+		addToMovesList(board)
 		# printMoves(movesList)
 	# print("After moves")
-	# printBoard(board)
-	# time.sleep(0.5)
+	# if board[5][3] == 'A' or board[5][5] == 'B' or board[5][7] == 'C' or board[5][9] == 'D':
+		# print("Val in end")
+		# printBoard(board)
 	# print("*****")
+	# time.sleep(1)
 	# input("hit key")
 	# quit()
-	# printMoves(movesList)
+	# printMoves()
 	# break
 	
-print("\nmovesList")
-for board in movesList:
-	printBoard(board)
+printMoves()
 # print(movesList)
 print("score",score)
