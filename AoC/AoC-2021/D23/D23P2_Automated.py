@@ -295,10 +295,13 @@ def addToMovesList(board):
 	movesList.append(newBoard)
 
 # main follows
-board = readFileOfStringsToListOfLists('input.txt')
+# inFileName = 'input.txt'		# Example
+# inFileName = 'input1-2.txt'		# Example
+inFileName = 'input-SAG.txt'		# Example
+board = readFileOfStringsToListOfLists(inFileName)
 movesList = []
 while not checkBoardSolved(board):
-	board = readFileOfStringsToListOfLists('input.txt')
+	board = readFileOfStringsToListOfLists(inFileName)
 	score = 0
 	clearMovesList(board)
 	# printMoves(movesList)
