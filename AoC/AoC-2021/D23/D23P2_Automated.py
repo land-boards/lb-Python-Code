@@ -446,7 +446,7 @@ while not checkBoardSolved(board):
 	# print("(main): Before moves")
 	# printBoard(board)
 	# Move 2 pieces to the two far corners
-	board = moveTwoPiecesFromRoomsToCornersInHallway(board)
+	# board = moveTwoPiecesFromRoomsToCornersInHallway(board)
 	while not checkBoardLocked(board):
 		# Always move all pieces from home row if possible
 		# movedAPieceFromHomeRow,board = moveHallwayPiecesToRooms(board)
