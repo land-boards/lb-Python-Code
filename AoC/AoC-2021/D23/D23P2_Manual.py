@@ -5,6 +5,10 @@
 # Clear B column first didn't work
 
 import random
+import time
+
+# At start
+startTime = time.time()
 
 # print(random.randrange(1, 10))
 
@@ -48,7 +52,8 @@ def findAllMovablePieces(board):
 					moveablePieces.append([char,xVal,yVal])
 	return moveablePieces
 
-inList = readFileOfStringsToListOfLists('input.txt')
+inFileName = 'input1-2.txt'
+inList = readFileOfStringsToListOfLists(inFileName)
 # moveablePieces = findAllMovablePieces(inList)
 # print("moveablePieces")
 # for row in moveablePieces:
@@ -166,5 +171,7 @@ while True:
 			print("score",score)
 			printBoard(inList)
 		
+endTime = time.time()
+print('time',endTime-startTime)
 
 print("score",score)
