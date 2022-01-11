@@ -17,8 +17,6 @@ time_string = time.strftime("%m/%d/%Y, %H:%M:%S", named_tuple)
 print(time_string,"started")
 
 letterToColDestDict = {'A':3,'B':5,'C':7,'D':9}
-valCharDict = {3:'A',5:'B',7:'C',9:'D'}
-legalHallwayXLocations = [1,2,4,6,8,10,11]
 
 def readFileOfStringsToListOfLists(inFileName):
 	inList = []
@@ -156,16 +154,18 @@ def moveHallwayPiecesToRooms(board):
 				board = movePieceAndKeepCount(pieceToMove[1],pieceToMove[2],legalDests[0],legalDests[1],board)
 	return board
 
+legalHallwayXLocations = [1,2,4,6,8,10,11]
+
 def findAllPiecesInHallwayWithOpenPaths(board):
 	moveablePiecesInHallways = []
 	for xVal in legalHallwayXLocations:
 		if 'A' <= board[1][xVal] <= 'D':
 			char = board[1][xVal]
-			if pathIsOpenFromHallwayToRoom([char,xVal],board):
+			if pathIsOpenFromHallwayToOutsideRoom([char,xVal],board):
 				moveablePiecesInHallways.append([char,xVal,1])
 	return moveablePiecesInHallways
 
-def pathIsOpenFromHallwayToRoom(piece,board):
+def pathIsOpenFromHallwayToOutsideRoom(piece,board):
 	# piece [char,xVal]
 	destCol = letterToColDestDict[piece[0]]
 	# print("destCol",destCol)
@@ -173,18 +173,18 @@ def pathIsOpenFromHallwayToRoom(piece,board):
 	# print("startCol",startCol)
 	if startCol < destCol:
 		for xOff in range(startCol+1,destCol+1):
-			# print("pathIsOpenFromHallwayToRoom: ",board[1][xOff])
+			# print("pathIsOpenFromHallwayToOutsideRoom: ",board[1][xOff])
 			if board[1][xOff] != '.':
 				return False
 		return True
 	elif startCol > destCol:
 		for xOff in range(startCol-1,destCol-1,-1):
-			# print("pathIsOpenFromHallwayToRoom: xOff",xOff, )
+			# print("pathIsOpenFromHallwayToOutsideRoom: xOff",xOff, )
 			if board[1][xOff] != '.':
 				return False
 		return True
 	else:
-		assert False,"pathIsOpenFromHallwayToRoom: weirdness"
+		assert False,"pathIsOpenFromHallwayToOutsideRoom: weirdness"
 
 def findOpenRooms(x,y,board):
 	   # 0123456789012
@@ -310,6 +310,7 @@ def findLegalMovesToHallways(x,y,list):
 			break
 	return legalMovesToHomeRow
 
+valCharDict = {3:'A',5:'B',7:'C',9:'D'}
 def canRoomTakeCharFromHallway(xVal,yVal,board):
 	# Returns True if the room can accept a transfer from the hallway
 	# print("canRoomTakeCharFromHallway: xVal,yVal",xVal,yVal)
@@ -414,6 +415,15 @@ def testCode():
 	# quit()
 	return True
 
+def copyBoard(board):
+	newBoard = []
+	for row in board:
+		myRow = []
+		for col in row:
+			myRow.append(col)
+		newBoard.append(myRow)
+	return newBoard
+
 # main follows
 
 runNum = 0
@@ -432,14 +442,16 @@ inFileName = 'input.txt'		# My input
 # inFileName = 'input1-2.txt'	# Example
 # inFileName = 'input-SAG.txt'	# SAG example
 print("(main): inFileName:",inFileName)
-board = readFileOfStringsToListOfLists(inFileName)
+board1 = readFileOfStringsToListOfLists(inFileName)
+board = copyBoard(board1)
 movesCount = 0
 movesList = []
 while not checkBoardSolved(board):
 	# Read/re-read the board from the file
-	board = readFileOfStringsToListOfLists(inFileName)
+	# board = readFileOfStringsToListOfLists(inFileName)
+	board = copyBoard(board1)
 	score = 0
-	clearMovesList()
+	movesList = []
 	movesCount = 0
 	loopsCount = 0
 	# printMoves(movesList)
