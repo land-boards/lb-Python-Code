@@ -16,8 +16,6 @@ named_tuple = time.localtime() # get struct_time
 time_string = time.strftime("%m/%d/%Y, %H:%M:%S", named_tuple)
 print(time_string,"started")
 
-letterToColDestDict = {'A':3,'B':5,'C':7,'D':9}
-
 def readFileOfStringsToListOfLists(inFileName):
 	inList = []
 	with open(inFileName, 'r') as filehandle:  
@@ -114,6 +112,7 @@ def checkBoardSolved(board):
 		return False
 	return True
 
+pieceValDict = {'A':1,'B':10,'C':100,'D':1000}
 def movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,board):
 	# Move the piece from (xFrom,yFrom) to (xTo,yTo) and keep score
 	global score
@@ -122,16 +121,7 @@ def movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,board):
 	board[yTo][xTo] = pickedUp
 	board[yFrom][xFrom] = '.'
 	# print("(movePieceAndKeepCount): pickedUp",pickedUp)
-	if pickedUp == 'A':
-		pieceVal = 1
-	elif pickedUp == 'B':
-		pieceVal = 10
-	elif pickedUp == 'C':
-		pieceVal = 100
-	elif pickedUp == 'D':
-		pieceVal = 1000
-	else:
-		assert False,"(movePieceAndKeepCount): Illegal pickup char"
+	pieceVal = pieceValDict[pickedUp]
 	# Update score
 	score += pieceVal*abs(xFrom-xTo)
 	score += pieceVal*abs(yFrom-yTo)
@@ -141,6 +131,8 @@ def movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,board):
 # Hallway to Room movement functions
 
 def moveHallwayPiecesToRooms(board):
+	# if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
+		# return board
 	moveablePiecesInHallways = findAllPiecesInHallwayWithOpenPaths(board)
 	# print("moveablePiecesInHallways",moveablePiecesInHallways)
 	if moveablePiecesInHallways == []:
@@ -155,7 +147,6 @@ def moveHallwayPiecesToRooms(board):
 	return board
 
 legalHallwayXLocations = [1,2,4,6,8,10,11]
-
 def findAllPiecesInHallwayWithOpenPaths(board):
 	moveablePiecesInHallways = []
 	for xVal in legalHallwayXLocations:
@@ -165,6 +156,7 @@ def findAllPiecesInHallwayWithOpenPaths(board):
 				moveablePiecesInHallways.append([char,xVal,1])
 	return moveablePiecesInHallways
 
+letterToColDestDict = {'A':3,'B':5,'C':7,'D':9}
 def pathIsOpenFromHallwayToOutsideRoom(piece,board):
 	# piece [char,xVal]
 	destCol = letterToColDestDict[piece[0]]
@@ -321,28 +313,42 @@ def canRoomTakeCharFromHallway(xVal,yVal,board):
 			return False
 	return True
 
-def moveTwoPiecesFromRoomsToCornersInHallway(board):
-	# Move 1st random piece to other corner
+def moveFourPiecesFromRoomsToCornersInHallway(board):
+	# Move 4 random pieces to corners
+	# dstX1 = 1
+	# dstX2 = 2
+	# dstX3 = 10
+	# dstX4 = 11
+	# Move a random piece to random corner
 	# moveablePieces format [char,xVal,yVal]
-	moveablePieces = findTopPiecesInRooms(board)
-	pieceToMoveOffset = random.randrange(0,4)
-	xFrom = moveablePieces[pieceToMoveOffset][1]
-	yFrom = moveablePieces[pieceToMoveOffset][2]
-	# Pick random corner for first and second piece
-	corner = random.randrange(0,2)
-	if corner == 0:
+	randoCorner = random.randrange(0,2)
+	if randoCorner == 0:
 		dstX1 = 1
-		dstX2 = 11
 	else:
 		dstX1 = 11
-		dstX2 = 1
-	movePieceAndKeepCount(xFrom,yFrom,dstX1,1,board)
-	# Move 2nd random piece to other corner
 	moveablePieces = findTopPiecesInRooms(board)
-	pieceToMoveOffset = random.randrange(0,4)
+	pieceToMoveOffset = random.randrange(0,len(moveablePieces))
 	xFrom = moveablePieces[pieceToMoveOffset][1]
 	yFrom = moveablePieces[pieceToMoveOffset][2]
-	movePieceAndKeepCount(xFrom,yFrom,dstX2,1,board)
+	board = movePieceAndKeepCount(xFrom,yFrom,dstX1,1,board)
+	# # Move 2nd random piece to other corner
+	# moveablePieces = findTopPiecesInRooms(board)
+	# pieceToMoveOffset = random.randrange(0,len(moveablePieces))
+	# xFrom = moveablePieces[pieceToMoveOffset][1]
+	# yFrom = moveablePieces[pieceToMoveOffset][2]
+	# movePieceAndKeepCount(xFrom,yFrom,dstX2,1,board)
+	# # Move 3rd random piece to other corner
+	# moveablePieces = findTopPiecesInRooms(board)
+	# pieceToMoveOffset = random.randrange(0,len(moveablePieces))
+	# xFrom = moveablePieces[pieceToMoveOffset][1]
+	# yFrom = moveablePieces[pieceToMoveOffset][2]
+	# movePieceAndKeepCount(xFrom,yFrom,dstX3,1,board)
+	# # Move 4th random piece to other corner
+	# moveablePieces = findTopPiecesInRooms(board)
+	# pieceToMoveOffset = random.randrange(0,len(moveablePieces))
+	# xFrom = moveablePieces[pieceToMoveOffset][1]
+	# yFrom = moveablePieces[pieceToMoveOffset][2]
+	# movePieceAndKeepCount(xFrom,yFrom,dstX4,1,board)
 	return board
 
 def testCode():
@@ -445,6 +451,7 @@ print("(main): inFileName:",inFileName)
 board1 = readFileOfStringsToListOfLists(inFileName)
 board = copyBoard(board1)
 movesCount = 0
+mostMoves = 6
 movesList = []
 while not checkBoardSolved(board):
 	# Read/re-read the board from the file
@@ -454,26 +461,26 @@ while not checkBoardSolved(board):
 	movesList = []
 	movesCount = 0
 	loopsCount = 0
-	# printMoves(movesList)
+	# printMoves()
 	# print("(main): Before moves")
 	# printBoard(board)
 	# Move 2 pieces to the two far corners
-	# board = moveTwoPiecesFromRoomsToCornersInHallway(board)
+	board = moveFourPiecesFromRoomsToCornersInHallway(board)
 	while not checkBoardLocked(board):
-		# Always move all pieces from home row if possible
-		# movedAPieceFromHomeRow,board = moveHallwayPiecesToRooms(board)
-		board = moveHallwayPiecesToRooms(board)
-		# addToMovesList(board)
-		# print("(main): moved all home row pieces")
-		# printBoard(board)
-		# printMoves(movesList)
-		# time.sleep(0.1)
 		# Move a single piece from the columns to the home row
 		board = moveOneRandomPieceFromRoomToHallway(board)
 		# addToMovesList(board)
 		# print("(main): moved all column pieces")
 		# printBoard(board)
 		# printMoves()
+		# Always move all pieces from home row if possible
+		# movedAPieceFromHomeRow,board = moveHallwayPiecesToRooms(board)
+		board = moveHallwayPiecesToRooms(board)
+		# addToMovesList(board)
+		# print("(main): moved all home row pieces")
+		# printBoard(board)
+		# printMoves()
+		# time.sleep(0.1)
 		if movesCount > 32:
 			printMoves()
 			quit()
@@ -487,7 +494,10 @@ while not checkBoardSolved(board):
 		time_string = time.strftime("%m/%d/%Y, %H:%M:%S", named_tuple)
 		print(time_string,end=' ')
 		print(runNum,score)
-	# input("hit key")
+	if movesCount > mostMoves:
+		mostMoves = movesCount
+		printMoves()
+		printBoard(board)
 	# if (board[5][3] == 'A') or (board[5][5] == 'B') or (board[5][7] == 'C') or (board[5][9] == 'D'):
 		# printMoves()
 		# printBoard(board)
