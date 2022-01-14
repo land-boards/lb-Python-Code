@@ -52,7 +52,8 @@ def findAllMovablePieces(board):
 					moveablePieces.append([char,xVal,yVal])
 	return moveablePieces
 
-inFileName = 'input1-2.txt'
+# inFileName = 'input1-2.txt'
+inFileName = 'input.txt'
 inList = readFileOfStringsToListOfLists(inFileName)
 # moveablePieces = findAllMovablePieces(inList)
 # print("moveablePieces")
