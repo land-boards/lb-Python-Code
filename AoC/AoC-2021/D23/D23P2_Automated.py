@@ -3,6 +3,10 @@
 # Day 23
 # Part 2
 # 41213 is too low
+# One of four pieces can get moved from rooms into hallways
+# There are 7 positions in the hallways pieces can be moved into (at most)
+# There are 16 pieces to move
+# All pieces get moved twice
 
 import random
 import os
@@ -130,6 +134,16 @@ def movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,board):
 
 # Hallway to Room movement functions
 
+legalHallwayXLocations = [1,2,4,6,8,10,11]
+def findAllPiecesInHallway(board):
+	if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
+		return []
+	allHallwayPieces = []
+	for x in legalHallwayXLocations:
+		if board[1][x] !=- '.':
+			allHallwayPieces.append(x)
+	return allHallwayPieces
+
 def moveHallwayPiecesToRooms(board):
 	# if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
 		# return board
@@ -146,7 +160,6 @@ def moveHallwayPiecesToRooms(board):
 				board = movePieceAndKeepCount(pieceToMove[1],pieceToMove[2],legalDests[0],legalDests[1],board)
 	return board
 
-legalHallwayXLocations = [1,2,4,6,8,10,11]
 def findAllPiecesInHallwayWithOpenPaths(board):
 	moveablePiecesInHallways = []
 	for xVal in legalHallwayXLocations:
@@ -179,7 +192,7 @@ def pathIsOpenFromHallwayToOutsideRoom(piece,board):
 		assert False,"pathIsOpenFromHallwayToOutsideRoom: weirdness"
 
 def findOpenRooms(x,y,board):
-	   # 0123456789012
+	# 0123456789012
 	# 0  #############
 	# 1  #...........#
 	# 2  ###B#B#D#D###
@@ -279,11 +292,12 @@ def findTopPiecesInRooms(board):
 	return topColumnValList
 
 def findLegalMovesToHallways(x,y,list):
+	# Make list of open spots in Hallway# Returns list of X, Y list
 	legalMovesToHomeRow = []
 	xPos = x-1
 	while list[1][xPos] == '.':
 		# print("xPos(1)",xPos)
-		legalMovesToHomeRow.append([xPos,1])
+		legalMovesToHomeRow.append((xPos,1))
 		if xPos > 3:
 			xPos -= 2
 		elif xPos == 2:
@@ -293,13 +307,18 @@ def findLegalMovesToHallways(x,y,list):
 	xPos = x+1
 	while list[1][xPos] == '.':
 		# print("xPos(2)",xPos)
-		legalMovesToHomeRow.append([xPos,1])
+		legalMovesToHomeRow.append((xPos,1))
 		if xPos == 10:
 			xPos = 11
 		elif xPos > 3 and xPos < 11:
 			xPos += 2
 		else:
 			break
+	# Always move to corner instead of adjucent to corner position if available
+	if ((1,1) in legalMovesToHomeRow) and ((2,1) in legalMovesToHomeRow):
+		legalMovesToHomeRow.remove((2,1))
+	if ((10,1) in legalMovesToHomeRow) and ((11,1) in legalMovesToHomeRow):
+		legalMovesToHomeRow.remove((10,1))
 	return legalMovesToHomeRow
 
 valCharDict = {3:'A',5:'B',7:'C',9:'D'}
@@ -438,11 +457,15 @@ score = 0
 
 movesList = []
 movesCount = 0
+
+openSpotInRoom = {3:-1,5:-1,7:-1,9:-1}
+
 if not testCode():
 	print("(main): Test code failed")
 else:
 	print("(main): Test code passed")
 
+# inFileName = 'input-Part.txt'		# My input
 inFileName = 'input.txt'		# My input
 # inFileName = 'input3.txt'		# My input
 # inFileName = 'input1-2.txt'	# Example
@@ -451,7 +474,7 @@ print("(main): inFileName:",inFileName)
 board1 = readFileOfStringsToListOfLists(inFileName)
 board = copyBoard(board1)
 movesCount = 0
-mostMoves = 6
+mostMoves = 5
 movesList = []
 while not checkBoardSolved(board):
 	# Read/re-read the board from the file
@@ -461,11 +484,12 @@ while not checkBoardSolved(board):
 	movesList = []
 	movesCount = 0
 	loopsCount = 0
+	# openSpotInRoom = {3:-1,5:-1,7:-1,9:-1}
 	# printMoves()
 	# print("(main): Before moves")
 	# printBoard(board)
 	# Move 2 pieces to the two far corners
-	board = moveFourPiecesFromRoomsToCornersInHallway(board)
+	# board = moveFourPiecesFromRoomsToCornersInHallway(board)
 	while not checkBoardLocked(board):
 		# Move a single piece from the columns to the home row
 		board = moveOneRandomPieceFromRoomToHallway(board)
@@ -489,12 +513,16 @@ while not checkBoardSolved(board):
 			printMoves()
 			quit()
 	runNum += 1
-	if runNum % 10000 == 0:
+	# if runNum % 10000 == 0:
+		# named_tuple = time.localtime() # get struct_time
+		# time_string = time.strftime("%m/%d/%Y, %H:%M:%S", named_tuple)
+		# print(time_string,end=' ')
+		# print(runNum,score)
+	if movesCount > mostMoves:
 		named_tuple = time.localtime() # get struct_time
 		time_string = time.strftime("%m/%d/%Y, %H:%M:%S", named_tuple)
 		print(time_string,end=' ')
-		print(runNum,score)
-	if movesCount > mostMoves:
+		print('Run',runNum,'score',score,'moves',movesCount)
 		mostMoves = movesCount
 		printMoves()
 		printBoard(board)
