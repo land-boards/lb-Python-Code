@@ -12,6 +12,7 @@ import random
 import os
 import time
 import time
+from collections import deque
 
 # At start
 startTime = time.time()
@@ -476,7 +477,21 @@ board = copyBoard(board1)
 movesCount = 0
 mostMoves = 5
 movesList = []
+
+tovisit = deque([[board,0]])
+while len(tovisit):
+	current = tovisit.popleft()
+	if checkBoardSolved(current[0]):
+		print(current)
+		quit()
+	neighbors=findNeighbors(current)
+	for n in neighbors:
+		tovisit.append([n,current[1]+0])	# add score is 0
+	
+
 while not checkBoardSolved(board):
+
+
 	# Read/re-read the board from the file
 	# board = readFileOfStringsToListOfLists(inFileName)
 	board = copyBoard(board1)
