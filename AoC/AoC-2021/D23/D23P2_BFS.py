@@ -278,16 +278,16 @@ def findOpenRooms(x,y,board):
 
 def getListOfMoveableRoomPieces(board):
 	# allTopPiecesInRooms - [char,xVal,yVal]
-	debugGetListOfMoveableRoomPieces = True
+	debugGetListOfMoveableRoomPieces = False
 	if debugGetListOfMoveableRoomPieces:
 		printBoard(board)
 	allTopPiecesInRooms = findTopPiecesInRooms(board)
 	if debugGetListOfMoveableRoomPieces:
-		print("(moveOneRandomPieceFromRoomToHallway): All top pieces in rooms")
+		print("(getListOfMoveableRoomPieces): All top pieces in rooms")
 		for row in allTopPiecesInRooms:
 			print(row)
 	if allTopPiecesInRooms == []:
-		# assert False,"(moveOneRandomPieceFromRoomToHallway): no moveable pieces"
+		# assert False,"(getListOfMoveableRoomPieces): no moveable pieces"
 		return []
 	legallyMoveablePieces = []
 	for piece in allTopPiecesInRooms:
@@ -297,32 +297,30 @@ def getListOfMoveableRoomPieces(board):
 			legallyMoveablePieces.append(piece)
 	if legallyMoveablePieces == []:
 		if debugGetListOfMoveableRoomPieces:
-			print("(moveOneRandomPieceFromRoomToHallway): No pieces to move")
+			print("(getListOfMoveableRoomPieces): No pieces to move")
 		return []
 	if debugGetListOfMoveableRoomPieces:
-		print("(moveOneRandomPieceFromRoomToHallway): legallyMoveablePieces")
+		print("(getListOfMoveableRoomPieces): legallyMoveablePieces")
 		for row in legallyMoveablePieces:
 			print(row)
 	return legallyMoveablePieces
 
-
-
-
-	# pieceToMoveOffset = random.randrange(0,len(legallyMoveablePieces))
-	# pieceToMove = legallyMoveablePieces[pieceToMoveOffset]
-	# if debugmoveOnePieceFromRoomToHallway:
-		# print("(moveOneRandomPieceFromRoomToHallway): pieceToMove",pieceToMove)
-	# xFrom = pieceToMove[1]
-	# yFrom = pieceToMove[2]
-	# legalDestHallwaySpots = findLegalMovesToHallways(xFrom,yFrom,board)
-	# if debugmoveOnePieceFromRoomToHallway:
-		# print("(moveOneRandomPieceFromRoomToHallway): legalDestHallwaySpots")
-		# for row in legalDestHallwaySpots:
-			# print(row)
+def findAllMoves(pieceToMove):
+	debugmoveOnePieceFromRoomToHallway = False
+	if debugmoveOnePieceFromRoomToHallway:
+		print("(findAllMoves): pieceToMove",pieceToMove)
+	xFrom = pieceToMove[1]
+	yFrom = pieceToMove[2]
+	legalDestHallwaySpots = findLegalMovesToHallways(xFrom,yFrom,board)
+	if debugmoveOnePieceFromRoomToHallway:
+		print("(findAllMoves): legalDestHallwaySpots")
+		for row in legalDestHallwaySpots:
+			print(row)
+	return legalDestHallwaySpots
 	# destLocationOffset = random.randrange(0,len(legalDestHallwaySpots))
 	# destLocation = legalDestHallwaySpots[destLocationOffset]
 	# if debugmoveOnePieceFromRoomToHallway:
-		# print("(moveOneRandomPieceFromRoomToHallway): destLocation",destLocation)
+		# print("(findAllMoves): destLocation",destLocation)
 	# xTo = destLocation[0]
 	# yTo = destLocation[1]
 	# legallyMoveablePieces[pieceToMoveOffset][1]
@@ -523,13 +521,22 @@ def findNeighbors(board):
 	global count
 	boardsList = []
 	debugFindNeighbors = True
-	moveablePiecesInHallways = getListOfMoveableHallwayPieces(board[0])
-	count = board[1]
-	if moveablePiecesInHallways != []:
-		
 	moveablePiecesInRooms = getListOfMoveableRoomPieces(board[0])
-	if debugFindNeighbors:
-		print("findNeighbors() moveablePiecesInRooms",moveablePiecesInRooms)
+	count = board[1]
+	allMovesFromTo = []
+	if moveablePiecesInRooms != []:
+		# if debugFindNeighbors:
+			# print("findNeighbors: moveablePiecesInRooms",moveablePiecesInRooms)
+		for piece in moveablePiecesInRooms:
+			fromX = piece[1]
+			fromY = piece[2]
+			print("findNeighbors: piece",piece)
+			allMoves = findAllMoves(piece)
+			print("findNeighbors: allMoves",allMoves)
+			for move in allMoves:
+				toX = move[0]
+				toY = move[1]
+				print("findNeighbors: move",piece[0],"from x,y",fromX,fromY,"to x,y",toX,toY)
 
 inFileName = 'input.txt'		# My input
 # inFileName = 'input-Part.txt'	# My input
