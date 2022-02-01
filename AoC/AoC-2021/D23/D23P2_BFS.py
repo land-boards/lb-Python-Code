@@ -136,16 +136,16 @@ def movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,board):
 # Hallway to Room movement functions
 
 legalHallwayXLocations = [1,2,4,6,8,10,11]
-def findAllPiecesInHallway(board):
-	if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
-		return []
-	allHallwayPieces = []
-	for x in legalHallwayXLocations:
-		if board[1][x] !=- '.':
-			allHallwayPieces.append(x)
-	return allHallwayPieces
+# def findAllPiecesInHallway(board):
+	# if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
+		# return []
+	# allHallwayPieces = []
+	# for x in legalHallwayXLocations:
+		# if board[1][x] !=- '.':
+			# allHallwayPieces.append(x)
+	# return allHallwayPieces
 
-def moveHallwayPiecesToRooms(board):
+def findHallwayPiecesToRoomMove(board):
 	# if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
 		# return board
 	moveablePiecesInHallways = findAllPiecesInHallwayWithOpenPaths(board)
@@ -157,9 +157,25 @@ def moveHallwayPiecesToRooms(board):
 		allLegalDest = findOpenRooms(pieceToMove[1],pieceToMove[2],board)
 		# print("All dests",allLegalDest)
 		if allLegalDest != []:
-			for legalDests in allLegalDest:
-				board = movePieceAndKeepCount(pieceToMove[1],pieceToMove[2],legalDests[0],legalDests[1],board)
-	return board
+			return [pieceToMove[0],pieceToMove[1],pieceToMove[2],legalDests[0],legalDests[1]]
+	return []
+	
+	
+# def moveHallwayPiecesToRooms(board):
+	# # if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
+		# # return board
+	# moveablePiecesInHallways = findAllPiecesInHallwayWithOpenPaths(board)
+	# # print("moveablePiecesInHallways",moveablePiecesInHallways)
+	# if moveablePiecesInHallways == []:
+		# return board
+	# for pieceToMove in moveablePiecesInHallways:
+		# # print("moveHallwayPiecesToRooms: Piece to move",pieceToMove)
+		# allLegalDest = findOpenRooms(pieceToMove[1],pieceToMove[2],board)
+		# # print("All dests",allLegalDest)
+		# if allLegalDest != []:
+			# for legalDests in allLegalDest:
+				# board = movePieceAndKeepCount(pieceToMove[1],pieceToMove[2],legalDests[0],legalDests[1],board)
+	# return board
 
 def findAllPiecesInHallwayWithOpenPaths(board):
 	moveablePiecesInHallways = []
@@ -481,9 +497,13 @@ def findNeighbors(board):
 	global count
 	boardsList = []
 	debugFindNeighbors = True
+	hallwayMoveablePieces = findHallwayPiecesToRoomMove(board)
+	if hallwayMoveablePieces != []:
+		return hallwayMoveablePieces
 	movesList = makeRoomsToHallMovesList(board)
 	print("findNeighbors: movesList",movesList)
 	print("findNeighbors: len(movesList)",len(movesList))
+	return movesList
 
 inFileName = 'input.txt'		# My input
 # inFileName = 'input-Part.txt'	# My input
