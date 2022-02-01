@@ -47,30 +47,6 @@ def printBoard(inList):
 		print()
 		rowNum += 1
 
-# Moves list functions
-
-def printMoves():
-	# printMoves
-	global movesList
-	print("movesList")
-	for move in movesList:
-		print(move)
-	return
-
-def clearMovesList():
-	global movesList
-	# print("(clearMovesList): Clearing moves list")
-	movesList = []
-	return
-	
-def addToMovesList(xFrom,yFrom,xTo,yTo,pickedUp):
-	global movesList
-	global movesCount
-	# print("addToMovesList",xFrom,yFrom,xTo,yTo,pickedUp)
-	movesList.append([xFrom,yFrom,xTo,yTo,pickedUp])
-	movesCount += 1
-	return
-
 # Board check functions
 
 def checkBoardLocked(board):
@@ -113,7 +89,9 @@ def checkBoardSolved(board):
 	# Returns True if the board is solved
 	# Returns False if the board is not yet solved
 	# print(board[2])
-	if board[2] != ['#', '#', '#', 'A', '#', 'B', '#', 'C', '#', 'D', '#', '#', '#']:
+	print("checkBoardSolved board",board[0])
+	printBoard(board[0])
+	if board[0][2] != ['#', '#', '#', 'A', '#', 'B', '#', 'C', '#', 'D', '#', '#', '#']:
 		return False
 	return True
 
@@ -121,62 +99,49 @@ pieceValDict = {'A':1,'B':10,'C':100,'D':1000}
 def movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,board):
 	# Move the piece from (xFrom,yFrom) to (xTo,yTo) and keep score
 	global score
-	# print("(movePieceAndKeepCount): xFrom,yFrom,xTo,yTo",xFrom,yFrom,xTo,yTo)
+	debugMovePieceAndKeepCount = True
+	if debugMovePieceAndKeepCount:
+		print("movePieceAndKeepCount: xFrom,yFrom,xTo,yTo",xFrom,yFrom,xTo,yTo)
+		print("movePieceAndKeepCount: board")
+		printBoard(board)
 	pickedUp = board[yFrom][xFrom]
 	board[yTo][xTo] = pickedUp
 	board[yFrom][xFrom] = '.'
-	# print("(movePieceAndKeepCount): pickedUp",pickedUp)
+	if debugMovePieceAndKeepCount:
+		print("movePieceAndKeepCount: pickedUp",pickedUp)
 	pieceVal = pieceValDict[pickedUp]
+	if debugMovePieceAndKeepCount:
+		print("movePieceAndKeepCount: pieceVal",pieceVal)
+		print("movePieceAndKeepCount: score",score)
 	# Update score
 	score += pieceVal*abs(xFrom-xTo)
 	score += pieceVal*abs(yFrom-yTo)
-	addToMovesList(xFrom,yFrom,xTo,yTo,pickedUp)
 	return board
 
 # Hallway to Room movement functions
 
-legalHallwayXLocations = [1,2,4,6,8,10,11]
-# def findAllPiecesInHallway(board):
-	# if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
-		# return []
-	# allHallwayPieces = []
-	# for x in legalHallwayXLocations:
-		# if board[1][x] !=- '.':
-			# allHallwayPieces.append(x)
-	# return allHallwayPieces
-
-def findHallwayPiecesToRoomMove(board):
+def findAnyHallwayPieceToMoveToRoom(board):
 	# if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
 		# return board
-	moveablePiecesInHallways = findAllPiecesInHallwayWithOpenPaths(board)
-	# print("moveablePiecesInHallways",moveablePiecesInHallways)
+	debugFindHallwayPiecesToMoveToRoom = True
+	moveablePiecesInHallways = findAllPiecesInHallwayWithOpenPaths(board[0])
 	if moveablePiecesInHallways == []:
-		return board
+		if debugFindHallwayPiecesToMoveToRoom:
+			print("findAnyHallwayPieceToMoveToRoom: Nothing to move in hallways")
+		return []
+	if debugFindHallwayPiecesToMoveToRoom:
+		print("findAnyHallwayPieceToMoveToRoom: ",moveablePiecesInHallways)
 	for pieceToMove in moveablePiecesInHallways:
-		# print("moveHallwayPiecesToRooms: Piece to move",pieceToMove)
-		allLegalDest = findOpenRooms(pieceToMove[1],pieceToMove[2],board)
-		# print("All dests",allLegalDest)
+		if debugFindHallwayPiecesToMoveToRoom:
+			print("findAnyHallwayPieceToMoveToRoom: Piece to move",pieceToMove)
+		allLegalDest = findOpenRooms(pieceToMove[1],pieceToMove[2],board[0])
+		if debugFindHallwayPiecesToMoveToRoom:
+			print("All dests",allLegalDest)
 		if allLegalDest != []:
 			return [pieceToMove[0],pieceToMove[1],pieceToMove[2],legalDests[0],legalDests[1]]
 	return []
-	
-	
-# def moveHallwayPiecesToRooms(board):
-	# # if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
-		# # return board
-	# moveablePiecesInHallways = findAllPiecesInHallwayWithOpenPaths(board)
-	# # print("moveablePiecesInHallways",moveablePiecesInHallways)
-	# if moveablePiecesInHallways == []:
-		# return board
-	# for pieceToMove in moveablePiecesInHallways:
-		# # print("moveHallwayPiecesToRooms: Piece to move",pieceToMove)
-		# allLegalDest = findOpenRooms(pieceToMove[1],pieceToMove[2],board)
-		# # print("All dests",allLegalDest)
-		# if allLegalDest != []:
-			# for legalDests in allLegalDest:
-				# board = movePieceAndKeepCount(pieceToMove[1],pieceToMove[2],legalDests[0],legalDests[1],board)
-	# return board
 
+legalHallwayXLocations = [1,2,4,6,8,10,11]
 def findAllPiecesInHallwayWithOpenPaths(board):
 	moveablePiecesInHallways = []
 	for xVal in legalHallwayXLocations:
@@ -373,76 +338,6 @@ def moveFourPiecesFromRoomsToCornersInHallway(board):
 	# movePieceAndKeepCount(xFrom,yFrom,dstX4,1,board)
 	return board
 
-def testCode():
-	global score
-	debugTestCode = False
-	# Test readFileOfStringsToListOfLists()
-	inFileName = "input-Solved.TXT"
-	board = readFileOfStringsToListOfLists(inFileName)
-	if board != [['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'], 
-	['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#'], 
-	['#', '#', '#', 'A', '#', 'B', '#', 'C', '#', 'D', '#', '#', '#'], 
-	[' ', ' ', '#', 'A', '#', 'B', '#', 'C', '#', 'D', '#'], 
-	[' ', ' ', '#', 'A', '#', 'B', '#', 'C', '#', 'D', '#'], 
-	[' ', ' ', '#', 'A', '#', 'B', '#', 'C', '#', 'D', '#'], 
-	[' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#']]:
-		print("testCode(): readFileOfStringsToListOfLists() failed")
-		return False
-	# Test checkBoardSolved()
-	if not checkBoardSolved(board):
-		print("testCode(): readFileOfStringsToListOfLists() failed")
-		return False
-	# Test checkBoardSolved()
-	if not checkBoardLocked(board):
-		print("testCode():  checkBoardLocked() failed (1)")
-		return False
-	# Test moveHallwayPiecesToRooms
-	inFileName = 'input-MoveToRoomTest.txt'
-	board = readFileOfStringsToListOfLists(inFileName)
-	if debugTestCode:
-		printBoard(board)
-	board = moveHallwayPiecesToRooms(board)
-	if debugTestCode:
-		printBoard(board)
-	if not checkBoardSolved(board):
-		print("testCode(): moveHallwayPiecesToRooms() failed")
-		return False
-	if score != 3:
-		print("testCode(): Score failed")
-		return False
-	if debugTestCode:
-		print("testCode(): score",score)
-		print("testCode(): passed")
-	board = [['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'], 
-	['#', 'D', 'D', '.', 'D', '.', 'B', '.', 'C', '.', 'A', 'C', '#'], 
-	['#', '#', '#', '.', '#', '.', '#', '.', '#', '.', '#', '#', '#'], 
-	[' ', ' ', '#', '.', '#', 'C', '#', '.', '#', '.', '#'], 
-	[' ', ' ', '#', 'D', '#', 'B', '#', 'A', '#', 'C', '#'], 
-	[' ', ' ', '#', 'B', '#', 'A', '#', 'B', '#', 'A', '#'], 
-	[' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#']]
-	if not checkBoardLocked(board):
-		print("testCode():  checkBoardLocked() failed (2)")
-		return False
-	inFileName = "input-Solved.TXT"
-	board = readFileOfStringsToListOfLists(inFileName)
-	topSpots = findTopPiecesInRooms(board)
-	if topSpots != []:
-		print("testCode():  findTopPiecesInRooms() failed (1)")
-		return False
-	inFileName = "input.TXT"
-	board = readFileOfStringsToListOfLists(inFileName)
-	topSpots = findTopPiecesInRooms(board)
-	if topSpots != [['B', 3, 2], ['B', 5, 2], ['D', 7, 2], ['D', 9, 2]]:
-		print("(testCode): findTopPiecesInRooms failed (2)")
-		print(topSpots)
-		return False
-	if canRoomTakeCharFromHallway(3,0,board):
-		print("(testCode): canRoomTakeCharFromHallway() failed")
-		return False
-	# print("testCode(): topSpots",topSpots)
-	# quit()
-	return True
-
 def copyBoard(board):
 	newBoard = []
 	for row in board:
@@ -459,16 +354,10 @@ count = 0
 score = 0
 
 movesList = []
-movesCount = 0
 
 openSpotInRoom = {3:-1,5:-1,7:-1,9:-1}
 
-if not testCode():
-	print("(main): Test code failed")
-else:
-	print("(main): Test code passed")
-
-def makeRoomsToHallMovesList(board):
+def findAllMovesFromRoomsToHallway(board):
 	# Return list of moves [[piece,fromX,fromY,toX,toY],...]
 	debugMakeRoomsToHallMovesList = False
 	moveablePiecesInRooms = getListOfMoveableRoomPieces(board[0])
@@ -476,33 +365,54 @@ def makeRoomsToHallMovesList(board):
 	allMovesFromTo = []
 	if moveablePiecesInRooms != []:
 		# if debugFindNeighbors:
-			# print("findNeighbors: moveablePiecesInRooms",moveablePiecesInRooms)
+			# print("findNextMoves: moveablePiecesInRooms",moveablePiecesInRooms)
 		for piece in moveablePiecesInRooms:
 			fromX = piece[1]
 			fromY = piece[2]
 			if debugMakeRoomsToHallMovesList:
-				print("findNeighbors: piece",piece)
+				print("findNextMoves: piece",piece)
 			allMoves = findAllMoves(piece)
 			if debugMakeRoomsToHallMovesList:
-				print("findNeighbors: allMoves",allMoves)
+				print("findNextMoves: allMoves",allMoves)
 			for move in allMoves:
 				toX = move[0]
 				toY = move[1]
 				if debugMakeRoomsToHallMovesList:
-					print("findNeighbors: move",piece[0],"from x,y",fromX,fromY,"to x,y",toX,toY)
+					print("findNextMoves: move",piece[0],"from x,y",fromX,fromY,"to x,y",toX,toY)
 				allMovesFromTo.append([piece[0],fromX,fromY,toX,toY])
 	return allMovesFromTo
 
-def findNeighbors(board):
-	global count
-	boardsList = []
+def doMovesOnBoard(board,movesList):
+	global score
+	debugDoMovesOnBoard = True
+	newBoard = copyBoard(board)
+	xFrom = movesList[1]
+	yFrom = movesList[2]
+	xTo = movesList[3]
+	yTo = movesList[4]
+	if debugDoMovesOnBoard:
+		print("doMovesOnBoard: xFrom, yFrom, xTo, yTo",xFrom,yFrom,xTo,yTo)
+	newBoard = movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,newBoard)
+	return [newBoard,score]
+
+def findNextMoves(board):
+	# Return list of fromXY, toXY, piece
+	# First, check hallway and if there is a piece select it, if more than one, select first only
+	# Second, get a list of the pieces in the rooms that can be moved
+	global score
 	debugFindNeighbors = True
-	hallwayMoveablePieces = findHallwayPiecesToRoomMove(board)
+	score = board[1]
+	if debugFindNeighbors:
+		print("findNextMoves: board",board[0])
+		printBoard(board[0])
+	boardsList = []
+	hallwayMoveablePieces = findAnyHallwayPieceToMoveToRoom(board)
 	if hallwayMoveablePieces != []:
 		return hallwayMoveablePieces
-	movesList = makeRoomsToHallMovesList(board)
-	print("findNeighbors: movesList",movesList)
-	print("findNeighbors: len(movesList)",len(movesList))
+	movesList = findAllMovesFromRoomsToHallway(board)
+	if debugFindNeighbors:
+		print("findNextMoves: movesList",movesList)
+		print("findNextMoves: len(movesList)",len(movesList))
 	return movesList
 
 inFileName = 'input.txt'		# My input
@@ -513,80 +423,19 @@ inFileName = 'input.txt'		# My input
 print("(main): inFileName:",inFileName)
 board1 = readFileOfStringsToListOfLists(inFileName)
 board = copyBoard(board1)
-movesCount = 0
-mostMoves = 5
-movesList = []
 
+# Load the board,score into the deque
 tovisit = deque([[board,0]])
 while len(tovisit):
 	current = tovisit.popleft()
 	if checkBoardSolved(current[0]):
-		print(current)
+		print("main: score",current[1])
 		quit()
-	neighbors=findNeighbors(current)
+	neighbors=findNextMoves(current)
 	for n in neighbors:
-		tovisit.append([n,current[1]+0])	# add score is 0
-	
+		newBoard = doMovesOnBoard(board,n)
+		tovisit.append([newBoard,current[1]+0])	# add score is 0
 
-while not checkBoardSolved(board):	# Read/re-read the board from the file
-	# board = readFileOfStringsToListOfLists(inFileName)
-	board = copyBoard(board1)
-	score = 0
-	movesList = []
-	movesCount = 0
-	loopsCount = 0
-	# openSpotInRoom = {3:-1,5:-1,7:-1,9:-1}
-	# printMoves()
-	# print("(main): Before moves")
-	# printBoard(board)
-	# Move 2 pieces to the two far corners
-	# board = moveFourPiecesFromRoomsToCornersInHallway(board)
-	while not checkBoardLocked(board):
-		# Move a single piece from the columns to the home row
-		board = moveOneRandomPieceFromRoomToHallway(board)
-		# addToMovesList(board)
-		# print("(main): moved all column pieces")
-		# printBoard(board)
-		# printMoves()
-		# Always move all pieces from home row if possible
-		# movedAPieceFromHomeRow,board = moveHallwayPiecesToRooms(board)
-		board = moveHallwayPiecesToRooms(board)
-		# addToMovesList(board)
-		# print("(main): moved all home row pieces")
-		# printBoard(board)
-		# printMoves()
-		# time.sleep(0.1)
-		if movesCount > 32:
-			printMoves()
-			quit()
-		loopsCount += 1
-		if loopsCount > 32:
-			printMoves()
-			quit()
-	runNum += 1
-	# if runNum % 10000 == 0:
-		# named_tuple = time.localtime() # get struct_time
-		# time_string = time.strftime("%m/%d/%Y, %H:%M:%S", named_tuple)
-		# print(time_string,end=' ')
-		# print(runNum,score)
-	if movesCount > mostMoves:
-		named_tuple = time.localtime() # get struct_time
-		time_string = time.strftime("%m/%d/%Y, %H:%M:%S", named_tuple)
-		print(time_string,end=' ')
-		print('Run',runNum,'score',score,'moves',movesCount)
-		mostMoves = movesCount
-		printMoves()
-		printBoard(board)
-	# if (board[5][3] == 'A') or (board[5][5] == 'B') or (board[5][7] == 'C') or (board[5][9] == 'D'):
-		# printMoves()
-		# printBoard(board)
-		# input("hit key")
-	# quit()
-	# break
-	
-printMoves()
-# print(movesList)
 endTime = time.time()
 print('time',endTime-startTime)
-
 print("score",score)
