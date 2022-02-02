@@ -372,7 +372,7 @@ openSpotInRoom = {3:-1,5:-1,7:-1,9:-1}
 
 def findAllMovesFromRoomsToHallway(board):
 	# Return list of moves [[piece,fromX,fromY,toX,toY],...]
-	debugMakeRoomsToHallMovesList = False
+	debugMakeRoomsToHallMovesList = True
 	moveablePiecesInRooms = getListOfMoveableRoomPieces(board[0])
 	count = board[1]
 	allMovesFromTo = []
@@ -416,7 +416,7 @@ def findNextMoves(board):
 	# First, check hallway and if there is a piece select it, if more than one, select first only
 	# Second, get a list of the pieces in the rooms that can be moved
 	global score
-	debugFindNeighbors = False
+	debugFindNeighbors = True
 	score = board[1]
 	if debugFindNeighbors:
 		print("findNextMoves: board",board[0])
@@ -445,12 +445,15 @@ while len(tovisit):
 	current = tovisit.popleft()
 	if checkBoardSolved(current[0]):
 		print("main: score",current[1])
-		quit()
+		# quit()
 	neighbors=findNextMoves(current)
-	for n in neighbors:
-		newBoard = doMovesOnBoard(current[0],n)
-		tovisit.append([newBoard[0],newBoard[1]])	# add score is 0
-	# print("main: made it through loop")
+	# print("main: neighbors\n",neighbors)
+	if neighbors != []:
+		for n in neighbors:
+			print("n",n)
+			newBoard = doMovesOnBoard(current[0],n)
+			tovisit.append([newBoard[0],newBoard[1]])	# add score is 0
+	print("main: made it through loop")
 	# for thing in tovisit:
 		# printBoard(thing[0])
 		# print(thing[1])
