@@ -89,20 +89,26 @@ def checkBoardSolved(board):
 	# Returns True if the board is solved
 	# Returns False if the board is not yet solved
 	# print(board[2])
-	print("checkBoardSolved board",board[0])
-	printBoard(board[0])
+	debugCheckBoardSolved = False
+	if debugCheckBoardSolved:
+		print("checkBoardSolved: board",board)
+		printBoard(board)
 	if board[0][2] != ['#', '#', '#', 'A', '#', 'B', '#', 'C', '#', 'D', '#', '#', '#']:
+		if debugCheckBoardSolved:
+			print("checkBoardSolved: board is not solved")
 		return False
+	if debugCheckBoardSolved:
+		print("checkBoardSolved: board is solved")
 	return True
 
 pieceValDict = {'A':1,'B':10,'C':100,'D':1000}
 def movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,board):
 	# Move the piece from (xFrom,yFrom) to (xTo,yTo) and keep score
 	global score
-	debugMovePieceAndKeepCount = True
+	debugMovePieceAndKeepCount = False
 	if debugMovePieceAndKeepCount:
 		print("movePieceAndKeepCount: xFrom,yFrom,xTo,yTo",xFrom,yFrom,xTo,yTo)
-		print("movePieceAndKeepCount: board")
+		print("movePieceAndKeepCount: board (before)")
 		printBoard(board)
 	pickedUp = board[yFrom][xFrom]
 	board[yTo][xTo] = pickedUp
@@ -112,10 +118,13 @@ def movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,board):
 	pieceVal = pieceValDict[pickedUp]
 	if debugMovePieceAndKeepCount:
 		print("movePieceAndKeepCount: pieceVal",pieceVal)
-		print("movePieceAndKeepCount: score",score)
+		print("movePieceAndKeepCount: score (before move)",score)
 	# Update score
 	score += pieceVal*abs(xFrom-xTo)
 	score += pieceVal*abs(yFrom-yTo)
+	if debugMovePieceAndKeepCount:
+		print("movePieceAndKeepCount: board (after)")
+		printBoard(board)
 	return board
 
 # Hallway to Room movement functions
@@ -123,7 +132,10 @@ def movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,board):
 def findAnyHallwayPieceToMoveToRoom(board):
 	# if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
 		# return board
-	debugFindHallwayPiecesToMoveToRoom = True
+	debugFindHallwayPiecesToMoveToRoom = False
+	if debugFindHallwayPiecesToMoveToRoom:
+		print("findAnyHallwayPieceToMoveToRoom: board",board)
+		printBoard(board[0])
 	moveablePiecesInHallways = findAllPiecesInHallwayWithOpenPaths(board[0])
 	if moveablePiecesInHallways == []:
 		if debugFindHallwayPiecesToMoveToRoom:
@@ -143,6 +155,7 @@ def findAnyHallwayPieceToMoveToRoom(board):
 
 legalHallwayXLocations = [1,2,4,6,8,10,11]
 def findAllPiecesInHallwayWithOpenPaths(board):
+	debugFindAllPiecesInHallwayWithOpenPaths = False
 	moveablePiecesInHallways = []
 	for xVal in legalHallwayXLocations:
 		if 'A' <= board[1][xVal] <= 'D':
@@ -384,15 +397,18 @@ def findAllMovesFromRoomsToHallway(board):
 
 def doMovesOnBoard(board,movesList):
 	global score
-	debugDoMovesOnBoard = True
+	debugDoMovesOnBoard = False
 	newBoard = copyBoard(board)
 	xFrom = movesList[1]
 	yFrom = movesList[2]
 	xTo = movesList[3]
 	yTo = movesList[4]
+	score = 0
 	if debugDoMovesOnBoard:
 		print("doMovesOnBoard: xFrom, yFrom, xTo, yTo",xFrom,yFrom,xTo,yTo)
 	newBoard = movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,newBoard)
+	if debugDoMovesOnBoard:
+		print("doMovesOnBoard: score after move",score)
 	return [newBoard,score]
 
 def findNextMoves(board):
@@ -400,7 +416,7 @@ def findNextMoves(board):
 	# First, check hallway and if there is a piece select it, if more than one, select first only
 	# Second, get a list of the pieces in the rooms that can be moved
 	global score
-	debugFindNeighbors = True
+	debugFindNeighbors = False
 	score = board[1]
 	if debugFindNeighbors:
 		print("findNextMoves: board",board[0])
@@ -421,8 +437,7 @@ inFileName = 'input.txt'		# My input
 # inFileName = 'input1-2.txt'	# Example
 # inFileName = 'input-SAG.txt'	# SAG example
 print("(main): inFileName:",inFileName)
-board1 = readFileOfStringsToListOfLists(inFileName)
-board = copyBoard(board1)
+board = readFileOfStringsToListOfLists(inFileName)
 
 # Load the board,score into the deque
 tovisit = deque([[board,0]])
@@ -434,7 +449,9 @@ while len(tovisit):
 	neighbors=findNextMoves(current)
 	for n in neighbors:
 		newBoard = doMovesOnBoard(board,n)
-		tovisit.append([newBoard,current[1]+0])	# add score is 0
+		tovisit.append([newBoard[0],newBoard[1]])	# add score is 0
+	# print("main: made it through loop")
+	# print(tovisit)
 
 endTime = time.time()
 print('time',endTime-startTime)
