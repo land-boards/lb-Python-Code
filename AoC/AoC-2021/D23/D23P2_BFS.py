@@ -378,20 +378,20 @@ def findAllMovesFromRoomsToHallway(board):
 	allMovesFromTo = []
 	if moveablePiecesInRooms != []:
 		# if debugFindNeighbors:
-			# print("findNextMoves: moveablePiecesInRooms",moveablePiecesInRooms)
+			# print("findAllMovesFromRoomsToHallway: moveablePiecesInRooms",moveablePiecesInRooms)
 		for piece in moveablePiecesInRooms:
 			fromX = piece[1]
 			fromY = piece[2]
 			if debugMakeRoomsToHallMovesList:
-				print("findNextMoves: piece",piece)
+				print("findAllMovesFromRoomsToHallway: piece",piece)
 			allMoves = findAllMoves(piece)
 			if debugMakeRoomsToHallMovesList:
-				print("findNextMoves: allMoves",allMoves)
+				print("findAllMovesFromRoomsToHallway: allMoves",allMoves)
 			for move in allMoves:
 				toX = move[0]
 				toY = move[1]
 				if debugMakeRoomsToHallMovesList:
-					print("findNextMoves: move",piece[0],"from x,y",fromX,fromY,"to x,y",toX,toY)
+					print("findAllMovesFromRoomsToHallway: move",piece[0],"from x,y",fromX,fromY,"to x,y",toX,toY)
 				allMovesFromTo.append([piece[0],fromX,fromY,toX,toY])
 	return allMovesFromTo
 
