@@ -132,25 +132,25 @@ def movePieceAndKeepCount(xFrom,yFrom,xTo,yTo,board):
 def findAnyHallwayPieceToMoveToRoom(board):
 	# if board[1] == ['#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#']:
 		# return board
-	debugFindHallwayPiecesToMoveToRoom = False
-	if debugFindHallwayPiecesToMoveToRoom:
-		print("findAnyHallwayPieceToMoveToRoom: board",board)
-		printBoard(board[0])
+	debugFindHallwayPiecesToMoveToRoom = True
+	# if debugFindHallwayPiecesToMoveToRoom:
+		# print("findAnyHallwayPieceToMoveToRoom: board",board)
+		# printBoard(board[0])
 	moveablePiecesInHallways = findAllPiecesInHallwayWithOpenPaths(board[0])
 	if moveablePiecesInHallways == []:
-		if debugFindHallwayPiecesToMoveToRoom:
-			print("findAnyHallwayPieceToMoveToRoom: Nothing to move in hallways")
+		# if debugFindHallwayPiecesToMoveToRoom:
+			# print("findAnyHallwayPieceToMoveToRoom: Nothing to move in hallways")
 		return []
-	if debugFindHallwayPiecesToMoveToRoom:
-		print("findAnyHallwayPieceToMoveToRoom: ",moveablePiecesInHallways)
+	# if debugFindHallwayPiecesToMoveToRoom:
+		# print("findAnyHallwayPieceToMoveToRoom: ",moveablePiecesInHallways)
 	for pieceToMove in moveablePiecesInHallways:
-		if debugFindHallwayPiecesToMoveToRoom:
-			print("findAnyHallwayPieceToMoveToRoom: Piece to move",pieceToMove)
+		# if debugFindHallwayPiecesToMoveToRoom:
+			# print("findAnyHallwayPieceToMoveToRoom: Piece to move",pieceToMove)
 		allLegalDest = findOpenRooms(pieceToMove[1],pieceToMove[2],board[0])
-		if debugFindHallwayPiecesToMoveToRoom:
-			print("All dests",allLegalDest)
+		# if debugFindHallwayPiecesToMoveToRoom:
+			# print("All dests",allLegalDest)
 		if allLegalDest != []:
-			return [pieceToMove[0],pieceToMove[1],pieceToMove[2],legalDests[0],legalDests[1]]
+			return [pieceToMove[0],pieceToMove[1],pieceToMove[2],allLegalDest[0][0],allLegalDest[0][1]]
 	return []
 
 legalHallwayXLocations = [1,2,4,6,8,10,11]
@@ -448,10 +448,13 @@ while len(tovisit):
 		quit()
 	neighbors=findNextMoves(current)
 	for n in neighbors:
-		newBoard = doMovesOnBoard(board,n)
+		newBoard = doMovesOnBoard(current[0],n)
 		tovisit.append([newBoard[0],newBoard[1]])	# add score is 0
 	# print("main: made it through loop")
-	# print(tovisit)
+	# for thing in tovisit:
+		# printBoard(thing[0])
+		# print(thing[1])
+	# quit()
 
 endTime = time.time()
 print('time',endTime-startTime)
