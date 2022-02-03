@@ -431,9 +431,8 @@ while len(tovisit):
 				print("main: n",n)
 			newBoard = doMovesOnBoard(board,n)
 			tovisit.append([newBoard[0],newBoard[1]+currentScore])
-	else:
-		if checkBoardSolved(board):
-			print("main: solved score",score)
+	if checkBoardSolved(board):
+		print("main: solved currentScore",currentScore)
 
 endTime = time.time()
 print('time',endTime-startTime)
