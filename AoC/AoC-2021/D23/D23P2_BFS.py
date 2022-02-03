@@ -91,12 +91,11 @@ def checkBoardSolved(board):
 	# print(board[2])
 	debugCheckBoardSolved = False
 	if debugCheckBoardSolved:
-		print("checkBoardSolved: board")
+		print("checkBoardSolved: board[2]",board[2])
 		printBoard(board)
-	if board[0][2] == ['#', '#', '#', 'A', '#', 'B', '#', 'C', '#', 'D', '#', '#', '#']:
+	if board[2] == ['#', '#', '#', 'A', '#', 'B', '#', 'C', '#', 'D', '#', '#', '#']:
 		if debugCheckBoardSolved:
 			print("checkBoardSolved: board is solved")
-		quit()
 		return True
 	if debugCheckBoardSolved:
 		print("checkBoardSolved: board is not solved")
@@ -420,6 +419,8 @@ while len(tovisit):
 	current = tovisit.popleft()
 	board = current[0]
 	currentScore = current[1]
+	if checkBoardSolved(board):
+		print("main: solved currentScore",currentScore)
 	if debugMain:
 		print("main: currentScore",currentScore)
 	neighbors=findNextMoves(board)
@@ -431,8 +432,6 @@ while len(tovisit):
 				print("main: n",n)
 			newBoard = doMovesOnBoard(board,n)
 			tovisit.append([newBoard[0],newBoard[1]+currentScore])
-	if checkBoardSolved(board):
-		print("main: solved currentScore",currentScore)
 
 endTime = time.time()
 print('time',endTime-startTime)
