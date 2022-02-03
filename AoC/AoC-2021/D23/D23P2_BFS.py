@@ -412,10 +412,10 @@ inFileName = 'input.txt'		# My input
 # inFileName = 'input1-2.txt'	# Example
 # inFileName = 'input-SAG.txt'	# SAG example
 print("(main): inFileName:",inFileName)
-board = readFileOfStringsToListOfLists(inFileName)
+board1 = readFileOfStringsToListOfLists(inFileName)
 debugMain = False
 # Load the board,score into the deque\
-tovisit = deque([[board,0]])
+tovisit = deque([[board1,0]])
 while len(tovisit):
 	current = tovisit.popleft()
 	board = current[0]
