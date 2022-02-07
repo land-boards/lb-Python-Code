@@ -49,7 +49,7 @@ def getValAtPoint(xLoc,yLoc,arrayIn):
 	# print(xVal,yVal,val)
 	return val
 
-loopCount = 2
+loopCount = 50
 inList = readFileToListOfStrings('input1.txt')
 
 decoder = inList[0]
