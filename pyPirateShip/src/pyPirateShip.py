@@ -256,7 +256,7 @@ class ControlClass:
 		global rewardsSentColumn
 		outList = []
 		for row in theList:
-			if row[rewardsSentColumn] == '' and row[countryColumn] != 'United States of America':
+			if row[rewardsSentColumn] == '' and row[countryColumn] != 'United States of America' and row[countryColumn] != '':
 			#print 'country', row[countryColumn]
 				outLine = []
 				outLine.append(row[shippingFirstNameColumn])
