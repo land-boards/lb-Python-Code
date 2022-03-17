@@ -13,7 +13,7 @@
 
 == Files ==
 
-* [https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/libraries/digio128/digio128.py digio128.py] - Library/driver for the [http://land-boards.com/blwiki/index.php?title=DIGIO-128 DIGIO-128] card. 
+* [https://github.com/land-boards/lb-Python-Code/blob/master/MicroPython/ESP32/libraries/digio128/digio128.py digio128.py] - Library/driver for the [http://land-boards.com/blwiki/index.php?title=DIGIO-128 DIGIO-128] card. 
 ** Uses Arduino style functions but in Python with methods extended to 128 bits.
 *** [https://www.arduino.cc/reference/en/language/functions/digital-io/digitalread/ digitalRead(bit)] - bit is 0-127, returns 0 or 1
 *** [https://www.arduino.cc/reference/en/language/functions/digital-io/digitalwrite/ digitalWrite(bit,val)] - write val (0 or 1) to bit (0-127)
