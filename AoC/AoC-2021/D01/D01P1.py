@@ -5,6 +5,10 @@
 
 """
 """
+import time
+
+# At start
+startTime = time.time()
 
 # open file and read the content into an accumulated sum
 newList = []
@@ -20,3 +24,7 @@ for numOffset in range(len(newList)-1):
 	if nextNum > currNum:
 		incrCount += 1
 print("incrCount",incrCount)
+
+# At end
+endTime = time.time()
+print('time',endTime-startTime)

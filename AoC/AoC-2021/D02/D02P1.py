@@ -5,6 +5,10 @@
 
 """
 """
+import time
+
+# At start
+startTime = time.time()
 
 # readFileToListOfStrings
 def readFileToListOfStrings(fileName):
@@ -17,7 +21,7 @@ def readFileToListOfStrings(fileName):
 	return inList
 
 inList = readFileToListOfStrings('input.txt')
-print(inList)
+# print(inList)
 # for row in inList:
 	# print(row)
 
@@ -29,15 +33,18 @@ for row in inList:
 	line = row.split()
 	dirVal = line[0]
 	numVal = int(line[1])
-	print(dirVal,numVal)
+	# print(dirVal,numVal)
 	if dirVal == 'up':
 		zPos -= numVal
 	elif dirVal == 'down':
 		zPos += numVal
 	elif dirVal == 'forward':
 		xPos += numVal
-print('xPos',xPos)
-print('yPos',yPos)
-print('zPos',zPos)
+# print('xPos',xPos)
+# print('yPos',yPos)
+# print('zPos',zPos)
 print('product',xPos*zPos)
 
+# At end
+endTime = time.time()
+print('time',endTime-startTime)

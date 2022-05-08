@@ -6,6 +6,11 @@
 """
 """
 
+import time
+
+# At start
+startTime = time.time()
+
 # open file and read the content into an accumulated sum
 newList = []
 with open('input.txt', 'r') as filehandle:  
@@ -26,3 +31,7 @@ for numOffset in range(len(avgList)-1):
 	if avgList[numOffset+1] > avgList[numOffset]:
 		incrCount += 1
 print("incrCount",incrCount)
+
+# At end
+endTime = time.time()
+print('time',endTime-startTime)
