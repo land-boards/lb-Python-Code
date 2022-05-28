@@ -61,7 +61,9 @@ class HandleDefault(object):
 		global defaultsFileNamePath
 		global verboseMode
 		defaultFilePath = os.getcwd()
-		defaultsFileNamePath = defaultFilePath + '\\Defaults.csv'
+		print("initDefaults: defaultFilePath",defaultFilePath)
+		defaultsFileNamePath = '.\\Defaults.csv'
+		# defaultsFileNamePath = defaultFilePath + '\\Defaults.csv'
 		if verboseMode:
 			print('initDefaults: set defaultsFileNamePath to', defaultsFileNamePath)
 		if self.ifExistsDefaults() == True:
