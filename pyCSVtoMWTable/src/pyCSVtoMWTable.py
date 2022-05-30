@@ -66,8 +66,12 @@ class ControlClass(object):
 		This code uses the read CSV library to read in the CSV file.
 		"""
 		global defaultPath
-		
+		defaultFilePath = os.path.realpath(__file__)
+		defaultPath = defaultFilePath[0:defaultFilePath.rfind("\\")]
+		# print("theExecutive: defaultFilePath",defaultFilePath)
+		# print("theExecutive: defaultPath",defaultPath)
 		defaultParmsClass = HandleDefault()
+		defaultParmsClass.setPathToProgramSource(defaultPath)
 		defaultParmsClass.initDefaults()
 		defaultPath = defaultParmsClass.getKeyVal('DEFAULT_PATH')
 		#print 'defaultPath',defaultPath

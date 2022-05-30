@@ -56,13 +56,19 @@ class HandleDefault(object):
 	This can be used to save stuff like the default path
 	The file is a simple list with KEY, value pairs on individual lines
 	"""
+	def setPathToProgramSource(self,progDefPath):
+		global defaultPath
+		defaultPath = progDefPath
+		print("setPathself:",progDefPath)
+	
 	def initDefaults(self):
 		global defaultPath
 		global defaultsFileNamePath
 		global verboseMode
-		defaultFilePath = os.getcwd()
-		print("initDefaults: defaultFilePath",defaultFilePath)
-		defaultsFileNamePath = '.\\Defaults.csv'
+		defaultFilePath = defaultPath
+		# defaultFilePath = os.getcwd()
+		# print("initDefaults: defaultFilePath",defaultFilePath)
+		defaultsFileNamePath = defaultPath + '\\Defaults.csv'
 		# defaultsFileNamePath = defaultFilePath + '\\Defaults.csv'
 		if verboseMode:
 			print('initDefaults: set defaultsFileNamePath to', defaultsFileNamePath)

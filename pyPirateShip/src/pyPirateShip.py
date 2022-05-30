@@ -97,9 +97,12 @@ class ControlClass:
 		"""
 		global defaultPath
 		defaultParmsClass = HandleDefault()
+		defaultFilePath = os.path.realpath(__file__)
+		defaultPath = defaultFilePath[0:defaultFilePath.rfind("\\")]
+		defaultParmsClass.setPathToProgramSource(defaultPath)
 		defaultParmsClass.initDefaults()
 		defaultPath = defaultParmsClass.getKeyVal('DEFAULT_PATH')
-		print ('(doConvert): defaultPath',defaultPath)
+		# print ('(doConvert): defaultPath',defaultPath)
 		myCSVFileReadClass = ReadCSVtoList()	# instantiate the class
 		myCSVFileReadClass.setVerboseMode(False)	# turn on verbose mode until all is working 
 		myCSVFileReadClass.setUseSnifferFlag(True)
