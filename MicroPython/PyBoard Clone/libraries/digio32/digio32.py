@@ -1,8 +1,12 @@
 ###############################################################################
 # digio32 - DIGIO32-I2C library
+# CircuitPython
+# https://docs.circuitpython.org/en/latest/shared-bindings/busio/#busio.I2C
 ###############################################################################
 
-import machine
+import board
+import busio
+import time
 
 MCP23017_BASEADDR=0x20
 
@@ -34,74 +38,98 @@ INPUT=0x0
 OUTPUT=0x1
 INPUT_PULLUP=0x2
 
-i2c=machine.I2C(1)
-outdata=bytearray(b'\x00')
-i2c.writeto_mem(MCP23017_BASEADDR,MCP23017_IOCONA,outdata)	# set all bits to inputs
-i2c.writeto_mem(MCP23017_BASEADDR+1,MCP23017_IOCONA,outdata)	# set all bits to inputs
+def digitalWrite(bit,value):     # Writes to a single bit
+    global chipAddr
+    chipAddr = MCP23017_BASEADDR | ((bit & 0x10) >> 4)
+    if ((bit & 0x08) == 0):
+        regAdr=MCP23017_OLATA
+    else:
+        regAdr=MCP23017_OLATB
+    rwValue=readRegister(regAdr)
+    if (value == 0):
+        rwValue &= ~(1 << (bit&0x7))
+    else:
+        rwValue |= (1 << (bit&0x7))
+    writeRegister(regAdr,rwValue)
+    return
+
+def digitalRead(bit):            # Reads a single bit
+    global chipAddr
+    chipAddr = MCP23017_BASEADDR | ((bit & 0x10) >> 4)
+    if ((bit & 0x08) == 0):
+        regAdr=MCP23017_GPIOA
+    else:
+        regAdr=MCP23017_GPIOB
+    rdVal=readRegister(regAdr)
+    return ((rdVal>>(bit&7))&0x01)
+
+def pinMode(bit,value):            # Set the single bit direction (INPUT, INPUT_PULLUP, OUTPUT)
+    global chipAddr
+    chipAddr = MCP23017_BASEADDR | ((bit & 0x10) >> 4)
+    changeBit = 1 << (bit & 0x7)
+    if ((bit & 0x08) == 0):
+        puRegAdr=MCP23017_GPPUA
+        dirRegAdr=MCP23017_IODIRA
+    else:
+        puRegAdr=MCP23017_GPPUB
+        dirRegAdr=MCP23017_IODIRB
+    rdPuVal=readRegister(puRegAdr)
+    rdDirVal=readRegister(dirRegAdr)
+    if (value == INPUT_PULLUP): 
+        rdPuVal |= changeBit
+        writeRegister(puRegAdr,rdPuVal)
+        rdDirVal |= changeBit
+        writeRegister(dirRegAdr,rdDirVal)
+    elif (value == INPUT):
+        rdPuVal &= ~changeBit
+        writeRegister(puRegAdr,rdPuVal)
+        rdDirVal |= changeBit
+        writeRegister(dirRegAdr,rdDirVal)
+    elif (value == OUTPUT):
+        rdDirVal &= ~changeBit
+        writeRegister(dirRegAdr,rdDirVal)
+
+def readRegister(reg):
+    global chipAddr
+    result = bytearray(1)
+    i2c.writeto_then_readfrom(chipAddr, bytes([reg]), result)
+    return result[0]
+
+def writeRegister(reg, val):
+    global chipAddr
+    passVal = bytearray([reg, val])
+    i2c.writeto(chipAddr, passVal)
+
+i2c = busio.I2C(board.GP15, board.GP14)    # Pi Pico RP2040
+
+# Lock the I2C device before we try to scan
+while not i2c.try_lock():
+    pass
+
+# Print the addresses found once
+print("I2C addresses found:", [hex(device_address) for device_address in i2c.scan()])
+
 chipAddr = MCP23017_BASEADDR
 
-def digitalWrite(bit,value): 	# Writes to a single bit
-	global chipAddr
-	chipAddr = MCP23017_BASEADDR | ((bit & 0x10) >> 4)
-	if ((bit & 0x08) == 0):
-		regAdr=MCP23017_OLATA
-	else:
-		regAdr=MCP23017_OLATB
-	rwValue=readRegister(regAdr)
-	if (value == 0):
-		rwValue &= ~(1 << (bit&0x7))
-	else:
-		rwValue |= (1 << (bit&0x7))
-	writeRegister(regAdr,rwValue)
-	return
+# set all bits to inputs
+# writeRegister(MCP23017_IOCONA,0x00)
+# writeRegister(MCP23017_IOCONB,0x00)
 
-def digitalRead(bit):			# Reads a single bit
-	global chipAddr
-	chipAddr = MCP23017_BASEADDR | ((bit & 0x10) >> 4)
-	if ((bit & 0x08) == 0):
-		regAdr=MCP23017_GPIOA
-	else:
-		regAdr=MCP23017_GPIOB
-	rdVal=readRegister(regAdr)
-	return ((rdVal>>(bit&7))&0x01)
+for bit in range(32):
+    pinMode(bit,OUTPUT)
 
-def pinMode(bit,value):			# Set the single bit direction (INPUT, INPUT_PULLUP, OUTPUT)
-	global chipAddr
-	chipAddr = MCP23017_BASEADDR | ((bit & 0x10) >> 4)
-	changeBit = 1 << (bit & 0x7)
-	if ((bit & 0x08) == 0):
-		puRegAdr=MCP23017_GPPUA
-		dirRegAdr=MCP23017_IODIRA
-	else:
-		puRegAdr=MCP23017_GPPUB
-		dirRegAdr=MCP23017_IODIRB
-	rdPuVal=readRegister(puRegAdr)
-	rdDirVal=readRegister(dirRegAdr)
-	if (value == INPUT_PULLUP): 
-		rdPuVal |= changeBit
-		writeRegister(puRegAdr,rdPuVal)
-		rdDirVal |= changeBit
-		writeRegister(dirRegAdr,rdDirVal)
-	elif (value == INPUT):
-		rdPuVal &= ~changeBit
-		writeRegister(puRegAdr,rdPuVal)
-		rdDirVal |= changeBit
-		writeRegister(dirRegAdr,rdDirVal)
-	elif (value == OUTPUT):
-		rdDirVal &= ~changeBit
-		writeRegister(dirRegAdr,rdDirVal)
-
-def readRegister(regAdr):
-	global chipAddr
-	readbackVal=bytearray(1)	# Allow buffer space
-	i2c.readfrom_mem_into(chipAddr,regAdr,readbackVal)	# Do the read
-	rwValue=readbackVal[0]	# Pull the first byte
-	return rwValue				# Return value
-
-def writeRegister(regAdr,wrValue):
-	global chipAddr
-	outBuff=bytearray(1)
-	outBuff[0]=wrValue
-	i2c.writeto_mem(chipAddr,regAdr,outBuff)	# Write to OLATA register
-	return
-	
+speed = 0.25
+while True:
+    for bit in range(32):
+        digitalWrite(bit,1)
+        time.sleep(speed)
+        digitalWrite(bit,0)
+    speed -= 0.05
+    if speed <= 0.00:
+        speed = 0.25
+    
+# for bit in range(32):
+#     digitalWrite(bit,0)
+#     time.sleep(0.1)
+    
+i2c.unlock()
