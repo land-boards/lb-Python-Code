@@ -1,6 +1,10 @@
 == land-boards Python CSV to ROM Table Generation Code ==
 
 * This is our [https://www.python.org/ Python] CSV to ROM Table Generation Code
+* Altera Quartus II can make tables into logic saving on RAM usage
+* It is easy to make CSV files in EXCEL
+* It is a pain to convert them into VHDL arrays
+* This program makes it easy
 
 == Ownership ==
 
