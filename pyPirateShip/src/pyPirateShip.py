@@ -88,6 +88,7 @@ countryColumn = 99
 zipColumn = 99
 emailColumn = 99
 rewardsSentColumn = 99
+shippingMethodColumn = 99
 
 class ControlClass:
 	"""Methods to read tindie or Kickstarter files and write out USPS and PayPal lists.
@@ -182,6 +183,7 @@ class ControlClass:
 		global phoneNumberColumn
 		global emailColumn
 		global rewardsSentColumn
+		global shippingMethodColumn
 		#print header
 		myOutList = []
 		itemNum = 0
@@ -196,6 +198,8 @@ class ControlClass:
 				shippingLastNameColumn = itemNum
 			elif item == 'Company':
 				companyColumn = itemNum
+			elif item == 'Shipping Method':
+				shippingMethodColumn = itemNum
 			elif item == 'Street':
 				address1Column = itemNum
 			elif item == 'City':
@@ -339,10 +343,14 @@ class ControlClass:
 		global phoneNumberColumn
 		global emailColumn
 		global rewardsSentColumn
+		global shippingMethodColumn
 		outList = []
+		priFlag = False
 		for row in theList:
 			if row[rewardsSentColumn] == '' and row[countryColumn] == 'United States of America':
 			#print 'country', row[countryColumn]
+				if row[shippingMethodColumn] == 'United States Postal Service Priority Mail (3 Days) w tracking':
+					priFlag = True
 				outLine = []
 				outLine.append(row[shippingFirstNameColumn])
 				outLine.append('')
@@ -378,6 +386,8 @@ class ControlClass:
 				outLine.append('')		# fax
 				outLine.append('')
 				outList.append(outLine)
+		if priFlag:
+			errorDialog("Order contains US PRIORITY Shipping item(s)")
 		return outList
 
 		
