@@ -51,6 +51,8 @@ defaultsFileNamePath = '.\\Defaults.csv'
 
 verboseMode = False
 
+defaultPath = '.'
+
 class HandleDefault(object):
 	""""Load and save defaults file
 	This can be used to save stuff like the default path
