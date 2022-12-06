@@ -1,4 +1,5 @@
 """ 
+D02P1
 readFileOfStringsToListOfLists
 Rock A defeats Scissors Z
 Scissors C defeats Paper Y
