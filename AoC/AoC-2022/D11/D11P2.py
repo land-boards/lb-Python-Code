@@ -6,8 +6,14 @@ Monkey 0:
   Test: divisible by 23
     If true: throw to monkey 2
     If false: throw to monkey 3
-
+* 2567194800 too low
+* 2268469980 too low
 """
+import time
+import math
+
+# At start
+startTime = time.time()
 
 # fileName = 'input2.txt'
 fileName = 'input.txt'
@@ -104,7 +110,20 @@ print('Before moves')
 for monkey in range(numberOfMonkeys):
 	print(monkey,monkeyDict[monkey][0])
 print('')
-for roundNum in range(20):
+print('monkeyDict',monkeyDict)
+modulus = 1
+for num in range(len(monkeyDict)):
+	print('monkeyDict[num][2]',monkeyDict[num][3])
+	modulus *= int(monkeyDict[num][3])
+print('modulus2',modulus)
+# assert False
+
+for roundNum in range(10000):
+# for roundNum in range(20):
+	# if roundNum%100 == 0:
+		# endTime = time.time()
+		# print('time',endTime-startTime,end=', Round=')
+		# print(roundNum)
 	for monkey in range(numberOfMonkeys):
 	# for monkey in range(1):
 		monkeyMoves[monkey] += len(monkeyDict[monkey][0])
@@ -116,14 +135,13 @@ for roundNum in range(20):
 		if debugMoves:
 			print('worryLevelList',worryLevelList)
 		while worryLevelList != []:
-	#	for worryLevel in worryLevelList:
 			worryLevel = worryLevelList.pop(0)
 			if debugMoves:
 				print('handle worryLevel',worryLevel)
 			newWorryLevel = calcWorryLevel(worryLevel,op,opVal)
 			if debugMoves:
 				print('newWorryLevel',newWorryLevel)
-			div3Val = int(newWorryLevel/3)
+			div3Val = int(newWorryLevel%modulus)
 			if debugMoves:
 				print('div3Val',div3Val)
 			divByVal = monkeyDict[monkey][3]
@@ -140,16 +158,23 @@ for roundNum in range(20):
 			monkeyDict[throwToMonkey][0].append(div3Val)
 			if debugMoves:
 				print('throwToMonkey,monkeyDict[throwToMonkey]',throwToMonkey,monkeyDict[throwToMonkey][0])
-	print('After round',roundNum+1)
-	for monkey in range(numberOfMonkeys):
-		print(monkey,monkeyDict[monkey][0])
-	print('')
+	if debugMoves:
+		print('After round',roundNum+1)
+		for monkey in range(numberOfMonkeys):
+			print(monkey,monkeyDict[monkey][0])
+	# print('monkeyDict',monkeyDict)
+	if debugMoves:
+		endTime = time.time()
+		print(roundNum+1,end=',')
+		print(int(endTime-startTime),end=',')
+		for move in range(len(monkeyMoves)):
+			print(monkeyMoves[move],',',end='')
+		print()
 
-print('Final list')
-for monkey in range(numberOfMonkeys):
-# for monkey in range(1):
-	print(monkey,monkeyDict[monkey][0])
+print('Final list',monkeyMoves)
+
 sortedMonkeyMoves = sorted(monkeyMoves)
 print('sortedMonkeyMoves',sortedMonkeyMoves)
 print('result',sortedMonkeyMoves[-1]*sortedMonkeyMoves[-2])
-
+endTime = time.time()
+print(endTime-startTime,'secs')
