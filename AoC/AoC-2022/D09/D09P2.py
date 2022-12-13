@@ -18,7 +18,7 @@ def moveTailSingleStep(headX,headY,tailX,tailY):
 		return tailX,tailY
 	if (headY == tailY) and (headX == tailX):
 		return tailX,tailY
-	if headY == tailY:	# same colmn
+	if headY == tailY:	# same column
 		if headX > tailX+1:
 			tailX += 1
 		elif headX < tailX-1:
