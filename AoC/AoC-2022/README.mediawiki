@@ -55,11 +55,20 @@
 
 * Shortest path via Dijkstra's algorithm
 
-= Day 13 - =
+= Day 13 - Distress Signal =
 
-= Day 14 - =
+* Parse nested lists
+* Recursively parse two lists to compare the lists
 
-= Day 15 - =
+= Day 14 - Regolith Reservoir =
+
+* Drop rocks down through array structure
+
+= Day 15 - Beacon Exclusion Zone =
+
+* Intersections between Manhatten defined spaces
+
+<img srtc="https://raw.githubusercontent.com/land-boards/lb-Python-Code/master/AoC/AoC-2022/D15/P1-Fig2.png"></img>
 
 = Day 16 - =
 
