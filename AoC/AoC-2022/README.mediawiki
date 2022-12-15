@@ -1,1 +1,65 @@
 = Advent of Code 2022 =
+
+= Day 1 - Calorie Counting =
+
+* Add buggest 3 elements of list
+** First sort list
+** Add last 3
+
+= Day 2 - Rock Paper Scissors Game =
+
+* Part 1 is traditional game
+* Part 2 has known winner but unknowm shapes
+
+= Day 3 - Rucksack Reorganization =
+
+* Find things in common between lists
+
+= Day 4 - Camp Cleanup =
+
+* Overlapping lists of pairs
+
+= Day 5 - Supply Stacks =
+
+* Shuffle crates between columns
+
+= Day 6 - Tuning Trouble =
+
+* Find start of packet
+
+= Day 7 - =
+
+= Day 8 - =
+
+= Day 9 - =
+
+= Day 10 - =
+
+= Day 11 - =
+
+= Day 12 - =
+
+= Day 13 - =
+
+= Day 14 - =
+
+= Day 15 - =
+
+= Day 16 - =
+
+= Day 17 - =
+
+= Day 18 - =
+
+= Day 19 - =
+
+= Day 20 - =
+
+= Day 21 - =
+
+= Day 22 - =
+
+= Day 23 - =
+
+= Day 24 - =
+
