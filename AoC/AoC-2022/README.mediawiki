@@ -8,7 +8,7 @@
 
 = Day 2 - Rock Paper Scissors Game =
 
-* Part 1 is traditional game
+* Part 1 is traditional Rock Paper Scissors game
 * Part 2 has known winner but unknowm shapes
 
 = Day 3 - Rucksack Reorganization =
