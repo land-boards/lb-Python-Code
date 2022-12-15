@@ -2,7 +2,10 @@
 D14P2.py
 841 is too low
 '''
+import time
 
+# At start
+startTime = time.time()
 def printArray(newArr):
 	global minX
 	global maxX
@@ -157,10 +160,10 @@ for x in range(maxX):
 	newArr[maxY][x] = '#'
 
 fillArray(segList)
-printArray(newArr)
-print()
-print('minX',minX,'maxX',maxX)
-print('minY',minY,'maxY',maxY)
+# printArray(newArr)
+# print()
+# print('minX',minX,'maxX',maxX)
+# print('minY',minY,'maxY',maxY)
 minX = minX - maxY
  
 sandCount = 0
@@ -170,7 +173,9 @@ while insertedSand:
 #	printArray(newArr)
 	sandCount += 1
 
-printArray(newArr)
-print()
+# printArray(newArr)
+# print()
 	
 print('sandCount',sandCount)
+endTime = time.time()
+print('time',endTime-startTime)
