@@ -1,6 +1,6 @@
 = Advent of Code 2022 =
 
-* [https://adventofcode.com/2022 Webpage]
+* [https://adventofcode.com/2022 Advent of Code 2022 webpage]
 
 = Day 1 - Calorie Counting =
 
