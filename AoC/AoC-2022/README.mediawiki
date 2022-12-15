@@ -27,17 +27,33 @@
 
 * Find start of packet
 
-= Day 7 - =
+= Day 7 - No Space Left On Device =
 
-= Day 8 - =
+* Parse directory structure
+* Lists of folder sizes rolled up
+* Done with loop until done solving what I can
 
-= Day 9 - =
+= Day 8 - Treetop Tree House =
 
-= Day 10 - =
+* Grid with topological map as 2D list
+* moveDirs = ((1,0),(-1,0),(0,1),(0,-1))
 
-= Day 11 - =
+= Day 9 - Rope Bridge =
 
-= Day 12 - =
+* List manipulation
+
+= Day 10 - Cathode-Ray Tube =
+
+* Run minimal CPU on per clock cycle basis
+* Result is an Array that can be read like a multi-segment diisplay
+
+= Day 11 - Monkey in the Middle =
+
+* Used dict for monkeyDecisionTreeList
+
+= Day 12 - Hill Climbing Algorithm =
+
+* Shortest path via Dijkstra's algorithm
 
 = Day 13 - =
 
