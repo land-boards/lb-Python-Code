@@ -66,7 +66,7 @@
 
 = Day 15 - Beacon Exclusion Zone =
 
-* Intersections between Manhatten defined spaces
+* Intersections between Manhattan defined spaces
 
 <img src="https://raw.githubusercontent.com/land-boards/lb-Python-Code/master/AoC/AoC-2022/D15/P1-Fig1%2B2.png"></img>
 
