@@ -1,8 +1,40 @@
 '''
 D17P1.py
 Tetris
+3639 is too high
+3170 is too high
+'''
 
 '''
+Shapes
+
+....
+....
+....
+####
+
+....
+.#..
+###.
+.#..
+
+....
+..#.
+..#.
+###.
+
+#...
+#...
+#...
+#...
+
+....
+....
+##..
+##..
+
+'''
+
 import time
 
 # At start
@@ -77,6 +109,17 @@ def getNextShape():
 	if shapeOffset == len(shapes):
 		shapeOffset = 0
 	return currentShape,shapeWidth,shapeHeight
+
+def printTopField():
+	global manualIn
+	debug_printField = True
+	if len(field)> 16:
+		last = len(field)-16
+	else:
+		last = -1
+	if debug_printField or manualIn:
+		for row in range(len(field)-1,last,-1):
+			print(field[row])
 
 def printField():
 	global manualIn
@@ -177,13 +220,14 @@ def canShapeMoveVert(currentShape,shapeXPos,shapeYPos,shapeWidth,shapeHeight):
 		if manualIn:
 			print('canShapeMoveVert: at bottom')
 		return False
-	for x in range(shapeWidth):
-		if debug_canShapeMoveVert or manualIn:
-				print('canShapeMoveVert: x,33-y',x,3-shapeHeight)
-		if currentShape[3][x] == '#' and (field[shapeYPos-1][shapeXPos+x] == '#'):
-			if manualIn:
-				print('canShapeMoveVert: False')
-			return False
+	for y in range(shapeHeight):
+		for x in range(shapeWidth):
+			if debug_canShapeMoveVert or manualIn:
+					print('canShapeMoveVert: x,33-y',x,3-shapeHeight)
+			if currentShape[3-y][x] == '#' and (field[shapeYPos-1+y][shapeXPos+x] == '#'):
+				if manualIn:
+					print('canShapeMoveVert: False','x,y',x,y)
+				return False
 	return True
 
 def canShapeMoveHoriz(currentShape,shapeXPos,shapeYPos,dirMove,shapeWidth,shapeHeight):
@@ -267,35 +311,6 @@ def insertBlock(shapeXPos,shapeYPos,currentShape,shapeWidth,shapeHeight):
 		print('insertBlock: field (after)')
 		printField()
 
-'''
-
-....
-....
-....
-####
-
-....
-.#..
-###.
-.#..
-
-....
-..#.
-..#.
-###.
-
-#...
-#...
-#...
-#...
-
-....
-....
-##..
-##..
-
-'''
-
 shapes = [['....','....','....','####'],['....','.#..','###.','.#..'],['....','..#.','..#.','###.'],['#...','#...','#...','#...'],['....','....','##..','##..']]
 
 shapeHorizSize = [4,3,3,1,2]
@@ -304,9 +319,11 @@ shapeVertSize = [1,3,3,4,2]
 # fileName = 'input2.txt'
 # fileName = 'input.txt'
 fileName = 'input1.txt'
+
 inLine = readInFile(fileName)
 manualIn = False
 debug_main = False  
+singleStep = True
 if debug_main:
 	print('main: inLine',inLine)
 	print('main: len(inLine)',len(inLine))
@@ -335,7 +352,7 @@ while moveCount < 2023:
 	addNextShapeToField(shapeHeight,shapeYPos)
 	# print('main field (before)')
 	# printField()
-	if debug_main or manualIn:
+	if debug_main or manualIn or singleStep:
 		print('New shape')
 		printshape(currentShape)
 	shapeXPos = 3
@@ -373,12 +390,12 @@ while moveCount < 2023:
 			printShapeInField(currentShape,shapeXPos,shapeYPos,shapeWidth,shapeHeight)
 	insertBlock(shapeXPos,shapeYPos,currentShape,shapeWidth,shapeHeight)
 	moveCount += 1
-	if manualIn:
-		printField()
+	if manualIn or singleStep:
+		printTopField()
 		print('**************************************')
 		input('hit any key')
 
-printField()
+# printField()
 print('Height',findNextInsertRow()-4)
 print('len(field)-3',len(field)-4)
 # At end
