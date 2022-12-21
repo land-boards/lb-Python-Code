@@ -1,0 +1,92 @@
+= Advent of Code 2022 =
+
+* [https://adventofcode.com/2022 Advent of Code 2022 webpage]
+
+= Day 1 - Calorie Counting =
+
+* Add buggest 3 elements of list
+** First sort list
+** Add last 3
+
+= Day 2 - Rock Paper Scissors Game =
+
+* Part 1 is traditional Rock Paper Scissors game
+* Part 2 has known winner but unknown shapes
+
+= Day 3 - Rucksack Reorganization =
+
+* Find things in common between lists
+
+= Day 4 - Camp Cleanup =
+
+* Overlapping lists of pairs
+
+= Day 5 - Supply Stacks =
+
+* Shuffle crates between columns
+
+= Day 6 - Tuning Trouble =
+
+* Find start of packet
+
+= Day 7 - No Space Left On Device =
+
+* Parse directory structure
+* Lists of folder sizes rolled up
+* Done with loop until done solving what I can
+
+= Day 8 - Treetop Tree House =
+
+* Grid with topological map as 2D list
+* moveDirs = ((1,0),(-1,0),(0,1),(0,-1))
+
+= Day 9 - Rope Bridge =
+
+* List manipulation
+
+= Day 10 - Cathode-Ray Tube =
+
+* Run minimal CPU on per clock cycle basis
+* Result is an Array that can be read like a multi-segment diisplay
+
+= Day 11 - Monkey in the Middle =
+
+* Used dict for monkeyDecisionTreeList
+
+= Day 12 - Hill Climbing Algorithm =
+
+* Shortest path via Dijkstra's algorithm
+
+= Day 13 - Distress Signal =
+
+* Parse nested lists
+* Recursively parse two lists to compare the lists
+
+= Day 14 - Regolith Reservoir =
+
+* Drop rocks down through array structure
+
+= Day 15 - Beacon Exclusion Zone =
+
+* Intersections between Manhattan defined spaces
+
+<img src="https://raw.githubusercontent.com/land-boards/lb-Python-Code/master/AoC/AoC-2022/D15/P1-Fig1%2B2.png"></img>
+
+= Day 16 - =
+
+= Day 17 - =
+
+= Day 18 - =
+
+= Day 19 - =
+
+= Day 20 - =
+
+= Day 21 - =
+
+= Day 22 - =
+
+= Day 23 - =
+
+= Day 24 - =
+
