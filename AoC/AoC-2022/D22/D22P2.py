@@ -199,10 +199,23 @@ for y in range(0,ySize,blockYSize):
 	print()
 print('quadrantList',quadrantList)
 if fileName=="input1.txt":
-	nextQuadrant = {(1,'>'):3}
+	nextQuadrant =  {
+	(1,'>'):3,(1,'<'):'tbd',(1,'^'):'tbd',(1,'v'):'tbd',
+	(2,'>'):3,(2,'<'):'tbd',(2,'^'):'tbd',(2,'v'):'tbd',
+	(3,'>'):3,(3,'<'):'tbd',(3,'^'):'tbd',(3,'v'):'tbd',
+	(4,'>'):3,(4,'<'):'tbd',(4,'^'):'tbd',(4,'v'):'tbd',
+	(5,'>'):3,(5,'<'):'tbd',(5,'^'):'tbd',(5,'v'):'tbd',
+	(6,'>'):3,(6,'<'):'tbd',(6,'^'):'tbd',(6,'v'):'tbd'
+	}
 elif fileName=="input.txt":
-	nextQuadrant = {(1,'>'):2, (1,'<'):'tbd', (1,'^'):'tbd', (1,'v'):'tbd',
-					(2,'<'):1}
+	nextQuadrant = {
+	(1,'>'):2, (1,'<'):'tbd', (1,'^'):'tbd', (1,'v'):'tbd',
+	(2,'>'):2, (2,'<'):'tbd', (2,'^'):'tbd', (2,'v'):'tbd',
+	(3,'>'):2, (3,'<'):'tbd', (3,'^'):'tbd', (3,'v'):'tbd',
+	(4,'>'):2, (4,'<'):'tbd', (4,'^'):'tbd', (4,'v'):'tbd',
+	(5,'>'):2, (5,'<'):'tbd', (5,'^'):'tbd', (5,'v'):'tbd',
+	(6,'>'):2, (6,'<'):'tbd', (6,'^'):'tbd', (6,'v'):'tbd',
+	}
 print(nextQuadrant)
 assert False
 
