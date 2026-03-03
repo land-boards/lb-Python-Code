@@ -10,9 +10,9 @@ def readFileToListOfStrings(fileName):
     return inList
 
 inList = readFileToListOfStrings('D01_input-1.txt')
-print(inList)
-for row in inList:
-    print(row)
+# print(inList)
+# for row in inList:
+    # print(row)
 
 position = 50
 count = 0
